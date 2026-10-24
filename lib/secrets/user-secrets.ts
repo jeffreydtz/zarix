@@ -2,18 +2,27 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:
 import { createServiceClientSync } from '@/lib/supabase/server';
 
 const AES_PREFIX = 'aesgcm:v1:';
-const ENVELOPE_PREFIX = 'envelope:v0:';
+const VAULT_PREFIX = 'vault:v1:';
 
-function masterKey(): Buffer {
+export const SECRETS_UNAVAILABLE_MESSAGE =
+  'User secrets require Supabase Vault (schema vault, service_role SECURITY DEFINER) in production. Local/tests may set ZARIX_SECRETS_MASTER_KEY. No service-role derivation, no built-in key, no envelope:v0.';
+
+type SecretColumn = 'gemini_api_key' | 'telegram_bot_token';
+
+function masterKey(): Buffer | null {
   const explicit = process.env.ZARIX_SECRETS_MASTER_KEY?.trim();
-  const material = explicit || process.env.SUPABASE_SERVICE_ROLE_KEY || 'zarix-dev-secrets-key';
-  return createHash('sha256').update(`zarix-user-secrets:v1:${material}`).digest();
+  if (!explicit) return null;
+  return createHash('sha256').update(`zarix-user-secrets:v1:${explicit}`).digest();
 }
 
 export function encryptSecret(plain: string | null | undefined): string | null {
   if (plain == null || plain === '') return null;
+  const key = masterKey();
+  if (!key) {
+    throw new Error(SECRETS_UNAVAILABLE_MESSAGE);
+  }
   const iv = randomBytes(12);
-  const cipher = createCipheriv('aes-256-gcm', masterKey(), iv);
+  const cipher = createCipheriv('aes-256-gcm', key, iv);
   const ct = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
   return `${AES_PREFIX}${iv.toString('base64')}:${tag.toString('base64')}:${ct.toString('base64')}`;
@@ -21,45 +30,48 @@ export function encryptSecret(plain: string | null | undefined): string | null {
 
 export function decryptSecret(stored: string | null | undefined): string | null {
   if (!stored) return null;
+  if (stored.startsWith('envelope:v0:') || stored.startsWith('pgp:v1:')) {
+    return null;
+  }
+  if (!stored.startsWith(AES_PREFIX)) return null;
+  const key = masterKey();
+  if (!key) return null;
   try {
-    if (stored.startsWith(AES_PREFIX)) {
-      const rest = stored.slice(AES_PREFIX.length);
-      const [ivB64, tagB64, ctB64] = rest.split(':');
-      if (!ivB64 || !tagB64 || !ctB64) return null;
-      const decipher = createDecipheriv('aes-256-gcm', masterKey(), Buffer.from(ivB64, 'base64'));
-      decipher.setAuthTag(Buffer.from(tagB64, 'base64'));
-      return Buffer.concat([decipher.update(Buffer.from(ctB64, 'base64')), decipher.final()]).toString('utf8');
-    }
-    if (stored.startsWith(ENVELOPE_PREFIX)) {
-      return Buffer.from(stored.slice(ENVELOPE_PREFIX.length), 'base64').toString('utf8');
-    }
+    const rest = stored.slice(AES_PREFIX.length);
+    const [ivB64, tagB64, ctB64] = rest.split(':');
+    if (!ivB64 || !tagB64 || !ctB64) return null;
+    const decipher = createDecipheriv('aes-256-gcm', key, Buffer.from(ivB64, 'base64'));
+    decipher.setAuthTag(Buffer.from(tagB64, 'base64'));
+    return Buffer.concat([decipher.update(Buffer.from(ctB64, 'base64')), decipher.final()]).toString('utf8');
   } catch {
     return null;
   }
-  return null;
 }
 
-/** Decrypts aesgcm:v1, envelope:v0, or pgp:v1 (via service-role RPC). Never logs `stored`. */
-export async function decryptStoredSecret(stored: string | null | undefined): Promise<string | null> {
-  return decryptStored(stored ?? null);
-}
-
-async function decryptStored(stored: string | null): Promise<string | null> {
-  const local = decryptSecret(stored);
-  if (local) return local;
-  if (stored?.startsWith('pgp:v1:')) {
-    try {
-      const supabase = createServiceClientSync();
-      const { data } = await supabase.rpc('decrypt_user_secret', { p_stored: stored });
-      return typeof data === 'string' && data ? data : null;
-    } catch {
-      return null;
-    }
+async function vaultRead(userId: string, column: SecretColumn): Promise<string | null> {
+  try {
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase.rpc('zarix_vault_read', {
+      p_user_id: userId,
+      p_kind: column,
+    });
+    if (error) return null;
+    return typeof data === 'string' && data ? data : null;
+  } catch {
+    return null;
   }
-  return null;
 }
 
-type SecretColumn = 'gemini_api_key' | 'telegram_bot_token';
+async function vaultStore(userId: string, column: SecretColumn, value: string | null): Promise<string | null> {
+  const supabase = createServiceClientSync();
+  const { data, error } = await supabase.rpc('zarix_vault_store', {
+    p_user_id: userId,
+    p_kind: column,
+    p_plain: value,
+  });
+  if (error) throw error;
+  return typeof data === 'string' && data ? data : null;
+}
 
 async function readPair(userId: string, column: SecretColumn): Promise<{ enc: string | null; plain: string | null }> {
   try {
@@ -82,30 +94,38 @@ async function readPair(userId: string, column: SecretColumn): Promise<{ enc: st
 
 export async function getUserSecret(userId: string, column: SecretColumn): Promise<string | null> {
   const { enc, plain } = await readPair(userId, column);
-  const fromEnc = await decryptStored(enc);
-  const value = (fromEnc && fromEnc.trim()) || (plain && String(plain).trim()) || null;
-  if (value && (!enc || !enc.startsWith(AES_PREFIX))) {
-    try {
-      const supabase = createServiceClientSync();
-      await supabase
-        .from('users')
-        .update({ [`${column}_enc`]: encryptSecret(value), [column]: null })
-        .eq('id', userId);
-    } catch {
-      // Mocks and read-only clients skip the lazy upgrade.
-    }
+  if (enc?.startsWith(VAULT_PREFIX)) {
+    const fromVault = await vaultRead(userId, column);
+    if (fromVault?.trim()) return fromVault.trim();
   }
-  return value;
+  const fromAes = decryptSecret(enc);
+  if (fromAes?.trim()) return fromAes.trim();
+  const legacy = plain && String(plain).trim() ? String(plain).trim() : null;
+  return legacy;
 }
 
 export async function setUserSecret(userId: string, column: SecretColumn, value: string | null): Promise<void> {
   const supabase = createServiceClientSync();
   const trimmed = value == null || value === '' ? null : String(value).trim();
+  let enc: string | null = null;
+  let vaultOk = false;
+  try {
+    enc = await vaultStore(userId, column, trimmed);
+    vaultOk = Boolean(enc?.startsWith(VAULT_PREFIX)) || trimmed == null;
+  } catch {
+    vaultOk = false;
+  }
+  if (!vaultOk) {
+    if (trimmed && !masterKey()) {
+      throw new Error(SECRETS_UNAVAILABLE_MESSAGE);
+    }
+    enc = trimmed ? encryptSecret(trimmed) : null;
+  }
   const { error } = await supabase
     .from('users')
     .update({
-      [`${column}_enc`]: encryptSecret(trimmed),
-      [column]: null,
+      [`${column}_enc`]: enc,
+      [column]: trimmed,
     })
     .eq('id', userId);
   if (error) throw error;
@@ -124,8 +144,12 @@ export async function userHasOwnGeminiKey(userId: string): Promise<boolean> {
   return Boolean(key);
 }
 
+export async function decryptStoredSecret(stored: string | null | undefined): Promise<string | null> {
+  return decryptSecret(stored ?? null);
+}
+
 /** Used by tests: never logs `plain`. */
 export function secretLooksEncrypted(stored: string | null | undefined): boolean {
   if (!stored) return false;
-  return stored.startsWith(AES_PREFIX) || stored.startsWith(ENVELOPE_PREFIX) || stored.startsWith('pgp:v1:');
+  return stored.startsWith(AES_PREFIX) || stored.startsWith(VAULT_PREFIX);
 }

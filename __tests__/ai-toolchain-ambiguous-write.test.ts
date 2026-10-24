@@ -54,7 +54,7 @@ describe('ambiguous mutation aborts the complete real tool chain',()=>{
  });
  it('uncertainty in the first batch item stops all remaining batch writes',async()=>{
   mocks.create.mockRejectedValue(new Error('synthetic first commit lost response'));
-  vi.mocked(fetch).mockResolvedValue(sdkResponse([{name:'create_transactions',args:{transactions:[{amount:10},{amount:20}]}}]));
+  vi.mocked(fetch).mockResolvedValue(sdkResponse([{name:'create_transactions',args:{transactions:[{amount:10,type:'expense'},{amount:20,type:'expense'}]}}]));
   await expect(processInternalAiChatMessage(input)).rejects.toBeInstanceOf(AmbiguousPlanWorkError);
   expect(mocks.create).toHaveBeenCalledOnce();expect(fetch).toHaveBeenCalledOnce();
  });

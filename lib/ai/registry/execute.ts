@@ -10,7 +10,7 @@ import { recurringService } from '@/lib/services/recurring';
 import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import type { RecurrenceFrequency, RecurringRule } from '@/types/database';
 import type { ExecutedTransactionSummary } from '@/types/internal-ai-chat';
-import { asUntrustedData, maskSensitiveValue } from './mask';
+import { asUntrustedData, maskSensitiveValue, UNTRUSTED_INSTRUCTION } from './mask';
 import { getRegistryTool, WRITE_TOOL_NAMES } from './catalog';
 import { MAX_TOOL_BATCH, TOOL_SCHEMAS } from './schemas';
 import { rateLimitAllow } from '@/lib/rate-limit';
@@ -171,6 +171,26 @@ function txOptions(source: WriteChannel | undefined, requestId?: string) {
   return { source: source ?? 'web', requestId };
 }
 
+async function parkCreate(
+  userId: string,
+  args: ToolArgs,
+  source: WriteChannel | undefined,
+  requestId?: string
+) {
+  const { parkRegistryWrite } = await import('@/lib/services/pending-inbox');
+  return parkRegistryWrite({
+    userId,
+    amount: Number(args.amount),
+    currency: String(args.currency || 'ARS'),
+    merchant: str(args.description) ?? null,
+    accountId: str(args.accountId) ?? null,
+    categoryId: str(args.categoryId) ?? null,
+    occurredAt: str(args.transactionDate) || str(args.date) || null,
+    source: source === 'mcp' || source === 'api' ? source : 'api',
+    ingestKey: requestId ?? null,
+  });
+}
+
 async function executeRegistryToolImpl(
   name: string,
   args: ToolArgs,
@@ -187,17 +207,67 @@ async function executeRegistryToolImpl(
     }
   }
 
-  const parsed = (TOOL_SCHEMAS as Record<string, { safeParse: (v: unknown) => { success: boolean; data?: ToolArgs } }>)[
-    name
-  ]?.safeParse(args);
-  const safeArgs: ToolArgs = parsed?.success && parsed.data ? parsed.data : args;
+  const schema = (TOOL_SCHEMAS as Record<string, { safeParse: (v: unknown) => { success: boolean; data?: ToolArgs } }>)[name];
+  if (!schema) return { response: { success: false, error: `Herramienta desconocida: ${name}` } };
+  const parsed = schema.safeParse(args);
+  if (!parsed.success || !parsed.data) {
+    return { response: { success: false, error: 'Argumentos inválidos.' } };
+  }
+  const safeArgs: ToolArgs = parsed.data;
+  const remoteWrite = source === 'mcp' || source === 'api';
 
   switch (name) {
     case 'create_transaction': {
+      if (remoteWrite && !isConfirmed(safeArgs)) {
+        const parked = await parkCreate(userId, safeArgs, source, requestId);
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            pendingId: parked.id,
+            preview: {
+              type: safeArgs.type,
+              amount: safeArgs.amount,
+              currency: safeArgs.currency,
+              description: asUntrustedData(safeArgs.description),
+            },
+            untrusted: true,
+            untrusted_instruction: UNTRUSTED_INSTRUCTION,
+            error: 'Mostrá el preview al usuario. Si confirma, llamá de nuevo con confirm=true (y pendingId).',
+          },
+        };
+      }
+      if (remoteWrite && isConfirmed(safeArgs) && typeof safeArgs.pendingId === 'string') {
+        const { confirmPendingItem } = await import('@/lib/services/pending-inbox');
+        const item = await confirmPendingItem({
+          userId,
+          itemId: String(safeArgs.pendingId),
+          amount: num(safeArgs.amount),
+          currency: str(safeArgs.currency),
+          merchant: str(safeArgs.description),
+          accountId: str(safeArgs.accountId),
+          categoryId: str(safeArgs.categoryId),
+        });
+        return {
+          response: {
+            success: true,
+            pendingId: item.id,
+            description: asUntrustedData(item.merchant),
+            untrusted: true,
+            untrusted_instruction: UNTRUSTED_INSTRUCTION,
+          },
+        };
+      }
       const res = await executeBotTransaction(userId, financialContext, safeArgs as BotTxPayload, txOptions(source, requestId));
       if (res.kind === 'abort') return { response: { success: false, error: res.reply } };
       return {
-        response: { success: true, summary: res.reply },
+        response: {
+          success: true,
+          summary: res.reply,
+          description: asUntrustedData(str(safeArgs.description)),
+          untrusted: true,
+          untrusted_instruction: UNTRUSTED_INSTRUCTION,
+        },
         executed: res.executed ? [res.executed] : undefined,
       };
     }
@@ -208,11 +278,28 @@ async function executeRegistryToolImpl(
         .filter((t) => t && typeof t.amount === 'number' && t.amount > 0)
         .slice(0, MAX_TOOL_BATCH);
       if (txs.length === 0) return { response: { success: false, error: 'No encontré montos válidos.' } };
+      if (remoteWrite && !isConfirmed(safeArgs)) {
+        const pendingIds: string[] = [];
+        for (const tx of txs) {
+          const parked = await parkCreate(userId, tx as unknown as ToolArgs, source, requestId);
+          pendingIds.push(parked.id);
+        }
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            pendingIds,
+            untrusted: true,
+            untrusted_instruction: UNTRUSTED_INSTRUCTION,
+            error: 'Mostrá el preview. Si el usuario confirma, llamá con confirm=true.',
+          },
+        };
+      }
 
       const executed: ExecutedTransactionSummary[] = [];
       const results: Array<{ ok: boolean; detail: string }> = [];
       for (const tx of txs) {
-        const res = await executeBotTransaction(userId, financialContext, tx, txOptions(source));
+        const res = await executeBotTransaction(userId, financialContext, tx, txOptions(source, requestId));
         if (res.kind === 'abort') {
           results.push({ ok: false, detail: res.reply });
         } else {
@@ -221,7 +308,7 @@ async function executeRegistryToolImpl(
         }
       }
       return {
-        response: { executedCount: executed.length, total: txs.length, results },
+        response: { executedCount: executed.length, total: txs.length, results, untrusted: true, untrusted_instruction: UNTRUSTED_INSTRUCTION },
         executed: executed.length ? executed : undefined,
       };
     }
@@ -622,10 +709,11 @@ export async function executeRegistryTool(
 ): Promise<RegistryToolResult> {
   try {
     const result = await executeRegistryToolImpl(name, args, ctx);
-    return {
-      ...result,
-      response: maskSensitiveValue(result.response),
-    };
+    const response = maskSensitiveValue(result.response);
+    if (response && typeof response === 'object' && 'untrusted' in response && response.untrusted) {
+      (response as Record<string, unknown>).untrusted_instruction = UNTRUSTED_INSTRUCTION;
+    }
+    return { ...result, response };
   } catch (error) {
     if (WRITE_TOOL_NAMES.has(name)) {
       throw error instanceof AmbiguousFinancialMutationError ? error : new AmbiguousFinancialMutationError(error);

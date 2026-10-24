@@ -58,10 +58,15 @@ export async function recordIntegrationAudit(input: {
 }
 
 const SECRET_KEYS = /token|secret|password|authorization|gemini|bot_token|api_key|cbu|cuit|pan|card_number/i;
+const AUDIT_KEY_ALLOWLIST = new Set(['tokenId', 'prefix', 'token_prefix', 'itemId', 'pendingId', 'scope']);
 
 export function redactAuditMetadata(value: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(value)) {
+    if (AUDIT_KEY_ALLOWLIST.has(k)) {
+      out[k] = typeof v === 'string' && v.length > 240 ? `${v.slice(0, 240)}…` : v;
+      continue;
+    }
     if (SECRET_KEYS.test(k)) {
       out[k] = '[redacted]';
       continue;

@@ -1,17 +1,22 @@
 import { ApiError } from '@/lib/api-handler';
 import { createBareServiceClient } from '@/lib/supabase/server';
 import {
+  defaultPatExpiresAt,
   generatePersonalAccessToken,
   hashPersonalAccessToken,
   hashesMatch,
   looksLikePersonalAccessToken,
   normalizeScopes,
   parseBearerToken,
+  parsePatExpiry,
   scopesInclude,
   type PatScope,
 } from '@/lib/auth/personal-access-token';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
-import { auditIpFromRequest, auditUserAgent, recordIntegrationAudit } from '@/lib/integrations/audit';
+import { auditIpFromRequest, auditUserAgent, hashClientIp, recordIntegrationAudit } from '@/lib/integrations/audit';
+
+const PAT_PUBLIC_COLUMNS =
+  'id, user_id, name, token_prefix, scopes, expires_at, last_used_at, revoked_at, created_at';
 
 export type PatRow = {
   id: string;
@@ -20,6 +25,7 @@ export type PatRow = {
   token_prefix: string;
   token_hash: string;
   scopes: string[];
+  expires_at: string | null;
   last_used_at: string | null;
   revoked_at: string | null;
   created_at: string;
@@ -27,16 +33,11 @@ export type PatRow = {
 
 export type PublicPat = Omit<PatRow, 'token_hash'>;
 
-function toPublic(row: PatRow): PublicPat {
-  const { token_hash: _hash, ...rest } = row;
-  return rest;
-}
-
 export async function listPersonalAccessTokens(userId: string): Promise<PublicPat[]> {
   const supabase = createBareServiceClient();
   const { data, error } = await supabase
     .from('personal_access_tokens')
-    .select('id, user_id, name, token_prefix, scopes, last_used_at, revoked_at, created_at')
+    .select(PAT_PUBLIC_COLUMNS)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
@@ -47,11 +48,13 @@ export async function createPersonalAccessToken(input: {
   userId: string;
   name: string;
   scopes?: unknown;
+  expiresAt?: unknown;
   req?: Request;
 }): Promise<{ token: string; pat: PublicPat }> {
   const name = String(input.name || '').trim().slice(0, 60);
   if (name.length < 2) throw new ApiError('Elegí un nombre de al menos 2 caracteres.');
   const scopes = normalizeScopes(input.scopes);
+  const expiresAt = parsePatExpiry(input.expiresAt, defaultPatExpiresAt());
   const generated = generatePersonalAccessToken();
   const supabase = createBareServiceClient();
   const { count } = await supabase
@@ -69,8 +72,9 @@ export async function createPersonalAccessToken(input: {
       token_prefix: generated.prefix,
       token_hash: generated.hash,
       scopes,
+      expires_at: expiresAt,
     })
-    .select('id, user_id, name, token_prefix, scopes, last_used_at, revoked_at, created_at')
+    .select(PAT_PUBLIC_COLUMNS)
     .single();
   if (error || !data) throw error || new ApiError('No se pudo crear el token.');
   if (input.req) {
@@ -84,6 +88,36 @@ export async function createPersonalAccessToken(input: {
     });
   }
   return { token: generated.token, pat: data as PublicPat };
+}
+
+export async function updatePersonalAccessToken(input: {
+  userId: string;
+  tokenId: string;
+  expiresAt?: unknown;
+  name?: unknown;
+  req?: Request;
+}): Promise<PublicPat> {
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (input.expiresAt !== undefined) {
+    patch.expires_at = parsePatExpiry(input.expiresAt, defaultPatExpiresAt());
+  }
+  if (input.name !== undefined) {
+    const name = String(input.name || '').trim().slice(0, 60);
+    if (name.length < 2) throw new ApiError('Elegí un nombre de al menos 2 caracteres.');
+    patch.name = name;
+  }
+  const supabase = createBareServiceClient();
+  const { data, error } = await supabase
+    .from('personal_access_tokens')
+    .update(patch)
+    .eq('id', input.tokenId)
+    .eq('user_id', input.userId)
+    .is('revoked_at', null)
+    .select(PAT_PUBLIC_COLUMNS)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new ApiError('Token no encontrado.', 404);
+  return data as PublicPat;
 }
 
 export async function revokePersonalAccessToken(input: {
@@ -125,7 +159,8 @@ export async function authenticatePersonalAccessToken(
   needed: PatScope
 ): Promise<AuthenticatedPat> {
   const ip = clientIpFromRequest(req);
-  if (!rateLimitAllow(`pat-auth:${ip}`, 60, 60_000)) {
+  const ipHash = hashClientIp(ip);
+  if (!rateLimitAllow(`pat-preauth:${ipHash}`, 60, 60_000)) {
     throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
   }
   const presented = parseBearerToken(req.headers.get('authorization'));
@@ -137,7 +172,7 @@ export async function authenticatePersonalAccessToken(
   const supabase = createBareServiceClient();
   const { data, error } = await supabase
     .from('personal_access_tokens')
-    .select('id, user_id, scopes, token_hash, revoked_at, last_used_at')
+    .select('id, user_id, scopes, token_hash, revoked_at, last_used_at, expires_at')
     .eq('token_hash', presentedHash)
     .maybeSingle();
   if (error) throw error;
@@ -145,16 +180,23 @@ export async function authenticatePersonalAccessToken(
   if (!row || !hashesMatch(presentedHash, row.token_hash) || row.revoked_at) {
     throw new ApiError('Unauthorized', 401);
   }
+  if (row.expires_at && Date.parse(row.expires_at) <= Date.now()) {
+    throw new ApiError('Unauthorized', 401);
+  }
+  if (!rateLimitAllow(`pat:${row.id}:${ipHash}`, 60, 60_000)) {
+    throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
+  }
   if (!scopesInclude(row.scopes, needed)) {
     throw new ApiError('Este token no tiene el permiso necesario.', 403);
   }
   const last = row.last_used_at ? Date.parse(row.last_used_at) : 0;
   if (!Number.isFinite(last) || Date.now() - last > 60_000) {
-    await supabase
+    const { error: usedErr } = await supabase
       .from('personal_access_tokens')
       .update({ last_used_at: new Date().toISOString() })
       .eq('id', row.id)
       .eq('user_id', row.user_id);
+    if (usedErr) console.error('[pat] last_used_at update failed');
   }
   await recordIntegrationAudit({
     userId: row.user_id,

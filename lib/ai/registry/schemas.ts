@@ -1,29 +1,38 @@
 import { z } from 'zod';
 
 const MAX_BATCH = 12;
+const MAX_AMOUNT = 1_000_000_000;
 
 const periodEnum = z
   .enum(['this_month', 'last_month', 'this_week', 'last_7_days', 'last_30_days', 'this_year'])
   .optional();
 
+const amountSchema = z.number().finite().positive().max(MAX_AMOUNT);
+
 export const transactionFieldsSchema = z.object({
   type: z.enum(['expense', 'income', 'transfer']).optional(),
-  amount: z.number().positive().optional(),
+  amount: amountSchema.optional(),
   currency: z.string().max(8).optional(),
   account: z.string().max(120).optional().nullable(),
+  accountId: z.string().uuid().optional(),
   category: z.string().max(80).optional(),
+  categoryId: z.string().uuid().optional().nullable(),
   description: z.string().max(500).optional(),
   destinationAccount: z.string().max(120).optional(),
   transactionDate: z.string().max(32).optional(),
+  date: z.string().max(32).optional(),
+  confirm: z.boolean().optional(),
+  pendingId: z.string().uuid().optional(),
 });
 
 export const createTransactionSchema = transactionFieldsSchema.extend({
   type: z.enum(['expense', 'income', 'transfer']),
-  amount: z.number().positive(),
+  amount: amountSchema,
 });
 
 export const createTransactionsSchema = z.object({
   transactions: z.array(createTransactionSchema).min(1).max(MAX_BATCH),
+  confirm: z.boolean().optional(),
 });
 
 export const createAccountSchema = z.object({
@@ -39,7 +48,7 @@ export const deleteLastTransactionSchema = z.object({
 });
 
 export const editLastTransactionSchema = z.object({
-  amount: z.number().positive().optional(),
+  amount: amountSchema.optional(),
   category: z.string().max(80).optional(),
   account: z.string().max(120).optional(),
   description: z.string().max(500).optional(),
@@ -65,7 +74,7 @@ export const emptySchema = z.object({});
 
 export const createRecurringSchema = z.object({
   description: z.string().min(1).max(200),
-  amount: z.number().positive(),
+  amount: amountSchema,
   currency: z.string().max(8).optional(),
   type: z.enum(['expense', 'income']).optional(),
   frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']),
@@ -94,3 +103,4 @@ export const TOOL_SCHEMAS = {
 
 export type ToolName = keyof typeof TOOL_SCHEMAS;
 export const MAX_TOOL_BATCH = MAX_BATCH;
+export const MAX_TOOL_AMOUNT = MAX_AMOUNT;

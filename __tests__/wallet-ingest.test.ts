@@ -25,17 +25,25 @@ describe('wallet parser', () => {
 });
 
 describe('secrets and audit redaction', () => {
-  it('round-trips AES-GCM and never treats plaintext as ciphertext', () => {
-    const plain = 'synthetic-gemini-key-not-real';
-    const enc = encryptSecret(plain)!;
-    expect(secretLooksEncrypted(enc)).toBe(true);
-    expect(decryptSecret(enc)).toBe(plain);
-    expect(decryptSecret('envelope:v0:' + Buffer.from(plain, 'utf8').toString('base64'))).toBe(plain);
+  it('round-trips AES-GCM and never treats envelope:v0 as ciphertext', () => {
+    const prev = process.env.ZARIX_SECRETS_MASTER_KEY;
+    process.env.ZARIX_SECRETS_MASTER_KEY = 'test-master-key-not-for-production';
+    try {
+      const plain = 'synthetic-gemini-key-not-real';
+      const enc = encryptSecret(plain)!;
+      expect(secretLooksEncrypted(enc)).toBe(true);
+      expect(decryptSecret(enc)).toBe(plain);
+      expect(decryptSecret('envelope:v0:' + Buffer.from(plain, 'utf8').toString('base64'))).toBeNull();
+    } finally {
+      if (prev === undefined) delete process.env.ZARIX_SECRETS_MASTER_KEY;
+      else process.env.ZARIX_SECRETS_MASTER_KEY = prev;
+    }
   });
 
   it('redacts token-like audit metadata', () => {
-    const redacted = redactAuditMetadata({ token: 'zrxp_secret', amount: 10, nested: { api_key: 'abc' } });
+    const redacted = redactAuditMetadata({ token: 'zrxp_secret', tokenId: 'pat-1', amount: 10, nested: { api_key: 'abc' } });
     expect(redacted.token).toBe('[redacted]');
+    expect(redacted.tokenId).toBe('pat-1');
     expect(redacted.amount).toBe(10);
     expect((redacted.nested as { api_key: string }).api_key).toBe('[redacted]');
   });

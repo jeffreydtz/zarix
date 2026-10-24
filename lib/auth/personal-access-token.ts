@@ -1,13 +1,27 @@
-import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { timingSafeStringEqual } from '@/lib/secure-compare';
 
 export const PAT_PREFIX = 'zrxp_';
 export const PAT_SCOPES = ['read', 'write', 'ingest'] as const;
 export type PatScope = (typeof PAT_SCOPES)[number];
+export const PAT_DEFAULT_TTL_MS = 365 * 24 * 60 * 60 * 1000;
+
+function patPepper(): string | null {
+  const pepper = process.env.SUPABASE_JWT_SECRET?.trim();
+  return pepper || null;
+}
 
 const DUMMY_HASH = hashPersonalAccessToken(`${PAT_PREFIX}${'0'.repeat(64)}`);
 
+/**
+ * HMAC-SHA256 when SUPABASE_JWT_SECRET is already set (no new prod credential).
+ * Otherwise SHA-256. Flag the optional pepper in the PR if JWT_SECRET is absent.
+ */
 export function hashPersonalAccessToken(token: string): string {
+  const pepper = patPepper();
+  if (pepper) {
+    return createHmac('sha256', pepper).update(token, 'utf8').digest('hex');
+  }
   return createHash('sha256').update(token, 'utf8').digest('hex');
 }
 
@@ -50,4 +64,18 @@ export function normalizeScopes(input: unknown): PatScope[] {
   const unique = [...new Set(input.map((s) => String(s).toLowerCase()))] as PatScope[];
   const valid = unique.filter((s): s is PatScope => (PAT_SCOPES as readonly string[]).includes(s));
   return valid.length ? valid : ['read'];
+}
+
+export function defaultPatExpiresAt(from = new Date()): string {
+  return new Date(from.getTime() + PAT_DEFAULT_TTL_MS).toISOString();
+}
+
+export function parsePatExpiry(input: unknown, fallback = defaultPatExpiresAt()): string | null {
+  if (input === null || input === false) return null;
+  if (input === undefined || input === '') return fallback;
+  const d = new Date(String(input));
+  if (Number.isNaN(d.getTime())) return fallback;
+  if (d.getTime() <= Date.now()) return fallback;
+  const max = Date.now() + 5 * PAT_DEFAULT_TTL_MS;
+  return new Date(Math.min(d.getTime(), max)).toISOString();
 }

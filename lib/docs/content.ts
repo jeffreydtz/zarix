@@ -95,7 +95,7 @@ export const DOCS_PAGES: DocsPage[] = [
         heading: 'Plantilla (ejemplo)',
         body: [
           '{ "amount": 1250.50, "currency": "ARS", "merchant": "Ejemplo Café (dato de ejemplo)", "cardName": "Visa Ejemplo", "timestamp": "2026-10-24T18:00:00-03:00" }',
-          'Zarix no crea el movimiento al toque: lo deja en la bandeja de pendientes. La primera vez que mapeás “Visa Ejemplo” a una cuenta, lo recuerda.',
+          'Zarix no crea el movimiento al toque: lo deja en la bandeja de pendientes. Si el monto es ambiguo, no auto-confirma. La primera vez que mapeás “Visa Ejemplo” a una cuenta, lo recuerda.',
         ],
       },
     ],
@@ -184,7 +184,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'Cifrado y revocación',
         body: [
-          'gemini_api_key y telegram_bot_token viven cifrados. El cliente autenticado no puede leerlos por la API de datos.',
+          'gemini_api_key y telegram_bot_token se guardan en Supabase Vault (service_role). El cliente autenticado no puede leerlos. Hasta el backfill posterior, la columna en claro se dual-escribe y no se anula en esta migración.',
           'Revocá un token en Integraciones y deja de funcionar. El registro de auditoría muestra altas, bajas y usos, con IP hasheada.',
         ],
       },

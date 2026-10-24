@@ -72,16 +72,9 @@ if (!email || !password) {
 }
 
 const normalizedEmail = String(email).trim().toLowerCase();
-const [localPart, domain] = normalizedEmail.split('@');
-if (localPart === 'jef_dietz' || domain === 'hotmail.com') {
-  console.error('❌ Refusing the owner/support mailbox. Use a dedicated fixture such as test-a@zarix.invalid');
-  process.exit(1);
-}
-const supabaseHost = String(supabaseUrl || '');
-const isLoopback = /localhost|127\.0\.0\.1|\[::1\]/i.test(supabaseHost);
-const isFixtureMailbox = /@(zarix|example)\.invalid$|@example\.com$/i.test(normalizedEmail);
-if (!isLoopback && !isFixtureMailbox) {
-  console.error('❌ Non-local targets require a dedicated test mailbox (@zarix.invalid / @example.invalid). Never the owner account.');
+const FIXTURE_MAILBOXES = new Set(['test-a@zarix.invalid', 'test-b@zarix.invalid']);
+if (!FIXTURE_MAILBOXES.has(normalizedEmail)) {
+  console.error('❌ Only fixture mailboxes are allowed (test-a@zarix.invalid / test-b@zarix.invalid). Never the owner account.');
   process.exit(1);
 }
 

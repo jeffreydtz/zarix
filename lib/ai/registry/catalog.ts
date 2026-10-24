@@ -7,7 +7,8 @@ const write = { readOnlyHint: false as const, openWorldHint: false as const };
 export const TOOL_CATALOG: readonly RegistryTool[] = [
   {
     name: 'create_transaction',
-    description: 'Registra UN movimiento (gasto, ingreso o transferencia) parseado del mensaje del usuario.',
+    description:
+      'Registra UN movimiento (gasto, ingreso o transferencia). MCP/REST: no escribas el libro hasta que el usuario confirme. Primero llamá sin confirm (queda en la bandeja de pendientes) y, si el usuario acepta, volvé a llamar con confirm=true. Gemini debe mostrar el preview y pedir confirmación.',
     schema: TOOL_SCHEMAS.create_transaction,
     readOnly: false,
     scopes: ['write'],
@@ -15,7 +16,8 @@ export const TOOL_CATALOG: readonly RegistryTool[] = [
   },
   {
     name: 'create_transactions',
-    description: 'Registra VARIOS movimientos de un mismo mensaje (listas, viñetas, "y también", varios montos).',
+    description:
+      'Registra VARIOS movimientos de un mismo mensaje. MCP/REST: no escribas el libro hasta confirm=true del usuario; si no, se estacionan en pendientes.',
     schema: TOOL_SCHEMAS.create_transactions,
     readOnly: false,
     scopes: ['write'],
@@ -41,11 +43,11 @@ export const TOOL_CATALOG: readonly RegistryTool[] = [
   {
     name: 'edit_last_transaction',
     description:
-      'Corrige el último movimiento (gasto/ingreso). Usar para "eran 5000 no 500", "ponelo en transporte", "era con la visa".',
+      'Corrige el último movimiento (gasto/ingreso). Crea uno nuevo y borra el anterior. Requiere confirm=true. Usar para "eran 5000 no 500", "ponelo en transporte", "era con la visa".',
     schema: TOOL_SCHEMAS.edit_last_transaction,
     readOnly: false,
     scopes: ['write'],
-    annotations: { ...write, destructiveHint: false, idempotentHint: false },
+    annotations: { ...write, destructiveHint: true, idempotentHint: false },
   },
   {
     name: 'get_spending',
@@ -132,4 +134,10 @@ export const WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(
 
 export function getRegistryTool(name: string): RegistryTool | undefined {
   return TOOL_CATALOG.find((t) => t.name === name);
+}
+
+/** Read-scoped PATs must not even see write tools in tools/list. */
+export function toolsVisibleToScopes(scopes: readonly string[] | null | undefined): RegistryTool[] {
+  const allowed = new Set(scopes ?? []);
+  return TOOL_CATALOG.filter((t) => t.scopes.every((s) => allowed.has(s)));
 }

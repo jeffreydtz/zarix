@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
       userId: user.id,
       name: body.name,
       scopes: body.scopes,
+      expiresAt: body.expiresAt ?? body.expires_at,
       req,
     });
     return NextResponse.json(

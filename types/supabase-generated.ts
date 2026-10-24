@@ -665,26 +665,26 @@ isOneToOne: false
                   Relationships: []
                 },"pending_inbox_items": {
                   Row: {
-                    "account_id": string | null,"amount": number | null,"card_name": string | null,"category_id": string | null,"confirmed_transaction_id": string | null,"created_at": string,"currency": string,"discarded_at": string | null,"fingerprint": string,"id": string,"idempotency_key": string | null,"merchant": string | null,"occurred_at": string | null,"raw_payload": Json | null,"raw_text": string | null,"source": string,"status": string,"suggestion_source": string | null,"updated_at": string,"user_id": string
+                    "account_id": string | null,"amount": number | null,"amount_ambiguous": boolean,"card_name": string | null,"category_id": string | null,"confirmed_transaction_id": string | null,"created_at": string,"currency": string,"direction": string,"discarded_at": string | null,"fingerprint": string,"id": string,"idempotency_key": string | null,"ingest_key": string,"merchant": string | null,"occurred_at": string | null,"raw_payload": Json | null,"raw_text": string | null,"source": string,"status": string,"suggestion_source": string | null,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "account_id"?: string | null,"amount"?: number | null,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"discarded_at"?: string | null,"fingerprint": string,"id"?: string,"idempotency_key"?: string | null,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"updated_at"?: string,"user_id": string
+                    "account_id"?: string | null,"amount"?: number | null,"amount_ambiguous"?: boolean,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"direction"?: string,"discarded_at"?: string | null,"fingerprint": string,"id"?: string,"idempotency_key"?: string | null,"ingest_key"?: string,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "account_id"?: string | null,"amount"?: number | null,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"discarded_at"?: string | null,"fingerprint"?: string,"id"?: string,"idempotency_key"?: string | null,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"updated_at"?: string,"user_id"?: string
+                    "account_id"?: string | null,"amount"?: number | null,"amount_ambiguous"?: boolean,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"direction"?: string,"discarded_at"?: string | null,"fingerprint"?: string,"id"?: string,"idempotency_key"?: string | null,"ingest_key"?: string,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: []
                 },"personal_access_tokens": {
                   Row: {
-                    "created_at": string,"id": string,"last_used_at": string | null,"name": string,"revoked_at": string | null,"scopes": string[],"token_hash": string,"token_prefix": string,"updated_at": string,"user_id": string
+                    "created_at": string,"expires_at": string | null,"id": string,"last_used_at": string | null,"name": string,"revoked_at": string | null,"scopes": string[],"token_hash": string,"token_prefix": string,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: string,"last_used_at"?: string | null,"name": string,"revoked_at"?: string | null,"scopes"?: string[],"token_hash": string,"token_prefix": string,"updated_at"?: string,"user_id": string
+                    "created_at"?: string,"expires_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name": string,"revoked_at"?: string | null,"scopes"?: string[],"token_hash": string,"token_prefix": string,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"last_used_at"?: string | null,"name"?: string,"revoked_at"?: string | null,"scopes"?: string[],"token_hash"?: string,"token_prefix"?: string,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"expires_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name"?: string,"revoked_at"?: string | null,"scopes"?: string[],"token_hash"?: string,"token_prefix"?: string,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: []
                 },"wallet_card_account_maps": {
@@ -830,6 +830,9 @@ isOneToOne: false
 "create_secondary_balance_adjustment":
 { Args: { "p_account_id": string,"p_target_secondary": number,"p_user_id": string }; Returns: undefined
                            },
+"claim_pending_inbox_item":
+{ Args: { "p_item_id": string,"p_user_id": string }; Returns: unknown
+                           },
 "create_transaction_once":
 { Args: { "p_installments"?: number,"p_request_hash": string,"p_request_id": string,"p_transaction": Json,"p_user_id": string }; Returns: Json
                            },
@@ -875,6 +878,12 @@ isOneToOne: false
                            },
 "sell_investment_position":
 { Args: { "p_ars_per_usd": number,"p_currency": string,"p_investment_id": string,"p_notes"?: string,"p_price": number,"p_quantity": number,"p_realized_pnl_native": number,"p_realized_pnl_usd": number,"p_sold_at": string,"p_user_id": string }; Returns: Json
+                           },
+"zarix_vault_read":
+{ Args: { "p_kind": string,"p_user_id": string }; Returns: string
+                           },
+"zarix_vault_store":
+{ Args: { "p_kind": string,"p_plain": string,"p_user_id": string }; Returns: string
                            },
 "show_limit":
 { Args: Record<PropertyKey, never>; Returns: number

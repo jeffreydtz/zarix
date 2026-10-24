@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     const contentType = req.headers.get('content-type') || '';
     const raw = await req.text();
-    if (raw.length > MAX_BYTES) throw new ApiError('El cuerpo es demasiado grande.', 413);
+    if (Buffer.byteLength(raw, 'utf8') > MAX_BYTES) throw new ApiError('El cuerpo es demasiado grande.', 413);
 
     let json: Record<string, unknown> | null = null;
     let text: string | null = null;

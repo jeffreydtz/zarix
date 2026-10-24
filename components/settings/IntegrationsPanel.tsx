@@ -8,6 +8,7 @@ type Pat = {
   name: string;
   token_prefix: string;
   scopes: string[];
+  expires_at: string | null;
   last_used_at: string | null;
   revoked_at: string | null;
   created_at: string;
@@ -42,6 +43,11 @@ export default function IntegrationsPanel({
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [name, setName] = useState('Atajo Wallet');
   const [scopes, setScopes] = useState<string[]>(['ingest']);
+  const [expiresAt, setExpiresAt] = useState(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    return d.toISOString().slice(0, 10);
+  });
   const [freshToken, setFreshToken] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [walletAuto, setWalletAuto] = useState(autoConfirm);
@@ -68,12 +74,32 @@ export default function IntegrationsPanel({
       const res = await fetch('/api/user/tokens', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, scopes }),
+        body: JSON.stringify({ name, scopes, expiresAt: expiresAt ? `${expiresAt}T23:59:59.000Z` : undefined }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'No se pudo crear');
       setFreshToken(data.token);
       setMessage(data.warning || 'Token creado. Copialo ahora: no se vuelve a mostrar.');
+      await load();
+    } catch (e) {
+      setMessage(`❌ ${(e as Error).message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveExpiry = async (id: string, value: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/user/tokens/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expiresAt: value ? `${value}T23:59:59.000Z` : null }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'No se pudo actualizar');
+      }
       await load();
     } catch (e) {
       setMessage(`❌ ${(e as Error).message}`);
@@ -147,6 +173,7 @@ export default function IntegrationsPanel({
         <h2 className="text-xl font-semibold">Tokens de acceso personal</h2>
         <p className="text-sm text-muted-foreground">
           El token se muestra una sola vez. Zarix guarda únicamente el hash. Permisos: lectura, escritura e ingest (Wallet).
+          Caduca en un año por defecto; podés editar la fecha.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="flex-1 text-sm">
@@ -155,6 +182,15 @@ export default function IntegrationsPanel({
               className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+          </label>
+          <label className="text-sm">
+            Caduca
+            <input
+              type="date"
+              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2"
+              value={expiresAt}
+              onChange={(e) => setExpiresAt(e.target.value)}
             />
           </label>
           <div className="flex gap-3 text-sm">
@@ -185,13 +221,25 @@ export default function IntegrationsPanel({
                 <p className="font-medium">{t.name}</p>
                 <p className="text-muted-foreground">
                   {t.token_prefix}… · {t.scopes.join(', ')}
+                  {t.expires_at ? ` · caduca ${new Date(t.expires_at).toLocaleDateString('es-AR')}` : ''}
                   {t.revoked_at ? ' · revocado' : t.last_used_at ? ` · usado ${new Date(t.last_used_at).toLocaleString('es-AR')}` : ''}
                 </p>
               </div>
               {!t.revoked_at && (
-                <button type="button" className="text-destructive" onClick={() => revoke(t.id)}>
-                  Revocar
-                </button>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-muted-foreground">
+                    Caduca
+                    <input
+                      type="date"
+                      className="ml-1 rounded border border-border bg-background px-2 py-1"
+                      value={t.expires_at ? t.expires_at.slice(0, 10) : ''}
+                      onChange={(e) => saveExpiry(t.id, e.target.value)}
+                    />
+                  </label>
+                  <button type="button" className="text-destructive" onClick={() => revoke(t.id)}>
+                    Revocar
+                  </button>
+                </div>
               )}
             </li>
           ))}

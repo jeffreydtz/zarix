@@ -27,33 +27,25 @@ const { db } = await bootDatabase();
 try {
   await seedDatabase(db);
 
-  await test('copy secrets verifies then nulls plaintext and rollback restores', async () => {
+  await test('vault helpers fail closed without vault and never keep a plaintext backup table', async () => {
     await db.query('UPDATE users SET gemini_api_key=$2, telegram_bot_token=$3 WHERE id=$1', [ids.a, SYNTHETIC_GEMINI, SYNTHETIC_BOT]);
-    const copied = Number((await db.query('SELECT zarix_vault.copy_user_secrets() AS n')).rows[0].n);
-    assert.ok(copied >= 1);
-    const afterCopy = (await db.query('SELECT gemini_api_key, gemini_api_key_enc, telegram_bot_token, telegram_bot_token_enc FROM users WHERE id=$1', [ids.a])).rows[0];
-    assert.equal(digest(afterCopy.gemini_api_key), digest(SYNTHETIC_GEMINI));
-    assert.ok(afterCopy.gemini_api_key_enc);
-    const decrypted = (await db.query('SELECT zarix_vault.decrypt_secret($1) AS v', [afterCopy.gemini_api_key_enc])).rows[0].v;
-    assert.equal(digest(decrypted), digest(SYNTHETIC_GEMINI));
-    const nulled = Number((await db.query('SELECT zarix_vault.finalize_plaintext_null() AS n')).rows[0].n);
-    assert.ok(nulled >= 1);
-    const afterNull = (await db.query('SELECT gemini_api_key, telegram_bot_token, gemini_api_key_enc FROM users WHERE id=$1', [ids.a])).rows[0];
-    assert.equal(afterNull.gemini_api_key, null);
-    assert.equal(afterNull.telegram_bot_token, null);
-    assert.ok(afterNull.gemini_api_key_enc);
-    const restored = Number((await db.query('SELECT zarix_vault.rollback_plaintext() AS n')).rows[0].n);
-    assert.ok(restored >= 1);
-    const afterRollback = (await db.query('SELECT gemini_api_key, telegram_bot_token FROM users WHERE id=$1', [ids.a])).rows[0];
-    assert.equal(digest(afterRollback.gemini_api_key), digest(SYNTHETIC_GEMINI));
-    assert.equal(digest(afterRollback.telegram_bot_token), digest(SYNTHETIC_BOT));
+    const available = (await db.query('SELECT zarix_vault.vault_available() AS v')).rows[0].v;
+    assert.equal(available, false);
+    await assert.rejects(() => db.query('SELECT zarix_vault.store_user_secret($1,$2,$3)', [ids.a, 'gemini_api_key', SYNTHETIC_GEMINI]));
+    const backup = await db.query("SELECT 1 FROM information_schema.tables WHERE table_schema='zarix_vault' AND table_name='user_secret_backup'");
+    assert.equal(backup.rows.length, 0);
+    const src = (await db.query("SELECT pg_get_functiondef(oid) AS def FROM pg_proc WHERE proname IN ('store_user_secret','read_user_secret')")).rows.map(r => r.def).join('\n');
+    assert.equal(src.includes('envelope:v0'), false);
+    assert.equal(src.includes('zarix-pglite-synthetic-key-not-for-production'), false);
+    const still = (await db.query('SELECT gemini_api_key FROM users WHERE id=$1', [ids.a])).rows[0];
+    assert.equal(digest(still.gemini_api_key), digest(SYNTHETIC_GEMINI));
     const leaked = JSON.stringify(results).includes(SYNTHETIC_GEMINI) || JSON.stringify(results).includes(SYNTHETIC_BOT);
     assert.equal(leaked, false);
   });
 
-  await test('copy is idempotent after a verified run', async () => {
-    const n = Number((await db.query('SELECT zarix_vault.copy_user_secrets() AS n')).rows[0].n);
-    assert.ok(n >= 0);
+  await test('decrypt lives outside public and execute is revoked', async () => {
+    const pub = await db.query("SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname='decrypt_user_secret'");
+    assert.equal(pub.rows.length, 0);
   });
 
   await service(db, "INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'Token A','zrxp_aaaaaa','bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',ARRAY['read','ingest'])", [ids.a]);
@@ -100,7 +92,8 @@ try {
   await test('secret functions are not executable by clients', async () => {
     await rejects(() => owner(db, "SELECT zarix_vault.encrypt_secret('x')"));
     await rejects(() => queryAs(db, 'anon', null, "SELECT zarix_vault.decrypt_secret('x')"));
-    await rejects(() => owner(db, "SELECT public.decrypt_user_secret('envelope:v0:eA==')"));
+    await rejects(() => owner(db, "SELECT public.zarix_vault_read($1,'gemini_api_key')", [ids.a]));
+    await rejects(() => owner(db, "SELECT zarix_vault.read_user_secret($1,'gemini_api_key')", [ids.a]));
   });
 
   await test('authenticated cannot write secret columns', async () => {

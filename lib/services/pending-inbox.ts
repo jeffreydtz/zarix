@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { ApiError } from '@/lib/api-handler';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { executeRegistryTool } from '@/lib/ai/registry/execute';
@@ -11,6 +11,10 @@ import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
 import type { User } from '@/types/database';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { withPatUserScope } from '@/lib/supabase/request-scope';
+import { withFinancialRequestContext } from '@/lib/financial-request-context';
+import type { WriteChannel } from '@/lib/ai/registry/types';
+
+export const WALLET_CIVIL_TIMEZONE = 'America/Argentina/Cordoba';
 
 export type PendingInboxItem = {
   id: string;
@@ -25,6 +29,9 @@ export type PendingInboxItem = {
   status: 'pending' | 'confirming' | 'confirmed' | 'discarded';
   suggestion_source: string | null;
   idempotency_key: string | null;
+  ingest_key: string;
+  direction: 'expense' | 'income';
+  amount_ambiguous: boolean;
   source: string;
   raw_text: string | null;
   created_at: string;
@@ -34,9 +41,35 @@ function normalizeCard(name: string | null): string {
   return (name || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
-function fingerprint(userId: string, payload: WalletIngestPayload, occurredAt: string | null): string {
+export function walletCivilDate(iso: string | null | undefined): string | undefined {
+  if (!iso) return undefined;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return undefined;
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: WALLET_CIVIL_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(d);
+}
+
+function fingerprint(
+  userId: string,
+  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'merchant' | 'cardName'>,
+  occurredAt: string | null,
+  ingestKey: string
+): string {
   const bucket = occurredAt ? occurredAt.slice(0, 16) : 'none';
-  const material = `${userId}|${payload.amount ?? ''}|${(payload.merchant || '').toLowerCase()}|${bucket}`;
+  const material = [
+    userId,
+    payload.amount ?? '',
+    payload.currency || 'ARS',
+    normalizeCard(payload.cardName),
+    (payload.merchant || '').toLowerCase(),
+    bucket,
+    ingestKey,
+  ].join('|');
   return createHash('sha256').update(material).digest('hex');
 }
 
@@ -74,6 +107,21 @@ export async function rememberCardAccount(userId: string, cardName: string | nul
   });
 }
 
+function isUniqueViolation(error: { code?: string; message?: string } | null | undefined): boolean {
+  return error?.code === '23505' || /duplicate key|unique constraint/i.test(error?.message || '');
+}
+
+async function loadByIngestKey(userId: string, ingestKey: string): Promise<PendingInboxItem | null> {
+  const supabase = createServiceClientSync();
+  const { data } = await supabase
+    .from('pending_inbox_items')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('ingest_key', ingestKey)
+    .maybeSingle();
+  return (data as PendingInboxItem | null) ?? null;
+}
+
 export async function ingestWalletItem(input: {
   userId: string;
   json?: Record<string, unknown> | null;
@@ -93,33 +141,30 @@ async function ingestWalletItemUnlocked(input: {
 }): Promise<{ item: PendingInboxItem; duplicate: boolean; autoConfirmed: boolean }> {
   const payload = parseWalletPayload({ json: input.json, text: input.text });
   const occurredAt = payload.occurredAt;
-  const fp = fingerprint(input.userId, payload, occurredAt);
+  const clientKey = input.idempotencyKey?.trim() || null;
+  if (clientKey && !validTransactionRequestId(clientKey) && !/^[A-Za-z0-9._:-]{8,200}$/.test(clientKey)) {
+    throw new ApiError('Idempotency-Key inválida.');
+  }
+  const ingestKey = clientKey || randomUUID();
+  const fp = fingerprint(input.userId, payload, occurredAt, clientKey || '');
   const supabase = createServiceClientSync();
 
-  if (input.idempotencyKey) {
-    if (!validTransactionRequestId(input.idempotencyKey) && !/^[A-Za-z0-9._:-]{8,200}$/.test(input.idempotencyKey)) {
-      throw new ApiError('Idempotency-Key inválida.');
-    }
-    const { data: existing } = await supabase
+  if (clientKey) {
+    const existing = await loadByIngestKey(input.userId, clientKey);
+    if (existing) return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
+  } else {
+    const windowStart = new Date(Date.now() - 15 * 60_000).toISOString();
+    const { data: dupes } = await supabase
       .from('pending_inbox_items')
       .select('*')
       .eq('user_id', input.userId)
-      .eq('idempotency_key', input.idempotencyKey)
-      .maybeSingle();
-    if (existing) return { item: existing as PendingInboxItem, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
-  }
-
-  const windowStart = new Date(Date.now() - 15 * 60_000).toISOString();
-  const { data: dupes } = await supabase
-    .from('pending_inbox_items')
-    .select('*')
-    .eq('user_id', input.userId)
-    .eq('fingerprint', fp)
-    .gte('created_at', windowStart)
-    .in('status', ['pending', 'confirmed'])
-    .limit(1);
-  if (dupes?.[0]) {
-    return { item: dupes[0] as PendingInboxItem, duplicate: true, autoConfirmed: dupes[0].status === 'confirmed' };
+      .eq('fingerprint', fp)
+      .gte('created_at', windowStart)
+      .in('status', ['pending', 'confirming', 'confirmed'])
+      .limit(1);
+    if (dupes?.[0]) {
+      return { item: dupes[0] as PendingInboxItem, duplicate: true, autoConfirmed: dupes[0].status === 'confirmed' };
+    }
   }
 
   const accountId = await resolveCardAccount(input.userId, payload.cardName);
@@ -140,13 +185,24 @@ async function ingestWalletItemUnlocked(input: {
       raw_text: payload.rawText,
       status: 'pending',
       suggestion_source: suggestion.source,
-      idempotency_key: input.idempotencyKey || null,
+      idempotency_key: clientKey,
+      ingest_key: ingestKey,
+      direction: payload.direction,
+      amount_ambiguous: payload.amountAmbiguous,
       source: 'wallet',
       fingerprint: fp,
     })
     .select('*')
     .single();
-  if (error || !data) throw error || new ApiError('No se pudo guardar el pendiente.');
+
+  if (error) {
+    if (isUniqueViolation(error)) {
+      const existing = await loadByIngestKey(input.userId, ingestKey);
+      if (existing) return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
+    }
+    throw error;
+  }
+  if (!data) throw new ApiError('No se pudo guardar el pendiente.');
 
   if (input.req) {
     await recordIntegrationAudit({
@@ -165,7 +221,13 @@ async function ingestWalletItemUnlocked(input: {
     .eq('id', input.userId)
     .maybeSingle();
 
-  const complete = payload.amount != null && payload.amount > 0 && Boolean(accountId) && suggestion.source === 'history';
+  const complete =
+    payload.amount != null &&
+    payload.amount > 0 &&
+    Boolean(accountId) &&
+    suggestion.source === 'history' &&
+    !payload.amountAmbiguous &&
+    payload.direction === 'expense';
   if (prefs?.wallet_auto_confirm && complete) {
     try {
       const confirmed = await confirmPendingItem({
@@ -180,6 +242,61 @@ async function ingestWalletItemUnlocked(input: {
   }
 
   return { item: data as PendingInboxItem, duplicate: false, autoConfirmed: false };
+}
+
+export async function parkRegistryWrite(input: {
+  userId: string;
+  amount: number;
+  currency: string;
+  merchant?: string | null;
+  accountId?: string | null;
+  categoryId?: string | null;
+  occurredAt?: string | null;
+  source: WriteChannel;
+  ingestKey?: string | null;
+}): Promise<PendingInboxItem> {
+  const ingestKey = input.ingestKey?.trim() || randomUUID();
+  if (input.ingestKey) {
+    const existing = await loadByIngestKey(input.userId, ingestKey);
+    if (existing) return existing;
+  }
+  const payload = {
+    amount: input.amount,
+    currency: input.currency,
+    merchant: input.merchant ?? null,
+    cardName: null as string | null,
+  };
+  const fp = fingerprint(input.userId, payload, input.occurredAt ?? null, ingestKey);
+  const supabase = createServiceClientSync();
+  const { data, error } = await supabase
+    .from('pending_inbox_items')
+    .insert({
+      user_id: input.userId,
+      amount: input.amount,
+      currency: input.currency,
+      merchant: input.merchant ?? null,
+      account_id: input.accountId ?? null,
+      category_id: input.categoryId ?? null,
+      occurred_at: input.occurredAt ?? null,
+      status: 'pending',
+      suggestion_source: 'none',
+      idempotency_key: input.ingestKey ?? null,
+      ingest_key: ingestKey,
+      direction: 'expense',
+      amount_ambiguous: false,
+      source: input.source,
+      fingerprint: fp,
+    })
+    .select('*')
+    .single();
+  if (error) {
+    if (isUniqueViolation(error)) {
+      const existing = await loadByIngestKey(input.userId, ingestKey);
+      if (existing) return existing;
+    }
+    throw error || new ApiError('No se pudo guardar el pendiente.');
+  }
+  return data as PendingInboxItem;
 }
 
 export async function listPendingItems(userId: string, status: 'pending' | 'all' = 'pending'): Promise<PendingInboxItem[]> {
@@ -221,7 +338,9 @@ export async function confirmPendingItem(input: {
   occurredAt?: string;
   req?: Request;
 }): Promise<PendingInboxItem> {
-  return withPatUserScope(input.userId, () => confirmPendingItemUnlocked(input));
+  return withPatUserScope(input.userId, () =>
+    withFinancialRequestContext(pendingInboxRequestId(input.itemId), () => confirmPendingItemUnlocked(input))
+  );
 }
 
 async function confirmPendingItemUnlocked(input: {
@@ -253,7 +372,6 @@ async function confirmPendingItemUnlocked(input: {
     if (!existing) throw new ApiError('Pendiente no encontrado.', 404);
     if (existing.status === 'confirmed') return existing as PendingInboxItem;
     if (existing.status === 'discarded') throw new ApiError('Este pendiente ya fue descartado.');
-    // Another worker holds confirming: reuse the deterministic request id.
   }
 
   const row = (claimedRow || (
@@ -261,48 +379,54 @@ async function confirmPendingItemUnlocked(input: {
   ).data) as PendingInboxItem | null;
   if (!row) throw new ApiError('Pendiente no encontrado.', 404);
 
+  const revertClaim = async () => {
+    if (claimedRow) {
+      await supabase
+        .from('pending_inbox_items')
+        .update({ status: 'pending' })
+        .eq('id', input.itemId)
+        .eq('user_id', input.userId)
+        .eq('status', 'confirming');
+    }
+  };
+
   const amount = input.amount ?? Number(row.amount);
   const accountId = input.accountId ?? row.account_id;
   if (!Number.isFinite(amount) || amount <= 0) {
-    if (claimedRow) {
-      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
-    }
+    await revertClaim();
     throw new ApiError('Falta el monto para confirmar.');
   }
   if (!accountId) {
-    if (claimedRow) {
-      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
-    }
+    await revertClaim();
     throw new ApiError('Elegí la cuenta de Zarix para esta tarjeta.');
   }
 
   const account = (await accountsService.list(input.userId)).find((a) => a.id === accountId);
   if (!account) {
-    if (claimedRow) {
-      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
-    }
+    await revertClaim();
     throw new ApiError('La cuenta no existe.');
   }
 
   const financialContext = await loadFinancialContext(input.userId);
   const requestId = pendingInboxRequestId(row.id);
+  const occurred = input.occurredAt ?? row.occurred_at;
   const result = await executeRegistryTool(
     'create_transaction',
     {
-      type: 'expense',
+      type: row.direction === 'income' ? 'income' : 'expense',
       amount,
       currency: input.currency || row.currency || account.currency,
       account: account.name,
-      category: undefined,
+      accountId,
+      categoryId: input.categoryId ?? row.category_id ?? undefined,
       description: input.merchant || row.merchant || 'Wallet',
-      transactionDate: (input.occurredAt || row.occurred_at || undefined)?.slice(0, 10),
+      transactionDate: walletCivilDate(occurred),
+      confirm: true,
     },
     { userId: input.userId, financialContext, source: 'wallet', requestId }
   );
   if (result.response?.success !== true) {
-    if (claimedRow) {
-      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
-    }
+    await revertClaim();
     throw new ApiError(String(result.response?.error || 'No se pudo confirmar el movimiento.'));
   }
 
@@ -317,17 +441,27 @@ async function confirmPendingItemUnlocked(input: {
       merchant: input.merchant ?? row.merchant,
       account_id: accountId,
       category_id: input.categoryId ?? row.category_id,
-      occurred_at: input.occurredAt ?? row.occurred_at,
+      occurred_at: occurred,
       confirmed_transaction_id: result.executed?.[0]?.id ?? null,
       idempotency_key: row.idempotency_key || requestId,
+      ingest_key: row.ingest_key || requestId,
     })
     .eq('id', input.itemId)
     .eq('user_id', input.userId)
-    .in('status', ['confirming', 'pending', 'confirmed'])
+    .eq('status', 'confirming')
     .select('*')
     .maybeSingle();
   if (updErr) throw updErr;
-  if (!updated) throw new ApiError('No se pudo actualizar el pendiente.');
+  if (!updated) {
+    const { data: already } = await supabase
+      .from('pending_inbox_items')
+      .select('*')
+      .eq('id', input.itemId)
+      .eq('user_id', input.userId)
+      .maybeSingle();
+    if (already?.status === 'confirmed') return already as PendingInboxItem;
+    throw new ApiError('No se pudo actualizar el pendiente.');
+  }
 
   if (input.req) {
     await recordIntegrationAudit({
@@ -375,4 +509,3 @@ export function sampleWalletPayload(): Record<string, unknown> {
     timestamp: new Date().toISOString(),
   };
 }
-

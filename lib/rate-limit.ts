@@ -39,11 +39,18 @@ export function rateLimitAllow(
   return true;
 }
 
+/**
+ * Client IP as provided by the platform. Do not trust a caller-controlled
+ * X-Forwarded-For: on Vercel use x-vercel-forwarded-for / x-real-ip.
+ */
 export function clientIpFromRequest(req: Request): string {
-  const forwarded = req.headers.get('x-forwarded-for');
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim();
-    if (first) return first;
-  }
-  return req.headers.get('x-real-ip')?.trim() || 'unknown';
+  const vercel = req.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim();
+  if (vercel) return vercel;
+  const realIp = req.headers.get('x-real-ip')?.trim();
+  if (realIp) return realIp;
+  return 'unknown';
+}
+
+export function rateLimitExceededResponse(message = 'Demasiados intentos. Esperá un minuto.') {
+  return { error: message, status: 429 as const };
 }

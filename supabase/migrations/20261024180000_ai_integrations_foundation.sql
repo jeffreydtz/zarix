@@ -1,7 +1,6 @@
 -- AI-first public integrations: write channel, PATs, encrypted secrets,
--- pending inbox, card maps, audit log. Idempotent. Does not rewrite
--- financial amounts; secrets plaintext is copied then nulled only after
--- a verified backup+ciphertext pair.
+-- pending inbox, card maps, audit log. Idempotent. Additive for secrets:
+-- plaintext columns are NOT copied or nulled here (staged rollout).
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 1. Write channel on transactions
@@ -84,6 +83,7 @@ CREATE TABLE IF NOT EXISTS public.personal_access_tokens (
   token_prefix TEXT NOT NULL CHECK (char_length(token_prefix) BETWEEN 8 AND 16),
   token_hash TEXT NOT NULL CHECK (token_hash ~ '^[0-9a-f]{64}$'),
   scopes TEXT[] NOT NULL DEFAULT ARRAY['read']::TEXT[],
+  expires_at TIMESTAMPTZ,
   last_used_at TIMESTAMPTZ,
   revoked_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -93,6 +93,9 @@ CREATE TABLE IF NOT EXISTS public.personal_access_tokens (
     AND array_length(scopes, 1) >= 1
   )
 );
+
+ALTER TABLE public.personal_access_tokens
+  ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
 
 CREATE UNIQUE INDEX IF NOT EXISTS personal_access_tokens_hash_unique
   ON public.personal_access_tokens (token_hash);
@@ -110,12 +113,16 @@ DROP POLICY IF EXISTS pat_no_client_write ON public.personal_access_tokens;
 -- Inserts/updates/deletes go through the service role API so token_hash never
 -- crosses PostgREST as a client write.
 REVOKE ALL ON public.personal_access_tokens FROM PUBLIC, anon, authenticated;
-GRANT SELECT (id, user_id, name, token_prefix, scopes, last_used_at, revoked_at, created_at, updated_at)
+GRANT SELECT (id, user_id, name, token_prefix, scopes, expires_at, last_used_at, revoked_at, created_at, updated_at)
   ON public.personal_access_tokens TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.personal_access_tokens TO service_role;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
--- 3. Encrypted user secrets (Vault / pgcrypto / envelope fallback)
+-- 3. Encrypted user secrets (Supabase Vault; fail closed)
+-- Additive only. Plaintext columns stay until later manual migrations:
+--   supabase/manual/backfill-user-secrets.sql  (copy+verify, never nulls)
+--   supabase/manual/null-plaintext-user-secrets.sql (null only after verify)
+-- Those must run AFTER the dual-write code is live. They are not applied here.
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ALTER TABLE public.users
   ADD COLUMN IF NOT EXISTS gemini_api_key_enc TEXT,
@@ -131,203 +138,172 @@ CREATE SCHEMA IF NOT EXISTS zarix_vault;
 REVOKE ALL ON SCHEMA zarix_vault FROM PUBLIC, anon, authenticated;
 GRANT USAGE ON SCHEMA zarix_vault TO service_role;
 
-CREATE TABLE IF NOT EXISTS zarix_vault.user_secret_backup (
-  user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
-  gemini_api_key TEXT,
-  telegram_bot_token TEXT,
-  copied_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  verified BOOLEAN NOT NULL DEFAULT FALSE
-);
-ALTER TABLE zarix_vault.user_secret_backup ENABLE ROW LEVEL SECURITY;
-ALTER TABLE zarix_vault.user_secret_backup FORCE ROW LEVEL SECURITY;
-REVOKE ALL ON zarix_vault.user_secret_backup FROM PUBLIC, anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON zarix_vault.user_secret_backup TO service_role;
+DROP TABLE IF EXISTS zarix_vault.user_secret_backup;
+DROP FUNCTION IF EXISTS public.decrypt_user_secret(TEXT);
+DROP FUNCTION IF EXISTS zarix_vault.encrypt_secret(TEXT);
+DROP FUNCTION IF EXISTS zarix_vault.decrypt_secret(TEXT);
+DROP FUNCTION IF EXISTS zarix_vault.copy_user_secrets();
+DROP FUNCTION IF EXISTS zarix_vault.finalize_plaintext_null();
+DROP FUNCTION IF EXISTS zarix_vault.rollback_plaintext();
 
-DO $$
-BEGIN
-  CREATE EXTENSION IF NOT EXISTS pgcrypto;
-EXCEPTION WHEN OTHERS THEN
-  NULL;
-END $$;
-
-CREATE OR REPLACE FUNCTION zarix_vault.encrypt_secret(p_plain TEXT)
+CREATE OR REPLACE FUNCTION zarix_vault.assert_kind(p_kind TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql
-SECURITY DEFINER
+IMMUTABLE
 SET search_path = pg_catalog, pg_temp
 AS $$
-DECLARE
-  k TEXT;
-  enc BYTEA;
 BEGIN
-  IF p_plain IS NULL OR p_plain = '' THEN RETURN NULL; END IF;
-  k := current_setting('zarix.secrets_key', true);
-  IF k IS NULL OR k = '' THEN
-    k := 'zarix-pglite-synthetic-key-not-for-production';
+  IF p_kind IS NULL OR p_kind NOT IN ('gemini_api_key', 'telegram_bot_token') THEN
+    RAISE EXCEPTION 'zarix_vault_invalid_kind';
   END IF;
-  BEGIN
-    enc := extensions.pgp_sym_encrypt(p_plain, k);
-    RETURN 'pgp:v1:' || encode(enc, 'base64');
-  EXCEPTION WHEN undefined_function OR undefined_object OR invalid_schema_name THEN
-    BEGIN
-      enc := public.pgp_sym_encrypt(p_plain, k);
-      RETURN 'pgp:v1:' || encode(enc, 'base64');
-    EXCEPTION WHEN undefined_function OR undefined_object THEN
-      RETURN 'envelope:v0:' || encode(convert_to(p_plain, 'utf8'), 'base64');
-    END;
-  END;
+  RETURN p_kind;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION zarix_vault.decrypt_secret(p_stored TEXT)
+CREATE OR REPLACE FUNCTION zarix_vault.secret_name(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE sql
+IMMUTABLE
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT 'zarix.user.' || zarix_vault.assert_kind(p_kind) || '.' || p_user_id::text;
+$$;
+
+CREATE OR REPLACE FUNCTION zarix_vault.vault_available()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  RETURN EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'vault');
+END;
+$$;
+
+-- Fail closed: never envelope, never a repo-hardcoded key, never pgcrypto
+-- with a published passphrase. Production uses supabase_vault.
+CREATE OR REPLACE FUNCTION zarix_vault.store_user_secret(p_user_id UUID, p_kind TEXT, p_plain TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE
-  k TEXT;
-  raw TEXT;
+  secret_name TEXT;
+  secret_id TEXT;
 BEGIN
-  IF p_stored IS NULL OR p_stored = '' THEN RETURN NULL; END IF;
-  k := current_setting('zarix.secrets_key', true);
-  IF k IS NULL OR k = '' THEN
-    k := 'zarix-pglite-synthetic-key-not-for-production';
+  IF p_user_id IS NULL THEN RAISE EXCEPTION 'zarix_vault_invalid_user'; END IF;
+  IF p_plain IS NULL OR p_plain = '' THEN
+    RETURN zarix_vault.delete_user_secret(p_user_id, p_kind);
   END IF;
-  IF left(p_stored, 12) = 'envelope:v0:' THEN
-    RETURN convert_from(decode(substr(p_stored, 13), 'base64'), 'utf8');
+  IF NOT zarix_vault.vault_available() THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'Supabase Vault (schema vault) is required in production. Tests may use app AES-GCM with ZARIX_SECRETS_MASTER_KEY.';
   END IF;
-  IF left(p_stored, 7) = 'pgp:v1:' THEN
-    raw := substr(p_stored, 8);
-    BEGIN
-      RETURN extensions.pgp_sym_decrypt(decode(raw, 'base64'), k);
-    EXCEPTION WHEN undefined_function OR undefined_object OR invalid_schema_name THEN
-      BEGIN
-        RETURN public.pgp_sym_decrypt(decode(raw, 'base64'), k);
-      EXCEPTION WHEN OTHERS THEN
-        RETURN NULL;
-      END;
-    END;
+  secret_name := zarix_vault.secret_name(p_user_id, p_kind);
+  BEGIN
+    EXECUTE 'SELECT id::text FROM vault.secrets WHERE name = $1' INTO secret_id USING secret_name;
+  EXCEPTION WHEN undefined_table OR invalid_schema_name THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable';
+  END;
+  IF secret_id IS NOT NULL THEN
+    EXECUTE 'SELECT vault.update_secret($1::uuid, $2, $3, $4)' USING secret_id::uuid, p_plain, secret_name, 'zarix user secret';
+    RETURN 'vault:v1:' || secret_id;
   END IF;
+  EXECUTE 'SELECT vault.create_secret($1, $2, $3)::text' INTO secret_id USING p_plain, secret_name, 'zarix user secret';
+  IF secret_id IS NULL OR secret_id = '' THEN
+    RAISE EXCEPTION 'zarix_vault_store_failed';
+  END IF;
+  RETURN 'vault:v1:' || secret_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION zarix_vault.read_user_secret(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  secret_name TEXT;
+  val TEXT;
+BEGIN
+  IF p_user_id IS NULL THEN RAISE EXCEPTION 'zarix_vault_invalid_user'; END IF;
+  IF NOT zarix_vault.vault_available() THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable';
+  END IF;
+  secret_name := zarix_vault.secret_name(p_user_id, p_kind);
+  BEGIN
+    EXECUTE 'SELECT decrypted_secret FROM vault.decrypted_secrets WHERE name = $1' INTO val USING secret_name;
+  EXCEPTION WHEN undefined_table OR invalid_schema_name THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable';
+  END;
+  RETURN val;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION zarix_vault.delete_user_secret(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  secret_name TEXT;
+  secret_id UUID;
+BEGIN
+  IF p_user_id IS NULL THEN RAISE EXCEPTION 'zarix_vault_invalid_user'; END IF;
+  IF NOT zarix_vault.vault_available() THEN
+    RETURN NULL;
+  END IF;
+  secret_name := zarix_vault.secret_name(p_user_id, p_kind);
+  BEGIN
+    EXECUTE 'SELECT id FROM vault.secrets WHERE name = $1' INTO secret_id USING secret_name;
+    IF secret_id IS NOT NULL THEN
+      EXECUTE 'DELETE FROM vault.secrets WHERE id = $1' USING secret_id;
+    END IF;
+  EXCEPTION WHEN undefined_table OR invalid_schema_name THEN
+    NULL;
+  END;
   RETURN NULL;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION zarix_vault.copy_user_secrets()
-RETURNS INTEGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = pg_catalog, zarix_vault, public, pg_temp
-AS $$
-DECLARE
-  n INTEGER := 0;
-  r RECORD;
-  g_enc TEXT;
-  t_enc TEXT;
-  g_ok BOOLEAN;
-  t_ok BOOLEAN;
-BEGIN
-  FOR r IN
-    SELECT id, gemini_api_key, telegram_bot_token, gemini_api_key_enc, telegram_bot_token_enc
-    FROM public.users
-    WHERE gemini_api_key IS NOT NULL OR telegram_bot_token IS NOT NULL
-       OR gemini_api_key_enc IS NOT NULL OR telegram_bot_token_enc IS NOT NULL
-  LOOP
-    INSERT INTO zarix_vault.user_secret_backup (user_id, gemini_api_key, telegram_bot_token, verified)
-    VALUES (r.id, r.gemini_api_key, r.telegram_bot_token, FALSE)
-    ON CONFLICT (user_id) DO UPDATE SET
-      gemini_api_key = COALESCE(EXCLUDED.gemini_api_key, zarix_vault.user_secret_backup.gemini_api_key),
-      telegram_bot_token = COALESCE(EXCLUDED.telegram_bot_token, zarix_vault.user_secret_backup.telegram_bot_token);
-
-    g_enc := COALESCE(r.gemini_api_key_enc, zarix_vault.encrypt_secret(r.gemini_api_key));
-    t_enc := COALESCE(r.telegram_bot_token_enc, zarix_vault.encrypt_secret(r.telegram_bot_token));
-
-    g_ok := (r.gemini_api_key IS NULL AND g_enc IS NULL)
-         OR (r.gemini_api_key IS NOT NULL AND zarix_vault.decrypt_secret(g_enc) IS NOT DISTINCT FROM r.gemini_api_key)
-         OR (r.gemini_api_key IS NULL AND g_enc IS NOT NULL);
-    t_ok := (r.telegram_bot_token IS NULL AND t_enc IS NULL)
-         OR (r.telegram_bot_token IS NOT NULL AND zarix_vault.decrypt_secret(t_enc) IS NOT DISTINCT FROM r.telegram_bot_token)
-         OR (r.telegram_bot_token IS NULL AND t_enc IS NOT NULL);
-
-    IF g_ok AND t_ok THEN
-      UPDATE public.users
-        SET gemini_api_key_enc = g_enc, telegram_bot_token_enc = t_enc
-        WHERE id = r.id;
-      UPDATE zarix_vault.user_secret_backup SET verified = TRUE WHERE user_id = r.id;
-      n := n + 1;
-    END IF;
-  END LOOP;
-  RETURN n;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION zarix_vault.finalize_plaintext_null()
-RETURNS INTEGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = pg_catalog, zarix_vault, public, pg_temp
-AS $$
-DECLARE n INTEGER;
-BEGIN
-  UPDATE public.users u
-     SET gemini_api_key = NULL, telegram_bot_token = NULL
-   FROM zarix_vault.user_secret_backup b
-  WHERE u.id = b.user_id
-    AND b.verified
-    AND (
-      (b.gemini_api_key IS NULL OR u.gemini_api_key_enc IS NOT NULL)
-      AND (b.telegram_bot_token IS NULL OR u.telegram_bot_token_enc IS NOT NULL)
-    )
-    AND (u.gemini_api_key IS NOT NULL OR u.telegram_bot_token IS NOT NULL);
-  GET DIAGNOSTICS n = ROW_COUNT;
-  RETURN n;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION zarix_vault.rollback_plaintext()
-RETURNS INTEGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = pg_catalog, zarix_vault, public, pg_temp
-AS $$
-DECLARE n INTEGER;
-BEGIN
-  UPDATE public.users u
-     SET gemini_api_key = COALESCE(u.gemini_api_key, b.gemini_api_key),
-         telegram_bot_token = COALESCE(u.telegram_bot_token, b.telegram_bot_token)
-    FROM zarix_vault.user_secret_backup b
-   WHERE u.id = b.user_id
-     AND (b.gemini_api_key IS NOT NULL OR b.telegram_bot_token IS NOT NULL);
-  GET DIAGNOSTICS n = ROW_COUNT;
-  RETURN n;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION public.decrypt_user_secret(p_stored TEXT)
+-- PostgREST trampolines: implementation lives in zarix_vault. EXECUTE is
+-- revoked from anon/authenticated. There is no public.decrypt_user_secret.
+CREATE OR REPLACE FUNCTION public.zarix_vault_store(p_user_id UUID, p_kind TEXT, p_plain TEXT)
 RETURNS TEXT
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = pg_catalog, zarix_vault, pg_temp
 AS $$
-  SELECT zarix_vault.decrypt_secret(p_stored);
+  SELECT zarix_vault.store_user_secret(p_user_id, p_kind, p_plain);
 $$;
 
-REVOKE ALL ON FUNCTION zarix_vault.encrypt_secret(TEXT) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION zarix_vault.decrypt_secret(TEXT) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION zarix_vault.copy_user_secrets() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION zarix_vault.finalize_plaintext_null() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION zarix_vault.rollback_plaintext() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.decrypt_user_secret(TEXT) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION zarix_vault.encrypt_secret(TEXT) TO service_role;
-GRANT EXECUTE ON FUNCTION zarix_vault.decrypt_secret(TEXT) TO service_role;
-GRANT EXECUTE ON FUNCTION zarix_vault.copy_user_secrets() TO service_role;
-GRANT EXECUTE ON FUNCTION zarix_vault.finalize_plaintext_null() TO service_role;
-GRANT EXECUTE ON FUNCTION zarix_vault.rollback_plaintext() TO service_role;
-GRANT EXECUTE ON FUNCTION public.decrypt_user_secret(TEXT) TO service_role;
+CREATE OR REPLACE FUNCTION public.zarix_vault_read(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = pg_catalog, zarix_vault, pg_temp
+AS $$
+  SELECT zarix_vault.read_user_secret(p_user_id, p_kind);
+$$;
 
--- Copy existing plaintext into encrypted storage. Never log values.
-SELECT zarix_vault.copy_user_secrets();
-SELECT zarix_vault.finalize_plaintext_null();
+REVOKE ALL ON FUNCTION zarix_vault.assert_kind(TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.secret_name(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.vault_available() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.store_user_secret(UUID, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.read_user_secret(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.delete_user_secret(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.zarix_vault_store(UUID, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.zarix_vault_read(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION zarix_vault.vault_available() TO service_role;
+GRANT EXECUTE ON FUNCTION zarix_vault.store_user_secret(UUID, TEXT, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION zarix_vault.read_user_secret(UUID, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION zarix_vault.delete_user_secret(UUID, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.zarix_vault_store(UUID, TEXT, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.zarix_vault_read(UUID, TEXT) TO service_role;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 4. Pending inbox + remembered card maps
@@ -357,6 +333,9 @@ CREATE TABLE IF NOT EXISTS public.pending_inbox_items (
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'discarded')),
   suggestion_source TEXT CHECK (suggestion_source IS NULL OR suggestion_source IN ('history', 'heuristic', 'none', 'gemini')),
   idempotency_key TEXT,
+  ingest_key TEXT NOT NULL DEFAULT gen_random_uuid()::text,
+  direction TEXT NOT NULL DEFAULT 'expense' CHECK (direction IN ('expense', 'income')),
+  amount_ambiguous BOOLEAN NOT NULL DEFAULT FALSE,
   source TEXT NOT NULL DEFAULT 'wallet' CHECK (source IN ('web', 'telegram', 'wallet', 'api', 'mcp')),
   fingerprint TEXT NOT NULL,
   confirmed_transaction_id UUID,
@@ -367,9 +346,32 @@ CREATE TABLE IF NOT EXISTS public.pending_inbox_items (
   FOREIGN KEY (account_id, user_id) REFERENCES public.accounts(id, user_id)
 );
 
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS ingest_key TEXT;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS direction TEXT;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS amount_ambiguous BOOLEAN;
+UPDATE public.pending_inbox_items
+   SET ingest_key = COALESCE(NULLIF(ingest_key, ''), idempotency_key, id::text)
+ WHERE ingest_key IS NULL OR ingest_key = '';
+UPDATE public.pending_inbox_items SET direction = 'expense' WHERE direction IS NULL;
+UPDATE public.pending_inbox_items SET amount_ambiguous = FALSE WHERE amount_ambiguous IS NULL;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN ingest_key SET DEFAULT gen_random_uuid()::text;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN ingest_key SET NOT NULL;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN direction SET DEFAULT 'expense';
+ALTER TABLE public.pending_inbox_items ALTER COLUMN direction SET NOT NULL;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN amount_ambiguous SET DEFAULT FALSE;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN amount_ambiguous SET NOT NULL;
+ALTER TABLE public.pending_inbox_items DROP CONSTRAINT IF EXISTS pending_inbox_direction_check;
+ALTER TABLE public.pending_inbox_items ADD CONSTRAINT pending_inbox_direction_check
+  CHECK (direction IN ('expense', 'income'));
+
 CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_idempotency_unique
   ON public.pending_inbox_items (user_id, idempotency_key)
   WHERE idempotency_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_ingest_key_unique
+  ON public.pending_inbox_items (user_id, ingest_key);
+CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_fingerprint_pending_unique
+  ON public.pending_inbox_items (user_id, fingerprint)
+  WHERE status IN ('pending', 'confirming');
 CREATE INDEX IF NOT EXISTS pending_inbox_user_status_idx
   ON public.pending_inbox_items (user_id, status, created_at DESC);
 CREATE INDEX IF NOT EXISTS pending_inbox_fingerprint_idx

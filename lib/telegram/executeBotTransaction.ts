@@ -12,7 +12,9 @@ export type BotTxPayload = {
   amount?: number;
   currency?: string;
   account?: string | null;
+  accountId?: string;
   category?: string;
+  categoryId?: string | null;
   description?: string;
   destinationAccount?: string;
   /** ISO o YYYY-MM-DD; el modelo también puede mandar `date` (alias). */
@@ -62,7 +64,18 @@ export async function executeBotTransaction(
   let accountName = '';
   let selectedAccount: (typeof financialContext.accounts)[0] | null = null;
 
-  if (txData.account) {
+  if (txData.accountId) {
+    selectedAccount = financialContext.accounts.find((a) => a.id === txData.accountId) ?? null;
+    if (!selectedAccount) {
+      const listed = await accountsService.list(userId);
+      selectedAccount = listed.find((a) => a.id === txData.accountId) ?? null;
+    }
+    if (!selectedAccount) {
+      return { kind: 'abort', reply: 'La cuenta no existe.' };
+    }
+    accountId = selectedAccount.id;
+    accountName = selectedAccount.name;
+  } else if (txData.account) {
     const fuzzyResult = await accountsService.findByNameFuzzy(userId, txData.account, {
       currency: txCurrency,
     });
@@ -141,7 +154,10 @@ export async function executeBotTransaction(
   }
 
   let categoryId: string | undefined;
-  if (txData.category) {
+  if (txData.categoryId) {
+    const byId = financialContext.categories.find((c) => c.id === txData.categoryId);
+    if (byId) categoryId = byId.id;
+  } else if (txData.category) {
     const category = financialContext.categories.find(
       (c) => c.name.toLowerCase() === txData.category!.toLowerCase()
     );
