@@ -3,6 +3,7 @@ import { executeRegistryTool, getRegistryTool, TOOL_CATALOG } from '@/lib/ai/reg
 import { loadRegistryFinancialContext } from '@/lib/ai/registry/context';
 import type { ToolScope, WriteChannel } from '@/lib/ai/registry/types';
 import { recordIntegrationAudit, auditIpFromRequest, auditUserAgent } from '@/lib/integrations/audit';
+import { withPatUserScope } from '@/lib/supabase/request-scope';
 
 export function scopesForPat(scopes: string[]): ToolScope[] {
   const allowed: ToolScope[] = [];
@@ -31,22 +32,24 @@ export async function invokeRegistryForPat(input: {
   if (!tool.scopes.every((scope) => allowed.includes(scope))) {
     throw new ApiError('Este token no tiene el permiso necesario.', 403);
   }
-  const financialContext = await loadRegistryFinancialContext(input.userId);
-  const result = await executeRegistryTool(input.name, input.args, {
-    userId: input.userId,
-    financialContext,
-    source: input.source,
-    allowedScopes: allowed,
-  });
-  if (!tool.readOnly && input.req) {
-    await recordIntegrationAudit({
+  return withPatUserScope(input.userId, async () => {
+    const financialContext = await loadRegistryFinancialContext(input.userId);
+    const result = await executeRegistryTool(input.name, input.args, {
       userId: input.userId,
-      action: input.source === 'mcp' ? 'mcp.write' : 'api.write',
+      financialContext,
       source: input.source,
-      ipHash: auditIpFromRequest(input.req),
-      userAgent: auditUserAgent(input.req),
-      metadata: { tool: input.name },
+      allowedScopes: allowed,
     });
-  }
-  return { response: result.response };
+    if (!tool.readOnly && input.req) {
+      await recordIntegrationAudit({
+        userId: input.userId,
+        action: input.source === 'mcp' ? 'mcp.write' : 'api.write',
+        source: input.source,
+        ipHash: auditIpFromRequest(input.req),
+        userAgent: auditUserAgent(input.req),
+        metadata: { tool: input.name },
+      });
+    }
+    return { response: result.response };
+  });
 }

@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/supabase/server', () => ({
   createServiceClientSync: () => ({ from: mocks.from }),
+  createBareServiceClient: () => ({ from: mocks.from }),
 }));
 
 vi.mock('@/lib/integrations/invoke-registry', async () => {
@@ -119,5 +120,54 @@ describe('MCP /api/mcp', () => {
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }),
     }));
     expect(res.status).toBe(401);
+  });
+});
+
+describe('every v1 tool stays on the PAT user and respects scopes', () => {
+  const OTHER = '22222222-2222-4222-8222-222222222222';
+
+  it('rejects every write tool on a read-only token', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
+        revoked_at: null, last_used_at: null,
+      },
+      error: null,
+    }));
+    for (const tool of TOOL_CATALOG.filter((t) => !t.readOnly)) {
+      const res = await callTool(new NextRequest(`http://localhost/api/v1/tools/${tool.name}`, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+        body: JSON.stringify({ confirm: true, amount: 10, type: 'expense' }),
+      }), { params: Promise.resolve({ name: tool.name }) });
+      expect(res.status, tool.name).toBe(403);
+    }
+    expect(mocks.invoke).not.toHaveBeenCalled();
+  });
+
+  it('invokes every tool as fixture A, never fixture B', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
+        revoked_at: null, last_used_at: null,
+      },
+      error: null,
+    }));
+    mocks.invoke.mockImplementation(async (input: { userId: string; name: string }) => {
+      expect(input.userId).toBe(FIXTURE_USER);
+      expect(input.userId).not.toBe(OTHER);
+      return { response: { ok: true, tool: input.name } };
+    });
+    for (const tool of TOOL_CATALOG) {
+      const res = await callTool(new NextRequest(`http://localhost/api/v1/tools/${tool.name}`, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+        body: JSON.stringify({}),
+      }), { params: Promise.resolve({ name: tool.name }) });
+      expect(res.status, tool.name).toBe(200);
+    }
+    expect(mocks.invoke).toHaveBeenCalledTimes(TOOL_CATALOG.length);
   });
 });
