@@ -143,9 +143,23 @@ export function createPgliteSupabaseClient(db: { query: (sql: string, params?: u
     };
 
     builder.select = (columns?: string) => {
-      if (typeof columns === 'string' && columns.trim()) state.columns = columns;
+      if (typeof columns === 'string' && columns.trim()) {
+        const stripped = columns
+          .split(',')
+          .map((part) => part.trim())
+          .filter((part) => part && !part.includes(':'))
+          .join(', ');
+        state.columns = stripped || '*';
+      }
       if (state.op !== 'select') state.returning = true;
       return self;
+    };
+    builder.not = (column: string, op: string, value: unknown) => {
+      if (op === 'is' && value === null) {
+        state.filters.push({ sql: `${ident(column)} IS NOT NULL`, params: [] });
+        return self;
+      }
+      throw new Error(`unsupported not() ${op}`);
     };
     builder.eq = (column: string, value: unknown) => {
       addEq(column, value);
@@ -178,6 +192,10 @@ export function createPgliteSupabaseClient(db: { query: (sql: string, params?: u
         if (!match) throw new Error(`unsupported or() ${expr}`);
         const [, column, op, raw] = match;
         if (op === 'is' && raw === 'null') return `${ident(column)} IS NULL`;
+        if (raw === 'true' || raw === 'false') {
+          params.push(raw === 'true');
+          return `${ident(column)} = $${params.length}`;
+        }
         params.push(raw);
         return `${ident(column)} = $${params.length}`;
       });

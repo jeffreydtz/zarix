@@ -497,7 +497,13 @@ describe('pending inbox confirm idempotency', () => {
   it('reusing an ingest key with a different body returns 409', async () => {
     const existing = {
       ...itemRow('pending'),
+      amount: 10,
+      currency: 'ARS',
+      merchant: 'Café',
+      source: 'api',
+      account_id: null,
       ingest_key: 'idem-park-fixture-009',
+      idempotency_key: 'idem-park-fixture-009',
       tool_payload: { type: 'expense', amount: 10, description: 'Café', _tool: 'create_transaction' },
     };
     mocks.from.mockImplementation(() => {

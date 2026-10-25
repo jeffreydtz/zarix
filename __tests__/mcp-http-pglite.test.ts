@@ -379,7 +379,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       );
     await query(
       `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,occurred_at,created_at)
-       VALUES ($1,18,'ARS','Two-hour café','pending','fp-two-hour','wallet','expense','2026-10-24T12:00:00-03:00', now() - interval '2 hours')`,
+       VALUES ($1,42,'ARS','Two-hour café','pending','fp-two-hour','wallet','expense','2026-10-24T12:00:00-03:00', now() - interval '2 hours')`,
       [ids.a]
     );
     const ingest = (body: Record<string, unknown>, key?: string) =>
@@ -395,7 +395,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
         })
       );
     const firstDate = await ingest({
-      amount: 18,
+      amount: 41,
       currency: 'ARS',
       merchant: 'Date-only café',
       cardName: 'Visa Ejemplo',
@@ -407,7 +407,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     expect(firstJson.autoConfirmed).toBe(false);
 
     const secondDate = await ingest({
-      amount: 18,
+      amount: 41,
       currency: 'ARS',
       merchant: 'Date-only café',
       cardName: 'Visa Ejemplo',
@@ -425,13 +425,13 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     expect(secondJson.item.possibleDuplicateOf).toBe(firstJson.item.id);
 
     const keyed = await ingest(
-      { amount: 18, currency: 'ARS', merchant: 'Keyed café', cardName: 'Visa Ejemplo' },
+      { amount: 43, currency: 'ARS', merchant: 'Keyed café', cardName: 'Visa Ejemplo' },
       'wallet-http-key-001'
     );
     expect(keyed.status).toBe(201);
     const keyedJson = (await keyed.json()) as { item: { id: string }; duplicate: boolean };
     const replay = await ingest(
-      { amount: 18, currency: 'ARS', merchant: 'Keyed café', cardName: 'Visa Ejemplo' },
+      { amount: 43, currency: 'ARS', merchant: 'Keyed café', cardName: 'Visa Ejemplo' },
       'wallet-http-key-001'
     );
     expect(replay.status).toBe(200);
@@ -464,7 +464,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     );
     expect(rest.status).toBe(409);
     const twoHour = await ingest({
-      amount: 18,
+      amount: 42,
       currency: 'ARS',
       merchant: 'Two-hour café',
       cardName: 'Visa Ejemplo',
