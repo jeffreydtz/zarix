@@ -34,7 +34,7 @@ class MaturityAlertsJob extends IterativeCronJob<any> {
     // Get investments with maturity dates in the next 3 days
     const { data: investments, error } = await supabase
       .from('investments')
-      .select('*, user:users(telegram_chat_id, telegram_bot_token)')
+      .select('*, user:users(telegram_chat_id)')
       .eq('is_active', true)
       .not('maturity_date', 'is', null)
       .gte('maturity_date', todayStr)

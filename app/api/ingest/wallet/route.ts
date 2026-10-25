@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ApiError, errorResponse } from '@/lib/api-handler';
 import { authenticatePersonalAccessToken } from '@/lib/services/personal-access-tokens';
 import { ingestWalletItem, sampleWalletPayload } from '@/lib/services/pending-inbox';
-import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
+import { clientIpFromRequest, rateLimitAllow, rateLimitAllowShared } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,8 +46,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Demasiados envíos. Esperá un minuto.' }, { status: 429 });
     }
     const auth = await authenticatePersonalAccessToken(req, 'ingest');
-    if (!rateLimitAllow(`ingest-token:${auth.tokenId}`, 30, 60_000)) {
+    if (!(await rateLimitAllowShared(`ingest-token:${auth.tokenId}`, 30, 60_000))) {
       return NextResponse.json({ error: 'Demasiados envíos con este token.' }, { status: 429 });
+    }
+    if (!(await rateLimitAllowShared(`ingest-user:${auth.userId}`, 60, 60_000))) {
+      return NextResponse.json({ error: 'Demasiados envíos. Esperá un minuto.' }, { status: 429 });
     }
 
     const contentType = req.headers.get('content-type') || '';
@@ -104,6 +107,7 @@ function publicItem(item: {
   merchant: string | null;
   card_name: string | null;
   status: string;
+  direction?: string;
   created_at: string;
 }) {
   return {
@@ -113,6 +117,7 @@ function publicItem(item: {
     merchant: item.merchant,
     cardName: item.card_name,
     status: item.status,
+    direction: item.direction === 'income' ? 'income' : 'expense',
     createdAt: item.created_at,
   };
 }

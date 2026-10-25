@@ -246,7 +246,7 @@ class WeeklySummaryJob extends IterativeCronJob<any> {
   protected async fetchItems(supabase: ServiceClient): Promise<any[]> {
     const { data: users, error } = await supabase
       .from('users')
-      .select('id, telegram_chat_id, weekly_summary_enabled, telegram_bot_token')
+      .select('id, telegram_chat_id, weekly_summary_enabled')
       .eq('weekly_summary_enabled', true)
       .not('telegram_chat_id', 'is', null);
 

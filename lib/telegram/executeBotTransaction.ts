@@ -1,7 +1,7 @@
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
-import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { parseTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
@@ -61,7 +61,14 @@ export async function executeBotTransaction(
   }
 
   const txType = normalizeTxType(txData.type);
-  const txCurrency = coerceTransactionCurrency(txData.currency);
+  const explicitCurrency = txData.currency != null && String(txData.currency).trim() !== '';
+  const txCurrency = explicitCurrency ? parseTransactionCurrency(String(txData.currency)) : 'ARS';
+  if (!txCurrency) {
+    return {
+      kind: 'abort',
+      reply: 'Moneda no admitida. Usá ARS, USD o EUR.',
+    };
+  }
 
   let accountId = '';
   let accountName = '';
@@ -220,6 +227,18 @@ export async function executeBotTransaction(
       ...(requestId ? { requestId } : {}),
       ...(resolvedDate ? { transactionDate: resolvedDate } : {}),
       ...(txData.installments && txData.installments > 1 ? { installments: txData.installments } : {}),
+      idempotencyIntent: {
+        type: txType,
+        amount: txData.amount,
+        currency: txCurrency,
+        accountId,
+        destinationAccountId: destinationAccountId ?? null,
+        categoryId: categoryId ?? null,
+        description: txData.description ?? null,
+        transactionDate: resolvedDate ?? null,
+        installments: txData.installments && txData.installments > 1 ? txData.installments : null,
+        source,
+      },
     });
 
     let responseWithAccount: string;

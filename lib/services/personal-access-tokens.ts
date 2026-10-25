@@ -9,13 +9,14 @@ import {
   normalizeScopes,
   parseBearerToken,
   parsePatExpiry,
+  parsePatExpiryForUpdate,
   scopesInclude,
   type PatHashVersion,
   type PatScope,
   PAT_HASH_VERSION_HMAC,
   PAT_HASH_VERSION_SHA256,
 } from '@/lib/auth/personal-access-token';
-import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
+import { clientIpFromRequest, rateLimitAllow, rateLimitAllowShared } from '@/lib/rate-limit';
 import { auditIpFromRequest, auditUserAgent, hashClientIp, recordIntegrationAudit } from '@/lib/integrations/audit';
 
 const PAT_PUBLIC_COLUMNS =
@@ -104,7 +105,11 @@ export async function updatePersonalAccessToken(input: {
 }): Promise<PublicPat> {
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (input.expiresAt !== undefined) {
-    patch.expires_at = parsePatExpiry(input.expiresAt, defaultPatExpiresAt());
+    try {
+      patch.expires_at = parsePatExpiryForUpdate(input.expiresAt);
+    } catch (error) {
+      throw new ApiError(error instanceof Error ? error.message : 'La fecha de vencimiento es inválida.');
+    }
   }
   if (input.name !== undefined) {
     const name = String(input.name || '').trim().slice(0, 60);
@@ -200,7 +205,10 @@ export async function authenticatePersonalAccessToken(
   if (!row.expires_at || Date.parse(row.expires_at) <= Date.now()) {
     throw new ApiError('Unauthorized', 401);
   }
-  if (!rateLimitAllow(`pat:${row.id}:${ipHash}`, 60, 60_000)) {
+  if (!(await rateLimitAllowShared(`pat-token:${row.id}`, 60, 60_000))) {
+    throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
+  }
+  if (!(await rateLimitAllowShared(`pat-user:${row.user_id}`, 120, 60_000))) {
     throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
   }
   if (!scopesInclude(row.scopes, needed)) {

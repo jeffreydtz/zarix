@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { rateLimitAllow } from '@/lib/rate-limit';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
+vi.mock('@/lib/supabase/server', () => ({
+  createBareServiceClient: () => ({ rpc: mocks.rpc }),
+}));
+
+import { rateLimitAllow, rateLimitAllowShared } from '@/lib/rate-limit';
 
 describe('rateLimitAllow', () => {
   it('allows up to max then denies inside the window', () => {
@@ -7,5 +13,25 @@ describe('rateLimitAllow', () => {
     expect(rateLimitAllow(key, 2, 60_000)).toBe(true);
     expect(rateLimitAllow(key, 2, 60_000)).toBe(true);
     expect(rateLimitAllow(key, 2, 60_000)).toBe(false);
+  });
+});
+
+describe('rateLimitAllowShared', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('uses the shared atomic counter and fails closed on rpc errors', async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: true, error: null });
+    expect(await rateLimitAllowShared('pat-token:abc', 2, 60_000)).toBe(true);
+    expect(mocks.rpc).toHaveBeenCalledWith('rate_limit_hit', {
+      p_key: 'pat-token:abc',
+      p_max: 2,
+      p_window_ms: 60_000,
+    });
+    mocks.rpc.mockResolvedValueOnce({ data: false, error: null });
+    expect(await rateLimitAllowShared('pat-token:abc', 2, 60_000)).toBe(false);
+    mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: 'unavailable' } });
+    expect(await rateLimitAllowShared('pat-user:abc', 2, 60_000)).toBe(false);
   });
 });

@@ -9,6 +9,24 @@ const periodEnum = z
 
 const amountSchema = z.number().finite().positive().max(MAX_AMOUNT);
 
+export const FROZEN_CONFIRM_KEYS = new Set(['confirm', 'pendingId', 'pendingIds', 'requestId']);
+
+export const remoteConfirmSchema = z
+  .object({
+    confirm: z.literal(true),
+    pendingId: z.string().uuid().optional(),
+    pendingIds: z.array(z.string().uuid()).max(MAX_BATCH).optional(),
+    requestId: z.string().min(8).max(200).optional(),
+  })
+  .strict()
+  .refine((value) => Boolean(value.pendingId) || Boolean(value.pendingIds?.length), {
+    message: 'Falta pendingId',
+  });
+
+export function remoteConfirmHasExtraFields(args: Record<string, unknown>): boolean {
+  return Object.keys(args).some((key) => args[key] !== undefined && !FROZEN_CONFIRM_KEYS.has(key));
+}
+
 export const transactionFieldsSchema = z.object({
   type: z.enum(['expense', 'income', 'transfer']).optional(),
   amount: amountSchema.optional(),
@@ -19,10 +37,14 @@ export const transactionFieldsSchema = z.object({
   categoryId: z.string().uuid().optional().nullable(),
   description: z.string().max(500).optional(),
   destinationAccount: z.string().max(120).optional(),
+  destinationAccountId: z.string().uuid().optional(),
+  installments: z.number().int().min(1).max(36).optional(),
   transactionDate: z.string().max(32).optional(),
   date: z.string().max(32).optional(),
   confirm: z.boolean().optional(),
   pendingId: z.string().uuid().optional(),
+  pendingIds: z.array(z.string().uuid()).max(MAX_BATCH).optional(),
+  requestId: z.string().min(8).max(200).optional(),
 });
 
 export const createTransactionSchema = transactionFieldsSchema.extend({
@@ -33,6 +55,9 @@ export const createTransactionSchema = transactionFieldsSchema.extend({
 export const createTransactionsSchema = z.object({
   transactions: z.array(createTransactionSchema).min(1).max(MAX_BATCH),
   confirm: z.boolean().optional(),
+  pendingId: z.string().uuid().optional(),
+  pendingIds: z.array(z.string().uuid()).max(MAX_BATCH).optional(),
+  requestId: z.string().min(8).max(200).optional(),
 });
 
 export const createAccountSchema = z.object({
@@ -85,8 +110,8 @@ export const createRecurringSchema = z.object({
 });
 
 export const TOOL_SCHEMAS = {
-  create_transaction: createTransactionSchema,
-  create_transactions: createTransactionsSchema,
+  create_transaction: z.union([createTransactionSchema, remoteConfirmSchema]),
+  create_transactions: z.union([createTransactionsSchema, remoteConfirmSchema]),
   create_account: createAccountSchema,
   delete_last_transaction: deleteLastTransactionSchema,
   edit_last_transaction: editLastTransactionSchema,

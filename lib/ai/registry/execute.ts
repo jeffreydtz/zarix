@@ -172,8 +172,8 @@ const ACCOUNT_TYPES = new Set([
   'other',
 ]);
 
-function txOptions(source: WriteChannel | undefined, requestId?: string) {
-  return { source: source ?? 'web', requestId };
+function txOptions(source: WriteChannel | undefined, requestId?: string, ledgerSource?: WriteChannel) {
+  return { source: ledgerSource ?? source ?? 'web', requestId };
 }
 
 async function parkCreate(
@@ -210,7 +210,7 @@ async function executeRegistryToolImpl(
   args: ToolArgs,
   ctx: RegistryToolContext
 ): Promise<RegistryToolResult> {
-  const { userId, financialContext, source, requestId } = ctx;
+  const { userId, financialContext, source, requestId, ledgerSource } = ctx;
   const tool = getRegistryTool(name);
   if (!tool) return { response: { error: `Herramienta desconocida: ${name}` } };
 
@@ -281,7 +281,7 @@ async function executeRegistryToolImpl(
           },
         };
       }
-      const res = await executeBotTransaction(userId, financialContext, safeArgs as BotTxPayload, txOptions(source, requestId));
+      const res = await executeBotTransaction(userId, financialContext, safeArgs as BotTxPayload, txOptions(source, requestId, ledgerSource));
       if (res.kind === 'abort') return { response: { success: false, error: res.reply } };
       return {
         response: {
@@ -346,7 +346,7 @@ async function executeRegistryToolImpl(
       const executed: ExecutedTransactionSummary[] = [];
       const results: Array<{ ok: boolean; detail: string }> = [];
       for (const tx of txs) {
-        const res = await executeBotTransaction(userId, financialContext, tx, txOptions(source, requestId));
+        const res = await executeBotTransaction(userId, financialContext, tx, txOptions(source, requestId, ledgerSource));
         if (res.kind === 'abort') {
           results.push({ ok: false, detail: res.reply });
         } else {
@@ -453,7 +453,7 @@ async function executeRegistryToolImpl(
         description: str(safeArgs.description) || last.description || undefined,
         transactionDate: last.transaction_date,
       };
-      const res = await executeBotTransaction(userId, financialContext, merged, txOptions(source));
+      const res = await executeBotTransaction(userId, financialContext, merged, txOptions(source, undefined, ledgerSource));
       if (res.kind === 'abort') return { response: { success: false, error: res.reply } };
       try {
         await transactionsService.delete(last.id, userId);

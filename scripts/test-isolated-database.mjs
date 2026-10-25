@@ -140,6 +140,12 @@ for(const legacyGrants of [false,true]) {
       assert.deepEqual(amounts,[33.33,33.33,33.34]);assert.equal(await balance(db),initial-100);
       await service(db,'DELETE FROM transactions WHERE installment_group_id=$1',[group]);assert.equal(await balance(db),initial);
     });
+    await test(profile,'installment RPC persists the originating write channel',async()=>{
+      const group=(await service(db,"SELECT create_installment_transactions($1,$2,90,'ARS',3,NULL,'Cuotas MCP','2026-10-08','mcp') AS id",[ids.a,ids.accountA])).rows[0].id;
+      const sources=(await db.query('SELECT DISTINCT source FROM transactions WHERE installment_group_id=$1',[group])).rows.map(r=>r.source);
+      assert.deepEqual(sources,['mcp']);
+      await service(db,'DELETE FROM transactions WHERE installment_group_id=$1',[group]);
+    });
     await test(profile,'adjustment and bulk RPC lock order is user before account',async()=>{
       for(const signature of ['create_balance_adjustment(uuid,uuid,numeric)','create_secondary_balance_adjustment(uuid,uuid,numeric)','bulk_move_transactions(uuid,uuid,jsonb)']) {
         const definition=(await db.query('SELECT pg_get_functiondef($1::regprocedure) AS definition',[signature])).rows[0].definition;
@@ -276,6 +282,7 @@ for(const legacyGrants of [false,true]) {
       await service(db,"INSERT INTO wallet_card_account_maps(user_id,card_name_normalized,account_id) VALUES($1,'visa ejemplo',$2)",[ids.a,ids.accountA]);
       await service(db,"INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,card_name,account_id,status,fingerprint,source) VALUES($1,12.5,'ARS','Comercio sintético','Visa Ejemplo',$2,'pending',$3,'wallet')",[ids.a,ids.accountA,digest('synthetic-pending')]);
       await service(db,"INSERT INTO integration_audit_log(user_id,action,source,ip_hash,metadata) VALUES($1,'token.create','web',$2,'{\"synthetic\":true}'::jsonb)",[ids.a,digest('synthetic-ip')]);
+      await service(db,"INSERT INTO rate_limit_counters(key,count,window_start) VALUES('synthetic-recovery',1,'2026-10-24T12:00:00Z')");
       const data=await snapshot(db);
       assert.ok(Object.values(data).every(value=>JSON.parse(value).length>0),'Each application table must contain recovery fixtures');
       return {rowCounts:Object.fromEntries(Object.entries(data).map(([name,value])=>[name,JSON.parse(value).length]))};

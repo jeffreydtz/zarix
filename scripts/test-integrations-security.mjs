@@ -29,8 +29,13 @@ const { db } = await bootDatabase();
 try {
   await seedDatabase(db);
 
-  await test('vault helpers fail closed without vault and never keep a plaintext backup table', async () => {
+  await test('vault round-trip then fail-closed without vault and never keep a plaintext backup table', async () => {
     await db.query('UPDATE users SET gemini_api_key=$2, telegram_bot_token=$3 WHERE id=$1', [ids.a, SYNTHETIC_GEMINI, SYNTHETIC_BOT]);
+    const stored = (await service(db, 'SELECT zarix_vault.store_user_secret($1,$2,$3) AS ref', [ids.a, 'gemini_api_key', SYNTHETIC_GEMINI])).rows[0].ref;
+    assert.match(String(stored), /^vault:v1:/);
+    const read = (await service(db, 'SELECT zarix_vault.read_user_secret($1,$2) AS v', [ids.a, 'gemini_api_key'])).rows[0].v;
+    assert.equal(read, SYNTHETIC_GEMINI);
+    await db.query('DROP SCHEMA vault CASCADE');
     await assert.rejects(() => db.query('SELECT zarix_vault.vault_available() AS v'));
     await assert.rejects(() => db.query('SELECT zarix_vault.store_user_secret($1,$2,$3)', [ids.a, 'gemini_api_key', SYNTHETIC_GEMINI]));
     const backup = await db.query("SELECT 1 FROM information_schema.tables WHERE table_schema='zarix_vault' AND table_name='user_secret_backup'");

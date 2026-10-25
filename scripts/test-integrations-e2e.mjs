@@ -154,6 +154,54 @@ try {
     assert.deepEqual(emails, ['test-a@zarix.invalid', 'test-b@zarix.invalid']);
     assert.ok(!emails.some(e => /hotmail/i.test(e) || e.startsWith('jef_dietz')));
   });
+
+  await test('fingerprint unique still blocks a second ingest after confirm', async () => {
+    const fp = 'fp-reserved-after-confirm';
+    await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
+      VALUES($1,40,'ARS','Dedupe','confirmed',$2,'wallet','expense')`, [ids.a, fp]);
+    await assert.rejects(() => service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
+      VALUES($1,40,'ARS','Dedupe','pending',$2,'wallet','expense')`, [ids.a, fp]));
+    const n = (await service(db, 'SELECT count(*)::int AS n FROM pending_inbox_items WHERE fingerprint=$1 AND user_id=$2', [fp, ids.a])).rows[0].n;
+    assert.equal(n, 1);
+  });
+
+  await test('uncertain items cannot be discarded when a transaction_request exists', async () => {
+    const itemId = randomUUID();
+    const requestId = `wallet:${itemId}`;
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,15,'ARS','Incertain',$3,'uncertain','fp-uncertain','wallet')`, [itemId, ids.a, ids.accountA]);
+    const payload = {
+      user_id: ids.a, type: 'expense', account_id: ids.accountA, amount: 15, currency: 'ARS',
+      amount_in_account_currency: 15, description: 'Incertain', source: 'wallet',
+    };
+    await service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1)',
+      [ids.a, requestId, digest(JSON.stringify(payload)), JSON.stringify(payload)]);
+    const claimed = (await service(db, 'SELECT id, status FROM claim_pending_inbox_item($1,$2)', [ids.a, itemId])).rows;
+    assert.equal(claimed.length, 1);
+    assert.equal(claimed[0].status, 'confirming');
+  });
+
+  await test('shared rate-limit counters are atomic per key', async () => {
+    const allowed = [];
+    for (let i = 0; i < 3; i += 1) {
+      allowed.push((await service(db, "SELECT rate_limit_hit('pat-token:e2e', 2, 60000) AS ok")).rows[0].ok);
+    }
+    assert.deepEqual(allowed, [true, true, false]);
+    const other = (await service(db, "SELECT rate_limit_hit('pat-user:e2e', 2, 60000) AS ok")).rows[0].ok;
+    assert.equal(other, true);
+  });
+
+  await test('create_transaction_once installments keep mcp source', async () => {
+    const payload = {
+      user_id: ids.a, type: 'expense', account_id: ids.accountA, amount: 30, currency: 'ARS',
+      amount_in_account_currency: 30, description: 'Cuotas MCP', source: 'mcp',
+      transaction_date: '2026-10-08T15:00:00Z',
+    };
+    const receipt = (await service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,3) AS receipt',
+      [ids.a, 'mcp:installments-e2e', digest(JSON.stringify(payload)), JSON.stringify(payload)])).rows[0].receipt;
+    const sources = (await service(db, 'SELECT DISTINCT source FROM transactions WHERE installment_group_id=(SELECT installment_group_id FROM transactions WHERE id=$1)', [receipt.id])).rows.map(r => r.source);
+    assert.deepEqual(sources, ['mcp']);
+  });
 } finally {
   await db.close();
 }
@@ -175,6 +223,10 @@ const report = {
     'cross-user denial',
     'read vs write scopes',
     'fixture-only identities',
+    'fingerprint unique after confirm',
+    'uncertain claim from ledger',
+    'shared rate-limit counters',
+    'installment source mcp',
   ],
   results,
 };

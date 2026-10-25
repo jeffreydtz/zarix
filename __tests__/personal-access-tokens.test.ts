@@ -12,11 +12,12 @@ const mocks = vi.hoisted(() => ({
   single: vi.fn(),
   order: vi.fn(),
   update: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
-  createServiceClientSync: () => ({ from: mocks.from }),
-  createBareServiceClient: () => ({ from: mocks.from }),
+  createServiceClientSync: () => ({ from: mocks.from, rpc: mocks.rpc }),
+  createBareServiceClient: () => ({ from: mocks.from, rpc: mocks.rpc }),
   createClient: async () => ({ auth: { getUser: async () => ({ data: { user: { id: '11111111-1111-4111-8111-111111111111' } } }) } }),
 }));
 
@@ -28,6 +29,7 @@ import {
   looksLikePersonalAccessToken,
   parseBearerToken,
   parsePatExpiry,
+  parsePatExpiryForUpdate,
   PAT_HASH_VERSION_HMAC,
   PAT_HASH_VERSION_SHA256,
 } from '@/lib/auth/personal-access-token';
@@ -57,6 +59,7 @@ function chain(result: unknown) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.rpc.mockResolvedValue({ data: true, error: null });
   vi.spyOn(console, 'error').mockImplementation(() => {});
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -96,6 +99,14 @@ describe('personal access tokens', () => {
     expect(Date.parse(fromNull)).toBeLessThan(horizon);
     const far = new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000).toISOString();
     expect(Date.parse(parsePatExpiry(far))).toBeLessThan(horizon);
+  });
+
+  it('rejects past or invalid expiry on PATCH and does not extend a year', () => {
+    expect(() => parsePatExpiryForUpdate('2020-01-01T00:00:00.000Z')).toThrow(/pasó|inválida/);
+    expect(() => parsePatExpiryForUpdate('not-a-date')).toThrow(/inválida/);
+    expect(() => parsePatExpiryForUpdate(null)).toThrow(/inválida/);
+    const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    expect(parsePatExpiryForUpdate(future)).toBe(future);
   });
 
   it('compares hashes in constant time', () => {

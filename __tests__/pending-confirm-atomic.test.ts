@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   confirmPendingItem,
+  discardPendingItem,
+  inboxEventFingerprint,
   isStaleConfirming,
   listPendingItems,
   occurredAtForStorage,
@@ -446,5 +448,116 @@ describe('pending inbox confirm idempotency', () => {
     });
     await confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM });
     expect(mocks.execute.mock.calls[0][1]).toMatchObject({ type: 'income', confirm: true });
+  });
+
+  it('fingerprints opposite directions as distinct events', () => {
+    const base = {
+      amount: 100,
+      currency: 'ARS',
+      merchant: 'COTO',
+      cardName: 'Visa Ejemplo',
+    };
+    const at = '2026-10-24T15:00:00.000Z';
+    const purchase = inboxEventFingerprint(FIXTURE_USER, { ...base, direction: 'expense' }, at, '');
+    const refund = inboxEventFingerprint(FIXTURE_USER, { ...base, direction: 'income' }, at, '');
+    const otherUser = inboxEventFingerprint('22222222-2222-4222-8222-222222222222', { ...base, direction: 'expense' }, at, '');
+    expect(purchase).not.toBe(refund);
+    expect(purchase).not.toBe(otherUser);
+  });
+
+  it('persists mcp as ledgerSource while confirm transport stays wallet', async () => {
+    const parked = {
+      ...itemRow('confirming'),
+      source: 'mcp',
+      tool_payload: { type: 'expense', amount: 50, accountId: ACCOUNT_ID },
+    };
+    mocks.rpc.mockResolvedValue({ data: [parked], error: null });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        return { data: { ...parked, status: 'confirmed' }, error: null };
+      };
+      q.single = async () => ({ data: parked, error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM, source: 'mcp' });
+    expect(mocks.execute.mock.calls[0][2]).toMatchObject({
+      source: 'wallet',
+      ledgerSource: 'mcp',
+    });
+  });
+
+  it('marks uncertain when inbox update fails after the ledger commit', async () => {
+    mocks.rpc.mockResolvedValue({ data: [itemRow('confirming')], error: null });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.in = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        const last = updates[updates.length - 1];
+        if (last?.value?.status === 'confirmed') {
+          return { data: null, error: { message: 'inbox write failed' } };
+        }
+        return { data: itemRow('confirming'), error: null };
+      };
+      q.single = async () => ({ data: itemRow('confirming'), error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await expect(confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toThrow(/inbox write failed/);
+    expect(updates.some((u) => u.value.status === 'uncertain')).toBe(true);
+    expect(updates.some((u) => u.value.status === 'pending')).toBe(false);
+  });
+
+  it('refuses to discard an uncertain item that already has a ledger row', async () => {
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.update = () => self;
+      q.in = () => self;
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: { response: { id: 'tx-1' } }, error: null };
+        return { data: itemRow('uncertain'), error: null };
+      };
+      return q;
+    });
+    await expect(discardPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toMatchObject({
+      status: 409,
+    });
+  });
+
+  it('rejects an explicit unsupported currency at ingest so it cannot auto-confirm as ARS', async () => {
+    const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+    await expect(
+      ingestWalletItem({
+        userId: FIXTURE_USER,
+        json: { amount: 100, currency: 'GBP', merchant: 'Shop' },
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(mocks.from).not.toHaveBeenCalled();
   });
 });

@@ -205,6 +205,8 @@ export interface CreateTransactionInput {
   recurringRuleId?: string | null;
   /** Channel that created the row: web, telegram, wallet, api, mcp. */
   source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
+  /** Canonical caller intent for replay hashing (original amount/currency before FX). */
+  idempotencyIntent?: Record<string, unknown>;
 }
 
 export interface TransactionWithCategory extends Transaction {
@@ -257,7 +259,9 @@ class TransactionsService {
       throw new Error('La cotización manual debe ser finita y mayor a cero.');
     }
     const supabase = createServiceClientSync();
-    const requestHash = input.requestId ? transactionRequestHash(input as unknown as Record<string, unknown>) : null;
+    const requestHash = input.requestId
+      ? transactionRequestHash((input.idempotencyIntent ?? input) as Record<string, unknown>)
+      : null;
     if (input.requestId) {
       if (!validTransactionRequestId(input.requestId)) throw new ApiError('Identificador de solicitud inválido.');
       // A committed reply survives response loss, account archival, and changed FX rates.
@@ -355,6 +359,7 @@ class TransactionsService {
         p_category_id: input.categoryId || null,
         p_description: input.description || 'Compra en cuotas',
         p_start_date: input.transactionDate || new Date().toISOString(),
+        p_source: channel,
       });
 
       if (error) throw error;

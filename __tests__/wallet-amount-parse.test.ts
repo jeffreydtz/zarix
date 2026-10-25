@@ -51,6 +51,27 @@ describe('wallet amount parser (table)', () => {
     expect(parsed.currency).toBe('USD');
   });
 
+  it('does not treat tarjeta de crédito as a refund', () => {
+    const parsed = parseAmountFromText('Compra con tarjeta de crédito $5.000 COTO');
+    expect(parsed.direction).toBe('expense');
+    expect(parsed.amount).toBe(5000);
+    const long = parseWalletText('Compra con tarjeta de crédito por $5.000,00 en COTO');
+    expect(long.direction).toBe('expense');
+    expect(long.amount).toBe(5000);
+  });
+
+  it('keeps real credit/refund words as income', () => {
+    expect(parseAmountFromText('crédito $1.000 devolución').direction).toBe('income');
+  });
+
+  it('marks explicit GBP unsupported instead of coercing to ARS', () => {
+    const parsed = parseWalletPayload({ json: { amount: 100, currency: 'GBP', merchant: 'Shop' } });
+    expect(parsed.currencyUnsupported).toBe(true);
+    expect(parsed.currency).toBe('GBP');
+    expect(parsed.amount).toBe(100);
+    expect(parsed.amountAmbiguous).toBe(true);
+  });
+
   it('invalid JSON amount falls back to text and is ambiguous (no auto-confirm)', () => {
     const foo = parseWalletPayload({
       json: { amount: 'foo', rawText: 'USD 1.234' },
