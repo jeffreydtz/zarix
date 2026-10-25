@@ -107,7 +107,11 @@ function patExpiresAtUnix(expiresAt: number | null | undefined): number {
   return Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
 }
 
-async function verifyMcpToken(req: Request, bearer?: string): Promise<AuthInfo | undefined> {
+async function verifyMcpToken(
+  req: Request,
+  bearer?: string,
+  options?: { skipRateLimit?: boolean }
+): Promise<AuthInfo | undefined> {
   const token = bearer || parseBearerToken(req.headers.get('authorization')) || undefined;
   if (!token) return undefined;
   if (!looksLikePersonalAccessToken(token)) {
@@ -116,7 +120,9 @@ async function verifyMcpToken(req: Request, bearer?: string): Promise<AuthInfo |
   }
   const authed = await authenticatePersonalAccessToken(req, undefined, {
     source: 'mcp',
-    skipRateLimit: true,
+    // First verify (mcpHandler) counts against the shared limiter.
+    // withMcpAuth runs again on a cloned Request — skip so one POST is one hit.
+    skipRateLimit: options?.skipRateLimit === true,
   });
   return {
     token,
@@ -132,7 +138,7 @@ const authedMcp = withMcpAuth(
     const info = req.auth;
     return requestStore.run(req, () => (info ? authStore.run(info, () => mcpInner(req)) : mcpInner(req)));
   },
-  verifyMcpToken,
+  (req, bearer) => verifyMcpToken(req, bearer, { skipRateLimit: true }),
   {
     required: true,
     resourceMetadataPath: '/.well-known/oauth-protected-resource',

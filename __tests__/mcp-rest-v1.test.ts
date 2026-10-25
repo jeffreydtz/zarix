@@ -156,6 +156,31 @@ describe('MCP /api/mcp', () => {
     expect(res.status).toBe(429);
   });
 
+  it('uses the shared per-token/per-user limiter instead of skipping it', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
+        hash_version: 1, revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
+      },
+      error: null,
+    }));
+    const spy = vi.spyOn(rateLimit, 'rateLimitAllowShared').mockResolvedValue(false);
+    const { POST } = await import('@/app/api/mcp/route');
+    const res = await POST(new NextRequest('http://localhost/api/mcp', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${generated.token}`,
+      },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }),
+    }));
+    expect(res.status).toBe(429);
+    expect(spy).toHaveBeenCalled();
+    expect(spy.mock.calls.some((call) => String(call[0]).startsWith('pat-token:'))).toBe(true);
+    spy.mockRestore();
+  });
+
   it('authenticates first, then rejects malformed JSON and oversized MCP bodies', async () => {
     const { POST } = await import('@/app/api/mcp/route');
     const unauthenticated = await POST(new NextRequest('http://localhost/api/mcp', {
