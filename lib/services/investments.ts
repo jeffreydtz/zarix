@@ -3,7 +3,7 @@ import { ApiError } from '@/lib/api-handler';
 import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
-import { cotizacionesService } from './cotizaciones';
+import { cotizacionesService, isFxUnavailableError } from './cotizaciones';
 import { blueFxReference, type BlueFxReference } from '@/lib/blue-fx-reference';
 import type { Account, Investment, InvestmentSale, InvestmentType } from '@/types/database';
 import {
@@ -114,10 +114,12 @@ export interface PortfolioSummaryPayload {
   totalPurchaseValue: number;
   totalPnL: number;
   totalPnLPercent: number;
-  /** Cotización blue usada (ARS por 1 USD). */
+  /** Cotización blue usada (ARS por 1 USD). 0 when FX is unavailable — never treat as a rate. */
   blueArsPerUsd: number;
   /** Exact FX reference used here; distinct from the price source of each asset. */
   blueReference?: BlueFxReference;
+  fxUnavailable?: boolean;
+  fxAsOf?: string | null;
   /** Equivalentes en ARS (referencia blue). */
   totalCurrentValueArsBlue: number;
   totalPurchaseValueArsBlue: number;
@@ -168,24 +170,24 @@ function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
 function amountToUsd(
   amount: number,
   currency: string | null | undefined,
-  arsPerUsd: number,
+  arsPerUsd: number | null,
   extraUsdPerUnit?: Map<string, number>
-): number {
+): number | null {
   const c = (currency || 'USD').toUpperCase();
   if (STABLE_AS_USD.has(c)) return amount;
   if (c === 'ARS') {
-    if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+    if (arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) return null;
     return amount / arsPerUsd;
   }
   if (extraUsdPerUnit) {
     const extra = extraUsdPerUnit.get(c);
     if (extra != null && Number.isFinite(extra) && extra > 0) return amount * extra;
   }
-  throw new Error(`No hay cotización a USD para ${c}`);
+  return null;
 }
 
-function usdToArsBlue(usd: number, arsPerUsd: number): number {
-  if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+function usdToArsBlue(usd: number | null, arsPerUsd: number | null): number | null {
+  if (usd == null || arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) return null;
   return usd * arsPerUsd;
 }
 
@@ -314,12 +316,34 @@ class InvestmentsService {
   private async loadInvestmentsNormalized(
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipQuoteRefresh?: boolean }
-  ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number; blueReference: BlueFxReference }> {
+  ): Promise<{
+    investments: InvestmentWithPnL[];
+    blueArsPerUsd: number;
+    blueReference?: BlueFxReference;
+    fxUnavailable?: boolean;
+    fxAsOf?: string | null;
+  }> {
     const supabase = createServiceClientSync();
 
-    const dolar = await cotizacionesService.getDolarQuotes();
-    const blueArsPerUsd = arsPerUsdFromDolar(dolar.blue);
-    const reference = blueFxReference(dolar.blue, dolar.blue.sell > 0 && Number.isFinite(dolar.blue.sell) ? 'sell' : 'buy');
+    let blueArsPerUsd: number | null = null;
+    let reference: BlueFxReference | undefined;
+    let fxUnavailable = false;
+    let fxAsOf: string | null = null;
+    try {
+      const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] });
+      fxAsOf = dolar.blue?.asOf ?? dolar.mep?.asOf ?? null;
+      if (dolar.blue && ((dolar.blue.sell > 0 && Number.isFinite(dolar.blue.sell)) || (dolar.blue.buy > 0 && Number.isFinite(dolar.blue.buy)))) {
+        blueArsPerUsd = arsPerUsdFromDolar(dolar.blue);
+        reference = blueFxReference(dolar.blue, dolar.blue.sell > 0 && Number.isFinite(dolar.blue.sell) ? 'sell' : 'buy');
+      } else {
+        fxUnavailable = true;
+      }
+    } catch (error) {
+      if (!isFxUnavailableError(error)) {
+        console.error('[investments] FX unavailable', error);
+      }
+      fxUnavailable = true;
+    }
 
     const { data: investmentsRaw, error } = await supabase
       .from('investments')
@@ -423,20 +447,24 @@ class InvestmentsService {
 
       const costUsd = amountToUsd(costNative, purchaseCur, blueArsPerUsd, extraUsd);
       const marketUsd = amountToUsd(marketNative, marketCur, blueArsPerUsd, extraUsd);
-      const pnlUsd = marketUsd - costUsd;
-      const pnlPctUsd = costUsd > 0 ? (pnlUsd / costUsd) * 100 : 0;
+      if (costUsd == null || marketUsd == null) fxUnavailable = true;
+      const costUsdValue = costUsd ?? 0;
+      const marketUsdValue = marketUsd ?? 0;
+      const pnlUsd = marketUsdValue - costUsdValue;
+      const pnlPctUsd = costUsdValue > 0 ? (pnlUsd / costUsdValue) * 100 : 0;
 
       let dailyPnlUsd = 0;
-      if (dailyChangePct != null && Number.isFinite(dailyChangePct)) {
+      if (dailyChangePct != null && Number.isFinite(dailyChangePct) && marketUsd != null) {
         const denom = 100 + dailyChangePct;
         if (denom !== 0) {
           const previousMarketNative = marketNative * (100 / denom);
           const previousMarketUsd = amountToUsd(previousMarketNative, marketCur, blueArsPerUsd, extraUsd);
-          dailyPnlUsd = marketUsd - previousMarketUsd;
+          if (previousMarketUsd != null) dailyPnlUsd = marketUsdValue - previousMarketUsd;
         }
       }
 
       const realizedAgg = salesByInvestment.get(inv.id) || { realized: 0, count: 0 };
+      const marketArs = usdToArsBlue(marketUsd, blueArsPerUsd);
 
       return {
         ...inv,
@@ -448,12 +476,12 @@ class InvestmentsService {
         current_price_change_pct: dailyChangePct,
         interest_rate: inv.interest_rate ? Number(inv.interest_rate) : null,
         market_price_currency: marketCur,
-        cost_basis_usd: costUsd,
-        market_value_usd: marketUsd,
+        cost_basis_usd: costUsdValue,
+        market_value_usd: marketUsdValue,
         profit_loss_usd: pnlUsd,
         profit_loss_percent_usd: pnlPctUsd,
-        market_value_ars_blue: usdToArsBlue(marketUsd, blueArsPerUsd),
-        current_value: marketUsd,
+        market_value_ars_blue: marketArs ?? 0,
+        current_value: marketUsdValue,
         profit_loss: pnlUsd,
         profit_loss_percent: pnlPctUsd,
         daily_change_pct: dailyChangePct,
@@ -479,7 +507,13 @@ class InvestmentsService {
       );
     }
 
-    return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference };
+    return {
+      investments: investmentsWithPnL,
+      blueArsPerUsd: blueArsPerUsd ?? 0,
+      blueReference: reference,
+      fxUnavailable: fxUnavailable || blueArsPerUsd == null,
+      fxAsOf,
+    };
   }
 
   async list(userId: string, options?: { forceRefreshQuotes?: boolean }): Promise<InvestmentWithPnL[]> {
@@ -609,6 +643,7 @@ class InvestmentsService {
     }
 
     const dolar = await cotizacionesService.getDolarQuotes();
+    if (!dolar.blue) throw new Error('No hay una cotización blue válida para valorar el portafolio.');
     const arsPerUsd = arsPerUsdFromDolar(dolar.blue);
 
     const saleCurrency = (input.currency || invRow.purchase_currency || 'USD').toUpperCase();
@@ -625,10 +660,13 @@ class InvestmentsService {
     }
     const saleUsdPerUnit = amountToUsd(input.price, saleCurrency, arsPerUsd, extra);
     const purchaseUsdPerUnit = amountToUsd(purchasePrice, basisCurrency, arsPerUsd, extra);
+    const saleUsdPerCurrencyUnit = amountToUsd(1, saleCurrency, arsPerUsd, extra);
+    if (saleUsdPerUnit == null || purchaseUsdPerUnit == null || saleUsdPerCurrencyUnit == null) {
+      throw new Error('No hay cotización para valorar la venta.');
+    }
     const realizedUsd = ((saleUsdPerUnit - purchaseUsdPerUnit) * input.quantity) / priceFactor;
     // Native se expresa en la moneda de la venta, también si es EUR/crypto:
     // no guardar un importe USD etiquetado con otra moneda.
-    const saleUsdPerCurrencyUnit = amountToUsd(1, saleCurrency, arsPerUsd, extra);
     const realizedNative = realizedUsd / saleUsdPerCurrencyUnit;
 
     // RPC atómico (una transacción): descuenta quantity SOLO si alcanza e
@@ -735,7 +773,7 @@ class InvestmentsService {
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipDailySnapshot?: boolean; skipQuoteRefresh?: boolean }
   ): Promise<PortfolioSummaryPayload> {
-    const { investments, blueArsPerUsd, blueReference } = await this.loadInvestmentsNormalized(userId, options);
+    const { investments, blueArsPerUsd, blueReference, fxUnavailable, fxAsOf } = await this.loadInvestmentsNormalized(userId, options);
 
     const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.market_value_usd, 0);
     const totalPurchaseValue = investments.reduce((sum, inv) => sum + inv.cost_basis_usd, 0);
@@ -747,10 +785,10 @@ class InvestmentsService {
     const totalDailyPnLPercent =
       previousValueUsd > 0 ? (totalDailyPnLUsd / previousValueUsd) * 100 : 0;
 
-    const totalCurrentValueArsBlue = usdToArsBlue(totalCurrentValue, blueArsPerUsd);
-    const totalPurchaseValueArsBlue = usdToArsBlue(totalPurchaseValue, blueArsPerUsd);
-    const totalPnLArsBlue = usdToArsBlue(totalPnL, blueArsPerUsd);
-    const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd);
+    const totalCurrentValueArsBlue = usdToArsBlue(totalCurrentValue, blueArsPerUsd) ?? 0;
+    const totalPurchaseValueArsBlue = usdToArsBlue(totalPurchaseValue, blueArsPerUsd) ?? 0;
+    const totalPnLArsBlue = usdToArsBlue(totalPnL, blueArsPerUsd) ?? 0;
+    const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd) ?? 0;
 
     const supabase = createServiceClientSync();
     const { data: allSales, error: allSalesError } = await supabase
@@ -762,7 +800,7 @@ class InvestmentsService {
       (sum, row) => sum + (Number(row.realized_pnl_usd) || 0),
       0
     );
-    const totalRealizedPnLArsBlue = usdToArsBlue(totalRealizedPnLUsd, blueArsPerUsd);
+    const totalRealizedPnLArsBlue = usdToArsBlue(totalRealizedPnLUsd, blueArsPerUsd) ?? 0;
 
     const byTypeSlices = composeComposition(investments, 'type');
     const byCurrencySlices = composeComposition(investments, 'currency');
@@ -778,6 +816,8 @@ class InvestmentsService {
       totalPnLPercent,
       blueArsPerUsd,
       blueReference,
+      fxUnavailable,
+      fxAsOf,
       totalCurrentValueArsBlue,
       totalPurchaseValueArsBlue,
       totalPnLArsBlue,
@@ -795,7 +835,7 @@ class InvestmentsService {
       investments,
     };
 
-    if (!options?.skipDailySnapshot) {
+    if (!options?.skipDailySnapshot && !fxUnavailable && blueArsPerUsd > 0) {
       await this.recordDailySnapshot(userId, payload);
     }
 

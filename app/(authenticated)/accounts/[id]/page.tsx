@@ -110,7 +110,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
                         {account.secondary_currency}
                       </span>
                     </p>
-                    {!enriched.valuationIssue && <p className="text-sm font-medium tabular-nums text-muted-foreground">
+                    {!enriched.valuationIssue && !enriched.valuation?.fxUnavailable && <p className="text-sm font-medium tabular-nums text-muted-foreground">
                       Total (ARS blue):{' '}
                       <span className="font-semibold text-destructive">
                         -$
@@ -181,10 +181,15 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
             viewAccountContext={{
               accountId: account.id,
               accountCurrency: account.currency,
-              fx: fxRates
-                ? { usdToArs: fxRates.usdArs, eurArs: fxRates.eurArs }
-                : undefined,
-              usdToArs: fxRates?.usdArs ?? undefined,
+              fx:
+                typeof fxRates?.usdArs === 'number' && fxRates.usdArs > 0
+                && typeof fxRates.eurArs === 'number' && fxRates.eurArs > 0
+                  ? { usdToArs: fxRates.usdArs, eurArs: fxRates.eurArs }
+                  : undefined,
+              usdToArs:
+                typeof fxRates?.usdArs === 'number' && fxRates.usdArs > 0
+                  ? fxRates.usdArs
+                  : undefined,
             }}
           />
         </div>

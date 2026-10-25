@@ -24,6 +24,8 @@ import DashboardSpendingAnalyzerSection from '@/components/dashboard/DashboardSp
 import DashboardMore from '@/components/dashboard/DashboardMore';
 import { PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
+import FxUnavailableBanner from '@/components/ui/FxUnavailableBanner';
+import { isFxUnavailableError } from '@/lib/services/cotizaciones';
 
 const CreditCardsWidget = dynamic(() => import('@/components/dashboard/CreditCardsWidget'), {
   loading: () => <div className="card h-40 animate-pulse bg-secondary" />,
@@ -53,35 +55,42 @@ export default async function DashboardPage() {
       new Promise((resolve) => setTimeout(resolve, 1500)),
     ]).catch(() => {});
 
-    const [
-      accounts,
-      recentTransactions,
-      portfolio,
-      quotes,
-      netWorthHistory,
-      inflacion,
-      sparklines,
-      monthFlow,
-      upcoming,
-      budgets,
-      preferences,
-    ] = await Promise.all([
+    const settled = await Promise.allSettled([
       accountsService.list(user.id, { allowPartialValuation: true }),
       transactionsService.list(user.id, { limit: 5 }),
       investmentsService
         .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }),
-      cotizacionesService.getAllQuotes().catch(error => {
-        unstable_rethrow(error);
-        return null;
-      }),
+      cotizacionesService.getAllQuotes(),
       getNetWorthHistory(user.id),
-      getInflacionSeries().catch(() => []),
-      getMarketSparklines().catch(() => ({ blue: [], btc: [], eth: [] })),
+      getInflacionSeries(),
+      getMarketSparklines(),
       getMonthFlow(user.id),
       getUpcoming(user.id),
       getTopBudgets(user.id),
       getPresentationPreferences(user.id),
     ]);
+
+    const unwrap = <T,>(result: PromiseSettledResult<T>, fallback: T, fatal = true): T => {
+      if (result.status === 'fulfilled') return result.value;
+      unstable_rethrow(result.reason);
+      if (!fatal || isFxUnavailableError(result.reason)) {
+        console.error('[dashboard] section unavailable', result.reason);
+        return fallback;
+      }
+      throw result.reason;
+    };
+
+    const accounts = unwrap(settled[0], [] as Awaited<ReturnType<typeof accountsService.list>>);
+    const recentTransactions = unwrap(settled[1], [] as Awaited<ReturnType<typeof transactionsService.list>>);
+    const portfolio = unwrap(settled[2], null);
+    const quotes = unwrap(settled[3], null, false);
+    const netWorthHistory = unwrap(settled[4], [] as Awaited<ReturnType<typeof getNetWorthHistory>>);
+    const inflacion = unwrap(settled[5], [], false);
+    const sparklines = unwrap(settled[6], { blue: [], btc: [], eth: [] }, false);
+    const monthFlow = unwrap(settled[7], null);
+    const upcoming = unwrap(settled[8], [] as Awaited<ReturnType<typeof getUpcoming>>);
+    const budgets = unwrap(settled[9], [] as Awaited<ReturnType<typeof getTopBudgets>>);
+    const preferences = unwrap(settled[10], { default_currency: 'ARS' as const, net_worth_widget_visible: true });
 
     // Patrimonio HOY: misma composición que computeNetWorth pero reutilizando
     // lo ya traído (evita repetir las queries de accounts/portfolio).
@@ -106,10 +115,24 @@ export default async function DashboardPage() {
             blueReferences: [],
             valuation: undefined,
           };
+    const blueSell = quotes?.dolar?.blue?.sell;
+    const blueRate =
+      (portfolio?.blueArsPerUsd && portfolio.blueArsPerUsd > 0 ? portfolio.blueArsPerUsd : null)
+      ?? (typeof blueSell === 'number' && blueSell > 0 ? blueSell : null);
+    const fxAsOf =
+      accounts.find((account) => account.valuation?.asOf)?.valuation?.asOf
+      ?? portfolio?.fxAsOf
+      ?? quotes?.dolar?.blue?.asOf
+      ?? (quotes?.dolar?.blue?.timestamp instanceof Date ? quotes.dolar.blue.timestamp.toISOString() : null);
+    const fxUnavailable = Boolean(
+      balances.valuation?.status === 'fx_unavailable'
+      || portfolio?.fxUnavailable
+      || !blueRate
+    );
     const netWorthNow = composeLiquidNetWorth({
       balances,
       portfolio,
-      blueRate: portfolio?.blueArsPerUsd ?? quotes?.dolar?.blue?.sell ?? 0,
+      blueRate: blueRate ?? 0,
     });
 
     // Reading or changing presentation preferences never rewrites history.
@@ -129,7 +152,7 @@ export default async function DashboardPage() {
 
     return (
       <>
-        {preferences.net_worth_widget_visible && !balances.valuation && <StickyNetWorthBar
+        {preferences.net_worth_widget_visible && !balances.valuation && !fxUnavailable && <StickyNetWorthBar
           key={user.id}
           totalARSBlue={netWorthNow.totalARSBlue}
           totalUSD={netWorthNow.totalUSD}
@@ -147,10 +170,10 @@ export default async function DashboardPage() {
           {/* Bento desktop: 12 columnas; mobile: columna única en orden de jerarquía */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <MotionSection delay={0.04} intensity="normal" className="lg:col-span-12">
-              {quotes ? (
-                <MarketStrip quotes={quotes} sparklines={sparklines} topHoldings={topHoldings} />
+              {fxUnavailable || !quotes ? (
+                <FxUnavailableBanner asOf={fxAsOf} />
               ) : (
-                <p role="status" className="card p-4 text-muted-foreground">Cotizaciones no disponibles. Volvé a intentar en unos minutos.</p>
+                <MarketStrip quotes={{ ...quotes, timestamp: quotes.timestamp ?? undefined }} sparklines={sparklines} topHoldings={topHoldings} />
               )}
             </MotionSection>
 
@@ -166,7 +189,7 @@ export default async function DashboardPage() {
               <UpcomingRail items={upcoming} />
             </MotionSection>
 
-            {quotes ? (
+            {quotes?.dolar?.blue && quotes.dolar.blue.sell > 0 ? (
               <MotionSection delay={0.16} intensity="subtle" className="lg:col-span-12">
                 <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
                   <DashboardSpendingAnalyzerSection quotes={quotes} />

@@ -1,8 +1,8 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import {
   accountsService,
+  type AccountValuation,
   type CreditCardDebtSlice,
-  type PartialAccountValuation,
 } from '@/lib/services/accounts';
 import { investmentsService } from '@/lib/services/investments';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
@@ -34,7 +34,7 @@ export interface NetWorthNow {
   positionsARSBlue?: number;
   /** Current components can have different quote samples; no universal source is inferred. */
   blueReferences?: BlueFxComponentReference[];
-  valuation?: PartialAccountValuation;
+  valuation?: AccountValuation;
 }
 
 const EMPTY_BALANCES = {
@@ -50,7 +50,7 @@ const EMPTY_BALANCES = {
   totalUSD: 0,
   totalARSBlue: 0,
   blueReferences: [] as NonNullable<ReturnType<typeof accountsService.aggregateAccountTotals>['blueReferences']>,
-  valuation: undefined as PartialAccountValuation | undefined,
+  valuation: undefined as AccountValuation | undefined,
 };
 
 /**
@@ -100,7 +100,7 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
 export async function recordNetWorthSnapshot(userId: string): Promise<boolean> {
   try {
     const now = await computeNetWorth(userId);
-    if (now.valuation?.status === 'partial') {
+    if (now.valuation?.status === 'partial' || now.valuation?.status === 'fx_unavailable') {
       console.warn('[net-worth] snapshot salteado: valoración parcial');
       return false;
     }

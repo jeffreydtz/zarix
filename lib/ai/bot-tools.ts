@@ -678,22 +678,26 @@ async function executeBotToolImpl(
     }
 
     case 'get_quotes': {
-      const q = await cotizacionesService.getAllQuotes();
-      return {
-        response: {
-          dolar: {
-            blue: round(q.dolar.blue.sell, 2),
-            oficial: round(q.dolar.oficial.sell, 2),
-            mep: round(q.dolar.mep.sell, 2),
-            ccl: round(q.dolar.ccl.sell, 2),
+      try {
+        const q = await cotizacionesService.getAllQuotes();
+        return {
+          response: {
+            dolar: {
+              blue: q.dolar.blue?.sell && q.dolar.blue.sell > 0 ? round(q.dolar.blue.sell, 2) : null,
+              oficial: q.dolar.oficial?.sell && q.dolar.oficial.sell > 0 ? round(q.dolar.oficial.sell, 2) : null,
+              mep: q.dolar.mep?.sell && q.dolar.mep.sell > 0 ? round(q.dolar.mep.sell, 2) : null,
+              ccl: q.dolar.ccl?.sell && q.dolar.ccl.sell > 0 ? round(q.dolar.ccl.sell, 2) : null,
+            },
+            crypto: {
+              btcUSD: round(q.crypto.btc.priceUSD),
+              ethUSD: round(q.crypto.eth.priceUSD),
+              usdtUSD: round(q.crypto.usdt.priceUSD, 4),
+            },
           },
-          crypto: {
-            btcUSD: round(q.crypto.btc.priceUSD),
-            ethUSD: round(q.crypto.eth.priceUSD),
-            usdtUSD: round(q.crypto.usdt.priceUSD, 4),
-          },
-        },
-      };
+        };
+      } catch {
+        return { response: { fxUnavailable: true, note: 'Cotizaciones no disponibles' } };
+      }
     }
 
     case 'list_recurring': {

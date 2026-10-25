@@ -235,16 +235,21 @@ bot.command('cuentas', async (ctx) => {
     message += `${acc.icon || '💳'} *${escapeMd(acc.name)}*\n`;
     message += `   ${sign}$${acc.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })} ${acc.currency}\n`;
 
-    if (acc.currency !== 'ARS') {
-      message += `   ≈ $${acc.balance_ars_blue?.toLocaleString('es-AR') || 0} ARS\n`;
+    if (acc.currency !== 'ARS' && typeof acc.balance_ars_blue === 'number') {
+      message += `   ≈ $${acc.balance_ars_blue.toLocaleString('es-AR')} ARS\n`;
     }
     message += `\n`;
   });
 
   message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-  message += `📊 *TOTAL PATRIMONIO*\n`;
-  message += `💵 $${total.totalARSBlue.toLocaleString('es-AR')} ARS (blue)\n`;
-  message += `💵 USD ${total.totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}\n`;
+  const fxDown = accounts.some((acc) => acc.valuation?.fxUnavailable);
+  if (fxDown) {
+    message += `📊 Cotizaciones no disponibles. Saldos en moneda original.\n`;
+  } else {
+    message += `📊 *TOTAL PATRIMONIO*\n`;
+    message += `💵 $${total.totalARSBlue.toLocaleString('es-AR')} ARS (blue)\n`;
+    message += `💵 USD ${total.totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}\n`;
+  }
 
   ctx.reply(message, { parse_mode: 'Markdown' });
 });
@@ -255,10 +260,13 @@ bot.command('cotizaciones', async (ctx) => {
 
     let message = `💱 *COTIZACIONES* (actualizadas ahora)\n\n`;
     message += `🇦🇷 *DÓLAR*\n`;
-    message += `💵 Blue: $${quotes.dolar.blue.sell.toFixed(2)}\n`;
-    message += `🏛️ Oficial: $${quotes.dolar.oficial.sell.toFixed(2)}\n`;
-    message += `📊 MEP: $${quotes.dolar.mep.sell.toFixed(2)}\n`;
-    message += `📈 CCL: $${quotes.dolar.ccl.sell.toFixed(2)}\n\n`;
+    const dolarLine = (label: string, quote?: { sell: number }) =>
+      quote && quote.sell > 0 ? `${label}: $${quote.sell.toFixed(2)}\n` : `${label}: no disponible\n`;
+    message += dolarLine('💵 Blue', quotes.dolar.blue);
+    message += dolarLine('🏛️ Oficial', quotes.dolar.oficial);
+    message += dolarLine('📊 MEP', quotes.dolar.mep);
+    message += dolarLine('📈 CCL', quotes.dolar.ccl);
+    message += `\n`;
 
     message += `₿ *CRYPTO*\n`;
     message += `BTC: USD ${quotes.crypto.btc.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 0 })} `;

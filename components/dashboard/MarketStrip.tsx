@@ -4,20 +4,22 @@ import type { MarketSparklines } from '@/lib/services/market-history';
 
 /** Mismo shape que usa components/dashboard/QuotesWidget.tsx. */
 interface MarketStripQuotes {
-  dolar: Record<
-    string,
-    {
-      type: string;
-      buy: number;
-      sell: number;
-    }
+  dolar: Partial<
+    Record<
+      string,
+      {
+        type: string;
+        buy: number;
+        sell: number;
+      }
+    >
   >;
   crypto: {
     btc: { priceUSD: number; change24h: number };
     eth: { priceUSD: number; change24h: number };
     usdt: { priceUSD: number };
   };
-  timestamp?: string;
+  timestamp?: string | null;
 }
 
 export interface MarketStripHolding {
@@ -86,8 +88,8 @@ function TickerCard({
  * component: todos los datos llegan por props, sin fetch propio.
  */
 export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketStripProps) {
-  const blue = quotes.dolar.blue ?? { type: 'blue', buy: 0, sell: 0 };
-  const mep = quotes.dolar.mep ?? { type: 'mep', buy: 0, sell: 0 };
+  const blue = quotes.dolar.blue && quotes.dolar.blue.sell > 0 ? quotes.dolar.blue : null;
+  const mep = quotes.dolar.mep && quotes.dolar.mep.sell > 0 ? quotes.dolar.mep : null;
   const { btc, eth } = quotes.crypto;
   const holdings = topHoldings.slice(0, 2);
 
@@ -107,8 +109,14 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
             <span className="text-xs font-medium text-muted-foreground">Blue</span>
           </div>
           <div className="text-sm text-foreground tabular-nums leading-tight">
-            <div className="text-muted-foreground">C: ${formatARS(blue.buy)}</div>
-            <div className="font-semibold">V: ${formatARS(blue.sell)}</div>
+            {blue ? (
+              <>
+                <div className="text-muted-foreground">C: ${formatARS(blue.buy)}</div>
+                <div className="font-semibold">V: ${formatARS(blue.sell)}</div>
+              </>
+            ) : (
+              <div className="text-muted-foreground">No disponible</div>
+            )}
           </div>
           {sparklines.blue.length >= 2 && (
             <div className="mt-2">
@@ -128,8 +136,14 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
             <span className="text-xs font-medium text-muted-foreground">MEP</span>
           </div>
           <div className="text-sm text-foreground tabular-nums leading-tight">
-            <div className="text-muted-foreground">C: ${formatARS(mep.buy)}</div>
-            <div className="font-semibold">V: ${formatARS(mep.sell)}</div>
+            {mep ? (
+              <>
+                <div className="text-muted-foreground">C: ${formatARS(mep.buy)}</div>
+                <div className="font-semibold">V: ${formatARS(mep.sell)}</div>
+              </>
+            ) : (
+              <div className="text-muted-foreground">No disponible</div>
+            )}
           </div>
         </TickerCard>
 

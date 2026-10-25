@@ -1,6 +1,8 @@
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
+  fciPlausibilityAnchor,
+  fciPricePlausible,
   fciUsdPlausibilityAnchor,
   listingCandidates,
   resolveFciQuoteCurrency,
@@ -28,7 +30,7 @@ export interface QuoteRefreshPosition {
   type: InvestmentType;
   ticker: string | null;
   market_currency: string | null;
-  purchase_currency: string | null;
+  purchase_currency?: string | null;
   /** Last stored cuotaparte; FCI unknown+USD plausibility vs this price. */
   current_price?: number | string | null;
   purchase_price?: number | string | null;
@@ -258,6 +260,7 @@ export async function refreshQuotesForInvestments(
     cacheKey: string;
     currency: string;
     storedPrice: number | null;
+    anchor: number | null;
     id: string | null;
   }> = [];
   const argPositions: Array<{
@@ -285,6 +288,12 @@ export async function refreshQuotesForInvestments(
           currentPrice: inv.current_price,
           purchasePrice: inv.purchase_price,
           marketCurrency: inv.market_currency,
+          purchaseCurrency: inv.purchase_currency,
+        }),
+        anchor: fciPlausibilityAnchor({
+          currentPrice: inv.current_price,
+          purchasePrice: inv.purchase_price,
+          marketCurrency: inv.market_currency || currency,
           purchaseCurrency: inv.purchase_currency,
         }),
         id: inv.id ?? null,
@@ -406,6 +415,16 @@ export async function refreshQuotesForInvestments(
           console.warn('[quotes] skip FCI currency', {
             ticker: fci.ticker,
             reason: 'mep',
+            cafci: q.currency,
+            stored: fci.currency,
+          });
+        } else if (fci.anchor != null && !fciPricePlausible(adapted.price, fci.anchor)) {
+          console.warn('[quotes] skip FCI currency', {
+            ticker: fci.ticker,
+            id: fci.id,
+            reason: 'fci_implausible',
+            candidate: adapted.price,
+            anchor: fci.anchor,
             cafci: q.currency,
             stored: fci.currency,
           });

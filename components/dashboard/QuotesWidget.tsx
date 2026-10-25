@@ -88,7 +88,9 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <span className="text-xs font-medium text-muted-foreground">Blue</span>
           </div>
           <div className="text-xl font-bold text-foreground">
-            <AnimatedNumber value={quotes.dolar.blue.sell} prefix="$" decimals={0} />
+            {quotes.dolar.blue?.sell && quotes.dolar.blue.sell > 0
+              ? <AnimatedNumber value={quotes.dolar.blue.sell} prefix="$" decimals={0} />
+              : <span className="text-muted-foreground text-sm">No disponible</span>}
           </div>
         </motion.div>
 
@@ -101,7 +103,9 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <span className="text-xs font-medium text-muted-foreground">MEP</span>
           </div>
           <div className="text-xl font-bold text-foreground">
-            <AnimatedNumber value={quotes.dolar.mep.sell} prefix="$" decimals={0} />
+            {quotes.dolar.mep?.sell && quotes.dolar.mep.sell > 0
+              ? <AnimatedNumber value={quotes.dolar.mep.sell} prefix="$" decimals={0} />
+              : <span className="text-muted-foreground text-sm">No disponible</span>}
           </div>
         </motion.div>
 

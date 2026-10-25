@@ -17,6 +17,7 @@ beforeEach(() => {
   vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
   vi.stubEnv('EXCHANGE_RATE_CACHE_TTL', '300');
   vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS', '86400');
+  vi.stubEnv('EXCHANGE_RATE_MARKET_MAX_AGE_SECONDS', '345600');
   vi.stubEnv('MARKET_DATA_TIMEOUT_MS', '8000');
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.rates = Object.fromEntries(sources.flatMap(source => [[source, { rate: 1200, timestamp: new Date().toISOString() }], [`${source}_buy`, { rate: 1150, timestamp: new Date().toISOString() }]]));
@@ -47,7 +48,7 @@ describe('dollar quote freshness and cache boundaries', () => {
     vi.mocked(fetch).mockResolvedValue(json(live()));
     const next = await cotizacionesService.getDolarQuotes();
     expect(fetch).toHaveBeenCalledTimes(age < 300 ? 1 : 2);
-    expect(next.blue.timestamp.getTime()).toBe(age < 300 ? initial.blue.timestamp.getTime() : Date.now());
+    expect(next.blue?.timestamp.getTime()).toBe(age < 300 ? initial.blue?.timestamp.getTime() : Date.now());
   });
 
   it('retains persisted value, original timestamp and fallback label when refresh fails exactly at TTL', async () => {
@@ -77,36 +78,46 @@ describe('dollar quote freshness and cache boundaries', () => {
   it('retries live providers after a request had to fall back to the DB', async () => {
     vi.mocked(fetch).mockRejectedValueOnce(new Error('offline')).mockRejectedValueOnce(new Error('offline'));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    expect((await cotizacionesService.getDolarQuotes()).blue.sell).toBe(1200);
-    expect((await cotizacionesService.getDolarQuotes()).blue.sell).toBe(1500);
+    expect((await cotizacionesService.getDolarQuotes()).blue?.sell).toBe(1200);
+    expect((await cotizacionesService.getDolarQuotes()).blue?.sell).toBe(1500);
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 
   it('refreshes rather than using persisted rates older than 24 hours', async () => {
     sources.forEach(source => { mocks.rates[source].timestamp = '2026-10-08T11:59:59Z'; });
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    expect((await cotizacionesService.getDolarQuotes({ preferCache: true })).blue.sell).toBe(1500);
+    expect((await cotizacionesService.getDolarQuotes({ preferCache: true })).blue?.sell).toBe(1500);
     expect(fetch).toHaveBeenCalledOnce();
   });
 
-  it.each(['stale', 'missing', 'negative', 'invalid-date'])('fails clearly when providers fail and DB quote is %s', async (kind) => {
+  it.each(['stale', 'missing', 'negative', 'invalid-date'])('drops only the bad blue row when providers fail and DB quote is %s', async (kind) => {
     vi.mocked(fetch).mockRejectedValue(new Error('synthetic outage'));
     if (kind === 'stale') mocks.rates.blue.timestamp = '2026-10-01T00:00:00Z';
     if (kind === 'missing') delete mocks.rates.blue;
     if (kind === 'negative') mocks.rates.blue.rate = -1;
     if (kind === 'invalid-date') mocks.rates.blue.timestamp = 'invalid';
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    await expect(cotizacionesService.getDolarQuotes()).rejects.toThrow('Cotización blue no disponible, inválida o vencida');
+    const quotes = await cotizacionesService.getDolarQuotes();
+    expect(quotes.blue).toBeUndefined();
+    expect(quotes.mep?.sell).toBe(1200);
+  });
+
+  it('throws FxUnavailable when providers fail and every DB source is unusable', async () => {
+    vi.mocked(fetch).mockRejectedValue(new Error('synthetic outage'));
+    sources.forEach((source) => { mocks.rates[source].timestamp = '2026-10-01T00:00:00Z'; });
+    const { cotizacionesService, FxUnavailableError } = await import('@/lib/services/cotizaciones');
+    await expect(cotizacionesService.getDolarQuotes()).rejects.toBeInstanceOf(FxUnavailableError);
   });
 
   it('does not extend source freshness when a DB result is put into memory', async () => {
     vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS', '60');
+    vi.stubEnv('EXCHANGE_RATE_MARKET_MAX_AGE_SECONDS', '60');
     Object.values(mocks.rates).forEach(rate => { rate.timestamp = '2026-10-09T11:59:01Z'; });
-    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    const { cotizacionesService, FxUnavailableError } = await import('@/lib/services/cotizaciones');
     await cotizacionesService.getDolarQuotes({ preferCache: true });
     vi.setSystemTime(new Date('2026-10-09T12:00:02Z'));
     vi.mocked(fetch).mockRejectedValue(new Error('synthetic outage'));
-    await expect(cotizacionesService.getDolarQuotes({ preferCache: true })).rejects.toThrow('vencida');
+    await expect(cotizacionesService.getDolarQuotes({ preferCache: true })).rejects.toBeInstanceOf(FxUnavailableError);
   });
 });
 
@@ -121,7 +132,7 @@ describe('bounded market-provider requests', () => {
       }))
       .mockResolvedValueOnce(json(['blue', 'oficial', 'bolsa', 'contadoconliqui'].map(casa => ({ casa, compra: 1400, venta: 1500, fechaActualizacion: new Date().toISOString() }))));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    expect((await cotizacionesService.getDolarQuotes()).blue.sell).toBe(1500);
+    expect((await cotizacionesService.getDolarQuotes()).blue?.sell).toBe(1500);
     expect(firstSignal?.aborted).toBe(true);
     expect(fetch).toHaveBeenCalledTimes(2);
   });
@@ -146,13 +157,17 @@ describe('truthful persisted bid/ask fallback', () => {
     delete mocks.rates.blue_buy;
     vi.mocked(fetch).mockRejectedValue(new Error('synthetic outage'));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    await expect(cotizacionesService.getDolarQuotes()).rejects.toThrow('Cotización blue');
+    const quotes = await cotizacionesService.getDolarQuotes();
+    expect(quotes.blue).toBeUndefined();
+    expect(quotes.mep?.sell).toBe(1200);
   });
   it('rejects sides from different timestamps', async () => {
     mocks.rates.blue_buy.timestamp = '2026-10-09T11:00:00Z';
     vi.mocked(fetch).mockRejectedValue(new Error('synthetic outage'));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    await expect(cotizacionesService.getDolarQuotes()).rejects.toThrow('Cotización blue');
+    const quotes = await cotizacionesService.getDolarQuotes();
+    expect(quotes.blue).toBeUndefined();
+    expect(quotes.mep?.sell).toBe(1200);
   });
   it('stores both sides together with the same source timestamp', async () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
@@ -171,19 +186,25 @@ describe('provider source timestamps', () => {
     const data = live(); data.blue.timestamp = (Date.now() - 60000)/1000;
     vi.mocked(fetch).mockResolvedValueOnce(json(data));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    expect((await cotizacionesService.getDolarQuotes()).blue.timestamp.toISOString()).toBe('2026-10-09T11:59:00.000Z');
+    expect((await cotizacionesService.getDolarQuotes()).blue?.timestamp.toISOString()).toBe('2026-10-09T11:59:00.000Z');
   });
   it('rejects stale live payload then preserves the timestamp of persisted fallback', async () => {
     const data = live(); data.blue.timestamp = (Date.now() - 90000000)/1000;
     vi.mocked(fetch).mockResolvedValueOnce(json(data)).mockRejectedValueOnce(new Error('fallback unavailable'));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    expect((await cotizacionesService.getDolarQuotes()).blue.sell).toBe(1200);
-    expect(mocks.insert).not.toHaveBeenCalled();
+    const quotes = await cotizacionesService.getDolarQuotes();
+    expect(quotes.blue?.sell).toBe(1200);
+    expect(quotes.blue?.origin).toBe('persisted');
+    expect(quotes.mep?.origin).toBe('provider');
+    expect(mocks.insert).toHaveBeenCalled();
+    const rows = mocks.insert.mock.calls[0][0] as Array<{ source: string }>;
+    expect(rows.some((row) => row.source === 'blue')).toBe(false);
+    expect(rows.some((row) => row.source === 'mep')).toBe(true);
   });
   it('preserves DolarApi fechaActualizacion rather than observation time', async () => {
     vi.mocked(fetch).mockRejectedValueOnce(new Error('primary down')).mockResolvedValueOnce(json(['blue','oficial','bolsa','contadoconliqui'].map(casa=>({casa,compra:1400,venta:1500,fechaActualizacion:'2026-10-09T11:00:00Z'}))));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    expect((await cotizacionesService.getDolarQuotes()).blue.timestamp.toISOString()).toBe('2026-10-09T11:00:00.000Z');
+    expect((await cotizacionesService.getDolarQuotes()).blue?.timestamp.toISOString()).toBe('2026-10-09T11:00:00.000Z');
   });
 });
 

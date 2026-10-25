@@ -41,6 +41,7 @@ beforeEach(() => {
   vi.setSystemTime(new Date('2026-10-13T12:00:00.000Z'));
   vi.stubEnv('EXCHANGE_RATE_CACHE_TTL', '300');
   vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS', '86400');
+  vi.stubEnv('EXCHANGE_RATE_MARKET_MAX_AGE_SECONDS', '345600');
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.accounts = [];
   mocks.investments = [];
@@ -111,7 +112,11 @@ describe('blue FX reference helper', () => {
     const original = structuredClone(mocks.accounts);
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     const dolar = await cotizacionesService.getDolarQuotes();
-    vi.spyOn(cotizacionesService, 'getDolarQuotes').mockResolvedValue({ ...dolar, blue: { ...dolar.blue, buy: 1200, sell: 1200 } });
+    expect(dolar.blue).toBeDefined();
+    vi.spyOn(cotizacionesService, 'getDolarQuotes').mockResolvedValue({
+      ...dolar,
+      blue: { ...dolar.blue!, type: 'blue', buy: 1200, sell: 1200 },
+    });
     const cross = vi.spyOn(cotizacionesService, 'getExchangeRate');
     const { accountsService } = await import('@/lib/services/accounts');
     const result = await accountsService.list('U1', { allowPartialValuation: true });
@@ -148,16 +153,30 @@ describe('blue FX reference helper', () => {
     const result = await accountsService.list('U1', { allowPartialValuation: true });
     expect(result[0]).toMatchObject({ balance: -10010, multicurrency_balance_primary: -10000, multicurrency_balance_secondary: -10, secondary_currency: 'ZZZ', valuationIssue: { currencies: ['ZZZ'] } });
     expect(result[0]).not.toHaveProperty('multicurrency_total_ars_blue');
-    expect(accountsService.aggregateAccountTotals(result).valuation?.excludedAccounts[0]).toMatchObject({ currency: 'ARS', balance: -10000, secondaryCurrency: 'ZZZ', secondaryBalance: -10 });
+    expect(accountsService.aggregateAccountTotals(result).valuation).toMatchObject({
+      status: 'partial',
+      excludedAccounts: [expect.objectContaining({
+        currency: 'ARS', balance: -10000, secondaryCurrency: 'ZZZ', secondaryBalance: -10,
+      })],
+    });
   });
 
-  it('still rejects a failed blue provider in partial read mode', async () => {
-    mocks.accounts = [{ id: 'known', user_id: 'U1', type: 'bank', currency: 'ARS', balance: 120000 }];
-    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    const unavailable = new Error('Synthetic blue provider outage');
+  it('keeps native balances when the blue provider fails in partial read mode', async () => {
+    mocks.accounts = [{ id: 'known', user_id: 'U1', name: 'ARS propia', type: 'bank', currency: 'ARS', balance: 120000, include_in_total: true }];
+    const { cotizacionesService, FxUnavailableError } = await import('@/lib/services/cotizaciones');
+    const unavailable = new FxUnavailableError('Synthetic blue provider outage');
     vi.spyOn(cotizacionesService, 'getDolarQuotes').mockRejectedValue(unavailable);
     const { accountsService } = await import('@/lib/services/accounts');
-    await expect(accountsService.list('U1', { allowPartialValuation: true })).rejects.toBe(unavailable);
+    const result = await accountsService.list('U1', { allowPartialValuation: true });
+    expect(result[0]).toMatchObject({
+      id: 'known', name: 'ARS propia', balance: 120000, currency: 'ARS',
+      valuation: { fxUnavailable: true, status: 'fx_unavailable' },
+    });
+    expect(result[0]).not.toHaveProperty('balance_usd');
+    expect(result[0]).not.toHaveProperty('balance_ars_blue');
+    expect(accountsService.aggregateAccountTotals(result).valuation).toMatchObject({
+      status: 'fx_unavailable', fxUnavailable: true,
+    });
   });
 
   it('still values a valid EUR balance with its actual positive FX leg', async () => {
@@ -200,7 +219,7 @@ describe('provider provenance follows the quote through fallback and memory', ()
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     const first = await cotizacionesService.getDolarQuotes();
     expect(first.blue).toMatchObject({ provider: 'criptoya', origin: 'provider', sell: 1300 });
-    expect(first.blue.timestamp.toISOString()).toBe(observedAt);
+    expect(first.blue?.timestamp.toISOString()).toBe(observedAt);
     vi.setSystemTime(new Date('2026-10-13T12:01:00.000Z'));
     const cached = await cotizacionesService.getDolarQuotes();
     expect(cached.blue).toEqual(first.blue);
@@ -215,7 +234,7 @@ describe('provider provenance follows the quote through fallback and memory', ()
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     const first = await cotizacionesService.getDolarQuotes();
     expect(first.blue).toMatchObject({ provider: 'dolarapi', origin: 'provider', sell: 1300 });
-    expect(first.blue.timestamp.toISOString()).toBe(observedAt);
+    expect(first.blue?.timestamp.toISOString()).toBe(observedAt);
     expect((await cotizacionesService.getDolarQuotes()).blue).toEqual(first.blue);
     expect(fetch).toHaveBeenCalledTimes(2);
   });
@@ -224,7 +243,7 @@ describe('provider provenance follows the quote through fallback and memory', ()
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     const first = await cotizacionesService.getDolarQuotes({ preferCache: true });
     expect(first.blue).toMatchObject({ provider: null, origin: 'persisted', sell: 1200 });
-    expect(first.blue.timestamp.toISOString()).toBe(observedAt);
+    expect(first.blue?.timestamp.toISOString()).toBe(observedAt);
     expect((await cotizacionesService.getDolarQuotes({ preferCache: true })).blue).toEqual(first.blue);
     expect(fetch).not.toHaveBeenCalled();
   });

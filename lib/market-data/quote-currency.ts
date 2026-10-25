@@ -124,11 +124,30 @@ function isPresentPrice(value: unknown): boolean {
 }
 
 /**
- * Unknown-USD plausibility anchor: a valid current_price (>0, finite, including
+ * Per-position FCI band anchor: a valid current_price (>0, finite, including
  * numeric strings like '1.09'). If current_price is absent (null/empty), fall
- * back to purchase_price only when purchase_currency equals market_currency and
- * that currency is USD. A present-but-invalid current_price (0/NaN/negative)
- * does not fall back.
+ * back to purchase_price only when purchase_currency equals market_currency.
+ * A present-but-invalid current_price (0/NaN/negative) does not fall back.
+ */
+export function fciPlausibilityAnchor(opts: {
+  currentPrice?: unknown;
+  purchasePrice?: unknown;
+  marketCurrency?: string | null;
+  purchaseCurrency?: string | null;
+}): number | null {
+  const current = asFiniteNumber(opts.currentPrice);
+  if (current != null && current > 0) return current;
+  if (isPresentPrice(opts.currentPrice)) return null;
+  const market = (opts.marketCurrency || '').trim().toUpperCase();
+  const purchaseCcy = (opts.purchaseCurrency || '').trim().toUpperCase();
+  if (!market || purchaseCcy !== market) return null;
+  const purchase = asFiniteNumber(opts.purchasePrice);
+  return purchase != null && purchase > 0 ? purchase : null;
+}
+
+/**
+ * Unknown-USD plausibility anchor: same as `fciPlausibilityAnchor` but the
+ * purchase-price fallback still requires a USD book.
  */
 export function fciUsdPlausibilityAnchor(opts: {
   currentPrice?: unknown;
@@ -146,6 +165,18 @@ export function fciUsdPlausibilityAnchor(opts: {
   return purchase != null && purchase > 0 ? purchase : null;
 }
 
+/** Inclusive band: peso vs USD cuotapartes differ by ~1000×, live USD FCIs stay near 1. */
+export function fciPricePlausible(
+  candidate: number | null | undefined,
+  anchor: number | null | undefined,
+): boolean {
+  const next = asFiniteNumber(candidate);
+  const prev = asFiniteNumber(anchor);
+  if (next == null || prev == null || !(next > 0) || !(prev > 0)) return false;
+  const ratio = next / prev;
+  return ratio >= FCI_UNKNOWN_USD_RATIO_MIN && ratio <= FCI_UNKNOWN_USD_RATIO_MAX;
+}
+
 /**
  * Unknown CAFCI + stored USD: accept the cuotaparte as USD only when a positive
  * stored last price exists and new/stored is in [0.5, 2]. CONIOLA ~179.598 vs
@@ -155,11 +186,7 @@ export function fciUnknownUsdPricePlausible(
   sourcePrice: number | null | undefined,
   storedPrice: number | null | undefined,
 ): boolean {
-  const next = asFiniteNumber(sourcePrice);
-  const prev = asFiniteNumber(storedPrice);
-  if (next == null || prev == null || !(next > 0) || !(prev > 0)) return false;
-  const ratio = next / prev;
-  return ratio >= FCI_UNKNOWN_USD_RATIO_MIN && ratio <= FCI_UNKNOWN_USD_RATIO_MAX;
+  return fciPricePlausible(sourcePrice, storedPrice);
 }
 
 /**

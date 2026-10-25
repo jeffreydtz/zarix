@@ -3,7 +3,7 @@ import { transactionRequestHash, validTransactionRequestId } from '@/lib/transac
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
-import { cotizacionesService } from './cotizaciones';
+import { cotizacionesService, isFxUnavailableError } from './cotizaciones';
 import { blueFxReference, uniqueBlueFxReferences, type BlueFxReference } from '@/lib/blue-fx-reference';
 import type { Account } from '@/types/database';
 
@@ -99,6 +99,8 @@ export interface AccountWithBalance extends Account {
   blueReference?: BlueFxReference;
   /** Read-only exclusion; original balances/currencies are never replaced. */
   valuationIssue?: { reason: 'unsupported_currency'; currencies: string[] };
+  /** FX missing: native balances only; converted fields omitted (never 0). */
+  valuation?: FxUnavailableValuation;
 }
 
 export interface PartialAccountValuation {
@@ -114,6 +116,14 @@ export interface PartialAccountValuation {
     currencies: string[];
   }>;
 }
+
+export interface FxUnavailableValuation {
+  status: 'fx_unavailable';
+  fxUnavailable: true;
+  asOf?: string | null;
+}
+
+export type AccountValuation = PartialAccountValuation | FxUnavailableValuation;
 
 export interface CreditCardDebtSlice {
   accountId: string;
@@ -150,8 +160,8 @@ export interface AccountAggregates {
   totalCreditLimit: number;
   creditUtilization: number;
   blueReferences?: BlueFxReference[];
-  /** When present, numeric totals contain only fully valued included accounts. */
-  valuation?: PartialAccountValuation;
+  /** When present, numeric totals contain only fully valued included accounts, or FX is unavailable. */
+  valuation?: AccountValuation;
 }
 
 function roundMoney(n: number): number {
@@ -308,12 +318,41 @@ class AccountsService {
 
     if (error) throw error;
 
-    const dolar = await cotizacionesService.getDolarQuotes();
-    const blueRate = dolar.blue.sell;
-    const reference = blueFxReference(dolar.blue);
+    let blueRate: number | null = null;
+    let reference: BlueFxReference | undefined;
+    let fxUnavailable: FxUnavailableValuation | undefined;
+    try {
+      const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] });
+      const sell = dolar.blue?.sell;
+      if (typeof sell === 'number' && Number.isFinite(sell) && sell > 0 && dolar.blue) {
+        blueRate = sell;
+        reference = blueFxReference(dolar.blue);
+      } else {
+        fxUnavailable = {
+          status: 'fx_unavailable',
+          fxUnavailable: true,
+          asOf: dolar.blue?.asOf ?? dolar.oficial?.asOf ?? dolar.mep?.asOf ?? dolar.ccl?.asOf ?? null,
+        };
+      }
+    } catch (error) {
+      if (!isFxUnavailableError(error)) {
+        console.error('[accounts] FX unavailable', error);
+      }
+      fxUnavailable = { status: 'fx_unavailable', fxUnavailable: true };
+    }
 
-    if (!Number.isFinite(blueRate) || blueRate <= 0) {
-      throw new Error('Exchange rate not available');
+    if (blueRate == null || !reference) {
+      const multicurrencyBalances = await this.computeMulticurrencyBalances(userId, accounts as Account[]);
+      return accounts.map((account) => {
+        const multi = multicurrencyBalances.get(account.id);
+        return {
+          ...account,
+          balance: Number(account.balance),
+          multicurrency_balance_primary: multi?.primary,
+          multicurrency_balance_secondary: multi?.secondary,
+          valuation: fxUnavailable ?? { status: 'fx_unavailable' as const, fxUnavailable: true as const },
+        };
+      });
     }
 
     const [usdRates, multicurrencyBalances] = await Promise.all([
@@ -419,8 +458,15 @@ class AccountsService {
         continue;
       }
 
-      const usd = a.balance_usd ?? 0;
-      const ars = a.balance_ars_blue ?? 0;
+      if (a.valuation?.fxUnavailable) {
+        continue;
+      }
+
+      const usd = a.balance_usd;
+      const ars = a.balance_ars_blue;
+      if (usd == null || ars == null) {
+        continue;
+      }
 
       if (a.type === 'credit_card') {
         const creditUsed = a.is_multicurrency
@@ -472,11 +518,14 @@ class AccountsService {
       }
     }
 
+    const fxUnavailable = accounts.find((account) => account.valuation?.fxUnavailable)?.valuation;
     const creditCardDebtUSD = Math.max(0, -liquidUSD + availableUSD);
     const creditCardDebtARSBlue = Math.max(0, -liquidARSBlue + availableARSBlue);
 
     return {
-      ...(excludedAccounts.length ? { valuation: { status: 'partial' as const, excludedAccounts } } : {}),
+      ...(fxUnavailable
+        ? { valuation: fxUnavailable }
+        : excludedAccounts.length ? { valuation: { status: 'partial' as const, excludedAccounts } } : {}),
       blueReferences: uniqueBlueFxReferences(accounts.filter(account => account.include_in_total !== false)
         .map(account => account.blueReference)),
       availableUSD: roundMoney(availableUSD),

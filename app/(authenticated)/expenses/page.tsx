@@ -6,6 +6,7 @@ import TransactionsList from '@/components/expenses/TransactionsList';
 import TransactionsFilters from '@/components/expenses/TransactionsFilters';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
+import FxUnavailableBanner from '@/components/ui/FxUnavailableBanner';
 
 export default async function ExpensesPage(
   props: {
@@ -44,7 +45,8 @@ export default async function ExpensesPage(
         .catch(() => []),
     ]);
     const categories = categoriesRes.data;
-
+    const fxAsOf = (accounts || []).find((account) => account.valuation?.asOf)?.valuation?.asOf ?? null;
+    const fxUnavailable = (accounts || []).some((account) => account.valuation?.fxUnavailable);
 
     return (
       <PageScaffold
@@ -56,6 +58,7 @@ export default async function ExpensesPage(
           />
         }
       >
+        {fxUnavailable ? <FxUnavailableBanner asOf={fxAsOf} /> : null}
         <div className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground -mt-2">
           Traídos: {transactions.length}
         </div>

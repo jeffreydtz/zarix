@@ -15,7 +15,7 @@ export default async function DashboardSpendingAnalyzerSection({
 }) {
   return (
     <SpendingAnalyzer
-      usdToArsBlue={quotes.dolar.blue.sell || 0}
+      usdToArsBlue={quotes.dolar.blue?.sell && quotes.dolar.blue.sell > 0 ? quotes.dolar.blue.sell : Number.NaN}
       cryptoPriceArs={{
         btc: quotes.crypto.btc.priceARS,
         eth: quotes.crypto.eth.priceARS,

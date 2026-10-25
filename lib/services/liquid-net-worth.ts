@@ -40,17 +40,23 @@ export interface LiquidNetWorthInput {
 
 export function composeLiquidNetWorth(input: LiquidNetWorthInput): NetWorthNow {
   const { balances, portfolio, blueRate } = input;
+  const fxDown = balances.valuation?.status === 'fx_unavailable'
+    || Boolean((portfolio as { fxUnavailable?: boolean } | null)?.fxUnavailable);
+  const rate = Number.isFinite(blueRate) && blueRate > 0 ? blueRate : 0;
   const positionsUSD = portfolio?.totalCurrentValue ?? 0;
-  const positionsARSBlue = portfolio?.totalCurrentValueArsBlue ?? 0;
+  const positionsARSBlue = rate > 0 ? (portfolio?.totalCurrentValueArsBlue ?? 0) : 0;
   const hasPositions = (portfolio?.investments?.length ?? 0) > 0 || positionsUSD !== 0;
 
   return {
     ...(balances.valuation ? { valuation: balances.valuation } : {}),
+    ...(fxDown && !balances.valuation
+      ? { valuation: { status: 'fx_unavailable' as const, fxUnavailable: true as const } }
+      : {}),
     liquidUSD: balances.liquidUSD,
     investmentsUSD: (balances.investmentsUSD ?? 0) + positionsUSD,
     totalUSD: balances.liquidUSD,
     totalARSBlue: balances.liquidARSBlue,
-    blueRate,
+    blueRate: rate,
     availableUSD: balances.availableUSD ?? 0,
     availableARSBlue: balances.availableARSBlue ?? 0,
     creditCardDebtUSD: balances.creditCardDebtUSD ?? 0,

@@ -263,7 +263,7 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
       </div>
 
       <div>
-        {now.valuation && <div role="status" className="text-sm text-warning mb-3">
+        {now.valuation?.status === 'partial' && <div role="status" className="text-sm text-warning mb-3">
           <p>Total parcial: subtotal de los componentes con valoración disponible.</p>
           <ul>{now.valuation.excludedAccounts.map(account => (
             <li key={account.accountId}>
@@ -274,18 +274,26 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
             </li>
           ))}</ul>
         </div>}
-        <Amount
-          value={displayValue}
-          currency={currency}
-          decimals={moneyDecimals(heroValue, currency)}
-          className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl"
-        />
+        {now.valuation?.status === 'fx_unavailable' ? (
+          <p role="status" className="text-sm text-warning mb-3">
+            Cotizaciones no disponibles. Los saldos se muestran en su moneda original.
+          </p>
+        ) : (
+          <>
+            <Amount
+              value={displayValue}
+              currency={currency}
+              decimals={moneyDecimals(heroValue, currency)}
+              className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl"
+            />
 
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {view === 'ars' && <Amount value={now.totalUSD} currency="USD" decimals={moneyDecimals(now.totalUSD, 'USD')} prefix="≈ " />}
-          {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
-          {view === 'real' && 'en pesos de hoy'}
-        </p>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              {view === 'ars' && <Amount value={now.totalUSD} currency="USD" decimals={moneyDecimals(now.totalUSD, 'USD')} prefix="≈ " />}
+              {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
+              {view === 'real' && 'en pesos de hoy'}
+            </p>
+          </>
+        )}
 
         {(now.creditCards?.length ?? 0) > 0 && (
           <div className="mt-3 rounded-control border border-border/70 bg-surface-soft/60 px-3 py-2 text-xs space-y-1.5">

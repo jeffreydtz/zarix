@@ -5,6 +5,7 @@ import AccountsList from '@/components/accounts/AccountsList';
 import ArchivedAccountsPanel from '@/components/accounts/ArchivedAccountsPanel';
 import CreateAccountButton from '@/components/accounts/CreateAccountButton';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
+import FxUnavailableBanner from '@/components/ui/FxUnavailableBanner';
 
 export default async function AccountsPage() {
   try {
@@ -23,10 +24,16 @@ export default async function AccountsPage() {
     ]);
     const aggregates =
       accounts.length > 0 ? accountsService.aggregateAccountTotals(accounts) : null;
+    const fxAsOf = accounts.find((account) => account.valuation?.asOf)?.valuation?.asOf ?? null;
+    const fxUnavailable = Boolean(
+      aggregates?.valuation?.status === 'fx_unavailable'
+      || accounts.some((account) => account.valuation?.fxUnavailable)
+    );
 
     return (
       <div className="min-h-screen bg-background transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+          {fxUnavailable ? <FxUnavailableBanner asOf={fxAsOf} /> : null}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground">Cuentas</h1>

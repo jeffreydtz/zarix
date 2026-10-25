@@ -162,7 +162,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                             {secondaryCur}
                           </span>
                         </div>
-                        {!account.valuationIssue && <div className="text-[11px] sm:text-xs font-medium tabular-nums text-muted-foreground">
+                        {!account.valuationIssue && !account.valuation?.fxUnavailable && <div className="text-[11px] sm:text-xs font-medium tabular-nums text-muted-foreground">
                           Total (ARS blue):{' '}
                           <span className="font-semibold text-destructive">
                             -$
@@ -310,7 +310,12 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Totales (cotización dólar blue)
           </h3>
-          {aggregates.valuation && <div role="status" className="text-sm text-warning mb-3">
+          {aggregates.valuation?.status === 'fx_unavailable' && (
+            <div role="status" className="text-sm text-warning mb-3">
+              Cotizaciones no disponibles. Los saldos se muestran en su moneda original.
+            </div>
+          )}
+          {aggregates.valuation?.status === 'partial' && <div role="status" className="text-sm text-warning mb-3">
             <p>Total parcial: sólo se suman las cuentas con valoración disponible.</p>
             <ul>{aggregates.valuation.excludedAccounts.map(account => (
               <li key={account.accountId}>
@@ -330,36 +335,48 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <p className="text-xs text-muted-foreground mb-0.5">Patrimonio total</p>
-              <p className="text-2xl font-bold tabular-nums text-foreground">
-                ${aggregates.totalARSBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}{' '}
-                <span className="text-base font-medium text-muted-foreground">ARS</span>
-              </p>
-              <p className="text-sm text-muted-foreground mt-1 tabular-nums">
-                USD{' '}
-                {aggregates.totalUSD.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </p>
+              {aggregates.valuation?.status === 'fx_unavailable' ? (
+                <p className="text-sm text-muted-foreground">Sin cotización para convertir totales.</p>
+              ) : (
+                <>
+                  <p className="text-2xl font-bold tabular-nums text-foreground">
+                    ${aggregates.totalARSBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}{' '}
+                    <span className="text-base font-medium text-muted-foreground">ARS</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1 tabular-nums">
+                    USD{' '}
+                    {aggregates.totalUSD.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                </>
+              )}
             </div>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Liquidez</span>
-                <span className="font-medium tabular-nums text-foreground">
-                  ${aggregates.liquidARSBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS
-                </span>
-              </div>
-              {(aggregates.investmentsARSBlue > 0 || aggregates.investmentsUSD > 0) && (
-                <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Inversiones</span>
-                  <span className="font-medium tabular-nums text-foreground">
-                    $
-                    {aggregates.investmentsARSBlue.toLocaleString('es-AR', {
-                      maximumFractionDigits: 0,
-                    })}{' '}
-                    ARS
-                  </span>
-                </div>
+              {aggregates.valuation?.status === 'fx_unavailable' ? (
+                <p className="text-muted-foreground">Liquidez e inversiones: sin cotización para convertir.</p>
+              ) : (
+                <>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground">Liquidez</span>
+                    <span className="font-medium tabular-nums text-foreground">
+                      ${aggregates.liquidARSBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS
+                    </span>
+                  </div>
+                  {(aggregates.investmentsARSBlue > 0 || aggregates.investmentsUSD > 0) && (
+                    <div className="flex justify-between gap-4">
+                      <span className="text-muted-foreground">Inversiones</span>
+                      <span className="font-medium tabular-nums text-foreground">
+                        $
+                        {aggregates.investmentsARSBlue.toLocaleString('es-AR', {
+                          maximumFractionDigits: 0,
+                        })}{' '}
+                        ARS
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

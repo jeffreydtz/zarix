@@ -441,6 +441,102 @@ describe('refreshQuotesForInvestments currency keys', () => {
     });
   });
 
+  it('writes IOLDOLD USD-labelled 1.098 vs current_price 1.09', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: 1.09, id: 'fixture-ioldold-band',
+      },
+    ]);
+    expect(map.get(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', id: 'fixture-ioldold-band',
+    })!)).toMatchObject({ price: 1.098, currency: 'USD' });
+  });
+
+  it.each([0.3, 5] as const)('skips IOLDOLD USD-labelled 1.098 vs implausible anchor %s', async (anchor) => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: anchor, id: 'fixture-ioldold-skip',
+      },
+    ]);
+    expect(map.get(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', id: 'fixture-ioldold-skip',
+    })!)).toBeUndefined();
+    expect(warn.mock.calls.some((call) => call[1]?.reason === 'fci_implausible')).toBe(true);
+  });
+
+  it('writes CONIOLA ARS→USD 0.138 vs USD anchor 0.135', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: 0.135, id: 'fixture-coniola-band',
+      },
+    ]);
+    expect(map.get(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', id: 'fixture-coniola-band',
+    })!)?.price).toBeCloseTo(179.598 / 1300, 8);
+  });
+
+  it('skips CONIOLA ARS→USD vs USD anchor 1.40 as implausible', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: 1.40, id: 'fixture-coniola-skip',
+      },
+    ]);
+    expect(map.get(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', id: 'fixture-coniola-skip',
+    })!)).toBeUndefined();
+    expect(warn.mock.calls.some((call) => call[1]?.reason === 'fci_implausible')).toBe(true);
+  });
+
+  it('writes ARS-stored PRTAVAB 1241.954 vs 1240', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'PRTAVAB', price: 1241.954, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', purchase_currency: 'ARS',
+        current_price: 1240, id: 'fixture-prtavab-band',
+      },
+    ]);
+    expect(map.get(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', id: 'fixture-prtavab-band',
+    })!)).toMatchObject({ price: 1241.954, currency: 'ARS' });
+  });
+
+  it('skips ARS-stored PRTAVAB 1241.954 vs 400 as implausible', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'PRTAVAB', price: 1241.954, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', purchase_currency: 'ARS',
+        current_price: 400, id: 'fixture-prtavab-skip',
+      },
+    ]);
+    expect(map.get(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', id: 'fixture-prtavab-skip',
+    })!)).toBeUndefined();
+    expect(warn.mock.calls.some((call) => call[1]?.reason === 'fci_implausible')).toBe(true);
+  });
+
   it('converts CONIOLA CAFCI ARS ~179.598 to USD with the same MEP stocks use', async () => {
     mocks.fci.mockResolvedValue({
       ticker: 'CONIOLA',
