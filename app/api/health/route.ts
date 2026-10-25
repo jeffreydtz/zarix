@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createBareServiceClient, createServiceClient } from '@/lib/supabase/server';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +25,26 @@ export async function GET(req: NextRequest) {
     if (error) {
       return NextResponse.json(
         { status: 'degraded', db: 'error', latencyMs: Date.now() - startedAt },
+        { status: 503 }
+      );
+    }
+
+    const bare = createBareServiceClient();
+    const rateLimit = await bare.rpc('rate_limit_hit', {
+      p_key: 'health:probe',
+      p_max: 1_000_000,
+      p_window_ms: 60_000,
+    });
+    if (rateLimit.error) {
+      const missing = /does not exist|PGRST202|42883|rate_limit_hit/i.test(rateLimit.error.message || '');
+      return NextResponse.json(
+        {
+          status: 'degraded',
+          db: 'ok',
+          rateLimit: missing ? 'missing_rpc' : 'error',
+          hint: missing ? 'apply_migration 20261024200000 before deploying this build' : undefined,
+          latencyMs: Date.now() - startedAt,
+        },
         { status: 503 }
       );
     }

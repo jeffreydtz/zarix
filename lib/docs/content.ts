@@ -184,7 +184,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'Cifrado y revocación',
         body: [
-          'gemini_api_key y telegram_bot_token se guardan cifrados (Vault, o AES-GCM local). Al guardar, la columna en claro queda null. La lectura usa primero el cifrado y, si aún no corriste el script manual de NULL, puede leer un valor viejo en claro como fallback.',
+          'gemini_api_key y telegram_bot_token se guardan cifrados (Vault, o AES-GCM local). Al guardar, la columna en claro queda null. La lectura usa solo el secreto cifrado; la columna en claro no se lee.',
           'Revocá un token en Integraciones y deja de funcionar. El registro de auditoría muestra altas, bajas y usos, con IP hasheada.',
         ],
       },

@@ -2,6 +2,18 @@ import { parseTransactionCurrency } from '@/lib/constants/transaction-currencies
 
 const CREDIT_CARD_PHRASE = /tarjeta\s+de\s+cr[eé]dito|credit\s+card/gi;
 
+/** ISO codes and symbols that are not ARS/USD/EUR. Word tokens only — never silent ARS. */
+const UNSUPPORTED_ISO =
+  /\b(GBP|JPY|BRL|CLP|UYU|MXN|CAD|CHF|CNY|AUD|NZD|KRW|PEN|COP|BOB|PYG|CRC|GTQ|HNL|NIO|PAB|DOP|INR|ZAR|SEK|NOK|DKK|PLN|CZK|HUF|TRY|RUB|SGD|HKD|TWD|THB|IDR|MYR|PHP|VND|ILS|AED|SAR|EGP|NGN)\b/i;
+
+export function detectUnsupportedCurrencyInText(text: string): string | null {
+  const iso = text.match(UNSUPPORTED_ISO);
+  if (iso) return iso[1].toUpperCase();
+  if (/[£₤]|GB£/.test(text)) return 'GBP';
+  if (/¥/.test(text)) return 'JPY';
+  return null;
+}
+
 export type WalletIngestPayload = {
   amount: number | null;
   currency: string;
@@ -194,7 +206,8 @@ export function parseWalletPayload(input: {
   const jsonCurrencyText =
     rawCurrency != null && String(rawCurrency).trim() !== '' ? String(rawCurrency).trim().toUpperCase() : '';
   const parsedJsonCurrency = jsonCurrencyText ? parseTransactionCurrency(jsonCurrencyText) : null;
-  const currencyUnsupported = Boolean(jsonCurrencyText) && parsedJsonCurrency == null;
+  const jsonUnsupported = Boolean(jsonCurrencyText) && parsedJsonCurrency == null;
+  const currencyUnsupported = jsonUnsupported || fromText.currencyUnsupported;
   const jsonAmountRaw = json ? json.amount ?? json.importe ?? json.value : undefined;
   const jsonAmount = jsonAmountRaw != null ? parseAmountValue(jsonAmountRaw) : null;
   const jsonAmountUsable = jsonAmount != null && jsonAmount.amount != null;
@@ -211,7 +224,7 @@ export function parseWalletPayload(input: {
 
   return {
     amount: jsonAmountUsable && jsonAmount ? jsonAmount.amount : fromText.amount,
-    currency: currencyUnsupported
+    currency: jsonUnsupported
       ? jsonCurrencyText
       : parsedJsonCurrency ?? fromText.currency,
     merchant: (json ? str(json.merchant ?? json.comercio ?? json.name) : null) ?? fromText.merchant,
@@ -237,7 +250,14 @@ export function parseWalletText(text: string | null): Omit<WalletIngestPayload, 
       direction: 'expense',
     };
   }
-  const currency = /\bUSD\b|U\$S|US\$/i.test(text) ? 'USD' : /\bEUR\b/i.test(text) ? 'EUR' : 'ARS';
+  const unsupported = detectUnsupportedCurrencyInText(text);
+  const currency = unsupported
+    ? unsupported
+    : /\bUSD\b|U\$S|US\$/i.test(text)
+      ? 'USD'
+      : /\bEUR\b/i.test(text)
+        ? 'EUR'
+        : 'ARS';
   const parsed = parseAmountFromText(text);
   const cardName =
     str(text.match(/(?:tarjeta|card|visa|mastercard|amex|naranja|galicia|macro|bbva|santander)\s*[\w*]{0,20}/i)?.[0]) ||
@@ -251,8 +271,8 @@ export function parseWalletText(text: string | null): Omit<WalletIngestPayload, 
     merchant,
     cardName,
     occurredAt: null,
-    amountAmbiguous: parsed.ambiguous,
-    currencyUnsupported: false,
+    amountAmbiguous: parsed.ambiguous || Boolean(unsupported),
+    currencyUnsupported: Boolean(unsupported),
     direction: parsed.direction,
   };
 }

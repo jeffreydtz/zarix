@@ -3,6 +3,8 @@ import {
   confirmPendingItem,
   discardPendingItem,
   inboxEventFingerprint,
+  inboxReservationBucket,
+  INBOX_DEDUPE_WINDOW_MS,
   isStaleConfirming,
   listPendingItems,
   occurredAtForStorage,
@@ -12,6 +14,7 @@ import {
   type PendingInboxItem,
 } from '@/lib/services/pending-inbox';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
+import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 
 const FIXTURE_ITEM = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9';
 const FIXTURE_USER = '11111111-1111-4111-8111-111111111111';
@@ -532,22 +535,160 @@ describe('pending inbox confirm idempotency', () => {
   });
 
   it('refuses to discard an uncertain item that already has a ledger row', async () => {
+    mocks.rpc.mockResolvedValue({
+      data: null,
+      error: { message: 'Este pendiente ya tiene un movimiento. No se puede descartar.' },
+    });
+    await expect(discardPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toMatchObject({
+      status: 409,
+      message: expect.stringMatching(/movimiento/i),
+    });
+    expect(mocks.rpc).toHaveBeenCalledWith('discard_pending_inbox_item', {
+      p_user_id: FIXTURE_USER,
+      p_item_id: FIXTURE_ITEM,
+    });
+  });
+
+  it('refuses to discard a confirming item and never CAS-updates confirming from JS', async () => {
+    mocks.rpc.mockResolvedValue({
+      data: null,
+      error: { message: 'Este pendiente se está confirmando.' },
+    });
+    await expect(discardPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toMatchObject({
+      status: 409,
+      message: expect.stringMatching(/confirmando/i),
+    });
+    expect(updates.some((u) => u.value.status === 'discarded')).toBe(false);
+  });
+
+  it('propagates discard lookup failures instead of treating them as no ledger', async () => {
+    mocks.rpc.mockResolvedValue({ data: null, error: { message: 'could not connect to database' } });
+    await expect(discardPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toMatchObject({
+      status: 409,
+    });
+    expect(updates.some((u) => u.value.status === 'discarded')).toBe(false);
+  });
+
+  it('propagates receipt lookup errors instead of treating them as no ledger', async () => {
+    mocks.rpc.mockResolvedValue({ data: [itemRow('confirming')], error: null });
     mocks.from.mockImplementation((table: string) => {
       const q: Record<string, unknown> = {};
       const self = q;
       q.select = () => self;
       q.eq = () => self;
-      q.update = () => self;
+      q.or = () => self;
+      q.is = () => self;
       q.in = () => self;
-      q.maybeSingle = async () => {
-        if (table === 'transaction_requests') return { data: { response: { id: 'tx-1' } }, error: null };
-        return { data: itemRow('uncertain'), error: null };
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
       };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') {
+          return { data: null, error: { message: 'receipt lookup failed' } };
+        }
+        return { data: itemRow('confirming'), error: null };
+      };
+      q.single = async () => ({ data: itemRow('confirming'), error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
       return q;
     });
-    await expect(discardPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toMatchObject({
-      status: 409,
+    await expect(confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toThrow(
+      'receipt lookup failed'
+    );
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it('marks uncertain when the ledger response is lost after a possible commit', async () => {
+    mocks.rpc.mockResolvedValue({ data: [itemRow('confirming')], error: null });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.in = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        return { data: itemRow('confirming'), error: null };
+      };
+      q.single = async () => ({ data: itemRow('confirming'), error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
     });
+    mocks.execute.mockRejectedValue(new AmbiguousFinancialMutationError(new Error('lost ledger response')));
+    await expect(confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toBeInstanceOf(
+      AmbiguousFinancialMutationError
+    );
+    expect(updates.some((u) => u.value.status === 'uncertain')).toBe(true);
+    expect(updates.some((u) => u.value.status === 'pending')).toBe(false);
+  });
+
+  it('explicit null amount does not restore the parked or original amount', async () => {
+    const parked = itemRow('confirming', {
+      amount: 1250,
+      tool_payload: { type: 'expense', amount: 999, accountId: ACCOUNT_ID },
+    });
+    mocks.rpc.mockResolvedValue({ data: [parked], error: null });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.in = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        return { data: parked, error: null };
+      };
+      q.single = async () => ({ data: parked, error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await expect(
+      confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM, amount: null })
+    ).rejects.toMatchObject({ message: expect.stringMatching(/Falta el monto/) });
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it('anonymous fingerprints expire with the 15-minute bucket; Idempotency-Key stays durable', () => {
+    const base = {
+      amount: 40,
+      currency: 'ARS',
+      merchant: 'Café',
+      cardName: 'Visa',
+      direction: 'expense' as const,
+    };
+    expect(inboxReservationBucket(null, '', 0)).toBe('win:0');
+    expect(inboxReservationBucket(null, '', INBOX_DEDUPE_WINDOW_MS)).toBe('win:1');
+    expect(inboxReservationBucket(null, 'wallet-idem-fixture-009', 0)).toBe('idemp');
+    const first = inboxEventFingerprint(FIXTURE_USER, base, null, '', 0);
+    const nextWindow = inboxEventFingerprint(FIXTURE_USER, base, null, '', INBOX_DEDUPE_WINDOW_MS);
+    const dayLater = inboxEventFingerprint(FIXTURE_USER, base, null, '', 24 * 60 * 60 * 1000);
+    expect(first).not.toBe(nextWindow);
+    expect(first).not.toBe(dayLater);
+    const keyed = inboxEventFingerprint(FIXTURE_USER, base, null, 'wallet-idem-fixture-009', 0);
+    const keyedLater = inboxEventFingerprint(
+      FIXTURE_USER,
+      base,
+      null,
+      'wallet-idem-fixture-009',
+      24 * 60 * 60 * 1000
+    );
+    expect(keyed).toBe(keyedLater);
   });
 
   it('rejects an explicit unsupported currency at ingest so it cannot auto-confirm as ARS', async () => {
@@ -556,6 +697,17 @@ describe('pending inbox confirm idempotency', () => {
       ingestWalletItem({
         userId: FIXTURE_USER,
         json: { amount: 100, currency: 'GBP', merchant: 'Shop' },
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
+
+  it('rejects GBP in free text at ingest so it cannot auto-confirm as ARS', async () => {
+    const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+    await expect(
+      ingestWalletItem({
+        userId: FIXTURE_USER,
+        text: 'Compra GBP 100 en COTO con tarjeta Visa',
       })
     ).rejects.toMatchObject({ status: 400 });
     expect(mocks.from).not.toHaveBeenCalled();

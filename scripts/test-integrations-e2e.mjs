@@ -176,9 +176,122 @@ try {
     };
     await service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1)',
       [ids.a, requestId, digest(JSON.stringify(payload)), JSON.stringify(payload)]);
-    const claimed = (await service(db, 'SELECT id, status FROM claim_pending_inbox_item($1,$2)', [ids.a, itemId])).rows;
-    assert.equal(claimed.length, 1);
+    await assert.rejects(
+      () => owner(db, 'SELECT id FROM discard_pending_inbox_item($1,$2)', [ids.a, itemId]),
+      /movimiento|descartar/i
+    );
+    const row = (await service(db, 'SELECT status FROM pending_inbox_items WHERE id=$1', [itemId])).rows[0];
+    assert.equal(row.status, 'uncertain');
+    const receipts = (await service(db, 'SELECT count(*)::int AS n FROM transaction_requests WHERE request_id=$1', [requestId])).rows[0].n;
+    assert.equal(receipts, 1);
+  });
+
+  await test('discard refuses confirming and allows pending without a receipt', async () => {
+    const confirmingId = randomUUID();
+    const pendingId2 = randomUUID();
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,21,'ARS','Confirming discard',$3,'pending','fp-discard-confirming','wallet')`,
+      [confirmingId, ids.a, ids.accountA]);
+    const claimed = (await service(db, 'SELECT status FROM claim_pending_inbox_item($1,$2)', [ids.a, confirmingId])).rows;
     assert.equal(claimed[0].status, 'confirming');
+    await assert.rejects(
+      () => owner(db, 'SELECT id FROM discard_pending_inbox_item($1,$2)', [ids.a, confirmingId]),
+      /confirmando/i
+    );
+    assert.equal((await service(db, 'SELECT status FROM pending_inbox_items WHERE id=$1', [confirmingId])).rows[0].status, 'confirming');
+
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,22,'ARS','Pending discard',$3,'pending','fp-discard-pending','wallet')`,
+      [pendingId2, ids.a, ids.accountA]);
+    const discarded = (await owner(db, 'SELECT status FROM discard_pending_inbox_item($1,$2)', [ids.a, pendingId2])).rows[0];
+    assert.equal(discarded.status, 'discarded');
+  });
+
+  await test('fingerprint window buckets allow the same coffee a day later', async () => {
+    const material = (bucket) => [ids.a, '+', 'expense', '40', 'ARS', '', 'café', bucket, ''].join('|');
+    const fp0 = digest(material('win:0'));
+    const fpLater = digest(material(`win:${Math.floor((24 * 60 * 60 * 1000) / (15 * 60 * 1000))}`));
+    assert.notEqual(fp0, fpLater);
+    await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
+      VALUES($1,40,'ARS','Café','confirmed',$2,'wallet','expense')`, [ids.a, fp0]);
+    await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
+      VALUES($1,40,'ARS','Café','pending',$2,'wallet','expense')`, [ids.a, fpLater]);
+    await assert.rejects(() => service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
+      VALUES($1,40,'ARS','Café','pending',$2,'wallet','expense')`, [ids.a, fp0]));
+    const n = (await service(db, "SELECT count(*)::int AS n FROM pending_inbox_items WHERE merchant='Café' AND user_id=$1 AND fingerprint IN ($2,$3)",
+      [ids.a, fp0, fpLater])).rows[0].n;
+    assert.equal(n, 2);
+  });
+
+  await test('MCP owner confirm writes one ledger row and cross-user confirm is denied', async () => {
+    const itemA = randomUUID();
+    const itemB = randomUUID();
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,18,'ARS','MCP Café',$3,'pending','fp-mcp-a','mcp')`, [itemA, ids.a, ids.accountA]);
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,19,'ARS','MCP B',$3,'pending','fp-mcp-b','mcp')`, [itemB, ids.b, ids.accountB]);
+    await assert.rejects(() => other(db, 'SELECT id FROM claim_pending_inbox_item($1,$2)', [ids.a, itemA]));
+    await assert.rejects(() => owner(db, 'SELECT id FROM claim_pending_inbox_item($1,$2)', [ids.b, itemB]));
+    const claimed = (await owner(db, 'SELECT id, status FROM claim_pending_inbox_item($1,$2)', [ids.a, itemA])).rows;
+    assert.equal(claimed.length, 1);
+    const payload = {
+      user_id: ids.a, type: 'expense', account_id: ids.accountA, amount: 18, currency: 'ARS',
+      amount_in_account_currency: 18, description: 'MCP Café', source: 'mcp',
+    };
+    const receipt = (await service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1) AS receipt',
+      [ids.a, `wallet:${itemA}`, digest(JSON.stringify(payload)), JSON.stringify(payload)])).rows[0].receipt;
+    await assert.rejects(() => other(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1)',
+      [ids.a, `wallet:${itemA}`, digest(JSON.stringify(payload)), JSON.stringify(payload)]));
+    await service(db, `UPDATE pending_inbox_items SET status='confirmed', confirmed_transaction_id=$2
+      WHERE id=$1 AND user_id=$3 AND status='confirming'`, [itemA, receipt.id, ids.a]);
+    const src = (await service(db, 'SELECT source FROM transactions WHERE id=$1', [receipt.id])).rows[0].source;
+    assert.equal(src, 'mcp');
+    assert.equal((await other(db, 'SELECT id FROM transactions WHERE id=$1', [receipt.id])).rows.length, 0);
+    assert.equal((await service(db, 'SELECT status FROM pending_inbox_items WHERE id=$1', [itemB])).rows[0].status, 'pending');
+  });
+
+  await test('fingerprint preflight rewrites confirmed collisions before the reserved unique index', async () => {
+    const fp = 'fp-legacy-collision';
+    await db.query('DROP INDEX IF EXISTS pending_inbox_fingerprint_reserved_unique');
+    await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,created_at)
+      VALUES($1,1,'ARS','Old collision','confirmed',$2,'wallet','expense','2026-01-01T00:00:00Z'),
+            ($1,1,'ARS','New collision','confirmed',$2,'wallet','expense','2026-02-01T00:00:00Z')`, [ids.a, fp]);
+    await db.query(`UPDATE public.pending_inbox_items AS p
+       SET fingerprint = 'legacy-collision:' || p.id::text
+     WHERE p.fingerprint IS NOT NULL
+       AND p.status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+       AND p.id IN (
+         SELECT id FROM (
+           SELECT id,
+                  row_number() OVER (
+                    PARTITION BY user_id, fingerprint
+                    ORDER BY created_at DESC, id DESC
+                  ) AS rn
+             FROM public.pending_inbox_items
+            WHERE fingerprint IS NOT NULL
+              AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+         ) ranked
+         WHERE rn > 1
+       )`);
+    await db.query(`CREATE UNIQUE INDEX pending_inbox_fingerprint_reserved_unique
+      ON public.pending_inbox_items (user_id, fingerprint)
+      WHERE status IN ('pending', 'confirming', 'confirmed', 'uncertain')`);
+    const rows = (await service(db, `SELECT fingerprint FROM pending_inbox_items
+      WHERE merchant IN ('Old collision','New collision') ORDER BY created_at`)).rows;
+    assert.equal(rows.length, 2);
+    assert.match(rows[0].fingerprint, /^legacy-collision:/);
+    assert.equal(rows[1].fingerprint, fp);
+  });
+
+  await test('purge_rate_limit_counters deletes old windows and keeps the current one', async () => {
+    await service(db, `INSERT INTO rate_limit_counters(key, count, window_start)
+      VALUES ('old-window', 3, now() - interval '3 hours'),
+             ('live-window', 1, now())
+      ON CONFLICT (key) DO UPDATE SET count = EXCLUDED.count, window_start = EXCLUDED.window_start`);
+    const deleted = (await service(db, "SELECT purge_rate_limit_counters(interval '2 hours') AS n")).rows[0].n;
+    assert.ok(deleted >= 1);
+    assert.equal((await service(db, "SELECT key FROM rate_limit_counters WHERE key='old-window'")).rows.length, 0);
+    assert.equal((await service(db, "SELECT key FROM rate_limit_counters WHERE key='live-window'")).rows[0].key, 'live-window');
   });
 
   await test('shared rate-limit counters are atomic per key', async () => {
@@ -224,7 +337,12 @@ const report = {
     'read vs write scopes',
     'fixture-only identities',
     'fingerprint unique after confirm',
-    'uncertain claim from ledger',
+    'uncertain cannot be discarded with receipt',
+    'discard confirming refused',
+    'fingerprint window expires',
+    'MCP owner confirm and cross-user denial',
+    'fingerprint collision preflight',
+    'rate-limit counter purge',
     'shared rate-limit counters',
     'installment source mcp',
   ],

@@ -73,35 +73,35 @@ async function vaultStore(userId: string, column: SecretColumn, value: string | 
   return typeof data === 'string' && data ? data : null;
 }
 
-async function readPair(userId: string, column: SecretColumn): Promise<{ enc: string | null; plain: string | null }> {
+async function readEnc(userId: string, column: SecretColumn): Promise<string | null> {
   try {
     const supabase = createServiceClientSync();
     const encCol = `${column}_enc`;
     const query: {
       maybeSingle?: () => Promise<{ data: Record<string, string | null> | null }>;
       single: () => Promise<{ data: Record<string, string | null> | null }>;
-    } = supabase.from('users').select(`${column}, ${encCol}`).eq('id', userId) as unknown as {
+    } = supabase.from('users').select(encCol).eq('id', userId) as unknown as {
       maybeSingle?: () => Promise<{ data: Record<string, string | null> | null }>;
       single: () => Promise<{ data: Record<string, string | null> | null }>;
     };
     const { data } = await (query.maybeSingle ? query.maybeSingle() : query.single());
     const row = (data ?? {}) as Record<string, string | null>;
-    return { enc: row[encCol] ?? null, plain: row[column] ?? null };
+    return row[encCol] ?? null;
   } catch {
-    return { enc: null, plain: null };
+    return null;
   }
 }
 
 export async function getUserSecret(userId: string, column: SecretColumn): Promise<string | null> {
-  const { enc, plain } = await readPair(userId, column);
+  const enc = await readEnc(userId, column);
   if (enc?.startsWith(VAULT_PREFIX)) {
     const fromVault = await vaultRead(userId, column);
     if (fromVault?.trim()) return fromVault.trim();
+    return null;
   }
   const fromAes = decryptSecret(enc);
   if (fromAes?.trim()) return fromAes.trim();
-  const legacy = plain && String(plain).trim() ? String(plain).trim() : null;
-  return legacy;
+  return null;
 }
 
 export async function setUserSecret(userId: string, column: SecretColumn, value: string | null): Promise<void> {

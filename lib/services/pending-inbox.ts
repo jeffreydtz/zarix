@@ -13,10 +13,13 @@ import type { User } from '@/types/database';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { withPatUserScope } from '@/lib/supabase/request-scope';
 import { withFinancialRequestContext } from '@/lib/financial-request-context';
+import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import type { ToolArgs, WriteChannel } from '@/lib/ai/registry/types';
 
 export const WALLET_CIVIL_TIMEZONE = 'America/Argentina/Cordoba';
 export const STALE_CONFIRMING_MS = 2 * 60 * 1000;
+/** Fingerprint reservation window. Idempotency-Key stays durable; this bucket expires. */
+export const INBOX_DEDUPE_WINDOW_MS = 15 * 60 * 1000;
 
 export type ParkedToolPayload = {
   type?: string;
@@ -91,13 +94,25 @@ const ACTIVE_EVENT_STATUSES: PendingInboxItem['status'][] = [
   'uncertain',
 ];
 
+export function inboxReservationBucket(
+  occurredAt: string | null,
+  ingestKey: string,
+  nowMs = Date.now()
+): string {
+  if (ingestKey) return 'idemp';
+  const ts = occurredAt ? Date.parse(occurredAt) : NaN;
+  const t = Number.isFinite(ts) ? ts : nowMs;
+  return `win:${Math.floor(t / INBOX_DEDUPE_WINDOW_MS)}`;
+}
+
 export function inboxEventFingerprint(
   userId: string,
   payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'merchant' | 'cardName' | 'direction'>,
   occurredAt: string | null,
-  ingestKey: string
+  ingestKey: string,
+  nowMs = Date.now()
 ): string {
-  const bucket = occurredAt ? occurredAt.slice(0, 16) : 'none';
+  const bucket = inboxReservationBucket(occurredAt, ingestKey, nowMs);
   const sign = payload.direction === 'income' ? '-' : '+';
   const material = [
     userId,
@@ -228,6 +243,8 @@ async function ingestWalletItemUnlocked(input: {
   }
   const ingestKey = clientKey || randomUUID();
   const fp = inboxEventFingerprint(input.userId, payload, occurredAt, clientKey || '');
+  // Anonymous fingerprint already encodes a 15-minute window. The created_at
+  // lookup is a fast path; the unique index is the atomic reservation.
   const supabase = createServiceClientSync();
 
   if (clientKey) {
@@ -239,7 +256,7 @@ async function ingestWalletItemUnlocked(input: {
       return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
     }
   } else {
-    const windowStart = new Date(Date.now() - 15 * 60_000).toISOString();
+    const windowStart = new Date(Date.now() - INBOX_DEDUPE_WINDOW_MS).toISOString();
     const { data: dupes } = await supabase
       .from('pending_inbox_items')
       .select('*')
@@ -456,12 +473,13 @@ async function loadPriorLedger(
   requestId: string
 ): Promise<{ id?: string } | null> {
   const supabase = createServiceClientSync();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('transaction_requests')
     .select('response')
     .eq('user_id', userId)
     .eq('request_id', requestId)
     .maybeSingle();
+  if (error) throw error;
   const response = data?.response as { id?: string } | null;
   return response?.id ? response : null;
 }
@@ -469,7 +487,7 @@ async function loadPriorLedger(
 export async function confirmPendingItem(input: {
   userId: string;
   itemId: string;
-  amount?: number;
+  amount?: number | null;
   currency?: string;
   merchant?: string;
   accountId?: string;
@@ -499,7 +517,7 @@ export async function confirmPendingItems(input: {
 async function confirmPendingItemUnlocked(input: {
   userId: string;
   itemId: string;
-  amount?: number;
+  amount?: number | null;
   currency?: string;
   merchant?: string;
   accountId?: string;
@@ -617,9 +635,12 @@ async function confirmPendingItemUnlocked(input: {
   try {
     const parked = row.tool_payload;
     const amount =
-      input.amount ??
-      (typeof parked?.amount === 'number' ? parked.amount : null) ??
-      (typeof row.amount === 'number' ? row.amount : null);
+      input.amount !== undefined
+        ? input.amount == null || !Number.isFinite(Number(input.amount))
+          ? null
+          : Number(input.amount)
+        : (typeof parked?.amount === 'number' ? parked.amount : null) ??
+          (typeof row.amount === 'number' ? row.amount : null);
     const accountId =
       input.accountId ??
       (typeof parked?.accountId === 'string' ? parked.accountId : null) ??
@@ -662,15 +683,30 @@ async function confirmPendingItemUnlocked(input: {
       confirm: true,
     };
 
-    const result = await executeRegistryTool('create_transaction', args, {
-      userId: input.userId,
-      financialContext,
-      source: 'wallet',
-      ledgerSource: ledgerChannelFor(row),
-      requestId,
-    });
+    let result: Awaited<ReturnType<typeof executeRegistryTool>>;
+    try {
+      result = await executeRegistryTool('create_transaction', args, {
+        userId: input.userId,
+        financialContext,
+        source: 'wallet',
+        ledgerSource: ledgerChannelFor(row),
+        requestId,
+      });
+    } catch (error) {
+      if (error instanceof AmbiguousFinancialMutationError) {
+        ledgerCommitted = true;
+      }
+      throw error;
+    }
     if (result.response?.success !== true) {
-      throw new ApiError(String(result.response?.error || 'No se pudo confirmar el movimiento.'));
+      const priorAfter = await loadPriorLedger(input.userId, requestId);
+      if (!priorAfter) {
+        throw new ApiError(String(result.response?.error || 'No se pudo confirmar el movimiento.'));
+      }
+      result = {
+        ...result,
+        executed: result.executed?.length ? result.executed : [{ id: priorAfter.id as string, summary: '', amount: 0, currency: 'ARS' }],
+      };
     }
     ledgerCommitted = true;
 
@@ -733,37 +769,28 @@ async function confirmPendingItemUnlocked(input: {
   }
 }
 
+function discardRpcError(error: { message?: string; code?: string } | null): never {
+  const message = error?.message || 'No se pudo descartar.';
+  if (/no encontrado/i.test(message)) throw new ApiError('Pendiente no encontrado.', 404);
+  if (/ya fue confirmado/i.test(message)) throw new ApiError('Este pendiente ya fue confirmado.');
+  if (/ya fue descartado/i.test(message)) throw new ApiError('Este pendiente ya fue descartado.');
+  if (/confirmando/i.test(message) || /movimiento/i.test(message)) {
+    throw new ApiError(message.includes('movimiento')
+      ? 'Este pendiente ya tiene un movimiento. No se puede descartar.'
+      : 'Este pendiente se está confirmando.', 409);
+  }
+  throw new ApiError(message, 409);
+}
+
 export async function discardPendingItem(input: { userId: string; itemId: string; req?: Request }): Promise<void> {
   const supabase = createServiceClientSync();
-  const { data: existing } = await supabase
-    .from('pending_inbox_items')
-    .select('*')
-    .eq('id', input.itemId)
-    .eq('user_id', input.userId)
-    .maybeSingle();
-  if (!existing) throw new ApiError('Pendiente no encontrado.', 404);
-  const row = existing as PendingInboxItem;
-  if (row.status === 'confirmed') throw new ApiError('Este pendiente ya fue confirmado.');
-  if (row.status === 'discarded') throw new ApiError('Este pendiente ya fue descartado.');
-  if (row.status === 'confirming' && !isStaleConfirming(row)) {
-    throw new ApiError('Este pendiente se está confirmando.', 409);
-  }
-  if (row.status === 'uncertain' || row.status === 'confirming') {
-    const prior = await loadPriorLedger(input.userId, pendingInboxRequestId(input.itemId));
-    if (prior) {
-      throw new ApiError('Este pendiente ya tiene un movimiento. No se puede descartar.', 409);
-    }
-  }
-  const { data, error } = await supabase
-    .from('pending_inbox_items')
-    .update({ status: 'discarded', discarded_at: new Date().toISOString(), claim_id: null })
-    .eq('id', input.itemId)
-    .eq('user_id', input.userId)
-    .in('status', ['pending', 'uncertain', 'confirming'])
-    .select('id')
-    .maybeSingle();
-  if (error) throw error;
-  if (!data) throw new ApiError('Pendiente no encontrado.', 404);
+  const { data, error } = await supabase.rpc('discard_pending_inbox_item', {
+    p_user_id: input.userId,
+    p_item_id: input.itemId,
+  });
+  if (error) discardRpcError(error);
+  const row = (Array.isArray(data) ? data[0] : data) as PendingInboxItem | undefined;
+  if (!row) throw new ApiError('Pendiente no encontrado.', 404);
   if (input.req) {
     await recordIntegrationAudit({
       userId: input.userId,

@@ -9,11 +9,15 @@ const SYSTEM_CATEGORY_ID = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
 
 const mocks = vi.hoisted(() => ({
   create: vi.fn(),
+  peek: vi.fn(),
   getExchangeRate: vi.fn(async (_from?: string, _to?: string) => 1),
 }));
 
 vi.mock('@/lib/services/transactions', () => ({
-  transactionsService: { create: (...args: unknown[]) => mocks.create(...args) },
+  transactionsService: {
+    create: (...args: unknown[]) => mocks.create(...args),
+    peekDurableRequest: (...args: unknown[]) => mocks.peek(...args),
+  },
 }));
 
 vi.mock('@/lib/services/accounts', () => ({
@@ -68,7 +72,11 @@ const financialContext = {
 describe('executeBotTransaction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.create.mockResolvedValue({ id: 'tx-1' });
+    mocks.create.mockReset();
+    mocks.peek.mockReset();
+    mocks.getExchangeRate.mockReset();
+    mocks.create.mockResolvedValue({ id: 'tx-1', amount: 1250, currency: 'ARS' });
+    mocks.peek.mockResolvedValue(null);
     mocks.getExchangeRate.mockResolvedValue(1);
   });
 
@@ -114,7 +122,9 @@ describe('executeBotTransaction', () => {
   });
 
   it('looks up retries from the original amount before credit-card FX', async () => {
+    const { transactionRequestHash } = await import('@/lib/transaction-idempotency');
     mocks.getExchangeRate.mockResolvedValueOnce(100);
+    mocks.create.mockResolvedValueOnce({ id: 'tx-1', amount: 1000, currency: 'ARS' });
     const payload = {
       type: 'expense' as const,
       amount: 10,
@@ -122,16 +132,24 @@ describe('executeBotTransaction', () => {
       accountId: ACCOUNT_ID,
       description: 'USD on ARS card',
     };
-    await executeBotTransaction(FIXTURE_USER, financialContext, payload, { requestId: 'fx-retry-001' });
+    const first = await executeBotTransaction(FIXTURE_USER, financialContext, payload, { requestId: 'fx-retry-001' });
+    expect(first.kind).toBe('success');
+    expect((first as { executed?: { amount: number } }).executed?.amount).toBe(1000);
+    const intent = (mocks.create.mock.calls[0][0] as { idempotencyIntent: Record<string, unknown> }).idempotencyIntent;
+    expect(intent).toMatchObject({ amount: 10, currency: 'USD', type: 'expense' });
+    mocks.peek.mockResolvedValueOnce({
+      request_hash: transactionRequestHash(intent),
+      response: { id: 'tx-1', amount: 1000, currency: 'ARS' },
+    });
     mocks.getExchangeRate.mockResolvedValueOnce(200);
-    await executeBotTransaction(FIXTURE_USER, financialContext, payload, { requestId: 'fx-retry-001' });
-    expect(mocks.create).toHaveBeenCalledTimes(2);
-    const first = mocks.create.mock.calls[0][0] as { amount: number; currency: string; idempotencyIntent: Record<string, unknown> };
-    const second = mocks.create.mock.calls[1][0] as { amount: number; currency: string; idempotencyIntent: Record<string, unknown> };
-    expect(first.amount).toBe(1000);
-    expect(second.amount).toBe(2000);
-    expect(first.idempotencyIntent).toMatchObject({ amount: 10, currency: 'USD', type: 'expense' });
-    expect(second.idempotencyIntent).toEqual(first.idempotencyIntent);
+    const second = await executeBotTransaction(FIXTURE_USER, financialContext, payload, { requestId: 'fx-retry-001' });
+    expect(mocks.create).toHaveBeenCalledTimes(1);
+    expect(mocks.getExchangeRate).toHaveBeenCalledTimes(1);
+    expect(second.kind).toBe('success');
+    expect((second as { executed?: { amount: number; currency: string }; reply: string }).executed?.amount).toBe(1000);
+    expect((second as { executed?: { currency: string } }).executed?.currency).toBe('ARS');
+    expect((second as { reply: string }).reply).toMatch(/1000/);
+    expect((second as { reply: string }).reply).not.toMatch(/2000/);
   });
 
   it('aborts an explicit unsupported currency instead of coercing to ARS', async () => {

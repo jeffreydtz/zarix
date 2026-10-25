@@ -19,7 +19,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const item = await confirmPendingItem({
       userId: user.id,
       itemId: id,
-      amount: typeof body.amount === 'number' ? body.amount : undefined,
+      ...(Object.prototype.hasOwnProperty.call(body, 'amount')
+        ? { amount: typeof body.amount === 'number' ? body.amount : null }
+        : {}),
       currency: typeof body.currency === 'string' ? body.currency : undefined,
       merchant: typeof body.merchant === 'string' ? body.merchant : undefined,
       accountId: typeof body.accountId === 'string' ? body.accountId : undefined,
