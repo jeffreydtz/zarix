@@ -7,6 +7,13 @@ import { normalizeCurrency } from '@/lib/transaction-exchange';
 import { accountsService, normalizeDebtBalanceForStorage } from './accounts';
 import { cotizacionesService } from './cotizaciones';
 import { readAllPages } from '@/lib/supabase-paginated-read';
+import {
+  endOfMonthYmd,
+  startOfMonthYmd,
+  transactionCivilYmd,
+  ymdToQueryExclusiveEndIso,
+  ymdToQueryStartIso,
+} from '@/lib/transaction-date';
 import { observe, observedStep } from '@/lib/observability/correlation';
 import type { Transaction, Account } from '@/types/database';
 
@@ -645,8 +652,9 @@ class TransactionsService {
   async getMonthSummary(userId: string, month: Date) {
     const supabase = createServiceClientSync();
 
-    const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59);
+    const civil = transactionCivilYmd(month.toISOString());
+    const startYmd = startOfMonthYmd(civil);
+    const endYmd = endOfMonthYmd(startYmd);
 
     const activeIds = await accountsService.getActiveAccountIds(userId);
     const transactions = await readAllPages<TransactionWithCategory>((from, to) => {
@@ -654,8 +662,8 @@ class TransactionsService {
         .from('transactions')
         .select('*, category:categories(name, icon)')
         .eq('user_id', userId)
-        .gte('transaction_date', startOfMonth.toISOString())
-        .lte('transaction_date', endOfMonth.toISOString());
+        .gte('transaction_date', ymdToQueryStartIso(startYmd))
+        .lt('transaction_date', ymdToQueryExclusiveEndIso(endYmd));
       monthQuery = applyArchivedAccountsTransactionFilter(monthQuery, activeIds);
       return monthQuery.order('transaction_date', { ascending: true })
         .order('id', { ascending: true }).range(from, to);

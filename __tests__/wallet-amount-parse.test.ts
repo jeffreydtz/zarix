@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { parseAmountFromText, parseWalletPayload, parseWalletText } from '@/lib/integrations/wallet-parse';
+import {
+  isWalletTimestampFresh,
+  parseAmountFromText,
+  parseWalletPayload,
+  parseWalletText,
+  parseWalletTimestamp,
+} from '@/lib/integrations/wallet-parse';
 
 const CASES: Array<{ input: string; amount: number | null; ambiguous?: boolean; direction?: 'expense' | 'income' }> = [
   { input: '$ 12.500', amount: 12500 },
@@ -124,5 +130,15 @@ describe('wallet amount parser (table)', () => {
     });
     expect(zero.amount).toBe(1250);
     expect(zero.amountAmbiguous).toBe(true);
+  });
+
+  it('parses old timestamps for identity and applies freshness only separately', () => {
+    const iso = '2025-09-01T12:00:00.000Z';
+    expect(parseWalletTimestamp(iso)).toBe(iso);
+    expect(isWalletTimestampFresh(iso, Date.parse('2026-10-24T12:00:00.000Z'))).toBe(false);
+    const parsed = parseWalletPayload({
+      json: { amount: 18, currency: 'ARS', merchant: 'Café', timestamp: iso },
+    });
+    expect(parsed.occurredAt).toBe(iso);
   });
 });

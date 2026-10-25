@@ -641,4 +641,143 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       (await query('SELECT status FROM pending_inbox_items WHERE id=$1', [fxParked.pendingId])).rows[0].status
     ).toBe('pending');
   });
+
+  it('REST confirmed expense resent as transfer with the same key returns 409 and writes nothing', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const headers = {
+      authorization: `Bearer ${tokenA}`,
+      'content-type': 'application/json',
+      'idempotency-key': 'rest-type-key-040',
+    };
+    const parked = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          type: 'expense',
+          amount: 40,
+          currency: 'ARS',
+          accountId: ids.accountA,
+          description: 'REST type lock',
+        }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    const parkedJson = (await parked.json()) as { pendingId: string };
+    const confirm = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ confirm: true, pendingId: parkedJson.pendingId }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(confirm.status).toBe(200);
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const transfer = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          type: 'transfer',
+          amount: 40,
+          currency: 'ARS',
+          accountId: ids.accountA,
+          destinationAccountId: ids.usdA,
+          description: 'REST type lock',
+        }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(transfer.status).toBe(409);
+    expect(
+      (await query('SELECT count(*)::int AS n FROM pending_inbox_items WHERE ingest_key=$1 AND user_id=$2', [
+        'rest-type-key-040',
+        ids.a,
+      ])).rows[0].n
+    ).toBe(1);
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+  });
+
+  it('REST mixed batch pendingIds include only confirmable items and mixed confirm does not partial-write', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const body = {
+      transactions: [
+        { type: 'expense', amount: 12, currency: 'ARS', accountId: ids.accountA, description: 'Batch pending' },
+        { type: 'expense', amount: 13, currency: 'ARS', accountId: ids.accountA, description: 'Batch discarded' },
+      ],
+    };
+    const headers = {
+      authorization: `Bearer ${tokenA}`,
+      'content-type': 'application/json',
+      'idempotency-key': 'rest-batch-mix',
+    };
+    const first = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transactions', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      }),
+      { params: Promise.resolve({ name: 'create_transactions' }) }
+    );
+    const firstJson = (await first.json()) as { pendingIds?: string[] };
+    expect(firstJson.pendingIds).toHaveLength(2);
+    const [pendingId, discardId] = firstJson.pendingIds ?? [];
+    await query(`UPDATE pending_inbox_items SET status='discarded', discarded_at=now() WHERE id=$1 AND user_id=$2`, [
+      discardId,
+      ids.a,
+    ]);
+    const replay = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transactions', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      }),
+      { params: Promise.resolve({ name: 'create_transactions' }) }
+    );
+    const replayJson = (await replay.json()) as {
+      needs_confirm?: boolean;
+      pendingIds?: string[];
+      items?: Array<{ pendingId: string; status: string }>;
+    };
+    expect(replay.status).toBe(200);
+    expect(replayJson.needs_confirm).toBe(true);
+    expect(replayJson.pendingIds).toEqual([pendingId]);
+    expect(replayJson.items).toEqual(
+      expect.arrayContaining([
+        { pendingId, status: 'pending' },
+        { pendingId: discardId, status: 'discarded' },
+      ])
+    );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const mixedConfirm = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transactions', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ confirm: true, pendingIds: [pendingId, discardId] }),
+      }),
+      { params: Promise.resolve({ name: 'create_transactions' }) }
+    );
+    expect(mixedConfirm.status).toBe(400);
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+    expect((await query('SELECT status FROM pending_inbox_items WHERE id=$1', [pendingId])).rows[0].status).toBe(
+      'pending'
+    );
+  });
 });

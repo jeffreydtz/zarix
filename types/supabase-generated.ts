@@ -821,6 +821,9 @@ isOneToOne: false
 "create_import_transaction_once":
 { Args: { "p_batch_id": string,"p_request_hash": string,"p_request_id": string,"p_skip_duplicates"?: boolean,"p_transaction": Json,"p_user_id": string }; Returns: Json
                            },
+"cordoba_add_months":
+{ Args: { "p_months": number,"p_start": string }; Returns: string
+                           },
 "create_installment_transactions":
 { Args: { "p_account_id": string,"p_category_id": string,"p_currency": string,"p_description": string,"p_installments": number,"p_start_date"?: string,"p_source"?: string,"p_total_amount": number,"p_user_id": string }; Returns: string
                            },

@@ -15,6 +15,7 @@ CREATE OR REPLACE FUNCTION public.cordoba_add_months(p_start TIMESTAMPTZ, p_mont
 RETURNS TIMESTAMPTZ
 LANGUAGE sql
 IMMUTABLE
+SET search_path = pg_catalog, pg_temp
 SET timezone = 'UTC'
 AS $$
   SELECT (
@@ -38,7 +39,7 @@ CREATE OR REPLACE FUNCTION public.create_installment_transactions(
   p_installments INTEGER,
   p_category_id UUID,
   p_description TEXT,
-  p_start_date TIMESTAMPTZ,
+  p_start_date TIMESTAMPTZ DEFAULT NOW(),
   p_source TEXT DEFAULT 'web'
 )
 RETURNS UUID

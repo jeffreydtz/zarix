@@ -77,10 +77,14 @@ export function startOfYearYmd(ymd: string): string {
   return isCivilYmd(ymd) ? `${ymd.slice(0, 4)}-01-01` : ymd;
 }
 
+/**
+ * Query bounds use a fixed UTC−03 offset (Córdoba since 2009, no DST).
+ * Grouping still uses the IANA zone. Historical DST (−02, e.g. 2008-01-15T00:30-02:00)
+ * is outside the supported range and is not reconstructed.
+ */
 export function ymdToQueryStartIso(ymd: string, timeZone: string = APP_CIVIL_TIMEZONE): string {
   const civil = ymd.trim();
   if (!isCivilYmd(civil)) return `${civil}T00:00:00.000Z`;
-  // Córdoba/Buenos Aires are UTC−03 year-round; keep the named zone in the API.
   void timeZone;
   return new Date(`${civil}T00:00:00.000-03:00`).toISOString();
 }
@@ -90,6 +94,13 @@ export function ymdToQueryEndIso(ymd: string, timeZone: string = APP_CIVIL_TIMEZ
   if (!isCivilYmd(civil)) return `${civil}T23:59:59.999Z`;
   void timeZone;
   return new Date(`${civil}T23:59:59.999-03:00`).toISOString();
+}
+
+/** Exclusive end instant of the civil day: start of the next Córdoba day. */
+export function ymdToQueryExclusiveEndIso(ymd: string, timeZone: string = APP_CIVIL_TIMEZONE): string {
+  const civil = ymd.trim();
+  if (!isCivilYmd(civil)) return `${civil}T00:00:00.000Z`;
+  return ymdToQueryStartIso(addDaysYmd(civil, 1), timeZone);
 }
 
 /** Día civil del instante en la zona de la app (Córdoba), no el prefijo UTC. */

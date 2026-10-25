@@ -428,17 +428,22 @@ try {
   await test('keyed reserve replays the same payload and 409s a different body or source', async () => {
     const key = 'wallet-idem-e2e-replay';
     const lock = `idemp:${key}`;
-    const canonical = (fields) => JSON.stringify({
+    const canonical = (fields) => `v1:${JSON.stringify({
       account_id: fields.account_id ?? ids.accountA,
-      amount: fields.amount,
+      account_name: fields.account_name ?? '',
+      amount: Number(fields.amount).toFixed(2),
       card: fields.card ?? '',
+      category_id: fields.category_id ?? null,
+      category_name: fields.category_name ?? '',
       currency: (fields.currency || 'ARS').toUpperCase(),
-      direction: fields.direction || 'expense',
+      destination_account_id: fields.destination_account_id ?? null,
+      destination_account_name: fields.destination_account_name ?? '',
       installments: fields.installments ?? 1,
-      merchant: (fields.merchant || 'Keyed café').trim().toLowerCase(),
+      merchant: String(fields.merchant || 'Keyed café').normalize('NFC').trim().toLowerCase(),
       occurred_at: fields.occurred_at ?? null,
       source: fields.source,
-    });
+      type: fields.type || fields.direction || 'expense',
+    })}`;
     const body = (amount, source, extra = {}) => JSON.stringify({
       amount, currency: extra.currency || 'ARS', merchant: extra.merchant || 'Keyed café', direction: 'expense', source,
       status: 'pending', fingerprint: extra.fingerprint || `fp-${source}-${amount}`,
@@ -487,17 +492,22 @@ try {
   await test('keyed replay stays valid after 25h and after confirm writes account_id', async () => {
     const key = 'wallet-idem-e2e-durable';
     const lock = `idemp:${key}`;
-    const canonical = JSON.stringify({
+    const canonical = `v1:${JSON.stringify({
       account_id: null,
-      amount: 22,
+      account_name: '',
+      amount: '22.00',
       card: 'visa aaa',
+      category_id: null,
+      category_name: '',
       currency: 'ARS',
-      direction: 'expense',
+      destination_account_id: null,
+      destination_account_name: '',
       installments: 1,
       merchant: 'durable café',
       occurred_at: null,
       source: 'wallet',
-    });
+      type: 'expense',
+    })}`;
     const row = JSON.stringify({
       amount: 22, currency: 'ARS', merchant: 'Durable café', direction: 'expense', source: 'wallet',
       status: 'pending', fingerprint: 'fp-durable', idempotency_key: key, ingest_key: key,
@@ -520,10 +530,11 @@ try {
         [ids.a, lock, key, JSON.stringify({
           amount: 900, currency: 'ARS', merchant: 'Otro', direction: 'expense', source: 'api',
           status: 'pending', fingerprint: 'fp-durable-other', idempotency_key: key, ingest_key: key,
-          request_canonical: JSON.stringify({
-            account_id: ids.accountA, amount: 900, card: '', currency: 'ARS', direction: 'expense',
-            installments: 1, merchant: 'otro', occurred_at: null, source: 'api',
-          }),
+          request_canonical: `v1:${JSON.stringify({
+            account_id: ids.accountA, account_name: '', amount: '900.00', card: '', category_id: null,
+            category_name: '', currency: 'ARS', destination_account_id: null, destination_account_name: '',
+            installments: 1, merchant: 'otro', occurred_at: null, source: 'api', type: 'expense',
+          })}`,
         })]),
       /Idempotency-Key ya se usó/i
     );
@@ -565,6 +576,14 @@ try {
       (transaction_date AT TIME ZONE 'America/Argentina/Cordoba')::date::text AS civil
       FROM transactions WHERE installment_group_id=$1 ORDER BY installment_number`, [group])).rows;
     assert.deepEqual(rows.map((r) => r.civil), ['2026-08-30', '2026-09-30']);
+  });
+
+  await test('create_installment_transactions still accepts the 7-argument DEFAULT start date', async () => {
+    const group = (await service(db,
+      `SELECT create_installment_transactions($1,$2,30,'ARS',2,NULL,'Cuotas default') AS id`,
+      [ids.a, ids.accountA])).rows[0].id;
+    const n = (await service(db, 'SELECT count(*)::int AS n FROM transactions WHERE installment_group_id=$1', [group])).rows[0].n;
+    assert.equal(n, 2);
   });
 
   await test('date-only purchases two hours apart insert two pending rows', async () => {

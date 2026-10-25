@@ -200,7 +200,11 @@ function parseAmountValue(v: unknown): AmountParseResult {
   return { amount: null, ambiguous: false, direction: 'expense' };
 }
 
-function parseTimestamp(v: unknown): string | null {
+const WALLET_PAST_MS = 366 * 86400000;
+const WALLET_FUTURE_MS = 86400000;
+
+/** Parse a wallet timestamp without consulting the clock. Date-only stays civil. */
+export function parseWalletTimestamp(v: unknown): string | null {
   if (v == null || v === '') return null;
   const s = String(v).trim();
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
@@ -215,15 +219,21 @@ function parseTimestamp(v: unknown): string | null {
       day: '2-digit',
     }).format(civilNoon);
     if (roundTrip !== s) return null;
-    const t = civilNoon.getTime();
-    if (t < Date.now() - 366 * 86400000 || t > Date.now() + 86400000) return null;
     return s;
   }
   const d = new Date(s);
   if (Number.isNaN(d.getTime())) return null;
-  const t = d.getTime();
-  if (t < Date.now() - 366 * 86400000 || t > Date.now() + 86400000) return null;
   return d.toISOString();
+}
+
+/** Freshness/date-sanity for *new* requests only. Canonicalization must not call this. */
+export function isWalletTimestampFresh(iso: string | null | undefined, now: number = Date.now()): boolean {
+  if (!iso) return true;
+  const instant = /^\d{4}-\d{2}-\d{2}$/.test(iso)
+    ? new Date(`${iso}T12:00:00-03:00`).getTime()
+    : Date.parse(iso);
+  if (!Number.isFinite(instant)) return false;
+  return instant >= now - WALLET_PAST_MS && instant <= now + WALLET_FUTURE_MS;
 }
 
 /**
@@ -265,7 +275,7 @@ export function parseWalletPayload(input: {
       : parsedJsonCurrency ?? fromText.currency,
     merchant: (json ? str(json.merchant ?? json.comercio ?? json.name) : null) ?? fromText.merchant,
     cardName: (json ? str(json.cardName ?? json.card ?? json.tarjeta ?? json.account) : null) ?? fromText.cardName,
-    occurredAt: (json ? parseTimestamp(json.timestamp ?? json.occurredAt ?? json.date ?? json.fecha) : null) ?? fromText.occurredAt,
+    occurredAt: (json ? parseWalletTimestamp(json.timestamp ?? json.occurredAt ?? json.date ?? json.fecha) : null) ?? fromText.occurredAt,
     rawText: text,
     amountAmbiguous,
     currencyUnsupported,

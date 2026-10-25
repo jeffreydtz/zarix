@@ -192,6 +192,52 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
     expect(result.response.success).toBe(false);
   });
 
+  it('omits discarded ids from pendingIds and reports per-item status in mixed batches', async () => {
+    const pendingId = PENDING_ID;
+    const discardedId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    mocks.park
+      .mockResolvedValueOnce({ id: pendingId, status: 'pending', amount: 10, merchant: 'A' })
+      .mockResolvedValueOnce({ id: discardedId, status: 'discarded', amount: 10, merchant: 'B' });
+    const result = await executeRegistryTool(
+      'create_transactions',
+      {
+        transactions: [
+          { type: 'expense', amount: 10, currency: 'ARS', description: 'A' },
+          { type: 'expense', amount: 10, currency: 'ARS', description: 'B' },
+        ],
+      },
+      {
+        userId: FIXTURE_A,
+        financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+        source: 'mcp',
+      }
+    );
+    expect(result.response.needs_confirm).toBe(true);
+    expect(result.response.pendingIds).toEqual([pendingId]);
+    expect(result.response.pendingIds).not.toContain(discardedId);
+    expect(result.response.items).toEqual([
+      { pendingId, status: 'pending' },
+      { pendingId: discardedId, status: 'discarded' },
+    ]);
+  });
+
+  it('does not confirm remaining items when a mixed confirm list includes a discarded id', async () => {
+    const { ApiError } = await import('@/lib/api-handler');
+    mocks.confirmMany.mockRejectedValue(new ApiError('Este pendiente ya fue descartado.', 400));
+    await expect(
+      executeRegistryTool(
+        'create_transactions',
+        { confirm: true, pendingIds: [PENDING_ID, 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9'] },
+        {
+          userId: FIXTURE_A,
+          financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+          source: 'mcp',
+        }
+      )
+    ).rejects.toMatchObject({ status: 400 });
+    expect(mocks.confirmMany).toHaveBeenCalledTimes(1);
+  });
+
   it('propagates FxUnavailableError from executeBotTransaction on the wallet confirm path', async () => {
     const { FxUnavailableError } = await import('@/lib/executable-fx');
     mocks.executeBot.mockRejectedValue(new FxUnavailableError('USD→ARS'));

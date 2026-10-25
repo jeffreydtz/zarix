@@ -1,5 +1,9 @@
 -- Immutable request identity for keyed Wallet/REST/MCP replay.
--- Compute the canonical string in JS; SQL stores it once and compares it.
+-- Compute the canonical string in JS (`v1:{json}`); SQL stores it once and compares it.
+-- Prod currently has none of 180000–240000 (latest applied 20261024182923), so this
+-- backfill is a no-op there. Preview/staging keyed rows created before this file
+-- get `legacy:<id>`, which never matches JS canonical: those keys stay bound
+-- (409 on retry) and are not released.
 -- Forward-only and re-runnable. NEVER `supabase db push`.
 -- Fail closed if Vault is missing at apply time. PGlite tests stub schema vault.
 
@@ -175,3 +179,26 @@ REVOKE ALL ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLE
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLEAN, INTEGER, JSONB)
   TO service_role;
+
+REVOKE UPDATE (request_canonical) ON public.pending_inbox_items FROM PUBLIC, anon, authenticated;
+
+CREATE OR REPLACE FUNCTION public.pending_inbox_freeze_request_canonical()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  IF NEW.request_canonical IS DISTINCT FROM OLD.request_canonical THEN
+    RAISE EXCEPTION 'request_canonical is immutable';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS pending_inbox_freeze_request_canonical ON public.pending_inbox_items;
+CREATE TRIGGER pending_inbox_freeze_request_canonical
+  BEFORE UPDATE ON public.pending_inbox_items
+  FOR EACH ROW
+  EXECUTE FUNCTION public.pending_inbox_freeze_request_canonical();
+
+REVOKE ALL ON FUNCTION public.pending_inbox_freeze_request_canonical() FROM PUBLIC, anon, authenticated;

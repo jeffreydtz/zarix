@@ -1247,7 +1247,8 @@ describe('pending inbox confirm idempotency', () => {
         return { data: itemRow('confirmed'), error: null };
       };
       q.single = async () => ({ data: itemRow('confirming'), error: null });
-      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({ data: table === 'pending_inbox_items' ? [itemRow('confirming')] : [], error: null });
       q.upsert = async () => ({ data: null, error: null });
       return q;
     });
@@ -1281,11 +1282,14 @@ describe('pending inbox confirm idempotency', () => {
       installments: 1,
     });
     expect(upper).toBe(equivalent);
+    expect(upper.startsWith('v1:')).toBe(true);
     expect(upper).toContain('"account_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"');
     expect(upper).toContain('"occurred_at":"2026-10-25T02:30:00.000Z"');
     expect(upper).toContain('"currency":"ARS"');
     expect(upper).toContain('"installments":1');
     expect(upper).toContain('"merchant":"café"');
+    expect(upper).toContain('"amount":"18.00"');
+    expect(upper).toContain('"type":"expense"');
   });
 
   it('stores request_canonical from the request card and account, not the resolved account_id', async () => {
@@ -1448,5 +1452,137 @@ describe('pending inbox confirm idempotency', () => {
       FxUnavailableError
     );
     expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'confirmed')).toBe(false);
+  });
+
+  it('NFC-normalizes merchants in request_canonical', () => {
+    expect(
+      inboxRequestCanonical({ source: 'wallet', amount: 18, type: 'expense', merchant: 'Café' })
+    ).toBe(
+      inboxRequestCanonical({ source: 'wallet', amount: 18, type: 'expense', merchant: 'Cafe\u0301' })
+    );
+  });
+
+  it('rejects amounts with more than two decimals before canonicalizing', () => {
+    expect(() =>
+      inboxRequestCanonical({ source: 'api', amount: 1.005, type: 'expense' })
+    ).toThrow(/dos decimales/);
+    expect(inboxRequestCanonical({ source: 'api', amount: 1, type: 'expense' })).toContain('"amount":"1.00"');
+  });
+
+  it('returns 409 and writes nothing when a confirmed expense is resent as a transfer with the same key', async () => {
+    const canonical = inboxRequestCanonical({
+      source: 'api',
+      amount: 40,
+      type: 'expense',
+      merchant: 'Transfer café',
+      accountId: ACCOUNT_ID,
+    });
+    const stored = itemRow('confirmed', {
+      amount: 40,
+      merchant: 'Transfer café',
+      source: 'api',
+      ingest_key: 'api-expense-40',
+      idempotency_key: 'api-expense-40',
+      request_canonical: canonical,
+    });
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.maybeSingle = async () => ({ data: stored, error: null });
+      return q;
+    });
+    await expect(
+      parkRegistryWrite({
+        userId: FIXTURE_USER,
+        amount: 40,
+        currency: 'ARS',
+        merchant: 'Transfer café',
+        accountId: ACCOUNT_ID,
+        source: 'api',
+        ingestKey: 'api-expense-40',
+        toolPayload: {
+          type: 'transfer',
+          amount: 40,
+          accountId: ACCOUNT_ID,
+          destinationAccountId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1',
+        },
+      })
+    ).rejects.toMatchObject({ status: 409 });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it('replays an exact keyed wallet request after 400 days', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-24T12:00:00.000Z'));
+    const occurredAt = '2026-10-23T15:00:00.000Z';
+    const canonical = inboxRequestCanonical({
+      source: 'wallet',
+      amount: 18,
+      type: 'expense',
+      direction: 'expense',
+      currency: 'ARS',
+      merchant: 'Café',
+      occurredAt,
+    });
+    const stored = itemRow('pending', {
+      amount: 18,
+      merchant: 'Café',
+      card_name: null,
+      account_id: null,
+      occurred_at: occurredAt,
+      ingest_key: 'wallet-400d',
+      idempotency_key: 'wallet-400d',
+      request_canonical: canonical,
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.maybeSingle = async () => {
+        if (table === 'pending_inbox_items') return { data: stored, error: null };
+        return { data: null, error: null };
+      };
+      return q;
+    });
+    try {
+      vi.setSystemTime(new Date('2027-11-28T12:00:00.000Z'));
+      const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+      const result = await ingestWalletItem({
+        userId: FIXTURE_USER,
+        json: { amount: 18, currency: 'ARS', merchant: 'Café', timestamp: occurredAt },
+        idempotencyKey: 'wallet-400d',
+      });
+      expect(result.duplicate).toBe(true);
+      expect(result.item.id).toBe(FIXTURE_ITEM);
+      expect(mocks.rpc).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('validates mixed confirm batches up front and does not write', async () => {
+    const pending = itemRow('pending');
+    const discardedId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const discarded = itemRow('discarded', { id: discardedId });
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [pending, discarded], error: null });
+      return q;
+    });
+    await expect(
+      confirmPendingItems({
+        userId: FIXTURE_USER,
+        itemIds: [FIXTURE_ITEM, discardedId],
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(updates).toEqual([]);
   });
 });

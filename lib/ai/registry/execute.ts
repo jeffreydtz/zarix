@@ -16,6 +16,7 @@ import { asUntrustedData, maskSensitiveValue, UNTRUSTED_INSTRUCTION, UNTRUSTED_O
 import { getRegistryTool, isRemoteWriteTool, WRITE_TOOL_NAMES } from './catalog';
 import { MAX_TOOL_BATCH, remoteConfirmHasExtraFields, remoteConfirmSchema, TOOL_SCHEMAS } from './schemas';
 import { rateLimitAllow } from '@/lib/rate-limit';
+import { resolveToolPeriod } from '@/lib/tool-period';
 import type { RegistryToolContext, RegistryToolResult, ToolArgs, WriteChannel } from './types';
 
 export type { RegistryToolContext as BotToolContext, RegistryToolResult as BotToolResult };
@@ -42,57 +43,8 @@ function arTodayParts(): { y: number; m: number; d: number } {
   return { y, m, d };
 }
 
-function arMidnightUtc(y: number, mIndex: number, d: number): Date {
-  return new Date(Date.UTC(y, mIndex, d, 3, 0, 0, 0));
-}
-
-function toYMD(date: Date): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: AR_TZ,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date);
-}
-
-type ResolvedPeriod = { start: Date; end: Date; label: string };
-
-function resolvePeriod(period?: string): ResolvedPeriod {
-  const { y, m, d } = arTodayParts();
-  const mIndex = m - 1;
-  const now = new Date();
-  const startOfToday = arMidnightUtc(y, mIndex, d);
-
-  switch ((period || 'this_month').toLowerCase()) {
-    case 'last_month': {
-      const start = arMidnightUtc(y, mIndex - 1, 1);
-      const end = new Date(arMidnightUtc(y, mIndex, 1).getTime() - 1);
-      return { start, end, label: 'el mes pasado' };
-    }
-    case 'this_week': {
-      const dow = new Date(Date.UTC(y, mIndex, d)).getUTCDay();
-      const backToMonday = dow === 0 ? 6 : dow - 1;
-      const start = arMidnightUtc(y, mIndex, d - backToMonday);
-      return { start, end: now, label: 'esta semana' };
-    }
-    case 'last_7_days': {
-      const start = new Date(startOfToday.getTime() - 6 * 86400000);
-      return { start, end: now, label: 'los últimos 7 días' };
-    }
-    case 'last_30_days': {
-      const start = new Date(startOfToday.getTime() - 29 * 86400000);
-      return { start, end: now, label: 'los últimos 30 días' };
-    }
-    case 'this_year': {
-      const start = arMidnightUtc(y, 0, 1);
-      return { start, end: now, label: 'este año' };
-    }
-    case 'this_month':
-    default: {
-      const start = arMidnightUtc(y, mIndex, 1);
-      return { start, end: now, label: 'este mes' };
-    }
-  }
+function resolvePeriod(period?: string) {
+  return resolveToolPeriod(period);
 }
 
 const DAY_MS = 86400000;
@@ -418,6 +370,7 @@ async function executeRegistryToolImpl(
             executedCount: confirmed.length,
             total: ids.length,
             pendingIds: confirmed.map((item) => item.id),
+            items: confirmed.map((item) => ({ pendingId: item.id, status: item.status })),
             untrusted: true,
             untrusted_instruction: UNTRUSTED_INSTRUCTION,
           },
@@ -441,13 +394,18 @@ async function executeRegistryToolImpl(
           parkedItems.push(parked);
           preview.push({ amount: Number(tx.amount), description: asUntrustedData(tx.description) });
         }
+        const items = parkedItems.map((item) => ({ pendingId: item.id, status: item.status }));
+        const confirmableIds = parkedItems
+          .filter((item) => item.status === 'pending' || item.status === 'uncertain')
+          .map((item) => item.id);
         if (parkedItems.every((item) => item.status === 'confirmed' || item.status === 'discarded')) {
           return {
             response: {
               success: parkedItems.every((item) => item.status === 'confirmed'),
               duplicate: true,
-              pendingIds: parkedItems.map((item) => item.id),
+              pendingIds: confirmableIds,
               status: parkedItems.map((item) => item.status),
+              items,
               untrusted: true,
               untrusted_instruction: UNTRUSTED_INSTRUCTION,
             },
@@ -457,7 +415,9 @@ async function executeRegistryToolImpl(
           response: {
             success: false,
             needs_confirm: true,
-            pendingIds: parkedItems.map((item) => item.id),
+            pendingIds: confirmableIds,
+            status: parkedItems.map((item) => item.status),
+            items,
             preview,
             untrusted: true,
             untrusted_instruction: UNTRUSTED_INSTRUCTION,
@@ -712,9 +672,7 @@ async function executeRegistryToolImpl(
     }
 
     case 'get_spending': {
-      const { start, end, label } = resolvePeriod(str(safeArgs.period));
-      const startYmd = start.toISOString().slice(0, 10);
-      const endYmd = end.toISOString().slice(0, 10);
+      const { startYmd, endYmd, label } = resolvePeriod(str(safeArgs.period));
       const breakdown = await analyticsService.getCategoryBreakdown(userId, startYmd, endYmd, 'expense');
       const total = breakdown.reduce((s, c) => s + c.amount, 0);
       const category = str(safeArgs.category);
@@ -766,9 +724,9 @@ async function executeRegistryToolImpl(
       }
       const period = str(safeArgs.period);
       if (period) {
-        const { start, end } = resolvePeriod(period);
-        opts.startDate = toYMD(start);
-        opts.endDate = toYMD(end);
+        const { startYmd, endYmd } = resolvePeriod(period);
+        opts.startDate = startYmd;
+        opts.endDate = endYmd;
       }
       const txs = await transactionsService.list(userId, opts);
       return {

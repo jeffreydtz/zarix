@@ -9,6 +9,7 @@ import {
   monthKeysInclusive,
   transactionCivilYmd,
   ymdToQueryEndIso,
+  ymdToQueryExclusiveEndIso,
   ymdToQueryStartIso,
 } from '@/lib/transaction-date';
 
@@ -79,7 +80,7 @@ class AnalyticsService {
       .eq('user_id', userId)
       .eq('type', type)
       .gte('transaction_date', ymdToQueryStartIso(startYmd))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .lt('transaction_date', ymdToQueryExclusiveEndIso(endYmd))
       .order('transaction_date', { ascending: true })
       .order('id', { ascending: true })
       .range(from, to));
@@ -127,7 +128,7 @@ class AnalyticsService {
       .eq('user_id', userId)
       .in('type', ['expense', 'income'])
       .gte('transaction_date', ymdToQueryStartIso(startOfRange(startYmd)))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .lt('transaction_date', ymdToQueryExclusiveEndIso(endYmd))
       .order('transaction_date', { ascending: true })
       .order('id', { ascending: true })
       .range(from, to));
@@ -173,7 +174,7 @@ class AnalyticsService {
       .eq('user_id', userId)
       .in('type', ['expense', 'income'])
       .gte('transaction_date', ymdToQueryStartIso(startYmd))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .lt('transaction_date', ymdToQueryExclusiveEndIso(endYmd))
       .order('transaction_date', { ascending: true })
       .order('id', { ascending: true })
       .range(from, to));
@@ -220,7 +221,7 @@ class AnalyticsService {
       .eq('user_id', userId)
       .eq('type', 'expense')
       .gte('transaction_date', ymdToQueryStartIso(startYmd))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .lt('transaction_date', ymdToQueryExclusiveEndIso(endYmd))
       .order('transaction_date', { ascending: true })
       .order('id', { ascending: true })
       .range(from, to));

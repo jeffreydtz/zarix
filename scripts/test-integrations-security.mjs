@@ -116,6 +116,28 @@ try {
     await rejects(() => queryAs(db, 'anon', null, "SELECT cordoba_add_months(now(), 1)"));
   });
 
+  await test('authenticated cannot update request_canonical', async () => {
+    const row = (await service(db, "SELECT id, request_canonical FROM pending_inbox_items WHERE user_id=$1 AND merchant='Sintético A'", [ids.a])).rows[0];
+    await rejects(
+      () => owner(db, "UPDATE pending_inbox_items SET request_canonical='tampered' WHERE id=$1 AND user_id=$2 RETURNING id", [row.id, ids.a]),
+      ['42501', 'P0001']
+    );
+    const frozen = (await service(db, 'SELECT request_canonical FROM pending_inbox_items WHERE id=$1', [row.id])).rows[0];
+    assert.equal(frozen.request_canonical, row.request_canonical);
+    await service(db, "UPDATE pending_inbox_items SET merchant='Sintético A' WHERE id=$1 AND user_id=$2", [row.id, ids.a]);
+    await rejects(
+      () => service(db, "UPDATE pending_inbox_items SET request_canonical='tampered-service' WHERE id=$1", [row.id]),
+      ['P0001']
+    );
+  });
+
+  await test('cordoba_add_months sets pg_catalog search_path', async () => {
+    const row = (await db.query(`SELECT pg_get_functiondef(p.oid) AS def
+      FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+      WHERE n.nspname='public' AND p.proname='cordoba_add_months'`)).rows[0];
+    assert.match(row.def, /search_path\s*(?:=|TO)\s*'?pg_catalog'?\s*,\s*'?pg_temp'?/i);
+  });
+
   await test('discard_pending_inbox_item DEFINER uses pg_catalog search_path', async () => {
     const row = (await db.query(`SELECT pg_get_functiondef(p.oid) AS def
       FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace

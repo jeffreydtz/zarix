@@ -8,11 +8,15 @@
 --   2. Apply supabase/migrations/20261024180000_ai_integrations_foundation.sql
 --   3. Apply supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
 --   4. Apply supabase/migrations/20261024200000_inbox_dedupe_uncertain_rate_limit.sql
---   5. Deploy the #16 application code (encrypt-only writes; Vault-aware Telegram)
---   6. Pause key edits, run supabase/manual/backfill-user-secrets.sql
+--   5. Apply supabase/migrations/20261024210000_inbox_possible_duplicate.sql
+--   6. Apply supabase/migrations/20261024220000_inbox_request_canonical.sql
+--   7. Apply supabase/migrations/20261024230000_inbox_possible_duplicate_owner_fk.sql
+--   8. Apply supabase/migrations/20261024240000_installments_cordoba_calendar.sql
+--   9. Deploy the #16 application code (encrypt-only writes; Vault-aware Telegram)
+--  10. Pause key edits, run supabase/manual/backfill-user-secrets.sql
 --      (copy + verify, never nulls)
---   7. Run THIS file (revoke authenticated UPDATE on plaintext/enc secret columns)
---   8. Later follow-up only: supabase/manual/null-plaintext-user-secrets.sql
+--  11. Run THIS file (revoke authenticated UPDATE on plaintext/enc secret columns)
+--  12. Later follow-up only: supabase/manual/null-plaintext-user-secrets.sql
 --
 -- Rollback of this step: GRANT UPDATE (gemini_api_key, telegram_bot_token)
 -- ON public.users TO authenticated;

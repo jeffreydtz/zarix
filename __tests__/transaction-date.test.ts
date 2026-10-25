@@ -7,6 +7,7 @@ import {
   isCivilYmd,
   transactionCivilYmd,
   ymdToQueryEndIso,
+  ymdToQueryExclusiveEndIso,
   ymdToQueryStartIso,
 } from '@/lib/transaction-date';
 
@@ -107,5 +108,8 @@ describe('Córdoba civil grouping and month bounds', () => {
     expect(stored >= start).toBe(true);
     expect(stored <= end).toBe(true);
     expect(end).toBe('2026-11-01T02:59:59.999Z');
+    const exclusive = ymdToQueryExclusiveEndIso('2026-10-31');
+    expect(exclusive).toBe('2026-11-01T03:00:00.000Z');
+    expect(stored < exclusive).toBe(true);
   });
 });
