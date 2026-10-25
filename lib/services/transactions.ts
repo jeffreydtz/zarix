@@ -48,8 +48,8 @@ export function applyArchivedAccountsTransactionFilter(query: any, activeIds: st
 }
 
 export interface ToArsConverter {
-  /** Convierte el monto original del movimiento a ARS. Devuelve 0 para monedas excluidas. */
-  toArs: (t: { amount: number; currency: string | null }) => number;
+  /** Convierte el monto original del movimiento a ARS. Devuelve null para monedas excluidas. */
+  toArs: (t: { amount: number; currency: string | null }) => number | null;
   /**
    * Monedas cuya cotización no se pudo obtener: sus movimientos se EXCLUYEN de
    * los totales (sumar 1:1 contaba 100 USD como 100 ARS). Los consumidores
@@ -94,7 +94,10 @@ export async function buildToArsConverter(
     }
   }
   return {
-    toArs: (t) => Number(t.amount) * (rateToArs.get(normalizeCurrency(t.currency)) ?? 0),
+    toArs: (t) => {
+      const rate = rateToArs.get(normalizeCurrency(t.currency));
+      return rate == null ? null : Number(t.amount) * rate;
+    },
     excludedCurrencies,
   };
 }
@@ -621,15 +624,23 @@ class TransactionsService {
     // Monedas sin cotización quedan fuera de los totales (ver excludedCurrencies).
     const { toArs, excludedCurrencies } = await buildToArsConverter(transactions);
 
-    const totalExpenses = expenses.reduce((sum, t) => sum + toArs(t), 0);
-    const totalIncome = income.reduce((sum, t) => sum + toArs(t), 0);
+    const totalExpenses = expenses.reduce((sum, t) => {
+      const amount = toArs(t);
+      return amount == null ? sum : sum + amount;
+    }, 0);
+    const totalIncome = income.reduce((sum, t) => {
+      const amount = toArs(t);
+      return amount == null ? sum : sum + amount;
+    }, 0);
 
     const categoryMap = new Map<string, { name: string; icon: string; amount: number }>();
     expenses.forEach((t) => {
+      const amount = toArs(t);
+      if (amount == null) return;
       if (t.category) {
         const cat = t.category as { name: string; icon: string };
         const existing = categoryMap.get(cat.name) || { name: cat.name, icon: cat.icon, amount: 0 };
-        existing.amount += toArs(t);
+        existing.amount += amount;
         categoryMap.set(cat.name, existing);
       }
     });

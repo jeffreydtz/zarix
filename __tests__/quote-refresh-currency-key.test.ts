@@ -362,7 +362,7 @@ describe('refreshQuotesForInvestments currency keys', () => {
   );
 
   it.each([0, Number.NaN, -1])(
-    'does not fall back to purchase_price when current_price is present-but-invalid (%s)',
+    'falls back to matching purchase_price when current_price is invalid (%s)',
     async (current_price) => {
       mocks.fci.mockResolvedValue({
         ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
@@ -373,7 +373,7 @@ describe('refreshQuotesForInvestments currency keys', () => {
           current_price, purchase_price: 1,
         },
       ]);
-      expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+      expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toMatchObject({ price: 1.098, currency: 'USD' });
     }
   );
 

@@ -85,6 +85,37 @@ describe('Financial read failures keep unavailable data distinct from zero', () 
     expect(mocks.from).not.toHaveBeenCalledWith('net_worth_snapshots');
   });
 
+  it('flags unavailable FX and never records an incomplete account valuation', async () => {
+    mocks.aggregateAccounts.mockReturnValue({
+      liquidUSD: 0, liquidARSBlue: 0, investmentsUSD: 0, investmentsARSBlue: 0,
+      availableUSD: 0, availableARSBlue: 0, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0,
+      creditCards: [], fxUnavailable: true,
+    });
+    mocks.quotes.mockResolvedValue({ status: 'unavailable', missing: ['blue'] });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ fxUnavailable: true, blueRate: null });
+    await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps the last-known date and skips snapshots during a stale FX fallback', async () => {
+    const asOf = new Date('2026-10-23T16:00:00Z');
+    mocks.quotes.mockResolvedValue({ blue: { buy: 1280, sell: 1300, stale: true, asOf } });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({
+      fxStale: true, fxAsOf: asOf.toISOString(), blueRate: 1300,
+    });
+    await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it('does not replace unavailable portfolio values with a zero snapshot', async () => {
+    mocks.portfolio.mockResolvedValue({
+      totalCurrentValue: null, totalCurrentValueArsBlue: null, investments: [{ id: 'position-A' }], fxUnavailable: true,
+    });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ investmentsUSD: null, positionsUSD: null });
+    await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
   it('propagates an unavailable budget status instead of returning zero spending for an existing budget', async () => {
     const failure = new Error('Budget status unavailable');
     mocks.status.mockRejectedValue(failure);

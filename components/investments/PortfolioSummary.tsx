@@ -6,17 +6,17 @@ import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
 
 interface PortfolioSummaryProps {
-  totalValue: number;
-  totalPnL: number;
-  totalPnLPercent: number;
-  blueArsPerUsd: number;
-  totalValueArsBlue: number;
-  totalPnLArsBlue: number;
-  totalDailyPnLUsd: number;
-  totalDailyPnLPercent: number;
-  totalDailyPnLArsBlue: number;
-  totalRealizedPnLUsd: number;
-  totalRealizedPnLArsBlue: number;
+  totalValue: number | null;
+  totalPnL: number | null;
+  totalPnLPercent: number | null;
+  blueArsPerUsd: number | null;
+  totalValueArsBlue: number | null;
+  totalPnLArsBlue: number | null;
+  totalDailyPnLUsd: number | null;
+  totalDailyPnLPercent: number | null;
+  totalDailyPnLArsBlue: number | null;
+  totalRealizedPnLUsd: number | null;
+  totalRealizedPnLArsBlue: number | null;
   byType: Array<{
     type: string;
     count: number;
@@ -100,6 +100,14 @@ export default function PortfolioSummary({
 }: PortfolioSummaryProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const { hidden } = useInvestmentsPrivacy();
+  if (totalValue == null || totalPnL == null || totalPnLPercent == null || blueArsPerUsd == null ||
+      totalValueArsBlue == null || totalPnLArsBlue == null || totalDailyPnLUsd == null ||
+      totalDailyPnLPercent == null || totalDailyPnLArsBlue == null || totalRealizedPnLUsd == null ||
+      totalRealizedPnLArsBlue == null) {
+    return <div role="status" className="card text-sm text-muted-foreground">
+      Valor total convertido no disponible. Consultá el valor en moneda original de cada posición.
+    </div>;
+  }
   const dayPositive = totalDailyPnLUsd >= 0;
   const totalPositive = totalPnL >= 0;
   const realizedPositive = totalRealizedPnLUsd >= 0;

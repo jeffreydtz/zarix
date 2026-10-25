@@ -102,7 +102,7 @@ describe('CU-001 financial regressions', () => {
     mocks.fx.mockResolvedValue(0);
     const result = await buildToArsConverter([{ currency:' ars ' }, { currency:' usd ' }]);
     expect(result.toArs({ amount:25, currency:' ars ' })).toBe(25);
-    expect(result.toArs({ amount:100, currency:'USD' })).toBe(0);
+    expect(result.toArs({ amount:100, currency:'USD' })).toBeNull();
     expect(result.excludedCurrencies).toEqual(['USD']);
   });
 });
@@ -157,14 +157,18 @@ describe('CU-004 financial regressions', () => {
     expect(writes[0].value).toMatchObject({ current_price:50, market_currency:'USD' });
   });
   it('does not value ARS holdings with a fake rate of 1', async () => {
+    replies = [{ data:[{ ...inv, purchase_currency:'ARS', market_currency:'ARS' }] }, { data:[] }];
     mocks.dolar.mockResolvedValue({ blue:{ sell:0,buy:0 } });
-    await expect(investmentsService.list('U1')).rejects.toThrow('cotización blue');
-    expect(mocks.client.from).not.toHaveBeenCalled();
+    const [position] = await investmentsService.list('U1');
+    expect(position).toMatchObject({ current_value_native:660, market_value_usd:null, cost_basis_usd:null, fxUnavailable:true });
+    expect(writes).toHaveLength(0);
   });
   it('does not replace missing EUR FX with zero cost/value', async () => {
     replies = [{ data:[{ ...inv, purchase_currency:'EUR' }] }, { data:[] }];
     mocks.fx.mockRejectedValue(new Error('offline'));
-    await expect(investmentsService.list('U1')).rejects.toThrow('EUR');
+    const [position] = await investmentsService.list('U1');
+    expect(position).toMatchObject({ cost_basis_usd:null, profit_loss_usd:null, market_value_usd:660, fxUnavailable:true });
+    expect(writes).toHaveLength(0);
   });
   it('does not hide a failed sales history query as zero realized profit', async () => {
     replies = [{ data:[inv] }, { error:{ message:'sales offline' } }];

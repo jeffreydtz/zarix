@@ -1,6 +1,8 @@
+import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
+import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import TransactionsFilters from '@/components/expenses/TransactionsFilters';
@@ -23,7 +25,7 @@ export default async function ExpensesPage(
       redirect('/login');
     }
 
-    const [accounts, categoriesRes, transactions] = await Promise.all([
+    const [accounts, categoriesRes, transactions, fx] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       supabase
         .from('categories')
@@ -42,6 +44,7 @@ export default async function ExpensesPage(
           limit: 2000,
         })
         .catch(() => []),
+      cotizacionesService.getTransactionsFxRates().catch(() => null),
     ]);
     const categories = categoriesRes.data;
 
@@ -56,6 +59,7 @@ export default async function ExpensesPage(
           />
         }
       >
+        <FxStatusBanner {...combinedFxStatus([...accounts, { fxUnavailable: !fx || fx.fxUnavailable, fxStale: fx?.stale, fxAsOf: fx?.asOf?.toISOString() }])} />
         <div className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground -mt-2">
           Traídos: {transactions.length}
         </div>

@@ -69,20 +69,24 @@ export type PatchInvestmentInput = {
 export interface InvestmentWithPnL extends Investment {
   /** Diferencia precio confirmado/caché de la referencia inicial de compra. */
   valuation_price_source: 'live' | 'manual' | 'cache' | 'purchase_reference';
-  current_value: number;
-  profit_loss: number;
-  profit_loss_percent: number;
+  current_value_native: number;
+  fxUnavailable?: boolean;
+  fxStale?: boolean;
+  fxAsOf?: string | null;
+  current_value: number | null;
+  profit_loss: number | null;
+  profit_loss_percent: number | null;
   /** Moneda del precio de mercado actual (cotización). */
   market_price_currency: string;
-  cost_basis_usd: number;
-  market_value_usd: number;
-  profit_loss_usd: number;
-  profit_loss_percent_usd: number;
-  market_value_ars_blue: number;
+  cost_basis_usd: number | null;
+  market_value_usd: number | null;
+  profit_loss_usd: number | null;
+  profit_loss_percent_usd: number | null;
+  market_value_ars_blue: number | null;
   /** Variación diaria del activo en %. NULL si no se pudo obtener. */
   daily_change_pct: number | null;
   /** P&L del día en USD para esta posición. 0 si no hay variación. */
-  daily_pnl_usd: number;
+  daily_pnl_usd: number | null;
   /** Ganancia realizada acumulada en USD por ventas previas. */
   realized_pnl_usd: number;
   /** Cantidad de ventas registradas para esta posición. */
@@ -108,30 +112,33 @@ export interface SellPositionResult {
 
 export interface PortfolioSummaryPayload {
   investments: InvestmentWithPnL[];
+  fxUnavailable?: boolean;
+  fxStale?: boolean;
+  fxAsOf?: string | null;
   /** Valor de mercado total en USD (ARS convertido con dólar blue venta). */
-  totalCurrentValue: number;
+  totalCurrentValue: number | null;
   /** Capital invertido (costo) en USD, misma convención. */
-  totalPurchaseValue: number;
-  totalPnL: number;
-  totalPnLPercent: number;
+  totalPurchaseValue: number | null;
+  totalPnL: number | null;
+  totalPnLPercent: number | null;
   /** Cotización blue usada (ARS por 1 USD). */
-  blueArsPerUsd: number;
+  blueArsPerUsd: number | null;
   /** Exact FX reference used here; distinct from the price source of each asset. */
   blueReference?: BlueFxReference;
   /** Equivalentes en ARS (referencia blue). */
-  totalCurrentValueArsBlue: number;
-  totalPurchaseValueArsBlue: number;
-  totalPnLArsBlue: number;
+  totalCurrentValueArsBlue: number | null;
+  totalPurchaseValueArsBlue: number | null;
+  totalPnLArsBlue: number | null;
   /** P&L del día agregado del portafolio (USD). */
-  totalDailyPnLUsd: number;
+  totalDailyPnLUsd: number | null;
   /** P&L del día como % sobre valor de mercado actual. */
-  totalDailyPnLPercent: number;
+  totalDailyPnLPercent: number | null;
   /** P&L del día en ARS equivalente (blue). */
-  totalDailyPnLArsBlue: number;
+  totalDailyPnLArsBlue: number | null;
   /** Ganancia realizada total del portafolio (USD), suma de todas las ventas. */
   totalRealizedPnLUsd: number;
   /** Ganancia realizada total en ARS equivalente (blue). */
-  totalRealizedPnLArsBlue: number;
+  totalRealizedPnLArsBlue: number | null;
   byType: Array<{ type: string; count: number; value: number; pnl: number }>;
   byCurrency: Array<{ type: string; count: number; value: number; pnl: number }>;
   weeklyChange: PeriodChange | null;
@@ -159,7 +166,8 @@ export interface PortfolioSummaryPayload {
 const STABLE_AS_USD = new Set(['USD', 'USDT', 'USDC', 'DAI', 'BUSD']);
 const QUOTE_REFRESH_MS = 15 * 60 * 1000;
 
-function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
+function arsPerUsdFromDolar(blue: { sell: number; buy: number } | undefined): number {
+  if (!blue) throw new Error('No hay una cotización blue válida para valorar el portafolio.');
   if (Number.isFinite(blue.sell) && blue.sell > 0) return blue.sell;
   if (Number.isFinite(blue.buy) && blue.buy > 0) return blue.buy;
   throw new Error('No hay una cotización blue válida para valorar el portafolio.');
@@ -168,13 +176,13 @@ function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
 function amountToUsd(
   amount: number,
   currency: string | null | undefined,
-  arsPerUsd: number,
+  arsPerUsd: number | null,
   extraUsdPerUnit?: Map<string, number>
 ): number {
   const c = (currency || 'USD').toUpperCase();
   if (STABLE_AS_USD.has(c)) return amount;
   if (c === 'ARS') {
-    if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+    if (arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
     return amount / arsPerUsd;
   }
   if (extraUsdPerUnit) {
@@ -185,8 +193,22 @@ function amountToUsd(
 }
 
 function usdToArsBlue(usd: number, arsPerUsd: number): number {
-  if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+  if (arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
   return usd * arsPerUsd;
+}
+
+function availableValue(calculate: () => number): number | null {
+  try {
+    const value = calculate();
+    return Number.isFinite(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function sumValuations(values: Array<number | null>): number | null {
+  return values.every((value): value is number => value != null && Number.isFinite(value))
+    ? values.reduce((total, value) => total + value, 0) : null;
 }
 
 async function loadOwnedActiveAccount(
@@ -314,12 +336,18 @@ class InvestmentsService {
   private async loadInvestmentsNormalized(
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipQuoteRefresh?: boolean }
-  ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number; blueReference: BlueFxReference }> {
+  ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number | null; blueReference?: BlueFxReference; fxStale: boolean; fxAsOf: string | null }> {
     const supabase = createServiceClientSync();
 
-    const dolar = await cotizacionesService.getDolarQuotes();
-    const blueArsPerUsd = arsPerUsdFromDolar(dolar.blue);
-    const reference = blueFxReference(dolar.blue, dolar.blue.sell > 0 && Number.isFinite(dolar.blue.sell) ? 'sell' : 'buy');
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(() => null);
+    const blue = dolar?.blue;
+    const blueArsPerUsd = availableValue(() => arsPerUsdFromDolar(blue));
+    const reference = blue && blueArsPerUsd != null
+      ? blueFxReference(blue, blue.sell > 0 && Number.isFinite(blue.sell) ? 'sell' : 'buy') : undefined;
+    const fxStale = Boolean(blue?.stale);
+    const observedAt = blue?.asOf ?? blue?.timestamp;
+    const fxAsOf = observedAt && Number.isFinite(new Date(observedAt).getTime())
+      ? new Date(observedAt).toISOString() : null;
 
     const { data: investmentsRaw, error } = await supabase
       .from('investments')
@@ -421,18 +449,18 @@ class InvestmentsService {
       const costNative = (qty * purchaseUnit) / priceFactor;
       const marketNative = (qty * currentPrice) / priceFactor;
 
-      const costUsd = amountToUsd(costNative, purchaseCur, blueArsPerUsd, extraUsd);
-      const marketUsd = amountToUsd(marketNative, marketCur, blueArsPerUsd, extraUsd);
-      const pnlUsd = marketUsd - costUsd;
-      const pnlPctUsd = costUsd > 0 ? (pnlUsd / costUsd) * 100 : 0;
+      const costUsd = availableValue(() => amountToUsd(costNative, purchaseCur, blueArsPerUsd, extraUsd));
+      const marketUsd = availableValue(() => amountToUsd(marketNative, marketCur, blueArsPerUsd, extraUsd));
+      const pnlUsd = marketUsd != null && costUsd != null ? marketUsd - costUsd : null;
+      const pnlPctUsd = pnlUsd != null && costUsd != null ? (costUsd > 0 ? (pnlUsd / costUsd) * 100 : 0) : null;
 
-      let dailyPnlUsd = 0;
-      if (dailyChangePct != null && Number.isFinite(dailyChangePct)) {
+      let dailyPnlUsd: number | null = marketUsd == null ? null : 0;
+      if (marketUsd != null && dailyChangePct != null && Number.isFinite(dailyChangePct)) {
         const denom = 100 + dailyChangePct;
         if (denom !== 0) {
           const previousMarketNative = marketNative * (100 / denom);
-          const previousMarketUsd = amountToUsd(previousMarketNative, marketCur, blueArsPerUsd, extraUsd);
-          dailyPnlUsd = marketUsd - previousMarketUsd;
+          const previousMarketUsd = availableValue(() => amountToUsd(previousMarketNative, marketCur, blueArsPerUsd, extraUsd));
+          dailyPnlUsd = previousMarketUsd != null ? marketUsd - previousMarketUsd : null;
         }
       }
 
@@ -452,7 +480,12 @@ class InvestmentsService {
         market_value_usd: marketUsd,
         profit_loss_usd: pnlUsd,
         profit_loss_percent_usd: pnlPctUsd,
-        market_value_ars_blue: usdToArsBlue(marketUsd, blueArsPerUsd),
+        market_value_ars_blue: marketCur === 'ARS' ? marketNative
+          : marketUsd != null && blueArsPerUsd != null ? usdToArsBlue(marketUsd, blueArsPerUsd) : null,
+        current_value_native: marketNative,
+        fxUnavailable: blueArsPerUsd == null || costUsd == null || marketUsd == null,
+        fxStale,
+        fxAsOf,
         current_value: marketUsd,
         profit_loss: pnlUsd,
         profit_loss_percent: pnlPctUsd,
@@ -479,7 +512,7 @@ class InvestmentsService {
       );
     }
 
-    return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference };
+    return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference, fxStale, fxAsOf };
   }
 
   async list(userId: string, options?: { forceRefreshQuotes?: boolean }): Promise<InvestmentWithPnL[]> {
@@ -608,7 +641,7 @@ class InvestmentsService {
       throw new ApiError(`No podés vender más de lo que tenés (${currentQty}).`);
     }
 
-    const dolar = await cotizacionesService.getDolarQuotes();
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] });
     const arsPerUsd = arsPerUsdFromDolar(dolar.blue);
 
     const saleCurrency = (input.currency || invRow.purchase_currency || 'USD').toUpperCase();
@@ -735,22 +768,26 @@ class InvestmentsService {
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipDailySnapshot?: boolean; skipQuoteRefresh?: boolean }
   ): Promise<PortfolioSummaryPayload> {
-    const { investments, blueArsPerUsd, blueReference } = await this.loadInvestmentsNormalized(userId, options);
+    const { investments, blueArsPerUsd, blueReference, fxStale, fxAsOf } = await this.loadInvestmentsNormalized(userId, options);
 
-    const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.market_value_usd, 0);
-    const totalPurchaseValue = investments.reduce((sum, inv) => sum + inv.cost_basis_usd, 0);
-    const totalPnL = totalCurrentValue - totalPurchaseValue;
-    const totalPnLPercent = totalPurchaseValue > 0 ? (totalPnL / totalPurchaseValue) * 100 : 0;
+    const totalCurrentValue = sumValuations(investments.map(inv => inv.market_value_usd));
+    const totalPurchaseValue = sumValuations(investments.map(inv => inv.cost_basis_usd));
+    const totalPnL = totalCurrentValue != null && totalPurchaseValue != null
+      ? totalCurrentValue - totalPurchaseValue : null;
+    const totalPnLPercent = totalPnL != null && totalPurchaseValue != null
+      ? (totalPurchaseValue > 0 ? (totalPnL / totalPurchaseValue) * 100 : 0) : null;
 
-    const totalDailyPnLUsd = investments.reduce((sum, inv) => sum + (inv.daily_pnl_usd || 0), 0);
-    const previousValueUsd = totalCurrentValue - totalDailyPnLUsd;
-    const totalDailyPnLPercent =
-      previousValueUsd > 0 ? (totalDailyPnLUsd / previousValueUsd) * 100 : 0;
-
-    const totalCurrentValueArsBlue = usdToArsBlue(totalCurrentValue, blueArsPerUsd);
-    const totalPurchaseValueArsBlue = usdToArsBlue(totalPurchaseValue, blueArsPerUsd);
-    const totalPnLArsBlue = usdToArsBlue(totalPnL, blueArsPerUsd);
-    const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd);
+    const totalDailyPnLUsd = sumValuations(investments.map(inv => inv.daily_pnl_usd));
+    const previousValueUsd = totalCurrentValue != null && totalDailyPnLUsd != null
+      ? totalCurrentValue - totalDailyPnLUsd : null;
+    const totalDailyPnLPercent = previousValueUsd != null && totalDailyPnLUsd != null
+      ? (previousValueUsd > 0 ? (totalDailyPnLUsd / previousValueUsd) * 100 : 0) : null;
+    const toArs = (value: number | null) => value != null && blueArsPerUsd != null
+      ? usdToArsBlue(value, blueArsPerUsd) : null;
+    const totalCurrentValueArsBlue = toArs(totalCurrentValue);
+    const totalPurchaseValueArsBlue = toArs(totalPurchaseValue);
+    const totalPnLArsBlue = toArs(totalPnL);
+    const totalDailyPnLArsBlue = toArs(totalDailyPnLUsd);
 
     const supabase = createServiceClientSync();
     const { data: allSales, error: allSalesError } = await supabase
@@ -762,16 +799,19 @@ class InvestmentsService {
       (sum, row) => sum + (Number(row.realized_pnl_usd) || 0),
       0
     );
-    const totalRealizedPnLArsBlue = usdToArsBlue(totalRealizedPnLUsd, blueArsPerUsd);
+    const totalRealizedPnLArsBlue = toArs(totalRealizedPnLUsd);
 
     const byTypeSlices = composeComposition(investments, 'type');
     const byCurrencySlices = composeComposition(investments, 'currency');
     const ranked = rankGainersLosers(investments, 3);
     const snapshots = await this.listPerformanceSnapshots(userId, 40).catch(() => []);
-    const weeklyChange = periodChangeFromSnapshots(snapshots, totalCurrentValue, 7);
-    const monthlyChange = periodChangeFromSnapshots(snapshots, totalCurrentValue, 30);
+    const weeklyChange = totalCurrentValue == null ? null : periodChangeFromSnapshots(snapshots, totalCurrentValue, 7);
+    const monthlyChange = totalCurrentValue == null ? null : periodChangeFromSnapshots(snapshots, totalCurrentValue, 30);
 
     const payload: PortfolioSummaryPayload = {
+      fxUnavailable: blueArsPerUsd == null || investments.some(inv => inv.fxUnavailable),
+      fxStale,
+      fxAsOf,
       totalCurrentValue,
       totalPurchaseValue,
       totalPnL,
@@ -795,7 +835,7 @@ class InvestmentsService {
       investments,
     };
 
-    if (!options?.skipDailySnapshot) {
+    if (!options?.skipDailySnapshot && !payload.fxUnavailable && !payload.fxStale) {
       await this.recordDailySnapshot(userId, payload);
     }
 

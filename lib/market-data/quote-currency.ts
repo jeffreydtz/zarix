@@ -104,9 +104,9 @@ function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | n
   return null;
 }
 
-/** Inclusive band: peso vs USD cuotapartes differ by ~1000×, live USD FCIs stay near 1. */
-const FCI_UNKNOWN_USD_RATIO_MIN = 0.5;
-const FCI_UNKNOWN_USD_RATIO_MAX = 2;
+/** Inclusive band applied after adapting the cuotaparte to the position currency. */
+const FCI_PRICE_RATIO_MIN = 0.5;
+const FCI_PRICE_RATIO_MAX = 2;
 
 function asFiniteNumber(value: unknown): number | null {
   if (value == null || value === '') return null;
@@ -118,49 +118,39 @@ function asFiniteNumber(value: unknown): number | null {
   return null;
 }
 
-function isPresentPrice(value: unknown): boolean {
-  if (value == null || value === '') return false;
-  return !(typeof value === 'string' && !value.trim());
-}
-
-/**
- * Unknown-USD plausibility anchor: a valid current_price (>0, finite, including
- * numeric strings like '1.09'). If current_price is absent (null/empty), fall
- * back to purchase_price only when purchase_currency equals market_currency and
- * that currency is USD. A present-but-invalid current_price (0/NaN/negative)
- * does not fall back.
- */
-export function fciUsdPlausibilityAnchor(opts: {
+/** A position's anchor must be expressed in its market currency. */
+export function fciPlausibilityAnchor(opts: {
   currentPrice?: unknown;
   purchasePrice?: unknown;
   marketCurrency?: string | null;
   purchaseCurrency?: string | null;
 }): number | null {
+  const market = knownQuoteCurrency(opts.marketCurrency);
+  if (!market) return null;
   const current = asFiniteNumber(opts.currentPrice);
   if (current != null && current > 0) return current;
-  if (isPresentPrice(opts.currentPrice)) return null;
-  const market = (opts.marketCurrency || '').trim().toUpperCase();
-  const purchaseCcy = (opts.purchaseCurrency || '').trim().toUpperCase();
-  if (market !== 'USD' || purchaseCcy !== 'USD') return null;
+  if (knownQuoteCurrency(opts.purchaseCurrency) !== market) return null;
   const purchase = asFiniteNumber(opts.purchasePrice);
   return purchase != null && purchase > 0 ? purchase : null;
 }
 
-/**
- * Unknown CAFCI + stored USD: accept the cuotaparte as USD only when a positive
- * stored last price exists and new/stored is in [0.5, 2]. CONIOLA ~179.598 vs
- * stored ~0.138 skips; IOLDOLD 1.098 vs stored ~1.09 accepts. 0/null/NaN skip.
- */
-export function fciUnknownUsdPricePlausible(
-  sourcePrice: number | null | undefined,
-  storedPrice: number | null | undefined,
+/** Kept for callers that used the original USD-only guard. */
+export const fciUsdPlausibilityAnchor = fciPlausibilityAnchor;
+
+/** Both prices must use the position's market currency; endpoints are inclusive. */
+export function fciPricePlausible(
+  candidate: number | null | undefined,
+  anchor: number | null | undefined,
 ): boolean {
-  const next = asFiniteNumber(sourcePrice);
-  const prev = asFiniteNumber(storedPrice);
+  const next = asFiniteNumber(candidate);
+  const prev = asFiniteNumber(anchor);
   if (next == null || prev == null || !(next > 0) || !(prev > 0)) return false;
   const ratio = next / prev;
-  return ratio >= FCI_UNKNOWN_USD_RATIO_MIN && ratio <= FCI_UNKNOWN_USD_RATIO_MAX;
+  return ratio >= FCI_PRICE_RATIO_MIN && ratio <= FCI_PRICE_RATIO_MAX;
 }
+
+/** Backward-compatible name for the unknown-currency inference guard. */
+export const fciUnknownUsdPricePlausible = fciPricePlausible;
 
 /**
  * FCI cuotaparte currency: never assume ARS from the ticker.
@@ -186,7 +176,7 @@ export function resolveFciQuoteCurrency(opts: {
   const stored = knownQuoteCurrency(opts.storedCurrency);
   if (source) return { currency: source };
   if (stored === 'ARS') return { currency: 'ARS' };
-  if (stored === 'USD' && fciUnknownUsdPricePlausible(opts.sourcePrice, opts.storedPrice)) {
+  if (stored === 'USD' && fciPricePlausible(opts.sourcePrice, opts.storedPrice)) {
     return { currency: 'USD' };
   }
   return { currency: null, reason: 'unknown' };

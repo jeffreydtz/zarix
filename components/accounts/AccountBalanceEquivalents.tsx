@@ -28,6 +28,10 @@ export default function AccountBalanceEquivalents({
   const usd = account.balance_usd != null ? Number(account.balance_usd) : null;
   const hasBalance = Math.abs(rawBal) > 1e-8;
 
+  if (account.fxUnavailable) {
+    return <p role="status" className="text-xs text-warning">Cotizaciones no disponibles. Saldo en moneda original.</p>;
+  }
+
   if (account.valuationIssue) {
     return <p role="status" className="text-xs text-warning">
       Sin cotización compatible para {account.valuationIssue.currencies.join(', ')}.

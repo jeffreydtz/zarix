@@ -29,10 +29,10 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
 
   protected async execute(supabase: ServiceClient): Promise<Record<string, unknown>> {
     try {
-      const dolar = await cotizacionesService.getDolarQuotes();
-      const sell = Number(dolar?.blue?.sell);
+      const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'] });
+      const sell = Number(dolar?.mep?.sell);
       if (!(Number.isFinite(sell) && sell > 0)) {
-        throw new Error('Cotización FX inválida');
+        throw new Error('Cotización MEP no disponible; se omiten sólo las conversiones MEP');
       }
     } catch (e) {
       this.integrationErrors++;

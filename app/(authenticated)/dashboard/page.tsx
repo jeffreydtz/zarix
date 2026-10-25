@@ -1,3 +1,4 @@
+import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
 import { Suspense } from 'react';
 import { redirect, unstable_rethrow } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -25,6 +26,13 @@ import DashboardMore from '@/components/dashboard/DashboardMore';
 import { PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 
+function unavailableSection<T>(fallback: T) {
+  return (error: unknown): T => {
+    unstable_rethrow(error);
+    return fallback;
+  };
+}
+
 const CreditCardsWidget = dynamic(() => import('@/components/dashboard/CreditCardsWidget'), {
   loading: () => <div className="card h-40 animate-pulse bg-secondary" />,
 });
@@ -49,7 +57,7 @@ export default async function DashboardPage() {
     // Pre-calienta la cache de cotización con la última persistida en DB (rápido)
     // para que las conversiones no esperen a las APIs externas en el render frío.
     await Promise.race([
-      cotizacionesService.getDolarQuotes({ preferCache: true }),
+      cotizacionesService.getDolarQuotes({ preferCache: true, require: ['blue'] }),
       new Promise((resolve) => setTimeout(resolve, 1500)),
     ]).catch(() => {});
 
@@ -69,18 +77,21 @@ export default async function DashboardPage() {
       accountsService.list(user.id, { allowPartialValuation: true }),
       transactionsService.list(user.id, { limit: 5 }),
       investmentsService
-        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }),
+        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }).catch(error => {
+          unstable_rethrow(error);
+          return null;
+        }),
       cotizacionesService.getAllQuotes().catch(error => {
         unstable_rethrow(error);
         return null;
       }),
-      getNetWorthHistory(user.id),
+      getNetWorthHistory(user.id).catch(unavailableSection(null)),
       getInflacionSeries().catch(() => []),
       getMarketSparklines().catch(() => ({ blue: [], btc: [], eth: [] })),
-      getMonthFlow(user.id),
-      getUpcoming(user.id),
-      getTopBudgets(user.id),
-      getPresentationPreferences(user.id),
+      getMonthFlow(user.id).catch(unavailableSection(null)),
+      getUpcoming(user.id).catch(unavailableSection(null)),
+      getTopBudgets(user.id).catch(unavailableSection(null)),
+      getPresentationPreferences(user.id).catch(unavailableSection({ default_currency: 'ARS' as const, net_worth_widget_visible: true })),
     ]);
 
     // Patrimonio HOY: misma composición que computeNetWorth pero reutilizando
@@ -109,7 +120,7 @@ export default async function DashboardPage() {
     const netWorthNow = composeLiquidNetWorth({
       balances,
       portfolio,
-      blueRate: portfolio?.blueArsPerUsd ?? quotes?.dolar?.blue?.sell ?? 0,
+      blueRate: balances.blueReferences?.[0]?.rate ?? portfolio?.blueArsPerUsd ?? quotes?.dolar?.blue?.sell ?? null,
     });
 
     // Reading or changing presentation preferences never rewrites history.
@@ -117,33 +128,48 @@ export default async function DashboardPage() {
 
     // Top 2 posiciones por valor para el strip de mercado
     const topHoldings = (portfolio?.investments ?? [])
-      .slice()
-      .sort((a, b) => b.market_value_usd - a.market_value_usd)
+      .filter(inv => inv.market_value_usd != null)
+      .sort((a, b) => b.market_value_usd! - a.market_value_usd!)
       .slice(0, 2)
       .map((inv) => ({
         ticker: inv.ticker ?? inv.name,
         name: inv.name,
-        valueUSD: inv.market_value_usd,
+        valueUSD: inv.market_value_usd!,
         dailyPct: inv.daily_change_pct ?? 0,
       }));
 
+    const fxStatus = combinedFxStatus([
+      ...accounts,
+      ...(portfolio ? [portfolio] : []),
+      ...(['blue', 'oficial', 'mep', 'ccl'] as const).map(type => ({
+        fxStale: quotes?.dolar?.[type]?.stale,
+        fxAsOf: quotes?.dolar?.[type]?.asOf?.toISOString(),
+      })),
+      { fxUnavailable: !quotes?.dolar?.blue && accounts.length === 0 },
+    ]);
+
     return (
       <>
-        {preferences.net_worth_widget_visible && !balances.valuation && <StickyNetWorthBar
+        {preferences.net_worth_widget_visible && !balances.valuation && !netWorthNow.fxUnavailable && <StickyNetWorthBar
           key={user.id}
           totalARSBlue={netWorthNow.totalARSBlue}
           totalUSD={netWorthNow.totalUSD}
           sentinelId="networth-sentinel"
           baseCurrency={preferences.default_currency}
+          fxStale={netWorthNow.fxStale}
+          fxAsOf={netWorthNow.fxAsOf}
         />}
         <PageScaffold
           hero={(
             preferences.net_worth_widget_visible ? <>
-              <NetWorthHero key={user.id} now={netWorthNow} history={netWorthHistory} inflacion={inflacion} baseCurrency={preferences.default_currency} />
+              <NetWorthHero key={user.id} now={netWorthNow} history={netWorthHistory ?? []} inflacion={inflacion} baseCurrency={preferences.default_currency} />
+              {netWorthHistory == null && <p role="status" className="text-sm text-muted-foreground">Historial de patrimonio no disponible.</p>}
               <div id="networth-sentinel" aria-hidden="true" />
             </> : null
           )}
         >
+          <FxStatusBanner {...fxStatus} />
+          {portfolio == null && <p role="status" className="text-sm text-muted-foreground">Resumen de inversiones no disponible.</p>}
           {/* Bento desktop: 12 columnas; mobile: columna única en orden de jerarquía */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <MotionSection delay={0.04} intensity="normal" className="lg:col-span-12">
@@ -155,18 +181,18 @@ export default async function DashboardPage() {
             </MotionSection>
 
             <MotionSection delay={0.08} intensity="normal" className="lg:col-span-4">
-              {monthFlow ? <MonthFlowCard flow={monthFlow} /> : null}
+              {monthFlow ? <MonthFlowCard flow={monthFlow} /> : <p role="status" className="card p-4">Resumen mensual no disponible.</p>}
             </MotionSection>
 
             <MotionSection delay={0.1} intensity="normal" className="lg:col-span-4">
-              <BudgetCluster budgets={budgets} />
+              {budgets ? <BudgetCluster budgets={budgets} /> : <p role="status" className="card p-4">Presupuestos no disponibles.</p>}
             </MotionSection>
 
             <MotionSection delay={0.12} intensity="normal" className="lg:col-span-4">
-              <UpcomingRail items={upcoming} />
+              {upcoming ? <UpcomingRail items={upcoming} /> : <p role="status" className="card p-4">Próximos movimientos no disponibles.</p>}
             </MotionSection>
 
-            {quotes ? (
+            {quotes?.dolar.blue ? (
               <MotionSection delay={0.16} intensity="subtle" className="lg:col-span-12">
                 <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
                   <DashboardSpendingAnalyzerSection quotes={quotes} />

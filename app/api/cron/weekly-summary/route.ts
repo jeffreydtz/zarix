@@ -85,17 +85,31 @@ async function analyzeWeek(
     ...previousWeek,
   ]);
 
-  const totalGastos = expenses.reduce((sum, t) => sum + toArs(t), 0);
-  const totalIngresos = income.reduce((sum, t) => sum + toArs(t), 0);
-  const prevTotalGastos = prevExpenses.reduce((sum, t) => sum + toArs(t), 0);
-  const prevTotalIngresos = prevIncome.reduce((sum, t) => sum + toArs(t), 0);
+  const totalGastos = expenses.reduce((sum, t) => {
+    const amount = toArs(t);
+    return amount == null ? sum : sum + amount;
+  }, 0);
+  const totalIngresos = income.reduce((sum, t) => {
+    const amount = toArs(t);
+    return amount == null ? sum : sum + amount;
+  }, 0);
+  const prevTotalGastos = prevExpenses.reduce((sum, t) => {
+    const amount = toArs(t);
+    return amount == null ? sum : sum + amount;
+  }, 0);
+  const prevTotalIngresos = prevIncome.reduce((sum, t) => {
+    const amount = toArs(t);
+    return amount == null ? sum : sum + amount;
+  }, 0);
 
   const categoryMap = new Map<string, { name: string; icon: string; amount: number }>();
   expenses.forEach((t) => {
     if (t.category) {
       const cat = t.category as { name: string; icon: string };
       const existing = categoryMap.get(cat.name) || { name: cat.name, icon: cat.icon, amount: 0 };
-      existing.amount += toArs(t);
+      const amount = toArs(t);
+      if (amount == null) return;
+      existing.amount += amount;
       categoryMap.set(cat.name, existing);
     }
   });

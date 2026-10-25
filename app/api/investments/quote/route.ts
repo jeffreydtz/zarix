@@ -20,6 +20,8 @@ export async function GET(req: NextRequest) {
     const symbol = req.nextUrl.searchParams.get('symbol')?.trim() || '';
     const type = req.nextUrl.searchParams.get('type') as InvestmentType | null;
     const marketCurrency = req.nextUrl.searchParams.get('currency')?.trim().toUpperCase() || null;
+    const currentPrice = req.nextUrl.searchParams.get('currentPrice')
+      ?? req.nextUrl.searchParams.get('current_price');
     const purchasePrice = req.nextUrl.searchParams.get('purchasePrice')
       ?? req.nextUrl.searchParams.get('purchase_price');
     const purchaseCurrency = (
@@ -40,7 +42,7 @@ export async function GET(req: NextRequest) {
       market_currency: marketCurrency,
       purchase_currency: purchaseCurrency || marketCurrency,
       purchase_price: purchasePrice,
-      current_price: null,
+      current_price: currentPrice,
     };
     const quotes = await refreshQuotesForInvestments([position]);
     const cacheKey = quoteCacheKeyForPosition(position);

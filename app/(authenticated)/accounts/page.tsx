@@ -1,3 +1,4 @@
+import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
@@ -40,6 +41,7 @@ export default async function AccountsPage() {
             </div>
           </div>
 
+          <FxStatusBanner {...combinedFxStatus(accounts)} />
           <AccountsList accounts={accounts} aggregates={aggregates} />
           <ArchivedAccountsPanel accounts={archivedAccounts} />
         </div>

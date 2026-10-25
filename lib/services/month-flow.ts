@@ -103,15 +103,24 @@ export async function getMonthFlow(userId: string): Promise<MonthFlow> {
 
   const incomeARS = mtdTransactions
     .filter((t) => t.type === 'income')
-    .reduce((sum, t) => sum + toArs(t), 0);
+    .reduce((sum, t) => {
+      const amount = toArs(t);
+      return amount == null ? sum : sum + amount;
+    }, 0);
   const spentARS = mtdTransactions
     .filter((t) => t.type === 'expense')
-    .reduce((sum, t) => sum + toArs(t), 0);
+    .reduce((sum, t) => {
+      const amount = toArs(t);
+      return amount == null ? sum : sum + amount;
+    }, 0);
 
   // La ventana rodante SIEMPRE abarca 14 días calendario (cruza el límite de
   // mes): el denominador es fijo. Capar por día-del-mes inflaba el promedio
   // ~3x a principio de mes al dividir 14 días de gasto por pocos días.
-  const trailingTotalARS = trailingExpenses.reduce((sum, t) => sum + toArs(t), 0);
+  const trailingTotalARS = trailingExpenses.reduce((sum, t) => {
+    const amount = toArs(t);
+    return amount == null ? sum : sum + amount;
+  }, 0);
   const avgDailySpendARS = trailingTotalARS / TRAILING_WINDOW_DAYS;
 
   let pendingRecurringARS = 0;
@@ -136,7 +145,9 @@ export async function getMonthFlow(userId: string): Promise<MonthFlow> {
     } else if (rule.frequency === 'daily') {
       occurrencesLeft = daysLeft;
     }
-    pendingRecurringARS += toArs(rule) * occurrencesLeft;
+    const amount = toArs(rule);
+    if (amount == null) continue;
+    pendingRecurringARS += amount * occurrencesLeft;
   }
 
   const projectedSpendARS = spentARS + avgDailySpendARS * daysLeft + pendingRecurringARS;

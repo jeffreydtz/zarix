@@ -191,13 +191,12 @@ describe.each(USD_LABELS)('CAFCI USD label %s', (moneda) => {
     expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE, 8);
   });
 
-  it.each(TICKERS)('cron %s ARS book converts via MEP', async (ticker) => {
+  it.each(TICKERS)('cron %s skips converted ARS price outside the position anchor band', async (ticker) => {
     setCronPosition(ticker, 'ARS');
     stubCafci(moneda);
-    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 1, errors: 0 });
-    expect(mocks.updates).toHaveLength(1);
-    expect(mocks.updates[0].market_currency).toBe('ARS');
-    expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE * MEP, 8);
+    // The old fixture anchor is 1.098 ARS; 1427.4 ARS is now correctly rejected.
+    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 0, errors: 1 });
+    expect(mocks.updates).toHaveLength(0);
   });
 });
 
@@ -225,13 +224,12 @@ describe.each(ARS_LABELS)('CAFCI ARS label %s', (moneda) => {
     expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE, 8);
   });
 
-  it.each(TICKERS)('cron %s USD book converts via MEP', async (ticker) => {
+  it.each(TICKERS)('cron %s skips converted USD price outside the position anchor band', async (ticker) => {
     setCronPosition(ticker, 'USD');
     stubCafci(moneda);
-    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 1, errors: 0 });
-    expect(mocks.updates).toHaveLength(1);
-    expect(mocks.updates[0].market_currency).toBe('USD');
-    expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE / MEP, 8);
+    // The old fixture anchor is 1.09 USD; 0.0008446 USD is now rejected.
+    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 0, errors: 1 });
+    expect(mocks.updates).toHaveLength(0);
   });
 });
 

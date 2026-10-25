@@ -89,7 +89,7 @@ describe('dashboard read failures preserve financial truth', () => {
     expect(mocks.accounts).toHaveBeenCalledWith('synthetic-user', { allowPartialValuation: true });
     expect(mocks.snapshot).not.toHaveBeenCalled();
   });
-  it.each(['accounts', 'transactions', 'portfolio', 'history', 'monthFlow', 'upcoming', 'budgets', 'preferences'] as const)(
+  it.each(['accounts', 'transactions'] as const)(
     'shows unavailable and retry instead of partial financial values when %s fails', async source => {
       mocks[source].mockRejectedValueOnce(new Error('synthetic database timeout'));
       const html = renderToStaticMarkup(await DashboardPage());
@@ -100,6 +100,28 @@ describe('dashboard read failures preserve financial truth', () => {
       expect(mocks.snapshot).not.toHaveBeenCalled();
     },
   );
+
+  it.each([
+    ['portfolio', 'Resumen de inversiones no disponible.'],
+    ['history', 'Historial de patrimonio no disponible.'],
+    ['monthFlow', 'Resumen mensual no disponible.'],
+    ['upcoming', 'Próximos movimientos no disponibles.'],
+    ['budgets', 'Presupuestos no disponibles.'],
+  ] as const)('isolates the %s section failure while preserving available accounts', async (source, fallback) => {
+    mocks[source].mockRejectedValueOnce(new Error('synthetic section timeout'));
+    const html = renderToStaticMarkup(await DashboardPage());
+    expect(html).toContain(fallback);
+    expect(html).toContain('data-testid="net-worth"');
+    expect(html).not.toContain('No pudimos cargar tus datos financieros');
+    expect(mocks.snapshot).not.toHaveBeenCalled();
+  });
+
+  it('uses presentation defaults when preferences cannot be read', async () => {
+    mocks.preferences.mockRejectedValueOnce(new Error('synthetic preferences timeout'));
+    const html = renderToStaticMarkup(await DashboardPage());
+    expect(html).toContain('data-base-currency="ARS"');
+    expect(html).not.toContain('No pudimos cargar tus datos financieros');
+  });
 
   it('adds complete account and portfolio values when every financial read succeeds', async () => {
     const html = renderToStaticMarkup(await DashboardPage());

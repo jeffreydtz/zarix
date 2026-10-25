@@ -51,6 +51,10 @@ function round(n: number, decimals = 0): number {
   return Math.round((Number(n) || 0) * f) / f;
 }
 
+function roundValuation(n: number | null | undefined, decimals = 0): number | null {
+  return n == null || !Number.isFinite(n) ? null : round(n, decimals);
+}
+
 // ─── Resolución de períodos (calendario argentino) ───────────────────────────
 
 const AR_TZ = 'America/Argentina/Buenos_Aires';
@@ -638,13 +642,16 @@ async function executeBotToolImpl(
       const p = await investmentsService.getPortfolioSummary(userId, { skipDailySnapshot: true });
       return {
         response: {
-          totalValueUSD: round(p.totalCurrentValue, 2),
-          totalValueARSBlue: round(p.totalCurrentValueArsBlue),
-          pnlUSD: round(p.totalPnL, 2),
-          pnlPercent: round(p.totalPnLPercent, 1),
-          dailyPnlUSD: round(p.totalDailyPnLUsd, 2),
-          dailyPnlPercent: round(p.totalDailyPnLPercent, 1),
-          byType: p.byType.map((t) => ({ type: t.type, value: round(t.value, 2), pnl: round(t.pnl, 2) })),
+          fxUnavailable: p.fxUnavailable,
+          fxStale: p.fxStale,
+          fxAsOf: p.fxAsOf,
+          totalValueUSD: roundValuation(p.totalCurrentValue, 2),
+          totalValueARSBlue: roundValuation(p.totalCurrentValueArsBlue),
+          pnlUSD: roundValuation(p.totalPnL, 2),
+          pnlPercent: roundValuation(p.totalPnLPercent, 1),
+          dailyPnlUSD: roundValuation(p.totalDailyPnLUsd, 2),
+          dailyPnlPercent: roundValuation(p.totalDailyPnLPercent, 1),
+          byType: p.byType.map((t) => ({ type: t.type, value: roundValuation(t.value, 2), pnl: roundValuation(t.pnl, 2) })),
         },
       };
     }
@@ -653,12 +660,15 @@ async function executeBotToolImpl(
       const t = await accountsService.getTotalBalanceWithInvestments(userId);
       return {
         response: {
-          liquidARSBlue: round(t.liquidARSBlue),
-          liquidUSD: round(t.liquidUSD, 2),
-          investmentsARSBlue: round(t.investmentsARSBlue),
-          investmentsUSD: round(t.investmentsUSD, 2),
-          totalARSBlue: round(t.totalARSBlue),
-          totalUSD: round(t.totalUSD, 2),
+          fxUnavailable: t.fxUnavailable,
+          fxStale: t.fxStale,
+          fxAsOf: t.fxAsOf,
+          liquidARSBlue: roundValuation(t.liquidARSBlue),
+          liquidUSD: roundValuation(t.liquidUSD, 2),
+          investmentsARSBlue: roundValuation(t.investmentsARSBlue),
+          investmentsUSD: roundValuation(t.investmentsUSD, 2),
+          totalARSBlue: roundValuation(t.totalARSBlue),
+          totalUSD: roundValuation(t.totalUSD, 2),
         },
       };
     }
@@ -672,6 +682,9 @@ async function executeBotToolImpl(
             currency: a.currency,
             balance: round(a.balance, 2),
             isDebt: a.is_debt,
+            fxUnavailable: a.fxUnavailable,
+            fxStale: a.fxStale,
+            fxAsOf: a.fxAsOf,
           })),
         },
       };
@@ -682,15 +695,20 @@ async function executeBotToolImpl(
       return {
         response: {
           dolar: {
-            blue: round(q.dolar.blue.sell, 2),
-            oficial: round(q.dolar.oficial.sell, 2),
-            mep: round(q.dolar.mep.sell, 2),
-            ccl: round(q.dolar.ccl.sell, 2),
+            blue: roundValuation(q.dolar.blue?.sell, 2),
+            oficial: roundValuation(q.dolar.oficial?.sell, 2),
+            mep: roundValuation(q.dolar.mep?.sell, 2),
+            ccl: roundValuation(q.dolar.ccl?.sell, 2),
           },
+          fxStatus: q.dolar.status,
+          rateMetadata: Object.fromEntries((['blue', 'oficial', 'mep', 'ccl'] as const).map(type => [type, {
+            stale: q.dolar[type]?.stale ?? false,
+            asOf: q.dolar[type]?.asOf?.toISOString() ?? null,
+          }])),
           crypto: {
-            btcUSD: round(q.crypto.btc.priceUSD),
-            ethUSD: round(q.crypto.eth.priceUSD),
-            usdtUSD: round(q.crypto.usdt.priceUSD, 4),
+            btcUSD: roundValuation(q.crypto.btc?.priceUSD),
+            ethUSD: roundValuation(q.crypto.eth?.priceUSD),
+            usdtUSD: roundValuation(q.crypto.usdt?.priceUSD, 4),
           },
         },
       };

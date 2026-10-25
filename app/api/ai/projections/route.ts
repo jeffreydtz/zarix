@@ -59,7 +59,10 @@ export async function GET(req: NextRequest) {
       .reduce((sum, a) => sum + Number(a.balance), 0);
 
     return NextResponse.json(calculateFinancialProjection(
-      (transactions || []).map(t => ({ type: t.type, amountArs: toArs(t), transaction_date: t.transaction_date })),
+      (transactions || []).flatMap(t => {
+        const amountArs = toArs(t);
+        return amountArs == null ? [] : [{ type: t.type, amountArs, transaction_date: t.transaction_date }];
+      }),
       currentARS,
       now
     ));

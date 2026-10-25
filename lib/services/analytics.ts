@@ -85,9 +85,15 @@ class AnalyticsService {
       .range(from, to));
 
     const rows = data.filter((t: any) => t.account?.is_active !== false);
-    const { toArs } = await buildToArsConverter(rows);
+    const { toArs, excludedCurrencies } = await buildToArsConverter(rows);
+    // These aggregate-only responses cannot expose partial-valuation metadata.
+    if (excludedCurrencies.length > 0) {
+      throw new Error(`Cotizaciones no disponibles para ${excludedCurrencies.join(', ')}`);
+    }
     const byCat = new Map<string, { name: string; icon: string; amount: number; count: number }>();
     for (const t of rows) {
+      const amount = toArs(t);
+      if (amount == null) continue;
       const cat = t.category as { name?: string; icon?: string } | null;
       const key = String(t.category_id || 'none');
       const cur = byCat.get(key) || {
@@ -96,7 +102,7 @@ class AnalyticsService {
         amount: 0,
         count: 0,
       };
-      cur.amount += toArs(t);
+      cur.amount += amount;
       cur.count += 1;
       byCat.set(key, cur);
     }
@@ -126,17 +132,23 @@ class AnalyticsService {
       .order('id', { ascending: true })
       .range(from, to));
     const rows = data.filter((t: any) => t.account?.is_active !== false);
-    const { toArs } = await buildToArsConverter(rows);
+    const { toArs, excludedCurrencies } = await buildToArsConverter(rows);
+    // These aggregate-only responses cannot expose partial-valuation metadata.
+    if (excludedCurrencies.length > 0) {
+      throw new Error(`Cotizaciones no disponibles para ${excludedCurrencies.join(', ')}`);
+    }
     const byMonth = new Map<string, { expenses: number; income: number }>();
     for (const key of monthKeys) {
       byMonth.set(key, { expenses: 0, income: 0 });
     }
     for (const t of rows) {
+      const amount = toArs(t);
+      if (amount == null) continue;
       const key = transactionCivilYmd(String(t.transaction_date)).slice(0, 7);
       const bucket = byMonth.get(key);
       if (!bucket) continue;
-      if (t.type === 'expense') bucket.expenses += toArs(t);
-      else bucket.income += toArs(t);
+      if (t.type === 'expense') bucket.expenses += amount;
+      else bucket.income += amount;
     }
     return monthKeys.map((key) => {
       const v = byMonth.get(key) || { expenses: 0, income: 0 };
@@ -166,17 +178,23 @@ class AnalyticsService {
       .order('id', { ascending: true })
       .range(from, to));
     const rows = data.filter((t: any) => t.account?.is_active !== false);
-    const { toArs } = await buildToArsConverter(rows);
+    const { toArs, excludedCurrencies } = await buildToArsConverter(rows);
+    // These aggregate-only responses cannot expose partial-valuation metadata.
+    if (excludedCurrencies.length > 0) {
+      throw new Error(`Cotizaciones no disponibles para ${excludedCurrencies.join(', ')}`);
+    }
     const byDay = new Map<string, { expenses: number; income: number }>();
     for (const dateStr of days) {
       byDay.set(dateStr, { expenses: 0, income: 0 });
     }
     for (const t of rows) {
+      const amount = toArs(t);
+      if (amount == null) continue;
       const dateStr = transactionCivilYmd(String(t.transaction_date));
       const bucket = byDay.get(dateStr);
       if (!bucket) continue;
-      if (t.type === 'expense') bucket.expenses += toArs(t);
-      else bucket.income += toArs(t);
+      if (t.type === 'expense') bucket.expenses += amount;
+      else bucket.income += amount;
     }
     return days.map((dateStr) => {
       const v = byDay.get(dateStr) || { expenses: 0, income: 0 };
@@ -208,9 +226,15 @@ class AnalyticsService {
       .range(from, to));
 
     const rows = data.filter((t: any) => t.account?.is_active !== false);
-    const { toArs } = await buildToArsConverter(rows);
+    const { toArs, excludedCurrencies } = await buildToArsConverter(rows);
+    // These aggregate-only responses cannot expose partial-valuation metadata.
+    if (excludedCurrencies.length > 0) {
+      throw new Error(`Cotizaciones no disponibles para ${excludedCurrencies.join(', ')}`);
+    }
     const byAcc = new Map<string, { name: string; icon: string; color: string; amount: number }>();
     for (const t of rows) {
+      const amount = toArs(t);
+      if (amount == null) continue;
       const acc = t.account as { name?: string; icon?: string; color?: string } | null;
       const key = String(t.account_id || 'none');
       const cur = byAcc.get(key) || {
@@ -219,7 +243,7 @@ class AnalyticsService {
         color: acc?.color || '#6B7280',
         amount: 0,
       };
-      cur.amount += toArs(t);
+      cur.amount += amount;
       byAcc.set(key, cur);
     }
     const normalized = Array.from(byAcc.values()).sort((a, b) => b.amount - a.amount);

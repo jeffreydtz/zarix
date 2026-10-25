@@ -1,7 +1,8 @@
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
-  fciUsdPlausibilityAnchor,
+  fciPlausibilityAnchor,
+  fciPricePlausible,
   listingCandidates,
   resolveFciQuoteCurrency,
   resolveQuoteCurrency,
@@ -29,7 +30,7 @@ export interface QuoteRefreshPosition {
   ticker: string | null;
   market_currency: string | null;
   purchase_currency: string | null;
-  /** Last stored cuotaparte; FCI unknown+USD plausibility vs this price. */
+  /** Last stored cuotaparte in market_currency, used as the plausibility anchor. */
   current_price?: number | string | null;
   purchase_price?: number | string | null;
   /** When set, FCI results are keyed per position so plausibility is not shared. */
@@ -281,7 +282,7 @@ export async function refreshQuotesForInvestments(
         ticker,
         cacheKey: quoteCacheKeyForPosition(inv) ?? cacheKey,
         currency,
-        storedPrice: fciUsdPlausibilityAnchor({
+        storedPrice: fciPlausibilityAnchor({
           currentPrice: inv.current_price,
           purchasePrice: inv.purchase_price,
           marketCurrency: inv.market_currency,
@@ -309,7 +310,7 @@ export async function refreshQuotesForInvestments(
     }
   }
 
-  const dolar = await cotizacionesService.getDolarQuotes().catch(() => null);
+  const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'] }).catch(() => null);
   const mepArsPerUsd = options?.mepArsPerUsd ?? mepRate(dolar);
 
   const adapt = (quote: ConvertibleQuote, currency: string): QuoteResult | null => {
@@ -388,7 +389,8 @@ export async function refreshQuotesForInvestments(
       if (!resolved.currency) {
         console.warn('[quotes] skip FCI currency', {
           ticker: fci.ticker,
-          reason: resolved.reason,
+          reason: fci.currency === 'USD' && fci.storedPrice != null ? 'fci_implausible' : resolved.reason,
+          id: fci.id,
           cafci: q.currency,
           stored: fci.currency,
         });
@@ -408,6 +410,15 @@ export async function refreshQuotesForInvestments(
             reason: 'mep',
             cafci: q.currency,
             stored: fci.currency,
+          });
+        } else if (fci.storedPrice != null && !fciPricePlausible(adapted.price, fci.storedPrice)) {
+          console.warn('[quotes] skip FCI price', {
+            reason: 'fci_implausible',
+            ticker: fci.ticker,
+            id: fci.id,
+            candidate: adapted.price,
+            anchor: fci.storedPrice,
+            currency: adapted.currency,
           });
         } else {
           stamped = stamp(adapted);

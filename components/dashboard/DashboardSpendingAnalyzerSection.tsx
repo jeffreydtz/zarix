@@ -13,12 +13,13 @@ export default async function DashboardSpendingAnalyzerSection({
 }: {
   quotes: QuotesPayload;
 }) {
+  if (!quotes.dolar.blue) return null;
   return (
     <SpendingAnalyzer
-      usdToArsBlue={quotes.dolar.blue.sell || 0}
+      usdToArsBlue={quotes.dolar.blue.sell}
       cryptoPriceArs={{
-        btc: quotes.crypto.btc.priceARS,
-        eth: quotes.crypto.eth.priceARS,
+        btc: quotes.crypto.btc?.priceARS,
+        eth: quotes.crypto.eth?.priceARS,
       }}
     />
   );

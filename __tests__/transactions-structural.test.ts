@@ -85,7 +85,7 @@ describe('CU-001 buildToArsConverter', () => {
     const { toArs, excludedCurrencies } = await buildToArsConverter([
       { currency: 'EUR' },
     ]);
-    expect(toArs({ amount: 50, currency: 'EUR' })).toBe(0);
+    expect(toArs({ amount: 50, currency: 'EUR' })).toBeNull();
     expect(excludedCurrencies).toEqual(['EUR']);
   });
 

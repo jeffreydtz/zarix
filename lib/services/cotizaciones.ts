@@ -1,13 +1,32 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { YAHOO_FINANCE_HEADERS } from '@/lib/yahoo-finance-headers';
 
+export type DolarRateType = 'blue' | 'oficial' | 'mep' | 'ccl';
+
 export interface DolarQuote {
-  type: 'blue' | 'oficial' | 'mep' | 'ccl';
+  type: DolarRateType;
   buy: number;
   sell: number;
   timestamp: Date;
   provider?: string | null;
   origin?: 'provider' | 'persisted';
+  stale?: boolean;
+  asOf?: Date;
+}
+
+type DolarRates = Partial<Record<DolarRateType, DolarQuote>>;
+export type DolarQuotes = DolarRates & {
+  status: 'available' | 'partial' | 'unavailable';
+  missing: DolarRateType[];
+};
+
+export class FxUnavailableError extends Error {
+  readonly code = 'FX_UNAVAILABLE';
+
+  constructor(pair: string) {
+    super(`Cotización ${pair} no disponible`);
+    this.name = 'FxUnavailableError';
+  }
 }
 
 interface CryptoQuote {
@@ -38,6 +57,7 @@ function positiveConfig(value: string | undefined, fallback: number): number {
 }
 const CACHE_TTL = positiveConfig(process.env.EXCHANGE_RATE_CACHE_TTL, 300) * 1000;
 const MAX_RATE_AGE_MS = positiveConfig(process.env.EXCHANGE_RATE_MAX_AGE_SECONDS, 86400) * 1000;
+const MAX_MARKET_RATE_AGE_MS = positiveConfig(process.env.EXCHANGE_RATE_MARKET_MAX_AGE_SECONDS, 345600) * 1000;
 const MARKET_TIMEOUT_MS = positiveConfig(process.env.MARKET_DATA_TIMEOUT_MS, 8000);
 const DOLAR_SOURCES = ['blue', 'oficial', 'mep', 'ccl'] as const;
 
@@ -49,19 +69,41 @@ function assertFreshQuote(timestamp: Date, prices: number[]): void {
   }
 }
 
-function validateDolarQuotes(quotes: Record<string, DolarQuote>): void {
-  for (const source of DOLAR_SOURCES) {
-    const quote = quotes[source];
-    const timestamp = quote?.timestamp?.getTime();
-    if (
-      !quote || !Number.isFinite(quote.buy) || quote.buy <= 0 ||
-      !Number.isFinite(quote.sell) || quote.sell <= 0 ||
-      !Number.isFinite(timestamp) || Date.now() - timestamp > MAX_RATE_AGE_MS ||
-      timestamp > Date.now() + 5 * 60 * 1000
-    ) {
-      throw new Error(`Cotización ${source} no disponible, inválida o vencida`);
+/** Invalid values and future timestamps are never usable, even as last-known data. */
+function validDolarQuote(quote: DolarQuote | undefined): quote is DolarQuote {
+  if (!quote) return false;
+  const time = quote.timestamp.getTime();
+  return Number.isFinite(quote.buy) && quote.buy > 0 &&
+    Number.isFinite(quote.sell) && quote.sell > 0 && Number.isFinite(time) &&
+    time <= Date.now() + 5 * 60 * 1000;
+}
+
+function acceptedDolarQuote(quote: DolarQuote | undefined): quote is DolarQuote {
+  return validDolarQuote(quote) && Date.now() - quote.timestamp.getTime() <=
+    (quote.type === 'blue' ? MAX_RATE_AGE_MS : MAX_MARKET_RATE_AGE_MS);
+}
+
+function dolarResult(quotes: DolarRates, required: readonly DolarRateType[]): DolarQuotes {
+  const missing = required.filter(type => !quotes[type]);
+  return {
+    ...quotes,
+    status: missing.length === 0 ? 'available' : missing.length === required.length ? 'unavailable' : 'partial',
+    missing,
+  };
+}
+
+function currentDolarRates(quotes: DolarRates): DolarRates {
+  const result: DolarRates = {};
+  for (const type of DOLAR_SOURCES) {
+    const quote = quotes[type];
+    if (acceptedDolarQuote(quote)) {
+      result[type] = {
+        ...quote, asOf: quote.timestamp,
+        stale: Boolean(quote.stale) || Date.now() - quote.timestamp.getTime() > MAX_RATE_AGE_MS,
+      };
     }
   }
+  return result;
 }
 
 interface DolarApiRow {
@@ -81,13 +123,13 @@ function sourceTimestamp(value: unknown): Date {
 /**
  * Patrón Strategy: cada fuente de cotización del dólar es una estrategia
  * intercambiable que cumple esta interfaz. CotizacionesService (Context) las
- * recorre en orden hasta obtener una cotización válida (fallback). Agregar una
+ * combina por tasa, conservando la muestra válida más reciente. Agregar una
  * fuente nueva = implementar esta interfaz y sumarla al arreglo `dolarProviders`.
  */
 interface DolarRateProvider {
   readonly name: string;
-  /** Devuelve blue/oficial/mep/ccl o lanza si la fuente no está disponible. */
-  fetch(): Promise<Record<string, DolarQuote>>;
+  /** Devuelve las tasas disponibles con su propia fecha de origen. */
+  fetch(): Promise<DolarRates>;
 }
 
 /** Estrategia primaria: API de CriptoYa. */
@@ -136,12 +178,6 @@ class CriptoYaProvider implements DolarRateProvider {
       },
     };
 
-    // Si el blue vino en 0 (respuesta degradada), tratarlo como fallo para caer
-    // al siguiente proveedor en vez de cachear ceros que rompen toda conversión.
-    if (!(quotes.blue.sell > 0) || !(quotes.blue.buy > 0)) {
-      throw new Error('CriptoYa: dólar blue en 0');
-    }
-
     return quotes;
   }
 }
@@ -186,12 +222,6 @@ class DolarApiProvider implements DolarRateProvider {
       ccl: { type: 'ccl', buy: Number(ccl?.compra) || 0, sell: Number(ccl?.venta) || 0, timestamp: sourceTimestamp(ccl?.fechaActualizacion) },
     };
 
-    // Igual que CriptoYa: blue en 0 = respuesta degradada → fallar para caer al
-    // siguiente proveedor en vez de cachear/persistir ceros que rompen conversiones.
-    if (!(quotes.blue.sell > 0) || !(quotes.blue.buy > 0)) {
-      throw new Error('DolarApi: dólar blue en 0');
-    }
-
     return quotes;
   }
 }
@@ -200,58 +230,39 @@ class DolarApiProvider implements DolarRateProvider {
 class DbCacheProvider implements DolarRateProvider {
   readonly name = 'db';
 
-  async fetch(): Promise<Record<string, DolarQuote>> {
+  async fetch(): Promise<DolarRates> {
     const supabase = createServiceClientSync();
-    const sources = DOLAR_SOURCES;
+    const queries = await Promise.allSettled(DOLAR_SOURCES.map(async source => {
+      const { data, error } = await supabase
+        .from('exchange_rates')
+        .select('rate, timestamp')
+        .eq('source', source)
+        .eq('from_currency', 'USD')
+        .eq('to_currency', 'ARS')
+        .order('timestamp', { ascending: false })
+        .limit(1)
+        .single();
+      if (error) throw error;
+      if (!data) return null;
+      // Both sides must belong to the same provider sample; never invent a spread.
+      const { data: buy, error: buyError } = await supabase
+        .from('exchange_rates').select('rate, timestamp')
+        .eq('source', `${source}_buy`).eq('from_currency', 'USD').eq('to_currency', 'ARS')
+        .eq('timestamp', data.timestamp).limit(1).maybeSingle();
+      if (buyError) throw buyError;
+      if (!buy) return null;
+      return {
+        type: source, buy: Number(buy.rate), sell: Number(data.rate),
+        timestamp: sourceTimestamp(data.timestamp),
+      } satisfies DolarQuote;
+    }));
 
-    const queries = await Promise.all(
-      sources.map(async (source) => {
-        const { data, error } = await supabase
-          .from('exchange_rates')
-          .select('rate, timestamp')
-          .eq('source', source)
-          .eq('from_currency', 'USD')
-          .eq('to_currency', 'ARS')
-          .order('timestamp', { ascending: false })
-          .limit(1)
-          .single();
-
-        if (error) throw error;
-        // Legacy rows contain only sell. Require a buy side from the same sample;
-        // copying sell into buy silently fabricates a zero spread.
-        const { data: buy, error: buyError } = data ? await supabase
-          .from('exchange_rates').select('rate, timestamp')
-          .eq('source', `${source}_buy`).eq('from_currency', 'USD').eq('to_currency', 'ARS')
-          .eq('timestamp', data.timestamp).limit(1).maybeSingle() : { data: null, error: null };
-        if (buyError) throw buyError;
-        return { source, data, buy };
-      })
-    );
-
-    const hasAny = queries.some((q) => q.data?.rate);
-    if (!hasAny) {
-      throw new Error('Sin cotizaciones previas en exchange_rates');
-    }
-
-    const result: Record<string, DolarQuote> = {
-      blue: { type: 'blue', buy: 0, sell: 0, timestamp: new Date() },
-      oficial: { type: 'oficial', buy: 0, sell: 0, timestamp: new Date() },
-      mep: { type: 'mep', buy: 0, sell: 0, timestamp: new Date() },
-      ccl: { type: 'ccl', buy: 0, sell: 0, timestamp: new Date() },
-    };
-
-    for (const q of queries) {
-      if (q.data?.rate) {
-        result[q.source] = {
-          type: q.source as DolarQuote['type'],
-          buy: q.buy ? Number(q.buy.rate) : 0,
-          sell: Number(q.data.rate),
-          timestamp: new Date(q.data.timestamp),
-        };
+    const result: DolarRates = {};
+    for (const query of queries) {
+      if (query.status === 'fulfilled' && query.value) {
+        result[query.value.type] = query.value;
       }
     }
-
-    validateDolarQuotes(result);
     return result;
   }
 }
@@ -298,21 +309,16 @@ class CotizacionesService {
     };
   }
 
-  private async saveLatestDolarQuotes(quotes: Record<string, DolarQuote>): Promise<void> {
+  private async saveLatestDolarQuotes(quotes: DolarRates): Promise<void> {
     try {
-      const supabase = createServiceClientSync();
-
-      // Nunca persistir tasas <= 0: quedan en exchange_rates y las lee DbCacheProvider.
       const rows = Object.values(quotes)
-        .flatMap((q) => [
+        .filter(q => q.origin === 'provider' && acceptedDolarQuote(q))
+        .flatMap(q => [
           { source: q.type, from_currency: 'USD', to_currency: 'ARS', rate: q.sell, timestamp: q.timestamp.toISOString() },
           { source: `${q.type}_buy`, from_currency: 'USD', to_currency: 'ARS', rate: q.buy, timestamp: q.timestamp.toISOString() },
-        ])
-        .filter((r) => r.rate > 0);
-
+        ]);
       if (rows.length === 0) return;
-
-      const { error } = await supabase.from('exchange_rates').insert(rows);
+      const { error } = await createServiceClientSync().from('exchange_rates').insert(rows);
       if (error) throw error;
     } catch (error) {
       console.error('Error saving dollar quotes:', error);
@@ -320,73 +326,81 @@ class CotizacionesService {
   }
 
   async getDolarQuotes(
-    opts?: { preferCache?: boolean }
-  ): Promise<Record<string, DolarQuote>> {
-    const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
+    opts?: { preferCache?: boolean; require?: readonly DolarRateType[] }
+  ): Promise<DolarQuotes> {
+    const required = opts?.require ?? DOLAR_SOURCES;
+    const cacheKey = this.getCacheKey('providers', 'dolar', 'all');
     const dbCacheKey = this.getCacheKey('db', 'dolar', 'all');
-    const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
-
+    const cached = this.getFromCache<DolarRates>(cacheKey);
     if (cached) {
-      try {
-        validateDolarQuotes(cached);
-        return cached;
-      } catch {
-        delete cache[cacheKey];
+      const current = currentDolarRates(cached);
+      // A memory entry must never extend a rate's provider-time age limit.
+      if (DOLAR_SOURCES.every(type => !cached[type] || current[type])) {
+        return dolarResult(current, required);
       }
     }
 
-    // Camino rápido (dashboard): última cotización persistida en DB en vez de
-    // esperar a las APIs externas en vivo (que en frío tardan segundos). La
-    // frescura la mantiene el cron update-prices. Si no hay cache en DB, cae al
-    // camino en vivo. El caller (dashboard) lo envuelve en un timeout duro.
+    let persisted: DolarRates | undefined;
+    const dbProvider = this.dolarProviders.find(provider => provider.name === 'db')!;
     if (opts?.preferCache) {
-      const dbCached = this.getFromCache<Record<string, DolarQuote>>(dbCacheKey);
-      if (dbCached) {
-        try {
-          validateDolarQuotes(dbCached);
-          return dbCached;
-        } catch {
-          delete cache[dbCacheKey];
-        }
-      }
-      const dbProvider = this.dolarProviders.find((p) => p.name === 'db');
-      if (dbProvider) {
-        try {
-          const quotes = this.withProviderMetadata(await dbProvider.fetch(), dbProvider.name);
-          this.setCache(dbCacheKey, quotes);
-          return quotes;
-        } catch {
-          // sin cache previa en DB → seguimos al camino en vivo
-        }
+      try {
+        persisted = this.getFromCache<DolarRates>(dbCacheKey) ??
+          this.withProviderMetadata(await dbProvider.fetch(), 'db');
+        this.setCache(dbCacheKey, persisted);
+        const current = currentDolarRates(persisted);
+        if (required.every(type => current[type])) return dolarResult(current, required);
+      } catch {
+        // An unavailable cache must not prevent live or other per-rate fallbacks.
       }
     }
 
-    // Patrón Strategy + fallback: recorre los proveedores en orden hasta que uno
-    // devuelve una cotización válida. Solo se persisten las fuentes en vivo
-    // (no el proveedor de respaldo en BD, que ya lee de exchange_rates).
-    let lastError: unknown;
+    const merged: DolarRates = {};
+    const live: DolarRates = {};
     for (const provider of this.dolarProviders) {
       try {
-        const quotes = this.withProviderMetadata(await provider.fetch(), provider.name);
-        validateDolarQuotes(quotes);
-        this.setCache(provider.name === 'db' ? dbCacheKey : cacheKey, quotes);
-        if (provider.name !== 'db') {
-          await this.saveLatestDolarQuotes(quotes);
+        const quotes = provider.name === 'db' && persisted ? persisted :
+          this.withProviderMetadata(await provider.fetch(), provider.name);
+        if (provider.name === 'db') persisted = quotes;
+        for (const type of DOLAR_SOURCES) {
+          const quote = quotes[type];
+          if (!acceptedDolarQuote(quote)) continue;
+          // On equal timestamps preserve the provider priority: CriptoYa, DolarApi, DB.
+          if (!merged[type] || quote.timestamp > merged[type]!.timestamp) merged[type] = quote;
+          if (provider.name !== 'db' && (!live[type] || quote.timestamp > live[type]!.timestamp)) {
+            live[type] = quote;
+          }
         }
-        return quotes;
       } catch (error) {
         console.error(`Dolar provider "${provider.name}" failed:`, error);
-        lastError = error;
       }
     }
 
-    throw lastError ?? new Error('No hay proveedor de cotización disponible');
+    await this.saveLatestDolarQuotes(live);
+    const hasLive = Object.keys(live).length > 0;
+    if (Object.keys(merged).length === 0) {
+      // Total outage: display last-known persisted values explicitly as stale.
+      // Never rescue rejected live data, invalid prices, or future provider dates.
+      for (const type of DOLAR_SOURCES) {
+        const quote = persisted?.[type];
+        if (validDolarQuote(quote)) merged[type] = { ...quote, stale: true, asOf: quote.timestamp };
+      }
+    } else if (!hasLive) {
+      for (const type of DOLAR_SOURCES) {
+        if (merged[type]) merged[type] = { ...merged[type]!, stale: true };
+      }
+    }
+    // A DB fallback must not suppress the next live refresh attempt.
+    if (hasLive) this.setCache(cacheKey, merged);
+    if (persisted) this.setCache(dbCacheKey, persisted);
+    return dolarResult(merged, required);
   }
 
-  private withProviderMetadata(quotes: Record<string, DolarQuote>, provider: string): Record<string, DolarQuote> {
+  private withProviderMetadata(quotes: DolarRates, provider: string): DolarRates {
     return Object.fromEntries(Object.entries(quotes).map(([type, quote]) => [type, {
       ...quote, provider: provider === 'db' ? null : provider,
       origin: provider === 'db' ? 'persisted' as const : 'provider' as const,
+      stale: Date.now() - quote.timestamp.getTime() > MAX_RATE_AGE_MS,
+      asOf: quote.timestamp,
     }]));
   }
 
@@ -532,14 +546,24 @@ class CotizacionesService {
   }
 
   /** Cotizaciones mínimas para movimientos (ARS / USD / EUR), sin crypto ni otros mercados. */
-  async getTransactionsFxRates(): Promise<{ usdArs: number; eurArs: number }> {
+  async getTransactionsFxRates(): Promise<{
+    usdArs: number | null;
+    eurArs: number | null;
+    fxUnavailable: boolean;
+    stale: boolean;
+    asOf: Date | null;
+  }> {
     const [dolar, eurUsd] = await Promise.all([
-      this.getDolarQuotes(),
-      this.getEurUsdRate(),
+      this.getDolarQuotes({ require: ['blue'] }).catch(() => null),
+      this.getEurUsdRate().catch(() => null),
     ]);
-    const usdArs = dolar.blue.sell;
-    const eurArs = eurUsd * usdArs;
-    return { usdArs, eurArs };
+    const blue = dolar?.blue;
+    const usdArs = blue && Number.isFinite(blue.sell) && blue.sell > 0 ? blue.sell : null;
+    const eurArs = eurUsd && usdArs ? eurUsd * usdArs : null;
+    return {
+      usdArs, eurArs, fxUnavailable: usdArs === null || eurArs === null,
+      stale: Boolean(blue?.stale), asOf: blue?.asOf ?? blue?.timestamp ?? null,
+    };
   }
 
   async getExchangeRate(
@@ -553,22 +577,22 @@ class CotizacionesService {
     // Source caches retain quote time; a derived numeric cache would extend freshness.
 
     if (fromU === 'USD' && toU === 'ARS') {
-      const dolar = await this.getDolarQuotes();
-      const rate = dolar.blue.sell;
+      const dolar = await this.getDolarQuotes({ require: ['blue'] });
+      const rate = dolar.blue?.sell;
       // Lanzar en vez de devolver 0: un 0 silencioso se multiplica aguas arriba
       // y guarda movimientos con amount_in_account_currency = 0.
-      if (!(rate > 0)) {
-        throw new Error('Cotización USD→ARS no disponible');
+      if (!rate || !Number.isFinite(rate) || rate <= 0) {
+        throw new FxUnavailableError('USD→ARS');
       }
       return rate;
     }
 
     if (fromU === 'ARS' && toU === 'USD') {
-      const dolar = await this.getDolarQuotes();
-      const buy = dolar.blue.buy;
+      const dolar = await this.getDolarQuotes({ require: ['blue'] });
+      const buy = dolar.blue?.buy;
       // Evitar Infinity/NaN si el blue viene en 0.
-      if (!(buy > 0)) {
-        throw new Error('Cotización ARS→USD no disponible');
+      if (!buy || !Number.isFinite(buy) || buy <= 0) {
+        throw new FxUnavailableError('ARS→USD');
       }
       const rate = 1 / buy;
       return rate;
@@ -576,11 +600,12 @@ class CotizacionesService {
 
     if (fromU === 'EUR' && toU === 'ARS') {
       const eurUsd = await this.getEurUsdRate();
-      const dolar = await this.getDolarQuotes();
-      if (!(dolar.blue.sell > 0)) {
-        throw new Error('Cotización EUR→ARS no disponible');
+      const dolar = await this.getDolarQuotes({ require: ['blue'] });
+      const sell = dolar.blue?.sell;
+      if (!sell || !Number.isFinite(sell) || sell <= 0) {
+        throw new FxUnavailableError('EUR→ARS');
       }
-      const rate = eurUsd * dolar.blue.sell;
+      const rate = eurUsd * sell;
       return rate;
     }
 
@@ -618,15 +643,15 @@ class CotizacionesService {
   async getAllQuotes() {
     const [dolar, btc, eth, usdt] = await Promise.all([
       this.getDolarQuotes(),
-      this.getCryptoQuote('BTC'),
-      this.getCryptoQuote('ETH'),
-      this.getCryptoQuote('USDT'),
+      this.getCryptoQuote('BTC').catch(() => null),
+      this.getCryptoQuote('ETH').catch(() => null),
+      this.getCryptoQuote('USDT').catch(() => null),
     ]);
 
     return {
       dolar,
       crypto: { btc, eth, usdt },
-      timestamp: dolar.blue.timestamp.toISOString(),
+      timestamp: dolar.blue?.timestamp.toISOString() ?? null,
     };
   }
 }

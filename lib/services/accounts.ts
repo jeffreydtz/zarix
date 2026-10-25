@@ -89,16 +89,19 @@ export interface CreateAccountInput {
 }
 
 export interface AccountWithBalance extends Account {
-  balance_usd?: number;
-  balance_ars_blue?: number;
+  fxUnavailable?: boolean;
+  fxStale?: boolean;
+  fxAsOf?: string | null;
+  balance_usd?: number | null;
+  balance_ars_blue?: number | null;
   multicurrency_balance_primary?: number;
   multicurrency_balance_secondary?: number;
-  multicurrency_total_usd?: number;
-  multicurrency_total_ars_blue?: number;
+  multicurrency_total_usd?: number | null;
+  multicurrency_total_ars_blue?: number | null;
   /** USD/ARS leg only; other currency crosses may use separate references. */
   blueReference?: BlueFxReference;
   /** Read-only exclusion; original balances/currencies are never replaced. */
-  valuationIssue?: { reason: 'unsupported_currency'; currencies: string[] };
+  valuationIssue?: { reason: 'unsupported_currency' | 'fx_unavailable'; currencies: string[] };
 }
 
 export interface PartialAccountValuation {
@@ -110,7 +113,7 @@ export interface PartialAccountValuation {
     balance: number;
     secondaryCurrency?: string;
     secondaryBalance?: number;
-    reason: 'unsupported_currency';
+    reason: 'unsupported_currency' | 'fx_unavailable';
     currencies: string[];
   }>;
 }
@@ -130,6 +133,9 @@ export interface CreditCardDebtSlice {
 
 /** Totales derivados de `list()` — misma cotización que cada fila. */
 export interface AccountAggregates {
+  fxUnavailable?: boolean;
+  fxStale?: boolean;
+  fxAsOf?: string | null;
   /** Efectivo + bancos + billeteras (y other con include_in_liquid), sin tarjetas ni broker. */
   availableUSD: number;
   availableARSBlue: number;
@@ -185,20 +191,20 @@ class AccountsService {
     return out;
   }
 
-  private getRateToUsd(usdRates: Record<string, number>, currency: string | null | undefined): number {
+  private getRateToUsd(usdRates: Record<string, number>, currency: string | null | undefined): number | null {
     const c = normalizeAccountCurrency(currency);
     const r = usdRates[c];
     if (r !== undefined && r > 0) return r;
     if (c === 'USD') return 1;
     if (STABLECOIN_USD.has(c)) return 1;
-    return 0;
+    return null;
   }
 
-  private async buildUsdRates(currencies: string[], blueRate: number): Promise<Record<string, number>> {
+  private async buildUsdRates(currencies: string[], blueRate: number | null): Promise<Record<string, number>> {
     const uniqueCurrencies = Array.from(new Set(currencies.map((c) => normalizeAccountCurrency(c))));
     const rates: Record<string, number> = {
       USD: 1,
-      ARS: blueRate > 0 ? 1 / blueRate : 0,
+      ...(blueRate != null && blueRate > 0 ? { ARS: 1 / blueRate } : {}),
     };
 
     const dynamicCurrencies = uniqueCurrencies.filter((c) => c !== 'USD' && c !== 'ARS');
@@ -210,12 +216,14 @@ class AccountsService {
           return [currency, rate] as const;
         } catch {
           if (STABLECOIN_USD.has(currency)) return [currency, 1] as const;
-          throw new Error(`Cotización ${currency}/USD no disponible`);
+          if (!ACCOUNT_CURRENCIES.has(currency)) throw new Error(`Cotización ${currency}/USD no disponible`);
+          return [currency, null] as const;
         }
       })
     );
 
     for (const [currency, rate] of dynamicRates) {
+      if (rate == null) continue;
       let effective = rate;
       if ((!effective || effective <= 0) && STABLECOIN_USD.has(currency)) {
         effective = 1;
@@ -308,13 +316,11 @@ class AccountsService {
 
     if (error) throw error;
 
-    const dolar = await cotizacionesService.getDolarQuotes();
-    const blueRate = dolar.blue.sell;
-    const reference = blueFxReference(dolar.blue);
-
-    if (!Number.isFinite(blueRate) || blueRate <= 0) {
-      throw new Error('Exchange rate not available');
-    }
+    // FX is optional for reads: failures must never hide native account data.
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(() => null);
+    const blue = dolar?.blue;
+    const blueRate = blue && Number.isFinite(blue.sell) && blue.sell > 0 ? blue.sell : null;
+    const reference = blue && blueRate != null ? blueFxReference(blue) : undefined;
 
     const [usdRates, multicurrencyBalances] = await Promise.all([
       this.buildUsdRates(
@@ -343,30 +349,29 @@ class AccountsService {
         };
       }
       const rateToUSD = this.getRateToUsd(usdRates, account.currency);
-      let balanceUSD = 0;
-      let balanceARSBlue = 0;
       const secondaryRateToUSD = this.getRateToUsd(usdRates, account.secondary_currency);
-      if (rateToUSD > 0) {
+      const isMulti = account.type === 'credit_card' && account.is_multicurrency;
+      const unavailable = blueRate == null || rateToUSD == null || (isMulti && secondaryRateToUSD == null);
+      let balanceUSD: number | null = null;
+      let balanceARSBlue: number | null = null;
+      if (!unavailable && rateToUSD != null && blueRate != null) {
         balanceUSD = balance * rateToUSD;
+        if (isMulti && multi && secondaryRateToUSD != null) {
+          balanceUSD = Number(multi.primary) * rateToUSD + Number(multi.secondary) * secondaryRateToUSD;
+        }
         balanceARSBlue = balanceUSD * blueRate;
-      }
-
-      // Tarjetas bimoneda: el patrimonio debe considerar ARS + USD (convertidos a USD/ARS blue).
-      if (
-        account.type === 'credit_card' &&
-        account.is_multicurrency &&
-        multi &&
-        rateToUSD > 0 &&
-        secondaryRateToUSD > 0
-      ) {
-        const combinedUSD = Number(multi.primary) * rateToUSD + Number(multi.secondary) * secondaryRateToUSD;
-        balanceUSD = combinedUSD;
-        balanceARSBlue = combinedUSD * blueRate;
       }
 
       return {
         ...account,
         balance,
+        fxUnavailable: unavailable,
+        fxStale: Boolean(blue?.stale),
+        fxAsOf: reference?.observedAt ?? null,
+        ...(unavailable ? { valuationIssue: {
+          reason: 'fx_unavailable' as const,
+          currencies: [normalizeAccountCurrency(account.currency)],
+        } } : {}),
         balance_usd: balanceUSD,
         balance_ars_blue: balanceARSBlue,
         blueReference: reference,
@@ -476,6 +481,10 @@ class AccountsService {
     const creditCardDebtARSBlue = Math.max(0, -liquidARSBlue + availableARSBlue);
 
     return {
+      fxUnavailable: accounts.some(account => account.include_in_total !== false && account.fxUnavailable),
+      fxStale: accounts.some(account => account.include_in_total !== false && account.fxStale),
+      fxAsOf: accounts.filter(account => account.include_in_total !== false && account.fxStale)
+        .map(account => account.fxAsOf).filter((value): value is string => Boolean(value)).sort()[0] ?? null,
       ...(excludedAccounts.length ? { valuation: { status: 'partial' as const, excludedAccounts } } : {}),
       blueReferences: uniqueBlueFxReferences(accounts.filter(account => account.include_in_total !== false)
         .map(account => account.blueReference)),
@@ -846,8 +855,11 @@ class AccountsService {
     const agg = this.aggregateAccountTotals(accounts);
 
     return {
-      totalUSD: agg.liquidUSD,
-      totalARSBlue: agg.liquidARSBlue,
+      fxUnavailable: agg.fxUnavailable,
+      fxStale: agg.fxStale,
+      fxAsOf: agg.fxAsOf,
+      totalUSD: agg.fxUnavailable ? null : agg.liquidUSD,
+      totalARSBlue: agg.fxUnavailable ? null : agg.liquidARSBlue,
       accountCount: nonInvestment.length,
       totalCreditUsed: agg.totalCreditUsed,
       totalCreditLimit: agg.totalCreditLimit,
@@ -860,12 +872,15 @@ class AccountsService {
     const agg = this.aggregateAccountTotals(accounts);
 
     return {
-      liquidUSD: agg.liquidUSD,
-      liquidARSBlue: agg.liquidARSBlue,
-      investmentsUSD: agg.investmentsUSD,
-      investmentsARSBlue: agg.investmentsARSBlue,
-      totalUSD: agg.totalUSD,
-      totalARSBlue: agg.totalARSBlue,
+      fxUnavailable: agg.fxUnavailable,
+      fxStale: agg.fxStale,
+      fxAsOf: agg.fxAsOf,
+      liquidUSD: agg.fxUnavailable ? null : agg.liquidUSD,
+      liquidARSBlue: agg.fxUnavailable ? null : agg.liquidARSBlue,
+      investmentsUSD: agg.fxUnavailable ? null : agg.investmentsUSD,
+      investmentsARSBlue: agg.fxUnavailable ? null : agg.investmentsARSBlue,
+      totalUSD: agg.fxUnavailable ? null : agg.totalUSD,
+      totalARSBlue: agg.fxUnavailable ? null : agg.totalARSBlue,
     };
   }
 

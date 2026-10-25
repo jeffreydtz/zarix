@@ -11,6 +11,7 @@ vi.mock('@/lib/services/accounts', () => ({ accountsService: { getActiveAccountI
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: { getExchangeRate: vi.fn().mockResolvedValue(1300) } }));
 import { transactionsService } from '@/lib/services/transactions';
 import { getMonthFlow } from '@/lib/services/month-flow';
+import { cotizacionesService } from '@/lib/services/cotizaciones';
 
 const accountId = '00000000-0000-0000-0000-000000000001';
 const destinationId = '00000000-0000-0000-0000-000000000002';
@@ -64,6 +65,7 @@ function expenseRows(count: number) {
 beforeEach(() => {
   vi.clearAllMocks(); mocks.rows = []; mocks.rules = []; mocks.queries = []; mocks.writes = []; mocks.failPage = null;
   mocks.active.mockResolvedValue([accountId, destinationId]);
+  vi.mocked(cotizacionesService.getExchangeRate).mockReset().mockResolvedValue(1300);
   vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-14T12:00:00.000Z'));
 });
 afterEach(() => { vi.useRealTimers(); });
@@ -159,5 +161,35 @@ describe('financial aggregate reads beyond PostgREST max_rows', () => {
       expect(group[1].filters).toEqual(group[0].filters);
       expect(group[1].orders).toEqual(group[0].orders);
     }
+  });
+});
+
+
+describe('financial summaries explicitly exclude unavailable conversions', () => {
+  it('keeps native transaction counts and labels excluded currencies without creating zero-value categories', async () => {
+    const ars = expenseRows(1)[0];
+    mocks.rows = [ars,
+      { ...ars, id: 'usd-expense', currency: 'USD', amount: 1000, category: { name: 'Dólares', icon: 'D' } },
+      { ...ars, id: 'eur-income', type: 'income', currency: 'EUR', amount: 1000 },
+    ];
+    vi.mocked(cotizacionesService.getExchangeRate).mockRejectedValue(new Error('Fixture FX unavailable'));
+    const summary = await transactionsService.getMonthSummary('U1', new Date('2026-10-14T12:00:00Z'));
+    expect(summary).toMatchObject({ totalExpenses: 2, totalIncome: 0, transactionCount: 3 });
+    expect(summary.excludedCurrencies).toEqual(expect.arrayContaining(['USD', 'EUR']));
+    expect(summary.topCategories).toEqual([{ name: 'Sintética', icon: 'X', amount: 2 }]);
+    expect(mocks.writes).toEqual([]);
+  });
+
+  it('skips unavailable trailing and recurring amounts while retaining the excluded-currency notice', async () => {
+    const ars = expenseRows(1)[0];
+    mocks.rows = [ars, { ...ars, id: 'usd-expense', currency: 'USD', amount: 1000 }];
+    const rule = { id: 'ars-rule', user_id: 'U1', is_active: true, type: 'expense', frequency: 'monthly',
+      amount: 3, currency: 'ARS', start_date: '2026-10-01', end_date: null, last_executed_date: null };
+    mocks.rules = [rule, { ...rule, id: 'usd-rule', currency: 'USD', amount: 1000 }];
+    vi.mocked(cotizacionesService.getExchangeRate).mockRejectedValue(new Error('Fixture FX unavailable'));
+    const flow = await getMonthFlow('U1');
+    expect(flow).toMatchObject({ spentARS: 2, incomeARS: 0, daysLeft: 17, excludedCurrencies: ['USD'] });
+    expect(flow.projectedSpendARS).toBeCloseTo(2 + 2 / 14 * 17 + 3, 8);
+    expect(mocks.writes).toEqual([]);
   });
 });

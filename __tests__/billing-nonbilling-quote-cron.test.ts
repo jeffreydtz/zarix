@@ -68,7 +68,7 @@ beforeEach(() => {
   mocks.investments = [{ id: 'investment-1', type: 'crypto', ticker: 'BTC', purchase_currency: 'USD' }];
   mocks.crypto.mockResolvedValue({ priceUSD: 100 });
   mocks.stock.mockResolvedValue({ price: 100 });
-  mocks.dolar.mockResolvedValue({ blue: { sell: 1200 } });
+  mocks.dolar.mockResolvedValue({ blue: { sell: 1200 }, mep: { sell: 1200 } });
   mocks.alert.mockResolvedValue(undefined);
   mocks.upsert.mockResolvedValue({ error: null });
   mocks.update.mockImplementation(() => ({ eq: vi.fn().mockResolvedValue({ error: null }) }));
@@ -111,8 +111,8 @@ describe('quote cron provider failure reporting', () => {
     expect(mocks.alert).toHaveBeenCalledOnce();
   });
 
-  it('counts an invalid FX quote as a provider failure', async () => {
-    mocks.dolar.mockResolvedValue({ blue: { sell: 0 } });
+  it('counts an invalid MEP quote as a provider failure without blocking native refresh', async () => {
+    mocks.dolar.mockResolvedValue({ blue: { sell: 1200 }, mep: { sell: 0 } });
     const response = await GET(request());
     expect(await response.json()).toMatchObject({ processed: 1, errors: 1 });
     expect(mocks.alert).toHaveBeenCalledOnce();

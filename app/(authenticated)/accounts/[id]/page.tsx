@@ -1,3 +1,4 @@
+import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
@@ -110,7 +111,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
                         {account.secondary_currency}
                       </span>
                     </p>
-                    {!enriched.valuationIssue && <p className="text-sm font-medium tabular-nums text-muted-foreground">
+                    {!enriched.valuationIssue && !enriched.fxUnavailable && <p className="text-sm font-medium tabular-nums text-muted-foreground">
                       Total (ARS blue):{' '}
                       <span className="font-semibold text-destructive">
                         -$
@@ -171,6 +172,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
             </div>
           </div>
 
+          <FxStatusBanner {...combinedFxStatus(enriched ? [enriched] : [])} />
           <RepairCurrencyRangePanel accountId={account.id} />
 
           <TransactionsList
@@ -181,7 +183,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
             viewAccountContext={{
               accountId: account.id,
               accountCurrency: account.currency,
-              fx: fxRates
+              fx: fxRates?.usdArs != null && fxRates.eurArs != null
                 ? { usdToArs: fxRates.usdArs, eurArs: fxRates.eurArs }
                 : undefined,
               usdToArs: fxRates?.usdArs ?? undefined,
