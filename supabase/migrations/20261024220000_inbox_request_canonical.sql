@@ -153,7 +153,8 @@ BEGIN
   END;
 
   IF NOT COALESCE(p_client_keyed, false) THEN
-    lookback := pg_catalog.make_interval(secs => pg_catalog.GREATEST(COALESCE(p_lookback_ms, 900000), 0) / 1000.0);
+    lookback := pg_catalog.make_interval(
+      secs => (CASE WHEN COALESCE(p_lookback_ms, 900000) < 0 THEN 0 ELSE COALESCE(p_lookback_ms, 900000) END) / 1000.0);
     SELECT id INTO match_id
       FROM public.pending_inbox_items
      WHERE user_id = p_user_id

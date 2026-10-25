@@ -6081,7 +6081,7 @@ GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BO
 -- END supabase/migrations/20261024210000_inbox_possible_duplicate.sql
 
 -- BEGIN supabase/migrations/20261024220000_inbox_request_canonical.sql
--- SHA256 9ea65a81977fdafe77087ec0877929f75edf22c8a683b8d565d2b2c645b1cbf7
+-- SHA256 d0f684ef268d815bc74afe1006911dda7a80d43d882317d56434366244fa5098
 -- Immutable request identity for keyed Wallet/REST/MCP replay.
 -- Compute the canonical string in JS (`v1:{json}`); SQL stores it once and compares it.
 -- Prod currently has none of 180000–240000 (latest applied 20261024182923), so this
@@ -6237,7 +6237,8 @@ BEGIN
   END;
 
   IF NOT COALESCE(p_client_keyed, false) THEN
-    lookback := pg_catalog.make_interval(secs => pg_catalog.GREATEST(COALESCE(p_lookback_ms, 900000), 0) / 1000.0);
+    lookback := pg_catalog.make_interval(
+      secs => (CASE WHEN COALESCE(p_lookback_ms, 900000) < 0 THEN 0 ELSE COALESCE(p_lookback_ms, 900000) END) / 1000.0);
     SELECT id INTO match_id
       FROM public.pending_inbox_items
      WHERE user_id = p_user_id
