@@ -242,11 +242,10 @@ function parseAmountValue(v: unknown, amountToken?: string | null): AmountParseR
     const direction: 'expense' | 'income' = v < 0 ? 'income' : 'expense';
     if (!(abs > 0) || abs > MAX_AMOUNT) return { amount: null, ambiguous: false, direction: 'expense' };
     const tokenFromNumber = numberToDecimalString(abs);
-    const cents = integerCentsFromToken(tokenFromNumber);
-    if (cents == null) {
+    const amount = integerCentsFromToken(tokenFromNumber) != null ? moneyAmountFromToken(tokenFromNumber) : null;
+    if (amount == null) {
       return { amount: null, ambiguous: true, direction, excessDecimals: true };
     }
-    const amount = moneyAmountFromToken(tokenFromNumber) ?? Number(cents / 100n) + Number(cents % 100n) / 100;
     return { amount, ambiguous: false, direction };
   }
   if (typeof v === 'string') {

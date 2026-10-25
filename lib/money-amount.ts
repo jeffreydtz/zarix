@@ -13,7 +13,7 @@ function centsFromParts(whole: string, frac: string): bigint | null {
   if (frac.length > 2) return null;
   if (!/^\d+$/.test(whole) || (frac !== '' && !/^\d+$/.test(frac))) return null;
   try {
-    return BigInt(whole) * 100n + BigInt(frac.padEnd(2, '0') || '0');
+    return BigInt(whole) * BigInt(100) + BigInt(frac.padEnd(2, '0') || '0');
   } catch {
     return null;
   }
@@ -60,10 +60,10 @@ export function integerCentsFromToken(raw: string): bigint | null {
 }
 
 export function formatCents(cents: bigint): string {
-  const sign = cents < 0n ? '-' : '';
-  const abs = cents < 0n ? -cents : cents;
-  const whole = abs / 100n;
-  const frac = abs % 100n;
+  const sign = cents < BigInt(0) ? '-' : '';
+  const abs = cents < BigInt(0) ? -cents : cents;
+  const whole = abs / BigInt(100);
+  const frac = abs % BigInt(100);
   return `${sign}${whole}.${frac.toString().padStart(2, '0')}`;
 }
 
@@ -116,5 +116,5 @@ export function hasAtMostTwoMoneyDecimals(value: unknown): boolean {
 export function moneyAmountFromToken(raw: string): number | null {
   const cents = integerCentsFromToken(raw);
   if (cents == null) return null;
-  return Number(cents / 100n) + Number(cents % 100n) / 100;
+  return Number(cents / BigInt(100)) + Number(cents % BigInt(100)) / 100;
 }
