@@ -16,7 +16,12 @@ import {
   PAT_HASH_VERSION_HMAC,
   PAT_HASH_VERSION_SHA256,
 } from '@/lib/auth/personal-access-token';
-import { clientIpFromRequest, rateLimitAllow, rateLimitAllowShared } from '@/lib/rate-limit';
+import {
+  clientIpFromRequest,
+  rateLimitAllow,
+  rateLimitAllowShared,
+  SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+} from '@/lib/rate-limit';
 import { auditIpFromRequest, auditUserAgent, hashClientIp, recordIntegrationAudit } from '@/lib/integrations/audit';
 
 const PAT_PUBLIC_COLUMNS =
@@ -208,11 +213,21 @@ export async function authenticatePersonalAccessToken(
   if (!row.expires_at || Date.parse(row.expires_at) <= Date.now()) {
     throw new ApiError('Unauthorized', 401);
   }
-  if (!options?.skipRateLimit && !(await rateLimitAllowShared(`pat-token:${row.id}`, 60, 60_000))) {
-    throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
-  }
-  if (!options?.skipRateLimit && !(await rateLimitAllowShared(`pat-user:${row.user_id}`, 120, 60_000))) {
-    throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
+  if (!options?.skipRateLimit) {
+    const tokenLimiter = await rateLimitAllowShared(`pat-token:${row.id}`, 60, 60_000);
+    if (tokenLimiter !== 'allow') {
+      throw new ApiError(
+        tokenLimiter === 'exhausted' ? 'Demasiados intentos. Esperá un minuto.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+        tokenLimiter === 'exhausted' ? 429 : 503
+      );
+    }
+    const userLimiter = await rateLimitAllowShared(`pat-user:${row.user_id}`, 120, 60_000);
+    if (userLimiter !== 'allow') {
+      throw new ApiError(
+        userLimiter === 'exhausted' ? 'Demasiados intentos. Esperá un minuto.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+        userLimiter === 'exhausted' ? 429 : 503
+      );
+    }
   }
   if (needed && !scopesInclude(row.scopes, needed)) {
     throw new ApiError('Este token no tiene el permiso necesario.', 403);

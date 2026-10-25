@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ApiError, errorResponse } from '@/lib/api-handler';
 import { authenticatePersonalAccessToken } from '@/lib/services/personal-access-tokens';
 import { ingestWalletItem, sampleWalletPayload } from '@/lib/services/pending-inbox';
-import { clientIpFromRequest, rateLimitAllow, rateLimitAllowShared } from '@/lib/rate-limit';
+import {
+  clientIpFromRequest,
+  rateLimitAllow,
+  rateLimitAllowShared,
+  SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+} from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,11 +51,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Demasiados envíos. Esperá un minuto.' }, { status: 429 });
     }
     const auth = await authenticatePersonalAccessToken(req, 'ingest');
-    if (!(await rateLimitAllowShared(`ingest-token:${auth.tokenId}`, 30, 60_000))) {
-      return NextResponse.json({ error: 'Demasiados envíos con este token.' }, { status: 429 });
+    const tokenLimiter = await rateLimitAllowShared(`ingest-token:${auth.tokenId}`, 30, 60_000);
+    if (tokenLimiter !== 'allow') {
+      throw new ApiError(
+        tokenLimiter === 'exhausted' ? 'Demasiados envíos con este token.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+        tokenLimiter === 'exhausted' ? 429 : 503
+      );
     }
-    if (!(await rateLimitAllowShared(`ingest-user:${auth.userId}`, 60, 60_000))) {
-      return NextResponse.json({ error: 'Demasiados envíos. Esperá un minuto.' }, { status: 429 });
+    const userLimiter = await rateLimitAllowShared(`ingest-user:${auth.userId}`, 60, 60_000);
+    if (userLimiter !== 'allow') {
+      throw new ApiError(
+        userLimiter === 'exhausted' ? 'Demasiados envíos. Esperá un minuto.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+        userLimiter === 'exhausted' ? 429 : 503
+      );
     }
 
     const contentType = req.headers.get('content-type') || '';

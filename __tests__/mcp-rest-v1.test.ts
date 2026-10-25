@@ -165,7 +165,7 @@ describe('MCP /api/mcp', () => {
       },
       error: null,
     }));
-    const spy = vi.spyOn(rateLimit, 'rateLimitAllowShared').mockResolvedValue(false);
+    const spy = vi.spyOn(rateLimit, 'rateLimitAllowShared').mockResolvedValue('exhausted');
     const { POST } = await import('@/app/api/mcp/route');
     const res = await POST(new NextRequest('http://localhost/api/mcp', {
       method: 'POST',

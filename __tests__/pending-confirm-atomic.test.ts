@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   confirmPendingItem,
   discardPendingItem,
+  hasStableInboxIdentity,
   inboxEventFingerprint,
+  inboxFingerprintCandidates,
   inboxReservationBucket,
   INBOX_DEDUPE_WINDOW_MS,
   isStaleConfirming,
@@ -26,6 +28,11 @@ const mocks = vi.hoisted(() => ({
   from: vi.fn(),
   execute: vi.fn(),
   listAccounts: vi.fn(),
+  suggest: vi.fn(async (): Promise<{
+    categoryId: string | null;
+    categoryName: string | null;
+    source: string;
+  }> => ({ categoryId: null, categoryName: null, source: 'none' })),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
@@ -46,7 +53,7 @@ vi.mock('@/lib/services/accounts', () => ({
 }));
 
 vi.mock('@/lib/integrations/merchant-category', () => ({
-  suggestCategoryFromMerchant: async () => ({ categoryId: null, categoryName: null, source: 'none' }),
+  suggestCategoryFromMerchant: () => mocks.suggest(),
 }));
 
 const updates: Array<{ table: string; value: Record<string, unknown> }> = [];
@@ -85,6 +92,7 @@ describe('pending inbox confirm idempotency', () => {
     vi.clearAllMocks();
     updates.length = 0;
     mocks.listAccounts.mockResolvedValue([{ id: ACCOUNT_ID, name: 'Visa Ejemplo', currency: 'ARS' }]);
+    mocks.suggest.mockResolvedValue({ categoryId: null, categoryName: null, source: 'none' });
     mocks.execute.mockResolvedValue({
       response: { success: true },
       executed: [{ id: 'tx-1' }],
@@ -796,6 +804,13 @@ describe('pending inbox confirm idempotency', () => {
     expect(first).not.toBe(nextWindow);
     expect(first).not.toBe(dayLater);
     const keyed = inboxEventFingerprint(FIXTURE_USER, base, null, 'wallet-idem-fixture-009', 0);
+    const keyedSameDay = inboxEventFingerprint(
+      FIXTURE_USER,
+      base,
+      null,
+      'wallet-idem-fixture-009',
+      60 * 60 * 1000
+    );
     const keyedLater = inboxEventFingerprint(
       FIXTURE_USER,
       base,
@@ -803,7 +818,163 @@ describe('pending inbox confirm idempotency', () => {
       'wallet-idem-fixture-009',
       24 * 60 * 60 * 1000
     );
-    expect(keyed).toBe(keyedLater);
+    expect(keyed).toBe(keyedSameDay);
+    expect(keyed).not.toBe(keyedLater);
+  });
+
+  it('retries without timestamp look back across the previous 15-minute bucket and cannot auto-confirm', () => {
+    const base = {
+      amount: 40,
+      currency: 'ARS',
+      merchant: 'Café',
+      cardName: 'Visa',
+      direction: 'expense' as const,
+    };
+    const before = Date.parse('2026-10-25T13:14:50.000Z');
+    const after = Date.parse('2026-10-25T13:15:10.000Z');
+    const first = inboxEventFingerprint(FIXTURE_USER, base, null, '', before);
+    const retry = inboxEventFingerprint(FIXTURE_USER, base, null, '', after);
+    expect(first).not.toBe(retry);
+    expect(inboxFingerprintCandidates(FIXTURE_USER, base, null, '', after)).toEqual(
+      expect.arrayContaining([retry, first])
+    );
+    expect(hasStableInboxIdentity(null, '')).toBe(false);
+    expect(hasStableInboxIdentity(null, 'wallet-idem-fixture-009')).toBe(true);
+    expect(hasStableInboxIdentity('2026-10-25T13:14:50.000Z', '')).toBe(true);
+  });
+
+  it('reusing an Idempotency-Key on a different civil day returns 409', async () => {
+    const keyed = inboxEventFingerprint(
+      FIXTURE_USER,
+      { amount: 40, currency: 'ARS', merchant: 'Café', cardName: 'Visa', direction: 'expense' },
+      '2026-10-24T23:00:00.000Z',
+      'wallet-idem-fixture-009'
+    );
+    const nextDay = inboxEventFingerprint(
+      FIXTURE_USER,
+      { amount: 40, currency: 'ARS', merchant: 'Café', cardName: 'Visa', direction: 'expense' },
+      '2026-10-25T23:00:00.000Z',
+      'wallet-idem-fixture-009'
+    );
+    expect(keyed).not.toBe(nextDay);
+    const existing = {
+      ...itemRow('pending'),
+      ingest_key: 'wallet-idem-fixture-009',
+      fingerprint: keyed,
+      occurred_at: '2026-10-24T23:00:00.000Z',
+    };
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.maybeSingle = async () => ({ data: existing, error: null });
+      q.insert = () => self;
+      q.single = async () => ({ data: existing, error: null });
+      return q;
+    });
+    const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+    await expect(
+      ingestWalletItem({
+        userId: FIXTURE_USER,
+        json: {
+          amount: 40,
+          currency: 'ARS',
+          merchant: 'Café',
+          cardName: 'Visa',
+          occurredAt: '2026-10-25T23:00:00.000Z',
+        },
+        idempotencyKey: 'wallet-idem-fixture-009',
+      })
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('does not auto-confirm a complete payload that lacks occurredAt and Idempotency-Key', async () => {
+    const inserted: Record<string, unknown>[] = [];
+    mocks.suggest.mockResolvedValue({
+      categoryId: CATEGORY_ID,
+      categoryName: 'Café',
+      source: 'history',
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.order = () => self;
+      q.limit = () => self;
+      q.maybeSingle = async () => {
+        if (table === 'wallet_card_account_maps') return { data: { account_id: ACCOUNT_ID }, error: null };
+        if (table === 'users') return { data: { wallet_auto_confirm: true }, error: null };
+        return { data: null, error: null };
+      };
+      q.insert = (row: Record<string, unknown>) => {
+        inserted.push(row);
+        return self;
+      };
+      q.single = async () => ({
+        data: { ...inserted[inserted.length - 1], id: FIXTURE_ITEM, status: 'pending' },
+        error: null,
+      });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      return q;
+    });
+    const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+    const result = await ingestWalletItem({
+      userId: FIXTURE_USER,
+      json: { amount: 40, currency: 'ARS', merchant: 'Café', cardName: 'Visa Ejemplo' },
+    });
+    expect(result.autoConfirmed).toBe(false);
+    expect(result.duplicate).toBe(false);
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it('treats a retry that crosses the 15-minute bucket as the same pending item', async () => {
+    const before = Date.parse('2026-10-25T13:14:50.000Z');
+    const after = Date.parse('2026-10-25T13:15:10.000Z');
+    const base = {
+      amount: 40,
+      currency: 'ARS',
+      merchant: 'Café',
+      cardName: 'Visa',
+      direction: 'expense' as const,
+    };
+    const previousFp = inboxEventFingerprint(FIXTURE_USER, base, null, '', before);
+    const existing = { ...itemRow('pending'), fingerprint: previousFp, occurred_at: null };
+    const fingerprintFilters: unknown[] = [];
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(after);
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = (column: string, values: unknown) => {
+        if (column === 'fingerprint') fingerprintFilters.push(values);
+        return self;
+      };
+      q.order = () => self;
+      q.limit = () => self;
+      q.insert = () => self;
+      q.maybeSingle = async () => ({ data: null, error: null });
+      q.single = async () => ({ data: null, error: { code: '23505', message: 'duplicate' } });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({ data: fingerprintFilters.length ? [existing] : [], error: null });
+      return q;
+    });
+    try {
+      const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+      const result = await ingestWalletItem({
+        userId: FIXTURE_USER,
+        json: { amount: 40, currency: 'ARS', merchant: 'Café', cardName: 'Visa' },
+      });
+      expect(result.duplicate).toBe(true);
+      expect(result.autoConfirmed).toBe(false);
+      expect(result.item.id).toBe(FIXTURE_ITEM);
+      expect(fingerprintFilters[0]).toEqual(expect.arrayContaining([previousFp]));
+    } finally {
+      nowSpy.mockRestore();
+    }
   });
 
   it('rejects an explicit unsupported currency at ingest so it cannot auto-confirm as ARS', async () => {

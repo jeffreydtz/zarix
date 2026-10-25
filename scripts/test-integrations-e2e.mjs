@@ -165,6 +165,48 @@ try {
     assert.equal(n, 1);
   });
 
+  await test('late ledger write after discard is refused', async () => {
+    const itemId = randomUUID();
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,17,'ARS','Late discard',$3,'uncertain','fp-late-discard','wallet')`, [itemId, ids.a, ids.accountA]);
+    const discarded = (await owner(db, 'SELECT status FROM discard_pending_inbox_item($1,$2)', [ids.a, itemId])).rows[0];
+    assert.equal(discarded.status, 'discarded');
+    const payload = {
+      user_id: ids.a, type: 'expense', account_id: ids.accountA, amount: 17, currency: 'ARS',
+      amount_in_account_currency: 17, description: 'Late discard', source: 'wallet',
+    };
+    await assert.rejects(
+      () => service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1)',
+        [ids.a, `wallet:${itemId}`, digest(JSON.stringify(payload)), JSON.stringify(payload)]),
+      /descartado/i
+    );
+    assert.equal((await service(db, "SELECT count(*)::int AS n FROM transactions WHERE description='Late discard' AND user_id=$1", [ids.a])).rows[0].n, 0);
+    assert.equal((await service(db, 'SELECT count(*)::int AS n FROM transaction_requests WHERE request_id=$1', [`wallet:${itemId}`])).rows[0].n, 0);
+    assert.equal((await service(db, 'SELECT status FROM pending_inbox_items WHERE id=$1', [itemId])).rows[0].status, 'discarded');
+  });
+
+  await test('authenticated discard requires a matching non-null uid', async () => {
+    const itemId = randomUUID();
+    const serviceItem = randomUUID();
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,23,'ARS','Uid discard',$3,'pending','fp-uid-discard','wallet')`, [itemId, ids.a, ids.accountA]);
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,24,'ARS','Service discard',$3,'pending','fp-svc-discard','wallet')`, [serviceItem, ids.a, ids.accountA]);
+    await assert.rejects(
+      () => queryAs(db, 'authenticated', null, 'SELECT id FROM discard_pending_inbox_item($1,$2)', [ids.a, itemId]),
+      /No autorizado/i
+    );
+    await assert.rejects(
+      () => other(db, 'SELECT id FROM discard_pending_inbox_item($1,$2)', [ids.a, itemId]),
+      /No autorizado/i
+    );
+    assert.equal((await service(db, 'SELECT status FROM pending_inbox_items WHERE id=$1', [itemId])).rows[0].status, 'pending');
+    const discarded = (await owner(db, 'SELECT status FROM discard_pending_inbox_item($1,$2)', [ids.a, itemId])).rows[0];
+    assert.equal(discarded.status, 'discarded');
+    const asService = (await service(db, 'SELECT status FROM discard_pending_inbox_item($1,$2)', [ids.a, serviceItem])).rows[0];
+    assert.equal(asService.status, 'discarded');
+  });
+
   await test('uncertain items cannot be discarded when a transaction_request exists', async () => {
     const itemId = randomUUID();
     const requestId = `wallet:${itemId}`;
@@ -339,6 +381,8 @@ const report = {
     'docs public / private pages (vitest isPublicAppPath)',
     '/api/v1 and /api/mcp read vs write + cross-user (vitest)',
     'fingerprint unique after confirm',
+    'late ledger write after discard refused',
+    'authenticated discard requires uid',
     'uncertain cannot be discarded with receipt',
     'discard confirming refused',
     'fingerprint window expires',

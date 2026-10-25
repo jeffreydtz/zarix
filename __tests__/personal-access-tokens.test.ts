@@ -182,4 +182,26 @@ describe('wallet ingest auth surface', () => {
     const output = inspect(vi.mocked(console.error).mock.calls, { depth: 8 });
     expect(output).not.toContain(generated.token);
   });
+
+  it('returns 429 when the shared limiter is exhausted and 503 when it is unavailable', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation((table: string) => {
+      if (table === 'personal_access_tokens') {
+        return chain({ data: {
+          id: 'pat-1', user_id: FIXTURE_USER, scopes: ['ingest'], token_hash: generated.hash,
+          hash_version: 1, revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
+        }, error: null });
+      }
+      return chain({ data: null, error: null });
+    });
+    const req = () => new NextRequest('http://localhost/api/ingest/wallet', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+      body: '{"amount":1,"currency":"ARS","merchant":"Café"}',
+    });
+    mocks.rpc.mockResolvedValue({ data: false, error: null });
+    expect((await ingest(req())).status).toBe(429);
+    mocks.rpc.mockResolvedValue({ data: null, error: { message: 'rate_limit_hit timeout' } });
+    expect((await ingest(req())).status).toBe(503);
+  });
 });

@@ -35,7 +35,7 @@ Do not put the REVOKE file back into `supabase/migrations/`.
 
 ## Rollback to main (`dpl_9Dq25TNT5g87278wtTwZZmKPk5iX` / `7651817`)
 
-Keys saved after step 4 have plaintext NULLed. Main reads only
+Keys saved after the #16 deploy step have plaintext NULLed. Main reads only
 `users.gemini_api_key` / `users.telegram_bot_token`.
 
 1. PITR marker.

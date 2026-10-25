@@ -79,29 +79,36 @@ $$;
 REVOKE ALL ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
 
--- Atomic discard: never confirming; serialize with claim via the same advisory lock;
--- refuse if a ledger receipt exists. DEFINER so the receipt lookup can read
--- transaction_requests; auth.uid() still constrains authenticated callers.
--- Lookup errors abort the function (no silent "no tx").
+-- Atomic discard: never confirming. Shared lock order with create_transaction_once
+-- (inbox key, then wallet:{item} request key) so a late ledger write cannot land
+-- after discard. DEFINER so the receipt lookup can read transaction_requests.
+-- Authenticated callers need a non-null auth.uid() matching p_user_id;
+-- service_role may call with a null uid. Lookup errors abort (no silent "no tx").
 CREATE OR REPLACE FUNCTION public.discard_pending_inbox_item(
   p_user_id UUID,
   p_item_id UUID
 ) RETURNS SETOF public.pending_inbox_items
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE
   rec public.pending_inbox_items%ROWTYPE;
   prior_id TEXT;
+  caller_role TEXT := coalesce(auth.role(), '');
 BEGIN
   IF p_user_id IS NULL OR p_item_id IS NULL THEN
     RAISE EXCEPTION 'No autorizado';
   END IF;
-  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+  IF caller_role IS DISTINCT FROM 'service_role'
+     AND (auth.uid() IS NULL OR auth.uid() <> p_user_id) THEN
     RAISE EXCEPTION 'No autorizado';
   END IF;
-  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  -- Shared with create_transaction_once: inbox then request (deadlock-safe).
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':wallet:' || p_item_id::text, 0));
   SELECT * INTO rec
     FROM public.pending_inbox_items
    WHERE id = p_item_id AND user_id = p_user_id
@@ -130,9 +137,9 @@ BEGIN
   END IF;
   UPDATE public.pending_inbox_items
      SET status = 'discarded',
-         discarded_at = now(),
+         discarded_at = pg_catalog.now(),
          claim_id = NULL,
-         updated_at = now()
+         updated_at = pg_catalog.now()
    WHERE id = p_item_id
      AND user_id = p_user_id
      AND status = rec.status
@@ -304,6 +311,8 @@ DECLARE
   t public.transactions%ROWTYPE;
   result JSONB;
   installment_group UUID;
+  v_inbox_item UUID;
+  v_inbox_status TEXT;
 BEGIN
   IF p_request_id IS NULL OR p_request_id !~ '^[A-Za-z0-9][A-Za-z0-9:._-]{7,199}$'
      OR p_request_hash IS NULL OR p_request_hash !~ '^[0-9a-f]{64}$' THEN
@@ -311,6 +320,11 @@ BEGIN
   END IF;
   IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
     RAISE EXCEPTION 'No autorizado';
+  END IF;
+  -- Wallet inbox writes share discard's lock order: inbox key, then request key.
+  IF p_request_id ~ '^wallet:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN
+    v_inbox_item := substring(p_request_id from 8)::uuid;
+    PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || v_inbox_item::text, 0));
   END IF;
   PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':' || p_request_id, 0));
   SELECT * INTO prior FROM public.transaction_requests
@@ -320,6 +334,15 @@ BEGIN
       RAISE EXCEPTION USING ERRCODE = 'Z0001', MESSAGE = 'Request payload conflict';
     END IF;
     RETURN prior.response;
+  END IF;
+  IF v_inbox_item IS NOT NULL THEN
+    SELECT status INTO v_inbox_status
+      FROM public.pending_inbox_items
+     WHERE id = v_inbox_item AND user_id = p_user_id
+     FOR UPDATE;
+    IF FOUND AND v_inbox_status = 'discarded' THEN
+      RAISE EXCEPTION 'Este pendiente fue descartado.';
+    END IF;
   END IF;
 
   t := jsonb_populate_record(NULL::public.transactions, p_transaction);

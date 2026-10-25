@@ -11,13 +11,14 @@
 --   1. PITR marker
 --   2. apply_migration 20261024180000_ai_integrations_foundation.sql
 --   3. apply_migration 20261024190000_pat_rls_confirm_quotes.sql
---   4. Deploy #16 code (encrypt-only writes; Vault-aware Telegram readers)
---   5. Pause key edits, run supabase/manual/backfill-user-secrets.sql
---   6. Run supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql
+--   4. apply_migration 20261024200000_inbox_dedupe_uncertain_rate_limit.sql
+--   5. Deploy #16 code (encrypt-only writes; Vault-aware Telegram readers)
+--   6. Pause key edits, run supabase/manual/backfill-user-secrets.sql
+--   7. Run supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql
 --      (not a timestamped migration — db push cannot apply it early)
---   7. Later follow-up: supabase/manual/null-plaintext-user-secrets.sql
+--   8. Later follow-up: supabase/manual/null-plaintext-user-secrets.sql
 --
--- Rollback to main (dpl_9Dq25… / 7651817): keys saved after step 4 have
+-- Rollback to main (dpl_9Dq25… / 7651817): keys saved after step 5 have
 -- plaintext NULLed. Before rolling the app back, run
 -- supabase/manual/restore-plaintext-from-vault.sql so main can still read
 -- Gemini/Telegram secrets. Do not roll back until that restore verifies.
