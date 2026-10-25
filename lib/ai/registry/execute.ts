@@ -223,6 +223,58 @@ function pendingIdsFromArgs(args: ToolArgs): string[] {
   return [];
 }
 
+async function confirmCreateTransactionsBatch(
+  userId: string,
+  rawIds: string[],
+  source: WriteChannel | undefined
+): Promise<RegistryToolResult> {
+  const { confirmPendingItems, canonicalPendingInboxIds, PendingBatchConfirmError } = await import(
+    '@/lib/services/pending-inbox'
+  );
+  const ids = canonicalPendingInboxIds(rawIds);
+  if (ids.length === 0) {
+    return {
+      response: {
+        success: false,
+        error: 'Faltan pendingIds. Confirmá los pendientes; no escribas el ledger directo.',
+      },
+    };
+  }
+  try {
+    const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
+    const executedCount =
+      typeof confirmed.executedCount === 'number' ? confirmed.executedCount : confirmed.length;
+    return {
+      response: {
+        success: true,
+        executedCount,
+        total: ids.length,
+        pendingIds: confirmed.map((item) => item.id),
+        items: confirmed.map((item) => ({ pendingId: item.id, status: item.status })),
+        untrusted: true,
+        untrusted_instruction: UNTRUSTED_INSTRUCTION,
+      },
+    };
+  } catch (error) {
+    if (error instanceof PendingBatchConfirmError) {
+      const written = error.items.filter((item) => item.status === 'confirmed').map((item) => item.pendingId);
+      return {
+        response: {
+          success: false,
+          error: error.message,
+          executedCount: error.executedCount,
+          total: ids.length,
+          pendingIds: written,
+          items: error.items,
+          untrusted: true,
+          untrusted_instruction: UNTRUSTED_INSTRUCTION,
+        },
+      };
+    }
+    throw error;
+  }
+}
+
 async function executeRegistryToolImpl(
   name: string,
   args: ToolArgs,
@@ -268,28 +320,7 @@ async function executeRegistryToolImpl(
       };
     }
     if (name === 'create_transactions') {
-      const { confirmPendingItems, canonicalPendingInboxIds } = await import('@/lib/services/pending-inbox');
-      const ids = canonicalPendingInboxIds(pendingIdsFromArgs(frozen.data as ToolArgs));
-      if (ids.length === 0) {
-        return {
-          response: {
-            success: false,
-            error: 'Faltan pendingIds. Confirmá los pendientes; no escribas el ledger directo.',
-          },
-        };
-      }
-      const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
-      return {
-        response: {
-          success: true,
-          executedCount: confirmed.length,
-          total: ids.length,
-          pendingIds: confirmed.map((item) => item.id),
-          items: confirmed.map((item) => ({ pendingId: item.id, status: item.status })),
-          untrusted: true,
-          untrusted_instruction: UNTRUSTED_INSTRUCTION,
-        },
-      };
+      return confirmCreateTransactionsBatch(userId, pendingIdsFromArgs(frozen.data as ToolArgs), source);
     }
     return confirmRemoteWrite(userId, frozen.data as ToolArgs, source);
   }
@@ -354,28 +385,7 @@ async function executeRegistryToolImpl(
 
     case 'create_transactions': {
       if (remoteWrite && isConfirmed(safeArgs)) {
-        const { confirmPendingItems, canonicalPendingInboxIds } = await import('@/lib/services/pending-inbox');
-        const ids = canonicalPendingInboxIds(pendingIdsFromArgs(safeArgs));
-        if (ids.length === 0) {
-          return {
-            response: {
-              success: false,
-              error: 'Faltan pendingIds. Confirmá los pendientes; no escribas el ledger directo.',
-            },
-          };
-        }
-        const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
-        return {
-          response: {
-            success: true,
-            executedCount: confirmed.length,
-            total: ids.length,
-            pendingIds: confirmed.map((item) => item.id),
-            items: confirmed.map((item) => ({ pendingId: item.id, status: item.status })),
-            untrusted: true,
-            untrusted_instruction: UNTRUSTED_INSTRUCTION,
-          },
-        };
+        return confirmCreateTransactionsBatch(userId, pendingIdsFromArgs(safeArgs), source);
       }
       const rawList = Array.isArray(safeArgs.transactions) ? (safeArgs.transactions as BotTxPayload[]) : [];
       const txs = rawList

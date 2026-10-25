@@ -26,6 +26,8 @@ export interface QuoteResult {
   timestamp: string | null;
   fxStale?: boolean;
   fxAsOf?: string | null;
+  sourcePrice?: number;
+  sourceCurrency?: string;
 }
 
 export class InvestmentQuoteMap extends Map<string, QuoteResult> {
@@ -278,6 +280,8 @@ export async function refreshQuotesForInvestments(
         timestamp: original,
         fxStale: quote.fxStale,
         fxAsOf: quote.fxAsOf,
+        sourcePrice: quote.sourcePrice,
+        sourceCurrency: quote.sourceCurrency,
       };
     }
     return {
@@ -287,6 +291,8 @@ export async function refreshQuotesForInvestments(
       timestamp: quoteTimestampOrFetchedAt(quote, fetchedAt),
       fxStale: quote.fxStale,
       fxAsOf: quote.fxAsOf,
+      sourcePrice: quote.sourcePrice,
+      sourceCurrency: quote.sourceCurrency,
     };
   };
   const out = new InvestmentQuoteMap();

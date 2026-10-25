@@ -18,8 +18,10 @@ import {
   parkRegistryWrite,
   pendingInboxRequestId,
   walletCivilDate,
+  PendingBatchConfirmError,
   type PendingInboxItem,
 } from '@/lib/services/pending-inbox';
+import { ApiError } from '@/lib/api-handler';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
@@ -34,6 +36,7 @@ const mocks = vi.hoisted(() => ({
   from: vi.fn(),
   execute: vi.fn(),
   listAccounts: vi.fn(),
+  findAccount: vi.fn(async () => ({ account: null, confidence: 'none' as const })),
   suggest: vi.fn(async (): Promise<{
     categoryId: string | null;
     categoryName: string | null;
@@ -57,7 +60,7 @@ vi.mock('@/lib/ai/registry/execute', () => ({
 vi.mock('@/lib/services/accounts', () => ({
   accountsService: {
     list: (...args: unknown[]) => mocks.listAccounts(...args),
-    findByNameFuzzy: async () => ({ account: null, confidence: 'none' }),
+    findByNameFuzzy: (...args: unknown[]) => mocks.findAccount(...args),
   },
 }));
 
@@ -101,6 +104,7 @@ describe('pending inbox confirm idempotency', () => {
     vi.clearAllMocks();
     updates.length = 0;
     mocks.listAccounts.mockResolvedValue([{ id: ACCOUNT_ID, name: 'Visa Ejemplo', currency: 'ARS' }]);
+    mocks.findAccount.mockResolvedValue({ account: null, confidence: 'none' });
     mocks.suggest.mockResolvedValue({ categoryId: null, categoryName: null, source: 'none' });
     mocks.execute.mockResolvedValue({
       response: { success: true },
@@ -142,10 +146,15 @@ describe('pending inbox confirm idempotency', () => {
         updates.push({ table, value });
         return self;
       };
-      q.maybeSingle = async () => ({
-        data: table === 'pending_inbox_items' ? itemRow('confirmed') : null,
-        error: null,
-      });
+      q.maybeSingle = async () => {
+        if (table === 'categories') {
+          return { data: { id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }, error: null };
+        }
+        return {
+          data: table === 'pending_inbox_items' ? itemRow('confirmed') : null,
+          error: null,
+        };
+      };
       q.single = async () => ({ data: itemRow('confirmed'), error: null });
       q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
       q.upsert = async () => ({ data: null, error: null });
@@ -200,10 +209,15 @@ describe('pending inbox confirm idempotency', () => {
         if (table === 'pending_inbox_items' && value.status === 'confirmed') status = 'confirmed';
         return self;
       };
-      q.maybeSingle = async () => ({
-        data: table === 'pending_inbox_items' ? itemRow(status) : null,
-        error: null,
-      });
+      q.maybeSingle = async () => {
+        if (table === 'categories') {
+          return { data: { id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }, error: null };
+        }
+        return {
+          data: table === 'pending_inbox_items' ? itemRow(status) : null,
+          error: null,
+        };
+      };
       q.single = async () => ({ data: itemRow(status), error: null });
       q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
       q.upsert = async () => ({ data: null, error: null });
@@ -453,10 +467,18 @@ describe('pending inbox confirm idempotency', () => {
         updates.push({ table, value });
         return self;
       };
-      q.maybeSingle = async () => ({
-        data: table === 'pending_inbox_items' ? { ...parked, status: 'confirmed' } : null,
-        error: null,
-      });
+      q.maybeSingle = async () => {
+        if (table === 'categories') {
+          return {
+            data: { id: SYSTEM_CATEGORY_ID, user_id: null, name: 'Comida', is_system: true },
+            error: null,
+          };
+        }
+        return {
+          data: table === 'pending_inbox_items' ? { ...parked, status: 'confirmed' } : null,
+          error: null,
+        };
+      };
       q.single = async () => ({
         data:
           table === 'users'
@@ -1248,7 +1270,15 @@ describe('pending inbox confirm idempotency', () => {
       };
       q.single = async () => ({ data: itemRow('confirming'), error: null });
       q.then = (resolve: (v: unknown) => unknown) =>
-        resolve({ data: table === 'pending_inbox_items' ? [itemRow('confirming')] : [], error: null });
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [itemRow('confirming')]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
       q.upsert = async () => ({ data: null, error: null });
       return q;
     });
@@ -1294,7 +1324,15 @@ describe('pending inbox confirm idempotency', () => {
       };
       q.single = async () => ({ data: itemRow('confirmed'), error: null });
       q.then = (resolve: (v: unknown) => unknown) =>
-        resolve({ data: table === 'pending_inbox_items' ? [pending, second] : [], error: null });
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [pending, second]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
       q.upsert = async () => ({ data: null, error: null });
       return q;
     });
@@ -1334,7 +1372,15 @@ describe('pending inbox confirm idempotency', () => {
       };
       q.single = async () => ({ data: itemRow('confirmed'), error: null });
       q.then = (resolve: (v: unknown) => unknown) =>
-        resolve({ data: table === 'pending_inbox_items' ? [itemRow('pending')] : [], error: null });
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [itemRow('pending')]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
       q.upsert = async () => ({ data: null, error: null });
       return q;
     });
@@ -1777,16 +1823,280 @@ describe('pending inbox confirm idempotency', () => {
     const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
     const rawJson =
       '{"amount":40.129,"currency":"ARS","merchant":"Café","cardName":"Visa Ejemplo","timestamp":"2026-10-25T12:00:00.000Z"}';
-    const result = await ingestWalletItem({
-      userId: FIXTURE_USER,
-      json: JSON.parse(rawJson) as Record<string, unknown>,
-      rawJson,
-      idempotencyKey: 'wallet-excess-decimals',
-    });
-    expect(result.autoConfirmed).toBe(false);
-    expect(captured.row?.amount).not.toBe(40.13);
-    expect(captured.row?.amount).toBeNull();
-    expect(captured.row?.amount_ambiguous).toBe(true);
+    await expect(
+      ingestWalletItem({
+        userId: FIXTURE_USER,
+        json: JSON.parse(rawJson) as Record<string, unknown>,
+        rawJson,
+        idempotencyKey: 'wallet-excess-decimals',
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(captured.row).toBeNull();
     expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it('reverts leftover confirming items when ledger insert N fails in a 3-item batch', async () => {
+    const secondId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const thirdId = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc9';
+    const first = itemRow('pending');
+    const second = itemRow('pending', { id: secondId });
+    const third = itemRow('pending', { id: thirdId });
+    const claimById = new Map([
+      [FIXTURE_ITEM, itemRow('confirming')],
+      [secondId, itemRow('confirming', { id: secondId })],
+      [thirdId, itemRow('confirming', { id: thirdId })],
+    ]);
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_item_ids?: string[] }) => {
+      if (fn === 'claim_pending_inbox_items') {
+        expect(args.p_item_ids).toEqual([FIXTURE_ITEM, secondId, thirdId]);
+        return { data: [...claimById.values()], error: null };
+      }
+      return { data: null, error: { message: `unexpected rpc ${fn}` } };
+    });
+    mocks.execute
+      .mockResolvedValueOnce({ response: { success: true }, executed: [{ id: 'tx-1' }] })
+      .mockRejectedValueOnce(new ApiError('ledger insert failed', 400));
+    const reverted: string[] = [];
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      let currentId: string | null = null;
+      q.select = () => self;
+      q.eq = (column: string, value: unknown) => {
+        if (column === 'id' && typeof value === 'string') currentId = value;
+        return self;
+      };
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        const chain: Record<string, unknown> = {};
+        chain.eq = (column: string, val: unknown) => {
+          if (column === 'id' && typeof val === 'string') {
+            currentId = val;
+            if (table === 'pending_inbox_items' && value.status === 'pending') reverted.push(val);
+          }
+          return chain;
+        };
+        chain.select = () => chain;
+        chain.maybeSingle = q.maybeSingle;
+        return chain;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        if (table === 'categories') {
+          return { data: { id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }, error: null };
+        }
+        return { data: itemRow('confirmed', { id: currentId || FIXTURE_ITEM }), error: null };
+      };
+      q.single = async () => ({ data: { id: FIXTURE_USER, default_currency: 'ARS' }, error: null });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [first, second, third]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const error = await confirmPendingItems({
+      userId: FIXTURE_USER,
+      itemIds: [FIXTURE_ITEM, secondId, thirdId],
+    }).catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(PendingBatchConfirmError);
+    const batch = error as PendingBatchConfirmError;
+    expect(batch.items).toEqual([
+      { pendingId: FIXTURE_ITEM, status: 'confirmed' },
+      { pendingId: secondId, status: 'failed', error: 'ledger insert failed' },
+      { pendingId: thirdId, status: 'reverted' },
+    ]);
+    expect(batch.executedCount).toBe(1);
+    expect(mocks.execute).toHaveBeenCalledTimes(2);
+    expect(reverted).toContain(thirdId);
+    expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'confirming')).toBe(false);
+  });
+
+  it('does not write item 1 when item 2 has a nonexistent account name', async () => {
+    const namedId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const pending = itemRow('pending');
+    const named = itemRow('pending', {
+      id: namedId,
+      account_id: null,
+      tool_payload: { type: 'expense', amount: 13, account: 'Cuenta Fantasma' },
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [pending, named]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
+      return q;
+    });
+    await expect(
+      confirmPendingItems({
+        userId: FIXTURE_USER,
+        itemIds: [FIXTURE_ITEM, namedId],
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.execute).not.toHaveBeenCalled();
+    expect(updates).toEqual([]);
+  });
+
+  it('rejects a foreign category before the ledger write', async () => {
+    const foreign = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb8';
+    const parked = itemRow('confirming', { category_id: foreign });
+    mocks.rpc.mockResolvedValue({ data: [parked], error: null });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'categories') {
+          return { data: { id: foreign, user_id: '22222222-2222-4222-8222-222222222222', is_system: false }, error: null };
+        }
+        if (table === 'transaction_requests') return { data: null, error: null };
+        return { data: parked, error: null };
+      };
+      q.single = async () => ({ data: { id: FIXTURE_USER, default_currency: 'ARS' }, error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await expect(confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toMatchObject({
+      status: 400,
+    });
+    expect(mocks.execute).not.toHaveBeenCalled();
+    expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'confirmed')).toBe(false);
+  });
+
+  it('recovers a stale confirming item on the batch path', async () => {
+    const stale = itemRow('confirming', {
+      updated_at: new Date(Date.now() - 10 * 60_000).toISOString(),
+    });
+    expect(isStaleConfirming(stale)).toBe(true);
+    mocks.rpc.mockImplementation(async (fn: string) => {
+      if (fn === 'claim_pending_inbox_items') {
+        return { data: [itemRow('confirming')], error: null };
+      }
+      return { data: null, error: { message: `unexpected rpc ${fn}` } };
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        if (table === 'categories') {
+          return { data: { id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }, error: null };
+        }
+        return { data: itemRow('confirmed'), error: null };
+      };
+      q.single = async () => ({ data: { id: FIXTURE_USER, default_currency: 'ARS' }, error: null });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [stale]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const confirmed = await confirmPendingItems({ userId: FIXTURE_USER, itemIds: [FIXTURE_ITEM] });
+    expect(confirmed).toHaveLength(1);
+    expect(mocks.rpc.mock.calls.some((call: unknown[]) => call[0] === 'claim_pending_inbox_items')).toBe(true);
+    expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'pending')).toBe(true);
+  });
+
+  it('counts only newly written items when a mixed batch includes already-confirmed ids', async () => {
+    const pendingId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const already = itemRow('confirmed');
+    const pending = itemRow('pending', { id: pendingId });
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_item_ids?: string[] }) => {
+      if (fn === 'claim_pending_inbox_items') {
+        expect(args.p_item_ids).toEqual([pendingId]);
+        return { data: [itemRow('confirming', { id: pendingId })], error: null };
+      }
+      return { data: null, error: { message: `unexpected rpc ${fn}` } };
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      let currentId: string | null = null;
+      q.select = () => self;
+      q.eq = (column: string, value: unknown) => {
+        if (column === 'id' && typeof value === 'string') currentId = value;
+        return self;
+      };
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        if (table === 'categories') {
+          return { data: { id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }, error: null };
+        }
+        return { data: itemRow('confirmed', { id: currentId || pendingId }), error: null };
+      };
+      q.single = async () => ({ data: { id: FIXTURE_USER, default_currency: 'ARS' }, error: null });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [already, pending]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const confirmed = await confirmPendingItems({
+      userId: FIXTURE_USER,
+      itemIds: [FIXTURE_ITEM, pendingId],
+    });
+    expect(confirmed).toHaveLength(2);
+    expect(confirmed.executedCount).toBe(1);
+    expect(mocks.execute).toHaveBeenCalledTimes(1);
   });
 });

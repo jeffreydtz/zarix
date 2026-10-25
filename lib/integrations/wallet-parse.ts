@@ -1,6 +1,6 @@
 import { parseTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import {
-  extractJsonNumberToken,
+  extractTopLevelJsonAmount,
   integerCentsFromToken,
   moneyAmountFromToken,
   numberToDecimalString,
@@ -30,6 +30,8 @@ export type WalletIngestPayload = {
   amountAmbiguous: boolean;
   currencyUnsupported: boolean;
   direction: 'expense' | 'income';
+  excessDecimals?: boolean;
+  amountDuplicate?: boolean;
 };
 
 export type AmountParseResult = {
@@ -155,7 +157,7 @@ function parseGroupedNumber(
 }
 
 const CANDIDATE_RE =
-  /(?<![A-Za-z\d])([+-])?\s*(?:(ARS|USD|EUR|U\$S|US\$)\$?|(\$))?\s*(\d{1,3}(?:[.\s]\d{3})+(?:,\d{1,2})?|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+[.,]\d{1,2}|\d{1,12})/gi;
+  /(?<![A-Za-z\d])([+-])?\s*(?:(ARS|USD|EUR|U\$S|US\$)\$?|(\$))?\s*((?:0[xX][0-9A-Fa-f]+|\d{1,3}(?:[.\s]\d{3})+(?:,\d{1,2})?|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+[.,]\d+|\d{1,12})(?:[eE][+-]?\d+)?)/gi;
 
 export function parseAmountFromText(text: string): AmountParseResult {
   const src = text.replace(/\u00a0/g, ' ');
@@ -168,7 +170,10 @@ export function parseAmountFromText(text: string): AmountParseResult {
   CANDIDATE_RE.lastIndex = 0;
   let m: RegExpExecArray | null;
   while ((m = CANDIDATE_RE.exec(stripped))) {
-    const digits = (m[4] || '').replace(/\s/g, '');
+    let digits = (m[4] || '').replace(/\s/g, '');
+    const after = stripped.slice(m.index + m[0].length);
+    const extra = after.match(/^[eExX][+\-0-9A-Fa-f]*/);
+    if (extra) digits += extra[0];
     const anchored = Boolean(m[2] || m[3]);
     matches.push({
       raw: digits,
@@ -331,10 +336,15 @@ export function parseWalletPayload(input: {
   const jsonUnsupported = Boolean(jsonCurrencyText) && parsedJsonCurrency == null;
   const currencyUnsupported = jsonUnsupported || fromText.currencyUnsupported;
   const jsonAmountRaw = json ? json.amount ?? json.importe ?? json.value : undefined;
+  const extracted = input.rawJson ? extractTopLevelJsonAmount(input.rawJson) : { token: null, duplicate: false };
   const amountToken =
-    (input.rawJson ? extractJsonNumberToken(input.rawJson) : null) ??
-    (typeof jsonAmountRaw === 'string' ? jsonAmountRaw : null);
-  const jsonAmount = jsonAmountRaw != null ? parseAmountValue(jsonAmountRaw, amountToken) : null;
+    extracted.token ?? (typeof jsonAmountRaw === 'string' ? jsonAmountRaw : null);
+  const jsonAmount =
+    extracted.duplicate
+      ? { amount: null, ambiguous: true, direction: 'expense' as const }
+      : jsonAmountRaw != null
+        ? parseAmountValue(jsonAmountRaw, amountToken)
+        : null;
   const jsonAmountUsable = jsonAmount != null && jsonAmount.amount != null;
   const jsonExcessDecimals = Boolean(jsonAmount?.excessDecimals);
   // If a JSON amount was present but unusable we fell back to rawText — recompute
@@ -343,6 +353,7 @@ export function parseWalletPayload(input: {
   const amountAmbiguous =
     currencyUnsupported ||
     jsonExcessDecimals ||
+    extracted.duplicate ||
     (jsonAmountUsable && jsonAmount
       ? jsonAmount.ambiguous
       : jsonAmountRaw != null
@@ -350,7 +361,12 @@ export function parseWalletPayload(input: {
         : fromText.amountAmbiguous);
 
   return {
-    amount: jsonExcessDecimals ? null : jsonAmountUsable && jsonAmount ? jsonAmount.amount : fromText.amount,
+    amount:
+      extracted.duplicate || jsonExcessDecimals
+        ? null
+        : jsonAmountUsable && jsonAmount
+          ? jsonAmount.amount
+          : fromText.amount,
     currency: jsonUnsupported
       ? jsonCurrencyText
       : parsedJsonCurrency ?? fromText.currency,
@@ -361,6 +377,8 @@ export function parseWalletPayload(input: {
     amountAmbiguous,
     currencyUnsupported,
     direction: jsonAmountUsable && jsonAmount ? jsonAmount.direction : fromText.direction,
+    excessDecimals: jsonExcessDecimals,
+    amountDuplicate: extracted.duplicate,
   };
 }
 

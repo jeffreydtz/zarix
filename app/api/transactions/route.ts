@@ -5,6 +5,7 @@ import { transactionsService } from '@/lib/services/transactions';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { errorResponse, requireUser } from '@/lib/api-handler';
 import { observedRequest } from '@/lib/observability/correlation';
+import { moneyAmountFromToken, rawJsonHasInvalidMoney } from '@/lib/money-amount';
 
 export async function GET(req: NextRequest) {
   try {
@@ -60,7 +61,16 @@ export async function POST(req: NextRequest) {
     if (!validTransactionRequestId(requestId)) {
       return NextResponse.json({ error: 'Falta un identificador de solicitud válido.' }, { status: 400 });
     }
-    const body = await req.json();
+    const raw = await req.text();
+    if (rawJsonHasInvalidMoney(raw)) {
+      return NextResponse.json({ error: 'Monto inválido' }, { status: 400 });
+    }
+    let body: Record<string, unknown>;
+    try {
+      body = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      return NextResponse.json({ error: 'JSON inválido.' }, { status: 400 });
+    }
 
     if (!body.accountId) {
       return NextResponse.json(
@@ -69,7 +79,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!['expense', 'income', 'transfer'].includes(body.type)) {
+    if (!['expense', 'income', 'transfer'].includes(String(body.type))) {
       return NextResponse.json(
         { error: 'Tipo de movimiento inválido (debe ser gasto, ingreso o transferencia)' },
         { status: 400 }
@@ -91,25 +101,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const amount = Number(body.amount);
-    if (!Number.isFinite(amount) || amount <= 0) {
+    const amount =
+      typeof body.amount === 'string'
+        ? moneyAmountFromToken(body.amount)
+        : Number(body.amount);
+    if (amount == null || !Number.isFinite(amount) || amount <= 0) {
       return NextResponse.json({ error: 'Monto inválido' }, { status: 400 });
     }
 
     const transaction = await transactionsService.create({
       requestId,
       userId: user.id,
-      type: body.type,
-      accountId: body.accountId,
-      destinationAccountId: body.destinationAccountId,
+      type: body.type as 'expense' | 'income' | 'transfer',
+      accountId: String(body.accountId),
+      destinationAccountId: typeof body.destinationAccountId === 'string' ? body.destinationAccountId : undefined,
       amount,
       currency: cur,
-      categoryId: body.categoryId,
-      description: body.description,
-      notes: body.notes,
-      tags: body.tags,
-      transactionDate: body.transactionDate,
-      installments: body.installments,
+      categoryId: typeof body.categoryId === 'string' ? body.categoryId : undefined,
+      description: typeof body.description === 'string' ? body.description : undefined,
+      notes: typeof body.notes === 'string' ? body.notes : undefined,
+      tags: Array.isArray(body.tags) ? (body.tags as string[]) : undefined,
+      transactionDate: typeof body.transactionDate === 'string' ? body.transactionDate : undefined,
+      installments: typeof body.installments === 'number' ? body.installments : undefined,
       source: 'web',
       exchangeRateOverride: (() => {
         const raw = body.exchangeRateOverride;

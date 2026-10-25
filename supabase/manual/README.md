@@ -70,4 +70,7 @@ The REVOKE file has no migration version.
 
 `20261024220000` backfills existing keyed inbox rows as `legacy:<id>`. Those keys stay bound and retry with a JS canonical as 409; they are never released. Query bounds use UTC−03 (Córdoba since 2009). Historical DST (−02) is out of the supported range; grouping still uses the IANA zone.
 
-Follow-up (after #16/#17): `apply_migration` `supabase/migrations/20261025010000_inbox_claim_category_search_path.sql`.
+Follow-up (after #16/#17), one file at a time:
+1. `apply_migration` `supabase/migrations/20261025010000_inbox_claim_category_search_path.sql`
+2. `apply_migration` `supabase/migrations/20261025020000_budget_status_cordoba.sql`
+3. `apply_migration` `supabase/migrations/20261025030000_category_system_select.sql`

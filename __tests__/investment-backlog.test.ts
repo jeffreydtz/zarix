@@ -112,7 +112,14 @@ describe('USD quote adaptation for D tickers', () => {
       'USD',
       1300
     );
-    expect(adapted).toEqual({ price: 100, changePct: 1, currency: 'USD', timestamp: null });
+    expect(adapted).toEqual({
+      price: 100,
+      changePct: 1,
+      currency: 'USD',
+      timestamp: null,
+      sourcePrice: 130000,
+      sourceCurrency: 'ARS',
+    });
     expect(adaptQuoteToMarketCurrency(
       { price: 91.5, changePct: -0.5, currency: 'USD', timestamp: null },
       'USD',

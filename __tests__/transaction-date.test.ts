@@ -1,11 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import {
+  APP_CIVIL_TIMEZONE,
   todayLocalYmd,
   calendarDateToUtcNoonIso,
+  civilTodayYmd,
   isoToLocalDateInputValue,
   parseBotTransactionDateInput,
   parseCivilMonthQuery,
   isCivilYmd,
+  startOfMonthYmd,
   transactionCivilYmd,
   ymdToQueryEndIso,
   ymdToQueryExclusiveEndIso,
@@ -122,6 +125,14 @@ describe('Córdoba civil grouping and month bounds', () => {
   it('keeps 24 Oct 23:30 local on the 24th, not the UTC 25th', () => {
     expect(transactionCivilYmd('2026-10-24T23:30:00-03:00')).toBe('2026-10-24');
     expect(transactionCivilYmd('2026-10-24T23:30:00-03:00')).not.toBe('2026-10-25');
+  });
+
+  it('selects October for 31 Oct 23:30 Córdoba even when UTC is 1 Nov', () => {
+    const late = new Date('2026-10-31T23:30:00-03:00');
+    expect(startOfMonthYmd(civilTodayYmd(APP_CIVIL_TIMEZONE, late))).toBe('2026-10-01');
+    const utcMorning = new Date('2026-11-01T01:00:00.000Z');
+    expect(startOfMonthYmd(civilTodayYmd(APP_CIVIL_TIMEZONE, utcMorning))).toBe('2026-10-01');
+    expect(utcMorning.toISOString().slice(0, 7)).toBe('2026-11');
   });
 
   it('keeps 31 Oct 23:30 local inside October query bounds', () => {

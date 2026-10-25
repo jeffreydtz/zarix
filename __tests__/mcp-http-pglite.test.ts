@@ -781,7 +781,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     );
   });
 
-  it('Wallet HTTP 40.129 parks and never writes the ledger', async () => {
+  it('Wallet HTTP 40.129 returns 400 and never writes the ledger', async () => {
     const query = (sql: string, params: unknown[] = []) =>
       asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
         tx.query(sql, params)
@@ -800,16 +800,12 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
         body: raw,
       })
     );
-    expect(res.status).toBe(201);
-    const json = (await res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
-    expect(json.autoConfirmed).toBe(false);
-    expect(json.item.amount).toBeNull();
-    const row = await query('SELECT amount, amount_ambiguous, status FROM pending_inbox_items WHERE id=$1', [
-      json.item.id,
-    ]);
-    expect(row.rows[0].amount).toBeNull();
-    expect(row.rows[0].amount_ambiguous).toBe(true);
-    expect(row.rows[0].status).toBe('pending');
+    expect(res.status).toBe(400);
+    const json = (await res.json()) as { error?: string };
+    expect(json.error).toMatch(/decimales/i);
+    expect(
+      (await query('SELECT count(*)::int AS n FROM pending_inbox_items WHERE merchant=$1', ['Excess café'])).rows[0].n
+    ).toBe(0);
     expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
       before
     );
@@ -891,6 +887,63 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     expect(excess.status).toBe(400);
     expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
       before
+    );
+
+    const exponent = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-exponent-1e3',
+        },
+        body: '{"type":"expense","amount":1e3,"currency":"ARS","accountId":"' + ids.accountA + '","description":"No exponent"}',
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(exponent.status).toBe(400);
+    const hex = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-hex-0x10',
+        },
+        body: '{"type":"expense","amount":"0x10","currency":"ARS","accountId":"' + ids.accountA + '","description":"No hex"}',
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(hex.status).toBe(400);
+  });
+
+  it('MCP rejects exponent amounts before parking or writing the ledger', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const beforeInbox = (await query('SELECT count(*)::int AS n FROM pending_inbox_items WHERE user_id=$1', [ids.a])).rows[0].n;
+    const beforeLedger = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const call = await mcpPost(
+      new NextRequest('http://localhost/api/mcp', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          accept: 'application/json, text/event-stream',
+        },
+        body:
+          '{"jsonrpc":"2.0","id":91,"method":"tools/call","params":{"name":"create_transaction","arguments":{"type":"expense","amount":1e3,"currency":"ARS","accountId":"' +
+          ids.accountA +
+          '","description":"MCP exponent"}}}',
+      })
+    );
+    expect(call.status).toBe(400);
+    expect((await query('SELECT count(*)::int AS n FROM pending_inbox_items WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      beforeInbox
+    );
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      beforeLedger
     );
   });
 

@@ -171,6 +171,40 @@ describe('wallet amount parser (table)', () => {
     expect(zero.amountAmbiguous).toBe(true);
   });
 
+  it('parks exponent and hex text tokens instead of auto-confirming 1 or 16', () => {
+    const exponent = parseAmountFromText('Compra $ 1e3 en COTO con tarjeta Visa');
+    expect(exponent.amount).toBeNull();
+    expect(exponent.amount).not.toBe(1);
+    expect(exponent.amount).not.toBe(1000);
+    expect(exponent.ambiguous).toBe(true);
+    const payload = parseWalletPayload({ text: 'Compra $ 1e3 en COTO' });
+    expect(payload.amount).toBeNull();
+    expect(payload.amountAmbiguous).toBe(true);
+    const hex = parseAmountFromText('Compra $ 0x10 en COTO');
+    expect(hex.amount).toBeNull();
+    expect(hex.amount).not.toBe(16);
+    expect(hex.ambiguous).toBe(true);
+  });
+
+  it('uses the top-level JSON amount and parks duplicate top-level keys', () => {
+    const nestedRaw = '{"metadata":{"amount":2},"amount":1000,"currency":"ARS","merchant":"Café"}';
+    const nested = parseWalletPayload({
+      json: JSON.parse(nestedRaw) as Record<string, unknown>,
+      rawJson: nestedRaw,
+    });
+    expect(nested.amount).toBe(1000);
+    expect(nested.amount).not.toBe(2);
+    expect(nested.amountAmbiguous).toBe(false);
+    const dupRaw = '{"amount":1,"amount":2,"currency":"ARS","merchant":"Café"}';
+    const dup = parseWalletPayload({
+      json: JSON.parse(dupRaw) as Record<string, unknown>,
+      rawJson: dupRaw,
+    });
+    expect(dup.amount).toBeNull();
+    expect(dup.amountAmbiguous).toBe(true);
+    expect(dup.amountDuplicate).toBe(true);
+  });
+
   it('parses old timestamps for identity and applies freshness only separately', () => {
     const iso = '2025-09-01T12:00:00.000Z';
     expect(parseWalletTimestamp(iso)).toBe(iso);

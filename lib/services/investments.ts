@@ -432,9 +432,10 @@ class InvestmentsService {
       let positionFxAsOf = fxAsOf;
       const cacheKey = quoteCacheKeyForPosition(inv);
       const requiredFxUnavailable = cacheKey != null && quoteMap.unavailableFxKeys.has(cacheKey);
+      let fresh: QuoteResult | undefined;
 
       if (inv.ticker && !inv.is_manual_price) {
-        const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
+        fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
         if (fresh && fresh.price > 0) {
           currentPrice = fresh.price;
           dailyChangePct = fresh.changePct;
@@ -460,9 +461,14 @@ class InvestmentsService {
 
       const costNative = (qty * purchaseUnit) / priceFactor;
       const marketNative = (qty * currentPrice) / priceFactor;
+      const pnlPrice = liveCurrency ? (fresh?.sourcePrice ?? currentPrice) : currentPrice;
+      const pnlCurrency = (
+        liveCurrency && fresh?.sourceCurrency ? fresh.sourceCurrency : marketCur
+      ).trim().toUpperCase();
+      const marketNativeForPnl = (qty * pnlPrice) / priceFactor;
 
       const costUsd = availableValue(() => amountToUsd(costNative, purchaseCur, blueArsPerUsd, extraUsd));
-      const marketUsd = availableValue(() => amountToUsd(marketNative, marketCur, blueArsPerUsd, extraUsd));
+      const marketUsd = availableValue(() => amountToUsd(marketNativeForPnl, pnlCurrency, blueArsPerUsd, extraUsd));
       const pnlUsd = marketUsd != null && costUsd != null ? marketUsd - costUsd : null;
       const pnlPctUsd = pnlUsd != null && costUsd != null ? (costUsd > 0 ? (pnlUsd / costUsd) * 100 : 0) : null;
 
@@ -470,8 +476,8 @@ class InvestmentsService {
       if (marketUsd != null && dailyChangePct != null && Number.isFinite(dailyChangePct)) {
         const denom = 100 + dailyChangePct;
         if (denom !== 0) {
-          const previousMarketNative = marketNative * (100 / denom);
-          const previousMarketUsd = availableValue(() => amountToUsd(previousMarketNative, marketCur, blueArsPerUsd, extraUsd));
+          const previousMarketNative = marketNativeForPnl * (100 / denom);
+          const previousMarketUsd = availableValue(() => amountToUsd(previousMarketNative, pnlCurrency, blueArsPerUsd, extraUsd));
           dailyPnlUsd = previousMarketUsd != null ? marketUsd - previousMarketUsd : null;
         }
       }

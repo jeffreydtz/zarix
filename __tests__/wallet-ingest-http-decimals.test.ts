@@ -59,7 +59,7 @@ describe('Wallet HTTP ingest decimal precision', () => {
     });
   });
 
-  it('POSTs amount 40.129 through ingest and never writes the ledger', async () => {
+  it('POSTs amount 40.129 through ingest as 400 and never writes the ledger', async () => {
     const captured: { row: Record<string, unknown> | null } = { row: null };
     mocks.rpc.mockImplementation(async (fn: string, args: { p_row?: Record<string, unknown> }) => {
       if (fn === 'reserve_pending_inbox_item') {
@@ -91,15 +91,12 @@ describe('Wallet HTTP ingest decimal precision', () => {
         body: raw,
       })
     );
-    expect(response.status).toBe(201);
-    const body = (await response.json()) as { autoConfirmed: boolean; item: { amount: number | null } };
-    expect(body.autoConfirmed).toBe(false);
-    expect(body.item.amount).toBeNull();
-    expect(captured.row?.amount).toBeNull();
-    expect(captured.row?.amount).not.toBe(40.13);
-    expect(captured.row?.amount_ambiguous).toBe(true);
+    expect(response.status).toBe(400);
+    const body = (await response.json()) as { error?: string };
+    expect(body.error).toMatch(/decimales/i);
+    expect(captured.row).toBeNull();
     expect(mocks.execute).not.toHaveBeenCalled();
-    expect(mocks.rpc.mock.calls.some((call) => call[0] === 'claim_pending_inbox_item')).toBe(false);
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
   it('POSTs amount 1e2 through ingest and parks null instead of 1.00', async () => {
@@ -141,6 +138,48 @@ describe('Wallet HTTP ingest decimal precision', () => {
     expect(captured.row?.amount).toBeNull();
     expect(captured.row?.amount).not.toBe(1);
     expect(captured.row?.amount).not.toBe(100);
+    expect(captured.row?.amount_ambiguous).toBe(true);
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it('POSTs text Compra $ 1e3 and parks null instead of auto-confirming 1', async () => {
+    const captured: { row: Record<string, unknown> | null } = { row: null };
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_row?: Record<string, unknown> }) => {
+      if (fn === 'reserve_pending_inbox_item') {
+        captured.row = args.p_row ?? null;
+        return {
+          data: {
+            item: {
+              ...args.p_row,
+              id: ITEM_ID,
+              user_id: FIXTURE_USER,
+              status: 'pending',
+            },
+            duplicate: false,
+          },
+          error: null,
+        };
+      }
+      return { data: null, error: null };
+    });
+
+    const response = await walletPost(
+      new NextRequest('http://localhost/api/ingest/wallet', {
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer zrxp_' + 'a'.repeat(64),
+          'content-type': 'text/plain',
+        },
+        body: 'Compra $ 1e3 en COTO',
+      })
+    );
+    expect(response.status).toBe(201);
+    const body = (await response.json()) as { autoConfirmed: boolean; item: { amount: number | null } };
+    expect(body.autoConfirmed).toBe(false);
+    expect(body.item.amount).toBeNull();
+    expect(captured.row?.amount).toBeNull();
+    expect(captured.row?.amount).not.toBe(1);
+    expect(captured.row?.amount).not.toBe(1000);
     expect(captured.row?.amount_ambiguous).toBe(true);
     expect(mocks.execute).not.toHaveBeenCalled();
   });

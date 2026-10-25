@@ -2,6 +2,7 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
 import type { Budget, BudgetStatus } from '@/types/database';
 import { enqueueNotification } from '@/lib/services/notification-outbox';
+import { APP_CIVIL_TIMEZONE, civilTodayYmd, startOfMonthYmd } from '@/lib/transaction-date';
 
 export interface CreateBudgetInput {
   userId: string;
@@ -57,7 +58,7 @@ class BudgetsService {
   async getStatus(userId: string, month: Date): Promise<BudgetStatus[]> {
     const supabase = createServiceClientSync();
 
-    const monthStr = month.toISOString().split('T')[0].substring(0, 7) + '-01';
+    const monthStr = startOfMonthYmd(civilTodayYmd(APP_CIVIL_TIMEZONE, month));
 
     const { data, error } = await supabase.rpc('get_budget_status', {
       p_user_id: userId,
@@ -71,7 +72,10 @@ class BudgetsService {
   async checkAndSendAlerts(userId: string, categoryId: string | null, month: string): Promise<void> {
     const supabase = createServiceClientSync();
 
-    const budgetStatus = await this.getStatus(userId, new Date(month));
+    const monthDate = /^\d{4}-\d{2}-\d{2}$/.test(month)
+      ? new Date(`${month}T12:00:00-03:00`)
+      : new Date(month);
+    const budgetStatus = await this.getStatus(userId, monthDate);
     const status = budgetStatus.find((s) => s.category_id === categoryId);
 
     if (!status) return;

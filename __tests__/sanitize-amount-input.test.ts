@@ -18,7 +18,8 @@ describe('sanitizeAmountInput', () => {
     [',', ',', 'lone comma: nothing before, comma kept'],
     ['.', '.', 'lone dot kept'],
     ['-50', '50', 'minus sign is stripped (not in allowlist)'],
-    ['1e3', '13', 'exponent letter stripped, digits concatenated'],
+    ['1e3', '1e3', 'exponent kept so the money parser can reject it'],
+    ['0x10', '0x10', 'hex kept so the money parser can reject it'],
     ['  1 000,25 ', '1000,25', 'spaces stripped'],
   ];
 

@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   extractJsonNumberToken,
+  extractTopLevelJsonAmount,
   formatCents,
   hasAtMostTwoMoneyDecimals,
   integerCentsFromToken,
   moneyAmountFromToken,
+  rawJsonHasInvalidMoney,
 } from '@/lib/money-amount';
 
 describe('integer cents money check (no float*100)', () => {
@@ -54,5 +56,35 @@ describe('integer cents money check (no float*100)', () => {
     expect(moneyAmountFromToken('1e2')).toBeNull();
     expect(moneyAmountFromToken('1e2')).not.toBe(1);
     expect(JSON.parse('{"amount":1e2}').amount).toBe(100);
+    expect(integerCentsFromToken('0x10')).toBeNull();
+    expect(integerCentsFromToken('1e3')).toBeNull();
+    expect(moneyAmountFromToken('1e-2')).toBeNull();
+  });
+
+  it('reads only the top-level amount and ignores nested metadata.amount', () => {
+    const nested = '{"metadata":{"amount":2},"amount":1000}';
+    expect(extractTopLevelJsonAmount(nested)).toEqual({ token: '1000', duplicate: false });
+    expect(extractJsonNumberToken(nested)).toBe('1000');
+    expect(extractJsonNumberToken(nested)).not.toBe('2');
+    expect(rawJsonHasInvalidMoney(nested)).toBe(false);
+  });
+
+  it('treats duplicate top-level amount keys as ambiguous', () => {
+    const dup = '{"amount":1,"amount":2}';
+    expect(extractTopLevelJsonAmount(dup).duplicate).toBe(true);
+    expect(integerCentsFromToken(extractJsonNumberToken(dup)!)).toBeNull();
+    expect(rawJsonHasInvalidMoney(dup)).toBe(true);
+  });
+
+  it('rejects exponent and hex money tokens on REST/MCP-shaped JSON', () => {
+    expect(rawJsonHasInvalidMoney('{"amount":1e3}')).toBe(true);
+    expect(rawJsonHasInvalidMoney('{"amount":1e-2}')).toBe(true);
+    expect(rawJsonHasInvalidMoney('{"amount":"0x10"}')).toBe(true);
+    expect(
+      rawJsonHasInvalidMoney(
+        '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"create_transaction","arguments":{"amount":1e3}}}'
+      )
+    ).toBe(true);
+    expect(rawJsonHasInvalidMoney('{"amount":1000}')).toBe(false);
   });
 });

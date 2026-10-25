@@ -19,7 +19,12 @@ import { withFinancialRequestContext } from '@/lib/financial-request-context';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import type { ToolArgs, WriteChannel } from '@/lib/ai/registry/types';
-import { formatCents, integerCentsFromToken, numberToDecimalString } from '@/lib/money-amount';
+import {
+  extractTopLevelJsonAmount,
+  formatCents,
+  integerCentsFromToken,
+  numberToDecimalString,
+} from '@/lib/money-amount';
 
 export { inboxDedupeLockKey };
 
@@ -386,6 +391,13 @@ async function ingestWalletItemUnlocked(input: {
   if (payload.currencyUnsupported || !isTransactionCurrency(payload.currency)) {
     throw new ApiError('Moneda no admitida. Usá ARS, USD o EUR.', 400);
   }
+  if (payload.excessDecimals) {
+    const token = input.rawJson ? extractTopLevelJsonAmount(input.rawJson).token : null;
+    const raw = `${token ?? ''} ${payload.rawText ?? ''} ${input.text ?? ''}`;
+    if (!/[eE]/.test(raw) && !/[xX]/.test(raw)) {
+      throw new ApiError('El monto no puede tener más de dos decimales.', 400);
+    }
+  }
   const occurredAt = occurredAtForStorage(payload.occurredAt);
   const clientKey = input.idempotencyKey?.trim() || null;
   if (clientKey && !validTransactionRequestId(clientKey) && !/^[A-Za-z0-9._:-]{8,200}$/.test(clientKey)) {
@@ -741,9 +753,27 @@ export async function confirmPendingItem(input: ConfirmPendingItemInput): Promis
 
 export type PendingBatchItemStatus = {
   pendingId: string;
-  status: string;
+  status: 'confirmed' | 'failed' | 'reverted';
   error?: string;
 };
+
+export class PendingBatchConfirmError extends ApiError {
+  readonly items: PendingBatchItemStatus[];
+  readonly executedCount: number;
+  constructor(items: PendingBatchItemStatus[], cause?: unknown, executedCount = 0) {
+    const failed = items.find((item) => item.status === 'failed');
+    const status =
+      cause instanceof ApiError
+        ? cause.status
+        : cause instanceof FxUnavailableError
+          ? 503
+          : 400;
+    super(failed?.error || 'No se pudo confirmar el lote.', status);
+    this.name = 'PendingBatchConfirmError';
+    this.items = items;
+    this.executedCount = executedCount;
+  }
+}
 
 function confirmableInboxStatus(status: string): boolean {
   return status === 'pending' || status === 'uncertain' || status === 'confirming';
@@ -785,14 +815,64 @@ function preflightConfirmItem(row: PendingInboxItem | undefined): { error: strin
   return null;
 }
 
+function parkedCategoryId(row: PendingInboxItem): string | null {
+  const parked = row.tool_payload;
+  if (typeof parked?.categoryId === 'string' && parked.categoryId) return parked.categoryId;
+  return row.category_id;
+}
+
+async function assertBatchAccountsResolvable(userId: string, rows: PendingInboxItem[]): Promise<void> {
+  const accounts = await accountsService.list(userId);
+  const known = new Set(accounts.map((account) => account.id));
+  for (const row of rows) {
+    if (row.status === 'confirmed') continue;
+    const { accountId, type, accountName } = parkedConfirmFields(row);
+    if (accountId) {
+      if (!known.has(accountId)) throw new ApiError('La cuenta no existe.', 400);
+      continue;
+    }
+    if (type === 'transfer' || !accountName) continue;
+    const fuzzy = await accountsService.findByNameFuzzy(userId, accountName, { currency: row.currency });
+    if (fuzzy.confidence !== 'exact' && fuzzy.confidence !== 'high') {
+      throw new ApiError('La cuenta no existe.', 400);
+    }
+  }
+}
+
+async function assertBatchCategoriesOwned(userId: string, rows: PendingInboxItem[]): Promise<void> {
+  const needed = [
+    ...new Set(rows.flatMap((row) => (row.status === 'confirmed' ? [] : parkedCategoryId(row) ? [parkedCategoryId(row)!] : []))),
+  ];
+  if (needed.length === 0) return;
+  const supabase = createServiceClientSync();
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, user_id, is_system')
+    .in('id', needed);
+  if (error) throw error;
+  const byId = new Map((data ?? []).map((row) => [row.id as string, row]));
+  for (const id of needed) {
+    const cat = byId.get(id);
+    if (!cat || (cat.is_system !== true && cat.user_id !== userId)) {
+      throw new ApiError('La categoría no pertenece al usuario.', 400);
+    }
+  }
+}
+
+export type PendingBatchConfirmResult = PendingInboxItem[] & { executedCount: number };
+
 export async function confirmPendingItems(input: {
   userId: string;
   itemIds: string[];
   source?: WriteChannel;
   req?: Request;
-}): Promise<PendingInboxItem[]> {
+}): Promise<PendingBatchConfirmResult> {
   const ids = canonicalPendingInboxIds(input.itemIds);
-  if (ids.length === 0) return [];
+  if (ids.length === 0) {
+    const empty = [] as PendingBatchConfirmResult;
+    empty.executedCount = 0;
+    return empty;
+  }
   const supabase = createServiceClientSync();
   const { data, error } = await supabase
     .from('pending_inbox_items')
@@ -807,23 +887,19 @@ export async function confirmPendingItems(input: {
   if (blocked?.err) {
     throw new ApiError(blocked.err.error, blocked.err.status);
   }
-  const neededAccountIds = [
-    ...new Set(
-      ids.flatMap((id) => {
-        const row = byId.get(id);
-        if (!row || row.status === 'confirmed') return [];
-        const { accountId } = parkedConfirmFields(row);
-        return accountId ? [accountId] : [];
-      })
-    ),
-  ];
-  if (neededAccountIds.length > 0) {
-    const accounts = await accountsService.list(input.userId);
-    const known = new Set(accounts.map((account) => account.id));
-    if (neededAccountIds.some((accountId) => !known.has(accountId))) {
-      throw new ApiError('La cuenta no existe.', 400);
+  const pendingRows = ids.map((id) => byId.get(id)).filter((row): row is PendingInboxItem => Boolean(row));
+  await assertBatchAccountsResolvable(input.userId, pendingRows);
+  await assertBatchCategoriesOwned(input.userId, pendingRows);
+
+  const stale = pendingRows.filter((row) => isStaleConfirming(row));
+  if (stale.length > 0) {
+    await releaseClaimedPendingItems(input.userId, stale);
+    for (const row of stale) {
+      byId.set(row.id, { ...row, status: 'pending', claim_id: null });
     }
   }
+
+  const alreadyConfirmed = new Set(ids.filter((id) => byId.get(id)?.status === 'confirmed'));
   const needClaim = ids.filter((id) => byId.get(id)?.status !== 'confirmed');
   const claimedById = new Map<string, PendingInboxItem>();
   if (needClaim.length > 0) {
@@ -837,31 +913,96 @@ export async function confirmPendingItems(input: {
       throw new ApiError('Este pendiente se está confirmando.', 409);
     }
     const rows = (Array.isArray(claimed) ? claimed : claimed ? [claimed] : []) as PendingInboxItem[];
-    if (rows.length !== needClaim.length) {
-      throw new ApiError('Este pendiente se está confirmando.', 409);
-    }
     for (const row of rows) claimedById.set(row.id, row);
+    const missing = needClaim.filter((id) => !claimedById.has(id));
+    if (missing.length > 0) {
+      const { data: latest } = await supabase
+        .from('pending_inbox_items')
+        .select('*')
+        .eq('user_id', input.userId)
+        .in('id', missing);
+      const latestById = new Map(((latest ?? []) as PendingInboxItem[]).map((row) => [row.id, row]));
+      const unclaimed: string[] = [];
+      for (const id of missing) {
+        const row = latestById.get(id);
+        if (row?.status === 'confirmed') {
+          byId.set(id, row);
+          alreadyConfirmed.add(id);
+        } else {
+          unclaimed.push(id);
+        }
+      }
+      if (unclaimed.length > 0) {
+        await releaseClaimedPendingItems(input.userId, [...claimedById.values()]);
+        throw new ApiError('Este pendiente se está confirmando.', 409);
+      }
+    }
   }
   const out: PendingInboxItem[] = [];
+  const report: PendingBatchItemStatus[] = [];
+  let failed: unknown = null;
+  const leftoverIds: string[] = [];
+  let executedCount = 0;
   for (const id of ids) {
     const row = byId.get(id);
     if (row?.status === 'confirmed') {
       out.push(row);
+      report.push({ pendingId: id, status: 'confirmed' });
+      continue;
+    }
+    if (failed) {
+      leftoverIds.push(id);
       continue;
     }
     const claimedRow = claimedById.get(id);
     if (!claimedRow) throw new ApiError('Este pendiente se está confirmando.', 409);
-    out.push(
-      await confirmPendingItem({
+    try {
+      const confirmed = await confirmPendingItem({
         userId: input.userId,
         itemId: id,
         source: input.source,
         req: input.req,
         claimedRow,
-      })
-    );
+      });
+      out.push(confirmed);
+      report.push({ pendingId: id, status: 'confirmed' });
+      executedCount += 1;
+    } catch (error) {
+      failed = error;
+      report.push({
+        pendingId: id,
+        status: 'failed',
+        error: error instanceof Error ? error.message : 'No se pudo confirmar el pendiente.',
+      });
+    }
   }
-  return out;
+  if (failed) {
+    await releaseClaimedPendingItems(
+      input.userId,
+      leftoverIds.map((id) => claimedById.get(id)).filter((row): row is PendingInboxItem => Boolean(row))
+    );
+    for (const id of leftoverIds) {
+      report.push({ pendingId: id, status: 'reverted' });
+    }
+    throw new PendingBatchConfirmError(report, failed, executedCount);
+  }
+  const result = out as PendingBatchConfirmResult;
+  result.executedCount = executedCount;
+  return result;
+}
+
+async function releaseClaimedPendingItems(userId: string, rows: PendingInboxItem[]): Promise<void> {
+  const supabase = createServiceClientSync();
+  for (const row of rows) {
+    if (row.status === 'confirmed' || !row.claim_id) continue;
+    await supabase
+      .from('pending_inbox_items')
+      .update({ status: 'pending', claim_id: null })
+      .eq('id', row.id)
+      .eq('user_id', userId)
+      .eq('status', 'confirming')
+      .eq('claim_id', row.claim_id);
+  }
 }
 
 async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promise<PendingInboxItem> {
@@ -1016,6 +1157,23 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
     }
 
     const financialContext = await loadFinancialContext(input.userId);
+    const requestedCategoryId =
+      input.categoryId ??
+      (typeof parked.categoryId === 'string' ? parked.categoryId : null) ??
+      row.category_id;
+    let resolvedCategoryId: string | null = null;
+    if (requestedCategoryId) {
+      const { data: cat, error: catErr } = await supabase
+        .from('categories')
+        .select('id, user_id, is_system')
+        .eq('id', requestedCategoryId)
+        .maybeSingle();
+      if (catErr) throw catErr;
+      if (!cat || (cat.is_system !== true && cat.user_id !== input.userId)) {
+        throw new ApiError('La categoría no pertenece al usuario.', 400);
+      }
+      resolvedCategoryId = requestedCategoryId;
+    }
     const rawOccurred =
       input.occurredAt ??
       (typeof parked.transactionDate === 'string' ? parked.transactionDate : null) ??
@@ -1031,7 +1189,7 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
       args.account = parked.account || account?.name;
       args.accountId = accountId ?? parked.accountId;
       args.category = parked.category;
-      args.categoryId = input.categoryId ?? row.category_id ?? parked.categoryId;
+      args.categoryId = resolvedCategoryId;
       args.destinationAccount = parked.destinationAccount;
       args.destinationAccountId = parked.destinationAccountId;
       args.description =
@@ -1091,7 +1249,7 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
         currency: currencyRaw,
         merchant: input.merchant ?? row.merchant,
         account_id: accountId,
-        category_id: input.categoryId ?? row.category_id,
+        category_id: resolvedCategoryId,
         occurred_at: occurred,
         confirmed_transaction_id: result.executed?.[0]?.id ?? prior?.id ?? null,
         idempotency_key: row.idempotency_key || requestId,

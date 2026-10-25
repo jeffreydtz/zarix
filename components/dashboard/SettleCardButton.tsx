@@ -7,6 +7,8 @@ import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { useRouter } from 'next/navigation';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
+import { moneyAmountFromToken } from '@/lib/money-amount';
+import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
 import type { AccountType } from '@/types/database';
 
 type FundingAccount = {
@@ -65,8 +67,9 @@ export default function SettleCardButton({
   /** Tope: ni más que la deuda ni más que el saldo de la cuenta origen. */
   const maxSettle = Math.min(primaryDebt, fundingAvailable);
 
-  const amountNum = parseFloat(amount.replace(',', '.'));
-  const amountValid = Number.isFinite(amountNum) && amountNum > 0 && amountNum <= maxSettle + 1e-9;
+  const amountNum = moneyAmountFromToken(amount);
+  const amountValid =
+    amountNum != null && Number.isFinite(amountNum) && amountNum > 0 && amountNum <= maxSettle + 1e-9;
 
   const { submit } = useFinancialOperation(`settle:${card.id}`);
 
@@ -100,7 +103,7 @@ export default function SettleCardButton({
   };
 
   const handleSettle = async () => {
-    if (!fundingId || !amountValid) return;
+    if (!fundingId || amountNum == null || !amountValid) return;
     setError('');
     setLoading(true);
     try {
@@ -205,7 +208,7 @@ export default function SettleCardButton({
                     type="text"
                     inputMode="decimal"
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => setAmount(sanitizeAmountInput(e.target.value))}
                     placeholder="0.00"
                     className="w-full min-w-0 px-4 py-2 rounded-lg border border-border bg-card"
                   />
@@ -219,7 +222,10 @@ export default function SettleCardButton({
                     >
                       Saldar todo
                     </button>
-                    <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
+                    <MiniAmountCalculatorButton
+                      currentAmount={amount}
+                      onApply={(value) => setAmount(sanitizeAmountInput(value))}
+                    />
                   </div>
                 </div>
                 {amount !== '' && !amountValid && (

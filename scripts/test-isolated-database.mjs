@@ -169,10 +169,7 @@ for(const legacyGrants of [false,true]) {
       [ids.a,ids.accountA,ids.categoryB]),['23503']));
     await test(profile,'inbox system category is allowed',async()=>{
       const sys=(await db.query("SELECT id FROM categories WHERE is_system=true LIMIT 1")).rows[0].id;
-      // Trigger is INVOKER + FOR KEY SHARE. Authenticated PGlite cannot lock
-      // NULL-owner system rows even though SELECT is allowed; service_role still
-      // exercises is_system=TRUE. Cross-user rejection stays on owner().
-      const row=await service(db,
+      const row=await owner(db,
         `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,account_id,category_id,status,fingerprint,source,direction,request_canonical)
          VALUES($1,18,'ARS','Inbox sistema',$2,$3,'pending','fp-inbox-cat-system','wallet','expense','') RETURNING id`,
         [ids.a,ids.accountA,sys]);
@@ -208,6 +205,14 @@ for(const legacyGrants of [false,true]) {
     });
     await test(profile,'own category and budget work',async()=>{
       const row=await owner(db,"INSERT INTO budgets(user_id,category_id,month,amount) VALUES($1,$2,'2026-10-01',100) RETURNING id",[ids.a,ids.categoryA]);assert.equal(row.rows.length,1);
+    });
+    await test(profile,'budget status uses Córdoba bounds under UTC session',async()=>{
+      await service(db,"SET TimeZone TO 'UTC'");
+      await owner(db,"INSERT INTO transactions(user_id,type,account_id,category_id,amount,currency,amount_in_account_currency,transaction_date) VALUES($1,'expense',$2,$3,50,'ARS',50,'2026-10-31 23:30:00-03')",[ids.a,ids.accountA,ids.categoryA]);
+      const october=await service(db,'SELECT spent_amount FROM get_budget_status($1,$2::date)',[ids.a,'2026-10-01']);
+      assert.equal(Number(october.rows[0].spent_amount),50);
+      const november=await service(db,'SELECT spent_amount FROM get_budget_status($1,$2::date)',[ids.a,'2026-11-01']);
+      assert.equal(november.rows.length,0);
     });
     await test(profile,'system categories cannot be minted or modified',async()=>{
       await rejects(()=>owner(db,"INSERT INTO categories(user_id,name,type,is_system) VALUES($1,'Fake global','expense',true)",[ids.a]));

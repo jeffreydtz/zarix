@@ -246,6 +246,9 @@ export interface ConvertibleQuote {
   /** FX provenance for display estimates; stale FX is never persisted. */
   fxStale?: boolean;
   fxAsOf?: string | null;
+  /** Native quote before MEP adapt. P&L converts this with blue, not the display currency. */
+  sourcePrice?: number;
+  sourceCurrency?: string;
 }
 
 /**
@@ -270,7 +273,13 @@ export function adaptQuoteToMarketCurrency(
     const price =
       source === 'ARS' ? quote.price / mepArsPerUsd : quote.price * mepArsPerUsd;
     if (!Number.isFinite(price) || price <= 0) return null;
-    return { ...quote, price, currency: desired };
+    return {
+      ...quote,
+      price,
+      currency: desired,
+      sourcePrice: quote.sourcePrice ?? quote.price,
+      sourceCurrency: quote.sourceCurrency ?? source,
+    };
   }
   return null;
 }
