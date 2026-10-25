@@ -115,6 +115,35 @@ export function dedupeByCacheKey<T extends { cacheKey: string }>(jobs: T[]): T[]
   return out;
 }
 
+/** Why one FCI got no CAFCI quote. Strings are capped; never a response body. */
+export interface FciSkipDetail {
+  reason: string;
+  status?: number;
+  stage?: string;
+  server?: string;
+}
+
+const FCI_SKIP_REASON_MAX = 200;
+
+function capReason(value: string): string {
+  return value.replace(/[\r\n\t]+/g, ' ').slice(0, FCI_SKIP_REASON_MAX);
+}
+
+/** Exported for tests: turns a fetchFciQuote rejection into a log-safe detail. */
+export function describeFciFetchError(error: unknown): FciSkipDetail {
+  const detail: FciSkipDetail = { reason: 'error' };
+  if (error instanceof Error) {
+    detail.reason = capReason(error.message || error.name || 'error');
+  } else if (typeof error === 'string') {
+    detail.reason = capReason(error);
+  }
+  const rec = error && typeof error === 'object' ? error as Record<string, unknown> : null;
+  if (rec && typeof rec.status === 'number' && Number.isFinite(rec.status)) detail.status = rec.status;
+  if (rec && (rec.stage === 'catalog' || rec.stage === 'ficha')) detail.stage = rec.stage;
+  if (rec && typeof rec.server === 'string' && rec.server) detail.server = capReason(rec.server).slice(0, 60);
+  return detail;
+}
+
 export async function mapWithLimit<T, R>(
   items: readonly T[],
   limit: number,
@@ -378,14 +407,21 @@ export async function refreshQuotesForInvestments(
 
   const uniqueFci = dedupeByTicker(fciTickers);
   const fciBudgetMs = options?.fciBudgetMs ?? FCI_REFRESH_BUDGET_MS;
+  const fciSkipReasons = new Map<string, FciSkipDetail>();
   const fciQuotes = await mapWithLimit(
     uniqueFci,
     FCI_REFRESH_CONCURRENCY,
     fciBudgetMs,
     async (fci) => {
+      let missReason: string | null = null;
       try {
-        return await fetchFciQuote(fci.ticker);
-      } catch {
+        const quote = await fetchFciQuote(fci.ticker, (reason) => {
+          missReason = reason;
+        });
+        if (!quote) fciSkipReasons.set(fci.ticker, { reason: missReason ?? 'no_match' });
+        return quote;
+      } catch (error) {
+        fciSkipReasons.set(fci.ticker, describeFciFetchError(error));
         return 'error' as const;
       }
     }
@@ -414,7 +450,13 @@ export async function refreshQuotesForInvestments(
     });
     let stamped: QuoteResult | null = null;
     if (q === 'error' || !q || !(q.price > 0)) {
-      console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker });
+      const detail: FciSkipDetail = fciSkipReasons.get(fci.ticker)
+        ?? (q === undefined
+          ? { reason: 'budget_exhausted' }
+          : q && q !== 'error'
+            ? { reason: 'non_positive_price' }
+            : { reason: 'unknown' });
+      console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker, ...detail });
     } else if (q.currencySkip) {
       console.warn('[quotes] skip FCI currency', {
         ticker: fci.ticker,
