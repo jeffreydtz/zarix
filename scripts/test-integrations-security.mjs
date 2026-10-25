@@ -111,6 +111,11 @@ try {
       [ids.a, row]));
   });
 
+  await test('cordoba_add_months is service-only', async () => {
+    await rejects(() => owner(db, "SELECT cordoba_add_months(now(), 1)"));
+    await rejects(() => queryAs(db, 'anon', null, "SELECT cordoba_add_months(now(), 1)"));
+  });
+
   await test('discard_pending_inbox_item DEFINER uses pg_catalog search_path', async () => {
     const row = (await db.query(`SELECT pg_get_functiondef(p.oid) AS def
       FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace

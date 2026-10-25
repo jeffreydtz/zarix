@@ -197,6 +197,34 @@ async function parkCreate(
   });
 }
 
+function terminalParkResponse(parked: {
+  id: string;
+  status: string;
+  amount?: number | null;
+  currency?: string;
+  merchant?: string | null;
+  direction?: string;
+  tool_payload?: { type?: string } | null;
+}): RegistryToolResult | null {
+  if (parked.status !== 'confirmed' && parked.status !== 'discarded') return null;
+  return {
+    response: {
+      success: parked.status === 'confirmed',
+      duplicate: true,
+      pendingId: parked.id,
+      status: parked.status,
+      preview: {
+        type: parked.tool_payload?.type || parked.direction,
+        amount: parked.amount,
+        currency: parked.currency,
+        description: asUntrustedData(parked.merchant),
+      },
+      untrusted: true,
+      untrusted_instruction: UNTRUSTED_INSTRUCTION,
+    },
+  };
+}
+
 function pendingIdsFromArgs(args: ToolArgs): string[] {
   if (typeof args.pendingId === 'string' && args.pendingId) return [args.pendingId];
   if (Array.isArray(args.pendingIds)) {
@@ -234,6 +262,8 @@ async function executeRegistryToolImpl(
     case 'create_transaction': {
       if (remoteWrite && !isConfirmed(safeArgs)) {
         const parked = await parkCreate(userId, safeArgs, source, requestId);
+        const terminal = terminalParkResponse(parked);
+        if (terminal) return terminal;
         const parkedPayload = parked.tool_payload;
         return {
           response: {
@@ -326,17 +356,28 @@ async function executeRegistryToolImpl(
         .slice(0, MAX_TOOL_BATCH);
       if (txs.length === 0) return { response: { success: false, error: 'No encontré montos válidos.' } };
       if (remoteWrite && !isConfirmed(safeArgs)) {
-        const pendingIds: string[] = [];
+        const parkedItems: Array<{ id: string; status: string }> = [];
         for (const [index, tx] of txs.entries()) {
           const itemKey = requestId ? `${requestId}:${index}` : undefined;
-          const parked = await parkCreate(userId, tx as unknown as ToolArgs, source, itemKey);
-          pendingIds.push(parked.id);
+          parkedItems.push(await parkCreate(userId, tx as unknown as ToolArgs, source, itemKey));
+        }
+        if (parkedItems.every((item) => item.status === 'confirmed' || item.status === 'discarded')) {
+          return {
+            response: {
+              success: parkedItems.every((item) => item.status === 'confirmed'),
+              duplicate: true,
+              pendingIds: parkedItems.map((item) => item.id),
+              status: parkedItems.map((item) => item.status),
+              untrusted: true,
+              untrusted_instruction: UNTRUSTED_INSTRUCTION,
+            },
+          };
         }
         return {
           response: {
             success: false,
             needs_confirm: true,
-            pendingIds,
+            pendingIds: parkedItems.map((item) => item.id),
             untrusted: true,
             untrusted_instruction: UNTRUSTED_INSTRUCTION,
             error: 'Mostrá el preview. Si el usuario confirma, llamá con confirm=true y pendingIds.',

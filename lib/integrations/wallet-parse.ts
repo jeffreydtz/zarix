@@ -177,7 +177,26 @@ function parseAmountValue(v: unknown): AmountParseResult {
     if (!(abs > 0) || abs > MAX_AMOUNT) return { amount: null, ambiguous: false, direction: 'expense' };
     return { amount: round2(abs), ambiguous: false, direction: v < 0 ? 'income' : 'expense' };
   }
-  if (typeof v === 'string') return parseAmountFromText(v);
+  if (typeof v === 'string') {
+    const trimmed = v.trim();
+    if (!trimmed) return { amount: null, ambiguous: false, direction: 'expense' };
+    const signed = /^\s*-/.test(trimmed);
+    const hint = localeHintFromText(trimmed);
+    const numeric = trimmed
+      .replace(/^[+-]\s*/, '')
+      .replace(/^(ARS|USD|EUR|U\$S|US\$)\$?\s*/i, '')
+      .replace(/^\$\s*/, '')
+      .replace(/\s+/g, '');
+    const parsed = parseGroupedNumber(numeric, hint === 'unknown' ? 'US' : hint);
+    if (!parsed || !(parsed.value > 0) || parsed.value > MAX_AMOUNT) {
+      return { amount: null, ambiguous: false, direction: 'expense' };
+    }
+    return {
+      amount: parsed.value,
+      ambiguous: parsed.ambiguous,
+      direction: signed ? 'income' : 'expense',
+    };
+  }
   return { amount: null, ambiguous: false, direction: 'expense' };
 }
 

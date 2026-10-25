@@ -5,6 +5,9 @@ import {
   isoToLocalDateInputValue,
   parseBotTransactionDateInput,
   isCivilYmd,
+  transactionCivilYmd,
+  ymdToQueryEndIso,
+  ymdToQueryStartIso,
 } from '@/lib/transaction-date';
 
 describe('todayLocalYmd', () => {
@@ -87,4 +90,22 @@ describe('parseBotTransactionDateInput', () => {
       expect(parseBotTransactionDateInput(input)).toBeUndefined();
     }
   );
+});
+
+describe('Córdoba civil grouping and month bounds', () => {
+  it('keeps 24 Oct 23:30 local on the 24th, not the UTC 25th', () => {
+    expect(transactionCivilYmd('2026-10-24T23:30:00-03:00')).toBe('2026-10-24');
+    expect(transactionCivilYmd('2026-10-24T23:30:00-03:00')).not.toBe('2026-10-25');
+  });
+
+  it('keeps 31 Oct 23:30 local inside October query bounds', () => {
+    expect(transactionCivilYmd('2026-10-31T23:30:00-03:00')).toBe('2026-10-31');
+    const start = ymdToQueryStartIso('2026-10-01');
+    const end = ymdToQueryEndIso('2026-10-31');
+    const stored = new Date('2026-10-31T23:30:00-03:00').toISOString();
+    expect(stored).toBe('2026-11-01T02:30:00.000Z');
+    expect(stored >= start).toBe(true);
+    expect(stored <= end).toBe(true);
+    expect(end).toBe('2026-11-01T02:59:59.999Z');
+  });
 });

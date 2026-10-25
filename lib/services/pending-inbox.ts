@@ -14,6 +14,7 @@ import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { withPatUserScope } from '@/lib/supabase/request-scope';
 import { withFinancialRequestContext } from '@/lib/financial-request-context';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import type { ToolArgs, WriteChannel } from '@/lib/ai/registry/types';
 
 export const WALLET_CIVIL_TIMEZONE = 'America/Argentina/Cordoba';
@@ -38,6 +39,14 @@ export type ParkedToolPayload = {
   [key: string]: unknown;
 };
 
+export type PendingInboxOriginalSummary = {
+  id: string;
+  merchant: string | null;
+  amount: number | null;
+  currency: string;
+  status: string;
+};
+
 export type PendingInboxItem = {
   id: string;
   user_id: string;
@@ -60,6 +69,8 @@ export type PendingInboxItem = {
   claim_id?: string | null;
   fingerprint?: string | null;
   possible_duplicate_of?: string | null;
+  possible_duplicate?: PendingInboxOriginalSummary | null;
+  request_canonical?: string | null;
   created_at: string;
   updated_at?: string;
 };
@@ -154,41 +165,71 @@ export function canonicalPendingInboxIds(raw: string[]): string[] {
   return out;
 }
 
-/** Window-independent identity so lookup+insert serialize across the 15-minute bucket split. */
+/** Advisory lock for anonymous possible-duplicates: user + amount + currency + direction. */
 export function inboxDedupeLockKey(
   userId: string,
-  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'merchant' | 'cardName' | 'direction'>,
+  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'direction'> &
+    Partial<Pick<WalletIngestPayload, 'merchant' | 'cardName'>>,
   ingestKey: string
 ): string {
   if (ingestKey) return `idemp:${ingestKey}`;
-  const sign = payload.direction === 'income' ? '-' : '+';
   const material = [
     userId,
-    sign,
-    payload.direction,
+    payload.direction || 'expense',
     payload.amount ?? '',
-    payload.currency || 'ARS',
-    normalizeCard(payload.cardName),
-    (payload.merchant || '').toLowerCase(),
+    (payload.currency || 'ARS').toUpperCase(),
   ].join('|');
   return createHash('sha256').update(material).digest('hex');
 }
 
-function parkedBodyKey(payload: ParkedToolPayload | null | undefined): string {
-  if (!payload) return '';
+function roundCanonicalAmount(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+function normalizeOccurredUtc(iso: string | null | undefined): string | null {
+  const stored = occurredAtForStorage(iso);
+  if (!stored) return null;
+  const parsed = new Date(stored);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString();
+}
+
+function normalizeAccountId(id: string | null | undefined): string | null {
+  const value = String(id ?? '').trim().toLowerCase();
+  return value || null;
+}
+
+function normalizeInstallments(value: unknown): number {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.min(36, Math.floor(n));
+}
+
+/** Immutable request identity. Set once at insert; confirm must not rewrite it. */
+export function inboxRequestCanonical(input: {
+  source: string;
+  amount?: number | null;
+  currency?: string | null;
+  direction?: string | null;
+  occurredAt?: string | null;
+  merchant?: string | null;
+  cardName?: string | null;
+  accountId?: string | null;
+  installments?: number | null;
+}): string {
+  const amountRaw = input.amount;
+  const amount =
+    amountRaw == null || !Number.isFinite(Number(amountRaw)) ? null : roundCanonicalAmount(Number(amountRaw));
   return JSON.stringify({
-    type: payload.type ?? null,
-    amount: payload.amount ?? null,
-    currency: payload.currency ?? null,
-    description: payload.description ?? null,
-    account: payload.account ?? null,
-    accountId: payload.accountId ?? null,
-    category: payload.category ?? null,
-    categoryId: payload.categoryId ?? null,
-    destinationAccount: payload.destinationAccount ?? null,
-    destinationAccountId: payload.destinationAccountId ?? null,
-    transactionDate: payload.transactionDate ?? payload.date ?? null,
-    installments: payload.installments ?? null,
+    account_id: normalizeAccountId(input.accountId),
+    amount,
+    card: normalizeCard(input.cardName ?? null),
+    currency: (String(input.currency || 'ARS').trim().toUpperCase() || 'ARS'),
+    direction: (String(input.direction || 'expense').trim().toLowerCase() || 'expense'),
+    installments: normalizeInstallments(input.installments),
+    merchant: String(input.merchant || '').trim().toLowerCase(),
+    occurred_at: normalizeOccurredUtc(input.occurredAt),
+    source: String(input.source || 'wallet').trim().toLowerCase(),
   });
 }
 
@@ -199,28 +240,42 @@ export function canonicalInboxPayloadKey(input: {
   direction: string | null | undefined;
   merchant: string | null | undefined;
   accountId: string | null | undefined;
+  occurredAt?: string | null;
+  cardName?: string | null;
+  installments?: number | null;
   toolPayload?: ParkedToolPayload | null;
 }): string {
-  return JSON.stringify({
-    source: input.source || 'wallet',
-    amount: input.amount ?? null,
-    currency: (input.currency || 'ARS').toUpperCase(),
-    direction: input.direction || 'expense',
-    merchant: (input.merchant || '').toLowerCase(),
-    accountId: input.accountId ?? null,
-    toolPayload: parkedBodyKey(input.toolPayload ?? null) || null,
+  return inboxRequestCanonical({
+    source: input.source,
+    amount: input.amount,
+    currency: input.currency,
+    direction: input.direction,
+    merchant: input.merchant,
+    accountId: input.accountId,
+    occurredAt: input.occurredAt ?? (typeof input.toolPayload?.transactionDate === 'string'
+      ? input.toolPayload.transactionDate
+      : typeof input.toolPayload?.date === 'string'
+        ? input.toolPayload.date
+        : null),
+    cardName: input.cardName ?? null,
+    installments: input.installments ?? (typeof input.toolPayload?.installments === 'number'
+      ? input.toolPayload.installments
+      : 1),
   });
 }
 
-function storedCanonicalKey(row: PendingInboxItem): string {
-  return canonicalInboxPayloadKey({
+function storedRequestCanonical(row: PendingInboxItem): string {
+  if (row.request_canonical) return row.request_canonical;
+  return inboxRequestCanonical({
     source: row.source,
     amount: row.amount,
     currency: row.currency,
     direction: row.direction,
     merchant: row.merchant,
+    cardName: row.card_name,
     accountId: row.account_id,
-    toolPayload: row.tool_payload,
+    occurredAt: row.occurred_at,
+    installments: typeof row.tool_payload?.installments === 'number' ? row.tool_payload.installments : 1,
   });
 }
 
@@ -308,6 +363,23 @@ async function ingestWalletItemUnlocked(input: {
   const ingestKey = clientKey || randomUUID();
   const fp = inboxEventFingerprint(input.userId, payload, occurredAt, clientKey || '');
   const accountId = await resolveCardAccount(input.userId, payload.cardName);
+  const requestAccountId =
+    typeof input.json?.accountId === 'string'
+      ? input.json.accountId
+      : typeof input.json?.account_id === 'string'
+        ? input.json.account_id
+        : null;
+  const requestCanonical = inboxRequestCanonical({
+    source: 'wallet',
+    amount: payload.amount,
+    currency: payload.currency,
+    direction: payload.direction,
+    occurredAt,
+    merchant: payload.merchant,
+    cardName: payload.cardName,
+    accountId: requestAccountId,
+    installments: 1,
+  });
   const suggestion = await suggestCategoryFromMerchant({ userId: input.userId, merchant: payload.merchant });
   const supabase = createServiceClientSync();
   const { data: reserved, error } = await supabase.rpc('reserve_pending_inbox_item', {
@@ -334,6 +406,7 @@ async function ingestWalletItemUnlocked(input: {
       amount_ambiguous: payload.amountAmbiguous,
       source: 'wallet',
       fingerprint: fp,
+      request_canonical: requestCanonical,
     },
   });
 
@@ -425,19 +498,21 @@ export async function parkRegistryWrite(input: {
   };
   const occurredAt = occurredAtForStorage(input.occurredAt ?? null);
   const fp = inboxEventFingerprint(input.userId, payload, occurredAt, clientKey || '');
-  const incomingKey = canonicalInboxPayloadKey({
+  const incomingCanonical = inboxRequestCanonical({
     source: input.source,
     amount: input.amount,
     currency: input.currency,
     direction,
     merchant: input.merchant ?? null,
+    cardName: null,
     accountId,
-    toolPayload,
+    occurredAt,
+    installments: typeof toolPayload?.installments === 'number' ? toolPayload.installments : 1,
   });
   if (clientKey) {
     const existing = await loadByIngestKey(input.userId, ingestKey);
     if (existing) {
-      if (storedCanonicalKey(existing) !== incomingKey) {
+      if (existing.source !== input.source || storedRequestCanonical(existing) !== incomingCanonical) {
         throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
       }
       return existing;
@@ -466,6 +541,7 @@ export async function parkRegistryWrite(input: {
       source: input.source,
       fingerprint: fp,
       tool_payload: toolPayload,
+      request_canonical: incomingCanonical,
     },
   });
   if (error) {
@@ -475,7 +551,7 @@ export async function parkRegistryWrite(input: {
     if (isUniqueViolation(error) && clientKey) {
       const existing = await loadByIngestKey(input.userId, ingestKey);
       if (existing) {
-        if (storedCanonicalKey(existing) !== incomingKey) {
+        if (existing.source !== input.source || storedRequestCanonical(existing) !== incomingCanonical) {
           throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
         }
         return existing;
@@ -489,6 +565,30 @@ export async function parkRegistryWrite(input: {
   return data;
 }
 
+async function attachPossibleDuplicateOriginals(
+  userId: string,
+  rows: PendingInboxItem[]
+): Promise<PendingInboxItem[]> {
+  const originalIds = [
+    ...new Set(rows.map((item) => item.possible_duplicate_of).filter((id): id is string => Boolean(id))),
+  ];
+  if (originalIds.length === 0) return rows.map((item) => ({ ...item, possible_duplicate: null }));
+  const supabase = createServiceClientSync();
+  const { data, error } = await supabase
+    .from('pending_inbox_items')
+    .select('id, merchant, amount, currency, status')
+    .eq('user_id', userId)
+    .in('id', originalIds);
+  if (error) throw error;
+  const byId = new Map(
+    ((data ?? []) as PendingInboxOriginalSummary[]).map((row) => [row.id, row])
+  );
+  return rows.map((item) => ({
+    ...item,
+    possible_duplicate: item.possible_duplicate_of ? byId.get(item.possible_duplicate_of) ?? null : null,
+  }));
+}
+
 export async function listPendingItems(userId: string, status: 'pending' | 'all' = 'pending'): Promise<PendingInboxItem[]> {
   const supabase = createServiceClientSync();
   let q = supabase.from('pending_inbox_items').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(100);
@@ -496,10 +596,13 @@ export async function listPendingItems(userId: string, status: 'pending' | 'all'
   const { data, error } = await q;
   if (error) throw error;
   const rows = (data ?? []) as PendingInboxItem[];
-  if (status !== 'pending') return rows;
-  return rows.filter(
-    (item) => item.status === 'pending' || item.status === 'uncertain' || isStaleConfirming(item)
-  );
+  const visible =
+    status !== 'pending'
+      ? rows
+      : rows.filter(
+          (item) => item.status === 'pending' || item.status === 'uncertain' || isStaleConfirming(item)
+        );
+  return attachPossibleDuplicateOriginals(userId, visible);
 }
 
 async function loadFinancialContext(userId: string): Promise<FinancialContext> {
@@ -763,6 +866,7 @@ async function confirmPendingItemUnlocked(input: {
         requestId,
       });
     } catch (error) {
+      if (error instanceof FxUnavailableError) throw error;
       if (error instanceof AmbiguousFinancialMutationError) {
         ledgerCommitted = true;
       }

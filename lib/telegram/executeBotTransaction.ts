@@ -256,19 +256,11 @@ export async function executeBotTransaction(
         selectedAccount.currency === txCurrency);
 
     if (!isMulticurrency && selectedAccount.type === 'credit_card') {
-      try {
-        const rate = await cotizacionesService.getExchangeRate(txCurrency, selectedAccount.currency);
-        if (rate > 0) {
-          finalAmount = txData.amount * rate;
-          finalCurrency = selectedAccount.currency;
-          conversionNote = ` (${txData.amount} ${txCurrency} × $${rate.toFixed(2)} = $${finalAmount.toFixed(2)} ${finalCurrency})`;
-        }
-      } catch (error) {
-        if (!(error instanceof FxUnavailableError)) throw error;
-        return {
-          kind: 'abort',
-          reply: error.message,
-        };
+      const rate = await cotizacionesService.getExchangeRate(txCurrency, selectedAccount.currency);
+      if (rate > 0) {
+        finalAmount = txData.amount * rate;
+        finalCurrency = selectedAccount.currency;
+        conversionNote = ` (${txData.amount} ${txCurrency} × $${rate.toFixed(2)} = $${finalAmount.toFixed(2)} ${finalCurrency})`;
       }
     }
   }
@@ -298,7 +290,7 @@ export async function executeBotTransaction(
     );
   } catch (txError: unknown) {
     if (txError instanceof FxUnavailableError) {
-      return { kind: 'abort', reply: txError.message };
+      throw txError;
     }
     console.error('Transaction error:', txError);
     // A transport error can happen after the ledger commit. Returning abort here

@@ -4,7 +4,7 @@
  * zona horaria no se muestre el día anterior (bug típico con `...T00:00:00.000Z`).
  */
 
-export const APP_CIVIL_TIMEZONE = 'America/Argentina/Buenos_Aires';
+export const APP_CIVIL_TIMEZONE = 'America/Argentina/Cordoba';
 
 const CIVIL_YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
 
@@ -77,17 +77,34 @@ export function startOfYearYmd(ymd: string): string {
   return isCivilYmd(ymd) ? `${ymd.slice(0, 4)}-01-01` : ymd;
 }
 
-export function ymdToQueryStartIso(ymd: string): string {
-  return `${ymd}T00:00:00.000Z`;
+export function ymdToQueryStartIso(ymd: string, timeZone: string = APP_CIVIL_TIMEZONE): string {
+  const civil = ymd.trim();
+  if (!isCivilYmd(civil)) return `${civil}T00:00:00.000Z`;
+  // Córdoba/Buenos Aires are UTC−03 year-round; keep the named zone in the API.
+  void timeZone;
+  return new Date(`${civil}T00:00:00.000-03:00`).toISOString();
 }
 
-export function ymdToQueryEndIso(ymd: string): string {
-  return `${ymd}T23:59:59.999Z`;
+export function ymdToQueryEndIso(ymd: string, timeZone: string = APP_CIVIL_TIMEZONE): string {
+  const civil = ymd.trim();
+  if (!isCivilYmd(civil)) return `${civil}T23:59:59.999Z`;
+  void timeZone;
+  return new Date(`${civil}T23:59:59.999-03:00`).toISOString();
 }
 
-/** Día civil guardado (movimientos a mediodía UTC → prefijo YYYY-MM-DD). */
-export function transactionCivilYmd(iso: string): string {
-  return String(iso).slice(0, 10);
+/** Día civil del instante en la zona de la app (Córdoba), no el prefijo UTC. */
+export function transactionCivilYmd(iso: string, timeZone: string = APP_CIVIL_TIMEZONE): string {
+  const raw = String(iso).trim();
+  if (isCivilYmd(raw)) return raw;
+  const fallback = String(iso).trim();
+  const parsed = new Date(fallback);
+  if (Number.isNaN(parsed.getTime())) return fallback.slice(0, 10);
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(parsed);
 }
 
 export function daysInclusive(startYmd: string, endYmd: string): number {

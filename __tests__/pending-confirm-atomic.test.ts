@@ -9,6 +9,7 @@ import {
   hasStableInboxIdentity,
   inboxDedupeLockKey,
   inboxEventFingerprint,
+  inboxRequestCanonical,
   INBOX_DEDUPE_WINDOW_MS,
   isFullOccurredAt,
   isStaleConfirming,
@@ -19,6 +20,7 @@ import {
   walletCivilDate,
   type PendingInboxItem,
 } from '@/lib/services/pending-inbox';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 
@@ -756,6 +758,9 @@ describe('pending inbox confirm idempotency', () => {
     expect(hasStableInboxIdentity(null, 'wallet-idem-fixture-009')).toBe(true);
     expect(hasStableInboxIdentity('2026-10-25T13:14:50.000Z', '')).toBe(true);
     expect(inboxDedupeLockKey(FIXTURE_USER, base, '')).toBe(inboxDedupeLockKey(FIXTURE_USER, base, ''));
+    expect(inboxDedupeLockKey(FIXTURE_USER, base, '')).toBe(
+      inboxDedupeLockKey(FIXTURE_USER, { ...base, merchant: 'Otro', cardName: 'Mastercard' }, '')
+    );
     expect(inboxDedupeLockKey(FIXTURE_USER, base, '')).not.toBe(
       inboxDedupeLockKey(FIXTURE_USER, { ...base, amount: 41 }, '')
     );
@@ -1083,6 +1088,9 @@ describe('pending inbox confirm idempotency', () => {
       transactionDate: '2026-10-24T23:30:00-03:00',
     });
     expect(mocks.execute.mock.calls[0][1].transactionDate).not.toBe('2026-10-24');
+    const confirmed = updates.find((u) => u.table === 'pending_inbox_items' && u.value.status === 'confirmed');
+    expect(confirmed?.value).toHaveProperty('account_id', ACCOUNT_ID);
+    expect(confirmed?.value).not.toHaveProperty('request_canonical');
   });
 
   it('canonicalizes and dedupes pendingIds before confirming', async () => {
@@ -1115,5 +1123,195 @@ describe('pending inbox confirm idempotency', () => {
     });
     expect(confirmed).toHaveLength(1);
     expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_item')).toHaveLength(1);
+  });
+
+  it('normalizes UUID, instants, currency defaults, trim and installments in request_canonical', () => {
+    const upper = inboxRequestCanonical({
+      source: 'api',
+      amount: 18,
+      currency: 'ars',
+      direction: 'expense',
+      occurredAt: '2026-10-24T23:30:00-03:00',
+      merchant: ' Café ',
+      accountId: ACCOUNT_ID.toUpperCase(),
+    });
+    const equivalent = inboxRequestCanonical({
+      source: 'API',
+      amount: 18,
+      currency: undefined,
+      direction: undefined,
+      occurredAt: '2026-10-25T02:30:00.000Z',
+      merchant: 'Café',
+      accountId: ACCOUNT_ID,
+      installments: 1,
+    });
+    expect(upper).toBe(equivalent);
+    expect(upper).toContain('"account_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"');
+    expect(upper).toContain('"occurred_at":"2026-10-25T02:30:00.000Z"');
+    expect(upper).toContain('"currency":"ARS"');
+    expect(upper).toContain('"installments":1');
+    expect(upper).toContain('"merchant":"café"');
+  });
+
+  it('stores request_canonical from the request card and account, not the resolved account_id', async () => {
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.maybeSingle = async () => {
+        if (table === 'wallet_card_account_maps') return { data: { account_id: ACCOUNT_ID }, error: null };
+        return { data: null, error: null };
+      };
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const captured: { row: Record<string, unknown> | null } = { row: null };
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_row?: Record<string, unknown> }) => {
+      if (fn === 'reserve_pending_inbox_item') {
+        captured.row = args.p_row ?? null;
+        return { data: { item: { ...args.p_row, id: FIXTURE_ITEM, status: 'pending' }, duplicate: false }, error: null };
+      }
+      return { data: null, error: null };
+    });
+    const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+    await ingestWalletItem({
+      userId: FIXTURE_USER,
+      json: { amount: 18, currency: 'ARS', merchant: 'Café', cardName: 'Visa AAA' },
+      idempotencyKey: 'wallet-idem-canonical-card',
+    });
+    expect(captured.row?.account_id).toBe(ACCOUNT_ID);
+    expect(captured.row?.request_canonical).toBe(
+      inboxRequestCanonical({
+        source: 'wallet',
+        amount: 18,
+        currency: 'ARS',
+        direction: 'expense',
+        merchant: 'Café',
+        cardName: 'Visa AAA',
+        accountId: null,
+      })
+    );
+    expect(String(captured.row?.request_canonical)).toContain('"account_id":null');
+    expect(String(captured.row?.request_canonical)).toContain('"card":"visa aaa"');
+  });
+
+  it('replays a 25h-old keyed park when request_canonical matches after confirm wrote account_id', async () => {
+    const canonical = inboxRequestCanonical({
+      source: 'api',
+      amount: 18,
+      currency: 'ARS',
+      direction: 'expense',
+      merchant: 'Café',
+      accountId: null,
+      occurredAt: '2026-10-24T23:30:00-03:00',
+    });
+    const stored = itemRow('confirmed', {
+      amount: 18,
+      merchant: 'Café',
+      account_id: ACCOUNT_ID,
+      source: 'api',
+      ingest_key: 'api-idem-old',
+      idempotency_key: 'api-idem-old',
+      request_canonical: canonical,
+      created_at: new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString(),
+      occurred_at: '2026-10-24T23:30:00-03:00',
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.maybeSingle = async () => {
+        if (table === 'pending_inbox_items') return { data: stored, error: null };
+        return { data: null, error: null };
+      };
+      return q;
+    });
+    const replayed = await parkRegistryWrite({
+      userId: FIXTURE_USER,
+      amount: 18,
+      currency: 'ARS',
+      merchant: 'Café',
+      occurredAt: '2026-10-24T23:30:00-03:00',
+      source: 'api',
+      ingestKey: 'api-idem-old',
+      toolPayload: { type: 'expense', amount: 18 },
+    });
+    expect(replayed.id).toBe(FIXTURE_ITEM);
+    expect(replayed.status).toBe('confirmed');
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it('attaches an ownership-checked original summary including confirmed originals', async () => {
+    const originalId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const flagged = itemRow('pending', { possible_duplicate_of: originalId });
+    const original = {
+      id: originalId,
+      merchant: 'Original café',
+      amount: 18,
+      currency: 'ARS',
+      status: 'confirmed',
+    };
+    const userFilters: unknown[][] = [];
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      let selected = '*';
+      q.select = (cols?: string) => {
+        selected = cols || '*';
+        return self;
+      };
+      q.eq = (...args: unknown[]) => {
+        userFilters.push(args);
+        return self;
+      };
+      q.in = () => self;
+      q.order = () => self;
+      q.limit = () => self;
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({
+          data: selected === '*' ? [flagged] : [original],
+          error: null,
+        });
+      return q;
+    });
+    const listed = await listPendingItems(FIXTURE_USER, 'pending');
+    expect(listed).toHaveLength(1);
+    expect(listed[0].possible_duplicate).toEqual(original);
+    expect(userFilters.some((args) => args[0] === 'user_id' && args[1] === FIXTURE_USER)).toBe(true);
+  });
+
+  it('rethrows FxUnavailableError from confirm instead of wrapping it as 400', async () => {
+    const parked = itemRow('confirming', {
+      tool_payload: { type: 'expense', amount: 10, accountId: ACCOUNT_ID, currency: 'USD' },
+    });
+    mocks.rpc.mockResolvedValue({ data: [parked], error: null });
+    mocks.execute.mockRejectedValue(new FxUnavailableError('USD→ARS'));
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.in = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        return { data: parked, error: null };
+      };
+      q.single = async () => ({ data: parked, error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await expect(confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toBeInstanceOf(
+      FxUnavailableError
+    );
+    expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'confirmed')).toBe(false);
   });
 });

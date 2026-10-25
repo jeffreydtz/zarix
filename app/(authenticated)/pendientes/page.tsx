@@ -6,6 +6,7 @@ import {
   confirmPreviewFromDraft,
   confirmRequestFromDraft,
   effectiveInboxItem,
+  inboxOriginalStatusLabel,
   type InboxDraft,
 } from '@/lib/pending-inbox-preview';
 
@@ -142,7 +143,12 @@ export default function PendientesPage() {
                 </p>
                 {item.possible_duplicate_of ? (
                   <p className="text-sm text-amber-800 dark:text-amber-200">
-                    Posible duplicado
+                    Posible duplicado de{' '}
+                    {item.possible_duplicate
+                      ? `${item.possible_duplicate.merchant || 'movimiento'} · ${
+                          item.possible_duplicate.amount ?? '—'
+                        } ${item.possible_duplicate.currency} · ${inboxOriginalStatusLabel(item.possible_duplicate.status)}`
+                      : item.possible_duplicate_of}
                     <button
                       type="button"
                       className="ml-2 text-destructive underline"

@@ -189,17 +189,18 @@ describe('executeBotTransaction', () => {
     expect(mocks.create).not.toHaveBeenCalled();
   });
 
-  it('aborts a credit-card FX conversion when executable FX is unavailable', async () => {
+  it('propagates FxUnavailableError from credit-card FX conversion instead of aborting as 400', async () => {
     const { FxUnavailableError } = await import('@/lib/executable-fx');
     mocks.getExchangeRate.mockRejectedValue(new FxUnavailableError('USD→ARS'));
-    const result = await executeBotTransaction(FIXTURE_USER, financialContext, {
-      type: 'expense',
-      amount: 10,
-      currency: 'USD',
-      accountId: ACCOUNT_ID,
-      description: 'USD on ARS card',
-    });
-    expect(result).toEqual({ kind: 'abort', reply: 'Cotización USD→ARS no disponible, inválida o vencida' });
+    await expect(
+      executeBotTransaction(FIXTURE_USER, financialContext, {
+        type: 'expense',
+        amount: 10,
+        currency: 'USD',
+        accountId: ACCOUNT_ID,
+        description: 'USD on ARS card',
+      })
+    ).rejects.toBeInstanceOf(FxUnavailableError);
     expect(mocks.create).not.toHaveBeenCalled();
   });
 });
