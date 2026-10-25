@@ -3,6 +3,7 @@ import {
   confirmPreviewFromDraft,
   confirmRequestFromDraft,
   effectiveInboxItem,
+  inboxOriginalStatusLabel,
   type InboxDraft,
 } from '@/lib/pending-inbox-preview';
 
@@ -51,6 +52,25 @@ describe('pending inbox preview matches the confirm request', () => {
   it('keeps possible_duplicate_of on the draft so /pendientes can show posible duplicado', () => {
     const draft = effectiveInboxItem({ ...ITEM, possible_duplicate_of: ITEM.id });
     expect(draft.possible_duplicate_of).toBe(ITEM.id);
+  });
+
+  it('labels confirmed and discarded originals for the pendientes warning', () => {
+    const original = {
+      id: ITEM.id,
+      merchant: 'Café original',
+      amount: 18,
+      currency: 'ARS',
+      status: 'confirmed',
+    };
+    const draft = effectiveInboxItem({
+      ...ITEM,
+      possible_duplicate_of: original.id,
+      possible_duplicate: original,
+    });
+    expect(draft.possible_duplicate?.merchant).toBe('Café original');
+    expect(draft.possible_duplicate?.status).toBe('confirmed');
+    expect(inboxOriginalStatusLabel('confirmed')).toBe('confirmado');
+    expect(inboxOriginalStatusLabel('discarded')).toBe('descartado');
   });
 
   it('cleared amount stays null in preview and POST instead of restoring parked amount', () => {

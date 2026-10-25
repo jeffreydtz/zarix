@@ -17,18 +17,22 @@ timestamp as the version. Do not touch prod from this repository's CI.
 4. `apply_migration` `supabase/migrations/20261024200000_inbox_dedupe_uncertain_rate_limit.sql`
    (required before this build: `rate_limit_hit`, `uncertain` inbox, fingerprint reservation,
    `discard_pending_inbox_item`). Without it, REST/Wallet/MCP PAT auth fail-closed with HTTP 503.
-5. Verify before deploying application code:
+5. `apply_migration` `supabase/migrations/20261024210000_inbox_possible_duplicate.sql`
+6. `apply_migration` `supabase/migrations/20261024220000_inbox_request_canonical.sql`
+7. `apply_migration` `supabase/migrations/20261024230000_inbox_possible_duplicate_owner_fk.sql`
+8. `apply_migration` `supabase/migrations/20261024240000_installments_cordoba_calendar.sql`
+9. Verify before deploying application code:
    ```sql
    SELECT proname FROM pg_proc
     WHERE proname IN ('rate_limit_hit','claim_pending_inbox_item','discard_pending_inbox_item','purge_rate_limit_counters')
     ORDER BY 1;
    -- expect 4 rows. GET /api/health must not return rateLimit=missing_rpc.
    ```
-6. Deploy the #16 application code (encrypt-only writes; Vault-aware Telegram readers).
-7. Pause key edits. Run `supabase/manual/backfill-user-secrets.sql` (copy + verify; never nulls).
-8. Run `supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql`
+10. Deploy the #16 application code (encrypt-only writes; Vault-aware Telegram readers).
+11. Pause key edits. Run `supabase/manual/backfill-user-secrets.sql` (copy + verify; never nulls).
+12. Run `supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql`
    (this directory is not a migration folder — a blind `db push` cannot apply it early).
-9. Later, after verification and a fresh PITR marker:
+13. Later, after verification and a fresh PITR marker:
    `supabase/manual/null-plaintext-user-secrets.sql`.
 
 Do not put the REVOKE file back into `supabase/migrations/`.
@@ -57,5 +61,5 @@ only; never rewrite or delete the existing prod rows:
 - `20261024182913` ↔ `20261024170000_investment_type_on.sql` (already applied)
 - `20261024182923` ↔ `20261024170100_investment_backlog.sql` (already applied)
 
-#16 versions to record after `apply_migration`: `20261024180000`, `20261024190000`, `20261024200000`.
+#16 versions to record after `apply_migration`: `20261024180000`, `20261024190000`, `20261024200000`, `20261024210000`, `20261024220000`, `20261024230000`, `20261024240000`.
 The REVOKE file has no migration version.

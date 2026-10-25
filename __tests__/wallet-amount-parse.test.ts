@@ -51,6 +51,19 @@ describe('wallet amount parser (table)', () => {
     expect(parsed.currency).toBe('USD');
   });
 
+  it('parses structured amount "1250" as 1250 without the card last-4 heuristic', () => {
+    const asString = parseWalletPayload({
+      json: { amount: '1250', currency: 'ARS', merchant: 'Ejemplo Café' },
+    });
+    const asNumber = parseWalletPayload({
+      json: { amount: 1250, currency: 'ARS', merchant: 'Ejemplo Café' },
+    });
+    expect(asString.amount).toBe(1250);
+    expect(asString.amountAmbiguous).toBe(false);
+    expect(asNumber.amount).toBe(1250);
+    expect(asString.amount).toBe(asNumber.amount);
+  });
+
   it('does not treat tarjeta de crédito as a refund', () => {
     const parsed = parseAmountFromText('Compra con tarjeta de crédito $5.000 COTO');
     expect(parsed.direction).toBe('expense');

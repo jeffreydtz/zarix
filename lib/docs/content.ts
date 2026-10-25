@@ -138,7 +138,7 @@ export const DOCS_PAGES: DocsPage[] = [
         heading: 'REST v1',
         body: [
           'GET /api/v1/openapi.json describe las herramientas remotas. En v1 las únicas escrituras son create_transaction y create_transactions (borrar, editar, cuentas y recurrentes siguen en la app y Telegram). GET /api/v1/tools las lista según el token (un PAT de solo lectura no ve las de escritura). POST /api/v1/tools/{nombre} las ejecuta.',
-          'Idempotency-Key (header) gana sobre requestId del cuerpo; ambos valen 24 h. Reusar la misma clave con otro cuerpo devuelve 409. Confirmá SOLO con {confirm:true, pendingId} o pendingIds: campos extra (monto, cuenta) se rechazan y no escriben. Un PAT write estaciona; hace falta write:confirm para confirmar por API.',
+          'Idempotency-Key (header) gana sobre requestId del cuerpo; la clave no caduca. El mismo cuerpo y canal reusa el pendiente (incluso confirmado o descartado). Otro cuerpo o canal da 409, sin reescribir la clave. Confirmá SOLO con {confirm:true, pendingId} o pendingIds: campos extra (monto, cuenta) se rechazan y no escriben. Un PAT write estaciona; hace falta write:confirm para confirmar por API.',
           'create_transaction(s) no escriben el libro al toque: quedan en pendientes. El payload estacionado se ejecuta tal cual (cuotas e destino incluidos).',
           'Ejemplo (dato de ejemplo): curl -X POST -H "Authorization: Bearer zrxp_…" -H "Content-Type: application/json" -H "Idempotency-Key: ejemplo-001" -d "{\\"type\\":\\"expense\\",\\"amount\\":10}" https://zarix-phi.vercel.app/api/v1/tools/create_transaction',
         ],

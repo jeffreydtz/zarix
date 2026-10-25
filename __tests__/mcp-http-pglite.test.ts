@@ -492,4 +492,153 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
         .length
     ).toBe(2);
   });
+
+  it('REST keyed replay of a confirmed item returns stored status, not needs_confirm', async () => {
+    const headers = {
+      authorization: `Bearer ${tokenA}`,
+      'content-type': 'application/json',
+      'idempotency-key': 'rest-terminal-key-001',
+    };
+    const body = {
+      type: 'expense',
+      amount: 44,
+      currency: 'ARS',
+      accountId: ids.accountA,
+      description: 'REST terminal',
+    };
+    const parked = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    const parkedJson = (await parked.json()) as { pendingId: string; needs_confirm?: boolean };
+    expect(parkedJson.needs_confirm).toBe(true);
+    const confirm = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ confirm: true, pendingId: parkedJson.pendingId }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(confirm.status).toBe(200);
+    const replay = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    const replayJson = (await replay.json()) as {
+      success?: boolean;
+      duplicate?: boolean;
+      status?: string;
+      needs_confirm?: boolean;
+      pendingId?: string;
+    };
+    expect(replay.status).toBe(200);
+    expect(replayJson.needs_confirm).toBeUndefined();
+    expect(replayJson.duplicate).toBe(true);
+    expect(replayJson.status).toBe('confirmed');
+    expect(replayJson.success).toBe(true);
+    expect(replayJson.pendingId).toBe(parkedJson.pendingId);
+  });
+
+  it('REST equivalent canonical (UUID case, ARS default) replays; FX confirm returns 503', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const cardId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaac';
+    await query(
+      `INSERT INTO accounts(id,user_id,name,type,currency,balance) VALUES ($1,$2,'Visa FX','credit_card','ARS',0)`,
+      [cardId, ids.a]
+    );
+    const first = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-canonical-key-001',
+        },
+        body: JSON.stringify({
+          type: 'expense',
+          amount: 45,
+          currency: 'ars',
+          accountId: String(ids.accountA).toUpperCase(),
+          description: 'REST canonical',
+        }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    const firstJson = (await first.json()) as { pendingId: string; needs_confirm?: boolean };
+    expect(firstJson.needs_confirm).toBe(true);
+    const replay = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-canonical-key-001',
+        },
+        body: JSON.stringify({
+          type: 'expense',
+          amount: 45,
+          accountId: ids.accountA,
+          description: 'REST canonical',
+        }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    const replayJson = (await replay.json()) as { pendingId?: string; needs_confirm?: boolean };
+    expect(replay.status).toBe(200);
+    expect(replayJson.pendingId).toBe(firstJson.pendingId);
+    expect(replayJson.needs_confirm).toBe(true);
+
+    const fxPark = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-fx-key-001',
+        },
+        body: JSON.stringify({
+          type: 'expense',
+          amount: 10,
+          currency: 'USD',
+          accountId: cardId,
+          description: 'USD on ARS card',
+        }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    const fxParked = (await fxPark.json()) as { pendingId: string };
+    const fxConfirm = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ confirm: true, pendingId: fxParked.pendingId }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(fxConfirm.status).toBe(503);
+    expect(
+      (await query('SELECT id FROM transactions WHERE user_id=$1 AND description=$2', [ids.a, 'USD on ARS card'])).rows
+    ).toHaveLength(0);
+    expect(
+      (await query('SELECT status FROM pending_inbox_items WHERE id=$1', [fxParked.pendingId])).rows[0].status
+    ).toBe('pending');
+  });
 });

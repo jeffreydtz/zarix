@@ -428,14 +428,35 @@ try {
   await test('keyed reserve replays the same payload and 409s a different body or source', async () => {
     const key = 'wallet-idem-e2e-replay';
     const lock = `idemp:${key}`;
+    const canonical = (fields) => JSON.stringify({
+      account_id: fields.account_id ?? ids.accountA,
+      amount: fields.amount,
+      card: fields.card ?? '',
+      currency: (fields.currency || 'ARS').toUpperCase(),
+      direction: fields.direction || 'expense',
+      installments: fields.installments ?? 1,
+      merchant: (fields.merchant || 'Keyed café').trim().toLowerCase(),
+      occurred_at: fields.occurred_at ?? null,
+      source: fields.source,
+    });
     const body = (amount, source, extra = {}) => JSON.stringify({
-      amount, currency: 'ARS', merchant: 'Keyed café', direction: 'expense', source,
-      status: 'pending', fingerprint: `fp-${source}-${amount}`, idempotency_key: key, ingest_key: key,
-      account_id: ids.accountA, ...extra,
+      amount, currency: extra.currency || 'ARS', merchant: extra.merchant || 'Keyed café', direction: 'expense', source,
+      status: 'pending', fingerprint: extra.fingerprint || `fp-${source}-${amount}`,
+      idempotency_key: key, ingest_key: key,
+      account_id: extra.account_id ?? ids.accountA,
+      card_name: extra.card_name || null,
+      occurred_at: extra.occurred_at || null,
+      request_canonical: extra.request_canonical || canonical({
+        amount, source, merchant: extra.merchant, account_id: extra.account_id ?? ids.accountA,
+        occurred_at: extra.occurred_at_canonical ?? null, card: extra.card || '',
+        currency: extra.currency, installments: extra.installments,
+      }),
+      tool_payload: extra.tool_payload || null,
     });
     const first = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb) AS r`,
       [ids.a, lock, key, body(18, 'wallet')])).rows[0].r;
     assert.equal(first.duplicate, false);
+    assert.equal(first.item.request_canonical, canonical({ amount: 18, source: 'wallet' }));
     const replay = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb) AS r`,
       [ids.a, lock, key, body(18, 'wallet')])).rows[0].r;
     assert.equal(replay.duplicate, true);
@@ -445,9 +466,105 @@ try {
         [ids.a, lock, key, body(900, 'api', { tool_payload: { type: 'expense', amount: 900 } })]),
       /Idempotency-Key ya se usó/i
     );
+    await assert.rejects(
+      () => service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb)`,
+        [ids.a, lock, key, body(18, 'wallet', {
+          occurred_at: '2026-10-24T23:30:00-03:00',
+          occurred_at_canonical: new Date('2026-10-24T23:30:00-03:00').toISOString(),
+        })]),
+      /Idempotency-Key ya se usó/i
+    );
+    await assert.rejects(
+      () => service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb)`,
+        [ids.a, lock, key, body(18, 'wallet', { card_name: 'Visa BBB', card: 'visa bbb' })]),
+      /Idempotency-Key ya se usó/i
+    );
     const count = (await service(db, 'SELECT count(*)::int AS n FROM pending_inbox_items WHERE ingest_key=$1 AND user_id=$2',
       [key, ids.a])).rows[0].n;
     assert.equal(count, 1);
+  });
+
+  await test('keyed replay stays valid after 25h and after confirm writes account_id', async () => {
+    const key = 'wallet-idem-e2e-durable';
+    const lock = `idemp:${key}`;
+    const canonical = JSON.stringify({
+      account_id: null,
+      amount: 22,
+      card: 'visa aaa',
+      currency: 'ARS',
+      direction: 'expense',
+      installments: 1,
+      merchant: 'durable café',
+      occurred_at: null,
+      source: 'wallet',
+    });
+    const row = JSON.stringify({
+      amount: 22, currency: 'ARS', merchant: 'Durable café', direction: 'expense', source: 'wallet',
+      status: 'pending', fingerprint: 'fp-durable', idempotency_key: key, ingest_key: key,
+      card_name: 'Visa AAA', request_canonical: canonical,
+    });
+    const first = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb) AS r`,
+      [ids.a, lock, key, row])).rows[0].r;
+    assert.equal(first.duplicate, false);
+    await service(db, `UPDATE pending_inbox_items
+      SET account_id=$1, status='confirmed', created_at=now() - interval '25 hours', updated_at=now() - interval '25 hours'
+      WHERE id=$2 AND user_id=$3`, [ids.accountA, first.item.id, ids.a]);
+    const replay = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb) AS r`,
+      [ids.a, lock, key, row])).rows[0].r;
+    assert.equal(replay.duplicate, true);
+    assert.equal(replay.item.id, first.item.id);
+    assert.equal(replay.item.request_canonical, canonical);
+    assert.equal(replay.item.account_id, ids.accountA);
+    await assert.rejects(
+      () => service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb)`,
+        [ids.a, lock, key, JSON.stringify({
+          amount: 900, currency: 'ARS', merchant: 'Otro', direction: 'expense', source: 'api',
+          status: 'pending', fingerprint: 'fp-durable-other', idempotency_key: key, ingest_key: key,
+          request_canonical: JSON.stringify({
+            account_id: ids.accountA, amount: 900, card: '', currency: 'ARS', direction: 'expense',
+            installments: 1, merchant: 'otro', occurred_at: null, source: 'api',
+          }),
+        })]),
+      /Idempotency-Key ya se usó/i
+    );
+    const count = (await service(db, 'SELECT count(*)::int AS n FROM pending_inbox_items WHERE ingest_key=$1 AND user_id=$2',
+      [key, ids.a])).rows[0].n;
+    assert.equal(count, 1);
+  });
+
+  await test('possible_duplicate_of rejects a cross-user original and nulls only the column on delete', async () => {
+    const originalB = randomUUID();
+    const originalA = randomUUID();
+    const childA = randomUUID();
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,status,fingerprint,source)
+      VALUES($1,$2,31,'ARS','Owner B','pending','fp-fk-b','wallet')`, [originalB, ids.b]);
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,status,fingerprint,source)
+      VALUES($1,$2,32,'ARS','Owner A original','pending','fp-fk-a','wallet')`, [originalA, ids.a]);
+    await assert.rejects(
+      () => service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,status,fingerprint,source,possible_duplicate_of)
+        VALUES($1,$2,32,'ARS','Cross user','pending','fp-fk-cross','wallet',$3)`, [randomUUID(), ids.a, originalB]),
+      (error) => error.code === '23503' || /foreign key|violates/i.test(error.message || '')
+    );
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,status,fingerprint,source,possible_duplicate_of)
+      VALUES($1,$2,32,'ARS','Child A','pending','fp-fk-child','wallet',$3)`, [childA, ids.a, originalA]);
+    await service(db, 'DELETE FROM pending_inbox_items WHERE id=$1 AND user_id=$2', [originalA, ids.a]);
+    const child = (await service(db, 'SELECT user_id, possible_duplicate_of FROM pending_inbox_items WHERE id=$1', [childA])).rows[0];
+    assert.equal(child.user_id, ids.a);
+    assert.equal(child.possible_duplicate_of, null);
+  });
+
+  await test('installments add months on the Córdoba calendar under a UTC session', async () => {
+    const group = (await asRole(db, 'service_role', null, async (tx) => {
+      await tx.exec(`SET LOCAL TIME ZONE 'UTC'`);
+      return tx.query(
+        `SELECT create_installment_transactions($1,$2,40,'ARS',2,NULL,'Cuotas Córdoba','2026-08-30T23:30:00-03:00','wallet') AS id`,
+        [ids.a, ids.accountA]
+      );
+    })).rows[0].id;
+    const rows = (await service(db, `SELECT installment_number,
+      (transaction_date AT TIME ZONE 'America/Argentina/Cordoba')::date::text AS civil
+      FROM transactions WHERE installment_group_id=$1 ORDER BY installment_number`, [group])).rows;
+    assert.deepEqual(rows.map((r) => r.civil), ['2026-08-30', '2026-09-30']);
   });
 
   await test('date-only purchases two hours apart insert two pending rows', async () => {

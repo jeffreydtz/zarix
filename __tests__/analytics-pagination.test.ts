@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({ from: mocks.from, rpc: mocks.rpc }) }));
 vi.mock('@/lib/services/transactions', () => ({ buildToArsConverter: mocks.converter }));
 import { analyticsService } from '@/lib/services/analytics';
+import { ymdToQueryEndIso, ymdToQueryStartIso } from '@/lib/transaction-date';
 
 const OWNER = 'synthetic-owner';
 const START = '2026-10-01';
@@ -139,8 +140,8 @@ function expectPagedFilters(types: string[], start = START) {
   for (const call of mocks.calls) {
     expect(call.orders).toEqual([['transaction_date', true], ['id', true]]);
     expect(call.filters).toContainEqual(['eq', 'user_id', OWNER]);
-    expect(call.filters).toContainEqual(['gte', 'transaction_date', `${start}T00:00:00.000Z`]);
-    expect(call.filters).toContainEqual(['lte', 'transaction_date', `${END}T23:59:59.999Z`]);
+    expect(call.filters).toContainEqual(['gte', 'transaction_date', ymdToQueryStartIso(start)]);
+    expect(call.filters).toContainEqual(['lte', 'transaction_date', ymdToQueryEndIso(END)]);
     expect(call.filters).toContainEqual(types.length === 1
       ? ['eq', 'type', types[0]] : ['in', 'type', types]);
   }

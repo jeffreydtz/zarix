@@ -21,8 +21,30 @@ export type InboxDraft = {
   occurred_at?: string | null;
   created_at: string;
   possible_duplicate_of?: string | null;
+  possible_duplicate?: {
+    id: string;
+    merchant: string | null;
+    amount: number | null;
+    currency: string;
+    status: string;
+  } | null;
   tool_payload?: InboxToolPayload | null;
 };
+
+export function inboxOriginalStatusLabel(status: string | null | undefined): string {
+  switch (status) {
+    case 'confirmed':
+      return 'confirmado';
+    case 'discarded':
+      return 'descartado';
+    case 'confirming':
+      return 'confirmando';
+    case 'uncertain':
+      return 'incierto';
+    default:
+      return 'pendiente';
+  }
+}
 
 export type InboxAccount = { id: string; name: string; currency?: string };
 

@@ -141,4 +141,70 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
     expect(mocks.confirm.mock.calls[0][0].userId).toBe(FIXTURE_A);
     expect(mocks.confirm.mock.calls[0][0].userId).not.toBe(FIXTURE_B);
   });
+
+  it('replays a confirmed parked write as stored status, not needs_confirm', async () => {
+    mocks.park.mockResolvedValue({
+      id: PENDING_ID,
+      status: 'confirmed',
+      amount: 18,
+      currency: 'ARS',
+      merchant: 'Café parked',
+      direction: 'expense',
+      tool_payload: { type: 'expense', amount: 18 },
+    });
+    const result = await executeRegistryTool(
+      'create_transaction',
+      { type: 'expense', amount: 18, currency: 'ARS', description: 'Café parked' },
+      {
+        userId: FIXTURE_A,
+        financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+        source: 'mcp',
+      }
+    );
+    expect(result.response.needs_confirm).toBeUndefined();
+    expect(result.response.duplicate).toBe(true);
+    expect(result.response.status).toBe('confirmed');
+    expect(result.response.success).toBe(true);
+    expect(result.response.pendingId).toBe(PENDING_ID);
+  });
+
+  it('replays a discarded parked write as stored terminal status', async () => {
+    mocks.park.mockResolvedValue({
+      id: PENDING_ID,
+      status: 'discarded',
+      amount: 18,
+      currency: 'ARS',
+      merchant: 'Café parked',
+      direction: 'expense',
+    });
+    const result = await executeRegistryTool(
+      'create_transaction',
+      { type: 'expense', amount: 18, currency: 'ARS', description: 'Café parked' },
+      {
+        userId: FIXTURE_A,
+        financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+        source: 'api',
+      }
+    );
+    expect(result.response.needs_confirm).toBeUndefined();
+    expect(result.response.duplicate).toBe(true);
+    expect(result.response.status).toBe('discarded');
+    expect(result.response.success).toBe(false);
+  });
+
+  it('propagates FxUnavailableError from executeBotTransaction on the wallet confirm path', async () => {
+    const { FxUnavailableError } = await import('@/lib/executable-fx');
+    mocks.executeBot.mockRejectedValue(new FxUnavailableError('USD→ARS'));
+    await expect(
+      executeRegistryTool(
+        'create_transaction',
+        { type: 'expense', amount: 10, currency: 'USD', description: 'USD card' },
+        {
+          userId: FIXTURE_A,
+          financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+          source: 'wallet',
+        }
+      )
+    ).rejects.toBeInstanceOf(FxUnavailableError);
+  });
 });
