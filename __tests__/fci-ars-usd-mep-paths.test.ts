@@ -72,10 +72,12 @@ beforeEach(() => {
     purchase_currency: 'USD',
     is_manual_price: false,
   }];
-  mocks.update.mockImplementation((payload: Record<string, unknown>) => {
-    mocks.updates.push(payload);
-    return { eq: vi.fn().mockResolvedValue({ error: null }) };
-  });
+  mocks.update.mockImplementation((payload: Record<string, unknown>) => ({
+    eq: vi.fn((_col: string, id: string) => {
+      mocks.updates.push({ ...payload, id });
+      return Promise.resolve({ error: null });
+    }),
+  }));
   mocks.from.mockImplementation((table: string) => {
     if (table === 'exchange_rates') {
       return { upsert: vi.fn().mockResolvedValue({ error: null }) };
@@ -118,6 +120,24 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
     });
     const response = await quoteGet(quoteRequest('CONIOLA', 'USD'));
     expect(await response.json()).toMatchObject({ ok: false });
+  });
+
+  it('skips unlabeled IOLDOLD on the interactive path when there is no stored price', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await quoteGet(quoteRequest('IOLDOLD', 'USD'));
+    expect(await response.json()).toMatchObject({ ok: false });
+  });
+
+  it('returns IOLDOLD 1.098 USD on the interactive path when CAFCI names USD', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await quoteGet(quoteRequest('IOLDOLD', 'USD'));
+    const body = await response.json();
+    expect(body).toMatchObject({ ok: true, symbol: 'IOLDOLD', currency: 'USD' });
+    expect(body.price).toBeCloseTo(1.098, 8);
   });
 
   it('keeps the stored quote when MEP is unavailable for an ARS FCI booked in USD', async () => {
@@ -178,6 +198,76 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
     expect(mocks.updates).toHaveLength(1);
     expect(mocks.updates[0]).toMatchObject({ market_currency: 'USD' });
     expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
+  });
+
+  it.each([
+    ['null then 1.09', null, 1.09],
+    ['1.09 then null', 1.09, null],
+  ] as const)('updates only the plausible IOLDOLD user when stored prices are %s', async (_label, firstPrice, secondPrice) => {
+    mocks.investments = [
+      {
+        id: 'fixture-user-a-ioldold',
+        type: 'fci',
+        ticker: 'IOLDOLD',
+        market_currency: 'USD',
+        purchase_currency: 'USD',
+        current_price: firstPrice,
+        is_manual_price: false,
+      },
+      {
+        id: 'fixture-user-b-ioldold',
+        type: 'fci',
+        ticker: 'IOLDOLD',
+        market_currency: 'USD',
+        purchase_currency: 'USD',
+        current_price: secondPrice,
+        is_manual_price: false,
+      },
+    ];
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    const body = await response.json();
+    expect(body.processed).toBe(1);
+    expect(mocks.fci).toHaveBeenCalledTimes(1);
+    expect(mocks.updates).toHaveLength(1);
+    expect(mocks.updates[0].id).toBe(
+      firstPrice === 1.09 ? 'fixture-user-a-ioldold' : 'fixture-user-b-ioldold'
+    );
+    expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
+  });
+
+  it('does not write CONIOLA 179.598 onto the user whose stored USD book is 0.138', async () => {
+    mocks.investments = [
+      {
+        id: 'fixture-user-a-coniola',
+        type: 'fci',
+        ticker: 'CONIOLA',
+        market_currency: 'USD',
+        purchase_currency: 'USD',
+        current_price: 179.598,
+        is_manual_price: false,
+      },
+      {
+        id: 'fixture-user-b-coniola',
+        type: 'fci',
+        ticker: 'CONIOLA',
+        market_currency: 'USD',
+        purchase_currency: 'USD',
+        current_price: 0.138,
+        is_manual_price: false,
+      },
+    ];
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    await response.json();
+    expect(mocks.fci).toHaveBeenCalledTimes(1);
+    expect(mocks.updates.some((row) => row.id === 'fixture-user-b-coniola')).toBe(false);
+    const legacy = mocks.updates.find((row) => row.id === 'fixture-user-a-coniola');
+    if (legacy) expect(legacy.current_price).toBeCloseTo(179.598, 5);
   });
 
   it('does not overwrite CONIOLA when MEP is unavailable', async () => {

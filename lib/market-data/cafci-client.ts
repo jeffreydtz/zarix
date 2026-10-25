@@ -141,24 +141,61 @@ const CAFCI_USD_LABELS = new Set([
   'DOLARCABLE',
   'DOLARESCABLE',
   'DOLARCCL',
+  'DOLARESCCL',
   'USDMEP',
   'USDCABLE',
   'USDCCL',
+  'DOLARESTADOUNIDENSEMEP',
+  'DOLARESTADOUNIDENSECABLE',
+  'DOLARESTADOUNIDENSECCL',
+]);
+
+/** Folded labels that are a foreign currency, not ARS/USD. Anything else is ignored. */
+const CAFCI_FOREIGN_LABELS = new Set([
+  'EUR',
+  'EURO',
+  'EUROS',
+  'CAD',
+  'MXN',
+  'BRL',
+  'GBP',
+  'CLP',
+  'UYU',
+  'COP',
+  'PEN',
+  'JPY',
+  'CNY',
+  'RMB',
+  'CHF',
+  'AUD',
+  'NZD',
+  'REAL',
+  'REALES',
+  'PESOMEXICANO',
+  'PESOSMEXICANOS',
+  'DOLARCANADIENSE',
+  'DOLARESCANADIENSES',
+  'DOLLARCANADIAN',
+  'DOLLARSCANADIAN',
 ]);
 
 /** First explicit label: ARS/USD, unsupported (EUR, CAD, MXN, …), or missing. */
 export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
-  if (value == null || typeof value === 'object') return null;
+  if (value == null || typeof value === 'object' || typeof value === 'number' || typeof value === 'boolean') {
+    return null;
+  }
   const folded = fold(String(value));
   if (!folded) return null;
   if (CAFCI_USD_LABELS.has(folded)) return 'USD';
   if (CAFCI_ARS_LABELS.has(folded)) return 'ARS';
-  return 'unsupported';
+  if (CAFCI_FOREIGN_LABELS.has(folded)) return 'unsupported';
+  return null;
 }
 
 /**
- * Every present field at one CAFCI level. Missing fields are ignored.
- * Any unsupported label, or ARS vs USD, makes the whole level a skip.
+ * Every present field at one CAFCI level. Missing, numeric, and non-currency
+ * words (Local, $) are ignored. A recognizable foreign currency, or ARS vs USD,
+ * makes the whole level a skip.
  */
 export function firstCurrencyLabel(...candidates: unknown[]): CafciCurrencyLabel {
   const present: Array<'ARS' | 'USD' | 'unsupported'> = [];

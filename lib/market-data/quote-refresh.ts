@@ -30,6 +30,8 @@ export interface QuoteRefreshPosition {
   purchase_currency: string | null;
   /** Last stored cuotaparte; FCI unknown+USD plausibility vs this price. */
   current_price?: number | null;
+  /** When set, FCI results are keyed per position so plausibility is not shared. */
+  id?: string | null;
 }
 
 function quoteSourceTimestamp(quote: unknown): string | null {
@@ -67,7 +69,25 @@ export function quoteCacheKey(
 export function quoteCacheKeyForPosition(inv: QuoteRefreshPosition): string | null {
   if (!inv.ticker) return null;
   const currency = inv.type === 'crypto' ? 'USD' : desiredQuoteCurrency(inv);
-  return quoteCacheKey(inv.type, inv.ticker, currency);
+  const base = quoteCacheKey(inv.type, inv.ticker, currency);
+  if (inv.type === 'fci' && inv.id) return `${base}:${inv.id}`;
+  return base;
+}
+
+export function dedupeByTicker<T extends { ticker: string }>(jobs: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const job of jobs) {
+    const ticker = job.ticker.trim().toUpperCase();
+    if (!ticker || seen.has(ticker)) continue;
+    seen.add(ticker);
+    out.push(job);
+  }
+  return out;
+}
+
+function positiveStoredPrice(value: number | null | undefined): boolean {
+  return value != null && Number.isFinite(value) && value > 0;
 }
 
 export const FCI_REFRESH_CONCURRENCY = 3;
@@ -236,6 +256,7 @@ export async function refreshQuotesForInvestments(
     cacheKey: string;
     currency: string;
     storedPrice: number | null;
+    id: string | null;
   }> = [];
   const argPositions: Array<{
     type: InvestmentType;
@@ -254,7 +275,13 @@ export async function refreshQuotesForInvestments(
       continue;
     }
     if (inv.type === 'fci') {
-      fciTickers.push({ ticker, cacheKey, currency, storedPrice: inv.current_price ?? null });
+      fciTickers.push({
+        ticker,
+        cacheKey: quoteCacheKeyForPosition(inv) ?? cacheKey,
+        currency,
+        storedPrice: inv.current_price ?? null,
+        id: inv.id ?? null,
+      });
       continue;
     }
     if (isArgentineListedType(inv.type)) {
@@ -307,7 +334,7 @@ export async function refreshQuotesForInvestments(
     addYahoo(yahooSymbolFor(pos.type, pos.ticker), pos.cacheKey);
   }
 
-  const uniqueFci = dedupeByCacheKey(fciTickers);
+  const uniqueFci = dedupeByTicker(fciTickers);
   const fciBudgetMs = options?.fciBudgetMs ?? FCI_REFRESH_BUDGET_MS;
   const fciQuotes = await mapWithLimit(
     uniqueFci,
@@ -321,56 +348,87 @@ export async function refreshQuotesForInvestments(
       }
     }
   );
+  const fciQuoteByTicker = new Map<string, (typeof fciQuotes)[number]>();
   for (const [i, fci] of uniqueFci.entries()) {
-    const q = fciQuotes[i];
+    fciQuoteByTicker.set(fci.ticker, fciQuotes[i]);
+  }
+
+  const fciByKey = new Map<string, Array<{
+    ticker: string;
+    currency: string;
+    storedPrice: number | null;
+    stamped: QuoteResult | null;
+  }>>();
+  for (const fci of fciTickers) {
+    const q = fciQuoteByTicker.get(fci.ticker);
+    let stamped: QuoteResult | null = null;
     if (q === 'error' || !q || !(q.price > 0)) {
       console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker });
-      continue;
-    }
-    if (q.currencySkip) {
+    } else if (q.currencySkip) {
       console.warn('[quotes] skip FCI currency', {
         ticker: fci.ticker,
         reason: q.currencySkip,
         cafci: q.currency,
         stored: fci.currency,
       });
-      continue;
+    } else {
+      const resolved = resolveFciQuoteCurrency({
+        sourceCurrency: q.currency,
+        storedCurrency: fci.currency,
+        sourcePrice: q.price,
+        storedPrice: fci.storedPrice,
+      });
+      if (!resolved.currency) {
+        console.warn('[quotes] skip FCI currency', {
+          ticker: fci.ticker,
+          reason: resolved.reason,
+          cafci: q.currency,
+          stored: fci.currency,
+        });
+      } else {
+        const adapted = adapt(
+          {
+            price: q.price,
+            changePct: q.changePct,
+            currency: resolved.currency,
+            timestamp: q.timestamp,
+          },
+          fci.currency || resolved.currency,
+        );
+        if (!adapted) {
+          console.warn('[quotes] skip FCI currency', {
+            ticker: fci.ticker,
+            reason: 'mep',
+            cafci: q.currency,
+            stored: fci.currency,
+          });
+        } else {
+          stamped = stamp(adapted);
+        }
+      }
     }
-    const resolved = resolveFciQuoteCurrency({
-      sourceCurrency: q.currency,
-      storedCurrency: fci.currency,
-      sourcePrice: q.price,
+    const rows = fciByKey.get(fci.cacheKey) ?? [];
+    rows.push({
+      ticker: fci.ticker,
+      currency: fci.currency,
       storedPrice: fci.storedPrice,
+      stamped,
     });
-    if (!resolved.currency) {
-      console.warn('[quotes] skip FCI currency', {
-        ticker: fci.ticker,
-        reason: resolved.reason,
-        cafci: q.currency,
-        stored: fci.currency,
-      });
+    fciByKey.set(fci.cacheKey, rows);
+  }
+  for (const [key, rows] of fciByKey) {
+    if (rows.length === 1) {
+      if (rows[0].stamped) out.set(key, rows[0].stamped);
       continue;
     }
-    const adapted = adapt(
-      {
-        price: q.price,
-        changePct: q.changePct,
-        currency: resolved.currency,
-        timestamp: q.timestamp,
-      },
-      fci.currency || resolved.currency,
-    );
-    if (!adapted) {
-      console.warn('[quotes] skip FCI currency', {
-        ticker: fci.ticker,
-        reason: 'mep',
-        cafci: q.currency,
-        stored: fci.currency,
-      });
+    const withStored = rows.filter((row) => positiveStoredPrice(row.storedPrice));
+    if (withStored.length === 0) {
+      if (rows.every((row) => row.stamped) && rows[0].stamped) out.set(key, rows[0].stamped);
       continue;
     }
-    const stamped = stamp(adapted);
-    if (stamped) out.set(fci.cacheKey, stamped);
+    if (withStored.every((row) => row.stamped) && withStored[0].stamped) {
+      out.set(key, withStored[0].stamped);
+    }
   }
 
   const yahooSymbols = Array.from(yahooSymbolToCacheKeys.keys());

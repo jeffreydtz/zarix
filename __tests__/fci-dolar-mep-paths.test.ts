@@ -112,7 +112,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe.each(['Dólar MEP', 'Dólar Cable'] as const)('IOLDOLD CAFCI %s → 1.098 USD', (moneda) => {
+describe.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL'] as const)('IOLDOLD CAFCI %s → 1.098 USD', (moneda) => {
   it('interactive quote path', async () => {
     stubCafci(moneda);
     const response = await quoteGet(quoteRequest());

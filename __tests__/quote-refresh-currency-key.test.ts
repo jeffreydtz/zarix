@@ -20,6 +20,7 @@ vi.mock('@/lib/market-data/cafci-client', () => ({ fetchFciQuote: mocks.fci }));
 import {
   mapWithLimit,
   quoteCacheKey,
+  quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
 } from '@/lib/market-data/quote-refresh';
 
@@ -151,6 +152,81 @@ describe('refreshQuotesForInvestments currency keys', () => {
     const hit = map.get(quoteCacheKey('cedear', 'IBM', 'USD'));
     expect(hit?.currency).toBe('USD');
     expect(hit?.price).toBe(92);
+  });
+
+  it('resolves unlabeled IOLDOLD per position for stored [null, 1.09] in both orders', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const nullRow = {
+      id: 'fixture-ioldold-null',
+      type: 'fci' as const, ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+      current_price: null as number | null,
+    };
+    const priced = {
+      id: 'fixture-ioldold-priced',
+      type: 'fci' as const, ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+      current_price: 1.09,
+    };
+    for (const rows of [[nullRow, priced], [priced, nullRow]]) {
+      mocks.fci.mockClear();
+      const map = await refreshQuotesForInvestments(rows);
+      expect(mocks.fci).toHaveBeenCalledTimes(1);
+      expect(map.get(quoteCacheKeyForPosition(priced)!)).toMatchObject({
+        price: 1.098, currency: 'USD',
+      });
+      expect(map.get(quoteCacheKeyForPosition(nullRow)!)).toBeUndefined();
+    }
+  });
+
+  it('inherits an unlabeled IOLDOLD accept onto a shared cache key when a sibling stored price is plausible', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD', current_price: null },
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD', current_price: 1.09 },
+    ]);
+    expect(mocks.fci).toHaveBeenCalledTimes(1);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toMatchObject({
+      price: 1.098, currency: 'USD',
+    });
+  });
+
+  it('skips a shared CONIOLA USD key when any valid stored price fails plausibility', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD', current_price: 179.598 },
+      { type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD', current_price: 0.138 },
+    ]);
+    expect(mocks.fci).toHaveBeenCalledTimes(1);
+    expect(map.get(quoteCacheKey('fci', 'CONIOLA', 'USD'))).toBeUndefined();
+  });
+
+  it('does not write a peso CONIOLA cuotaparte onto a plausible USD book sharing the ticker', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const legacy = {
+      id: 'fixture-coniola-legacy',
+      type: 'fci' as const, ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD',
+      current_price: 179.598,
+    };
+    const usdBook = {
+      id: 'fixture-coniola-usd',
+      type: 'fci' as const, ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD',
+      current_price: 0.138,
+    };
+    const map = await refreshQuotesForInvestments([legacy, usdBook]);
+    expect(mocks.fci).toHaveBeenCalledTimes(1);
+    expect(map.get(quoteCacheKeyForPosition(usdBook)!)).toBeUndefined();
+    const legacyHit = map.get(quoteCacheKeyForPosition(legacy)!);
+    expect(legacyHit?.price).not.toBeCloseTo(0.138, 5);
+    if (legacyHit) {
+      expect(legacyHit.price).toBeCloseTo(179.598, 5);
+    }
   });
 
   it('fetches each FCI ticker once even when many positions share it', async () => {

@@ -210,6 +210,10 @@ describe('CAFCI client headers and 403', () => {
     ['Dólar Cable', 'USD'],
     ['Dólares Cable', 'USD'],
     ['Dólar CCL', 'USD'],
+    ['Dólares CCL', 'USD'],
+    ['Dólar Estadounidense MEP', 'USD'],
+    ['Dólar Estadounidense Cable', 'USD'],
+    ['Dólar Estadounidense CCL', 'USD'],
     ['USD MEP', 'USD'],
     ['USD Cable', 'USD'],
     ['USD CCL', 'USD'],
@@ -224,8 +228,19 @@ describe('CAFCI client headers and 403', () => {
     'Euro',
     'CAD',
     'MXN',
+    'BRL',
   ])('treats %s as unsupported instead of ARS/USD', (label) => {
     expect(parseCafciCurrencyLabel(label)).toBe('unsupported');
+  });
+
+  it('ignores numeric codes and non-currency words instead of treating them as unsupported', () => {
+    expect(parseCafciCurrencyLabel(2)).toBeNull();
+    expect(parseCafciCurrencyLabel('Local')).toBeNull();
+    expect(parseCafciCurrencyLabel('$')).toBeNull();
+    expect(parseCafciCurrencyLabel('')).toBeNull();
+    expect(firstCurrencyLabel('USD', 2)).toBe('USD');
+    expect(firstCurrencyLabel('Pesos', 'Local')).toBe('ARS');
+    expect(firstCurrencyLabel('USD', 'EUR')).toBe('conflict');
   });
 
   it('treats mixed fields at one CAFCI level as a conflict skip', () => {
@@ -262,6 +277,54 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
+  it('keeps USD when moneda USD and numeric tipoMoneda 2 share a level', async () => {
+    expect(firstCurrencyLabel('USD', 2)).toBe('USD');
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'USD', tipoMoneda: 2 } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      price: 1.098,
+      currency: 'USD',
+    });
+  });
+
+  it('keeps ARS when moneda Pesos and tipoMoneda Local share a level', async () => {
+    expect(firstCurrencyLabel('Pesos', 'Local')).toBe('ARS');
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'Peso fund',
+            clases: [{ id: 2, simbolo: 'CONIOLA' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: 179.598, moneda: 'Pesos', tipoMoneda: 'Local' } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('CONIOLA')).resolves.toMatchObject({
+      price: 179.598,
+      currency: 'ARS',
+    });
+  });
+
   it('keeps USD when tipoMoneda USD and moneda Dólar agree at the same ficha level', async () => {
     expect(firstCurrencyLabel('USD', 'Dólar')).toBe('USD');
     const fetchMock = vi.fn()
@@ -286,7 +349,7 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
-  it.each(['Dólar MEP', 'Dólar Cable'] as const)(
+  it.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL'] as const)(
     'prices IOLDOLD 1.098 USD when CAFCI names %s',
     async (moneda) => {
       const fetchMock = vi.fn()

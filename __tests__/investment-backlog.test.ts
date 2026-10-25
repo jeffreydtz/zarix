@@ -503,6 +503,10 @@ describe('quote cache keys include currency', () => {
     expect(quoteCacheKeyForPosition({
       type: 'bond', ticker: 'AL30', market_currency: null, purchase_currency: 'USD',
     })).toBe('bond:AL30:NATIVE');
+    expect(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+      id: 'fixture-ioldold',
+    })).toBe('fci:IOLDOLD:USD:fixture-ioldold');
   });
 
   it('dedupes FCI jobs by cache key before fetching', () => {
