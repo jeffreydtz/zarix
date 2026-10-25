@@ -225,6 +225,23 @@ export interface TransactionWithCategory extends Transaction {
 }
 
 class TransactionsService {
+  async peekDurableRequest(
+    userId: string,
+    requestId: string
+  ): Promise<{ request_hash: string; response: Transaction } | null> {
+    if (!validTransactionRequestId(requestId)) return null;
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase
+      .from('transaction_requests')
+      .select('request_hash, response')
+      .eq('user_id', userId)
+      .eq('request_id', requestId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data?.response) return null;
+    return { request_hash: data.request_hash as string, response: data.response as Transaction };
+  }
+
   async create(input: CreateTransactionInput): Promise<Transaction> {
     return observedStep({ component: 'service', action: 'execute', failureClass: 'consistency',
       referenceType: 'transaction' }, async () => {

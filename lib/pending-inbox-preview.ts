@@ -31,14 +31,14 @@ export function effectiveInboxItem<T extends object>(item: T, edits?: Partial<T>
 
 export function confirmRequestFromDraft(effective: InboxDraft): {
   action: 'confirm';
-  amount: number | undefined;
+  amount: number | null;
   merchant: string | null;
   accountId: string | null;
   currency: string;
 } {
   return {
     action: 'confirm',
-    amount: effective.amount == null ? undefined : Number(effective.amount),
+    amount: effective.amount == null ? null : Number(effective.amount),
     merchant: effective.merchant,
     accountId: effective.account_id,
     currency: effective.currency,
@@ -48,7 +48,8 @@ export function confirmRequestFromDraft(effective: InboxDraft): {
 export function confirmPreviewFromDraft(effective: InboxDraft, accounts: InboxAccount[]) {
   const parked = effective.tool_payload || {};
   const type = parked.type || (effective.direction === 'income' ? 'income' : 'expense');
-  const amount = effective.amount ?? parked.amount ?? null;
+  // Cleared amount stays cleared — never restore parked/original silently.
+  const amount = effective.amount;
   const accountId = effective.account_id || parked.accountId || null;
   const accountName =
     accounts.find((a) => a.id === accountId)?.name || parked.account || 'cuenta sin elegir';

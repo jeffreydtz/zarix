@@ -90,9 +90,15 @@ try {
   });
 
   await test('anon cannot read new integration tables', async () => {
-    for (const table of ['personal_access_tokens', 'pending_inbox_items', 'wallet_card_account_maps', 'integration_audit_log']) {
+    for (const table of ['personal_access_tokens', 'pending_inbox_items', 'wallet_card_account_maps', 'integration_audit_log', 'rate_limit_counters']) {
       await rejects(() => queryAs(db, 'anon', null, `SELECT * FROM ${table}`));
     }
+  });
+
+  await test('rate_limit_hit and purge_rate_limit_counters are service-only', async () => {
+    await rejects(() => owner(db, "SELECT rate_limit_hit('pat-token:sec', 1, 1000)"));
+    await rejects(() => owner(db, "SELECT purge_rate_limit_counters()"));
+    await rejects(() => queryAs(db, 'anon', null, "SELECT rate_limit_hit('pat-token:sec', 1, 1000)"));
   });
 
   await test('secret functions are not executable by clients', async () => {

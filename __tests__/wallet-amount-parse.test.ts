@@ -72,6 +72,19 @@ describe('wallet amount parser (table)', () => {
     expect(parsed.amountAmbiguous).toBe(true);
   });
 
+  it('rejects GBP (and £) in free text so it cannot auto-confirm as ARS', () => {
+    const text = parseWalletText('Compra GBP 100 en COTO con tarjeta Visa');
+    expect(text.currencyUnsupported).toBe(true);
+    expect(text.currency).toBe('GBP');
+    expect(text.amountAmbiguous).toBe(true);
+    const payload = parseWalletPayload({ text: 'Compra GBP 100 en COTO con tarjeta Visa' });
+    expect(payload.currencyUnsupported).toBe(true);
+    expect(payload.currency).not.toBe('ARS');
+    const sterling = parseWalletText('Compra £50 en Shop');
+    expect(sterling.currencyUnsupported).toBe(true);
+    expect(sterling.currency).toBe('GBP');
+  });
+
   it('invalid JSON amount falls back to text and is ambiguous (no auto-confirm)', () => {
     const foo = parseWalletPayload({
       json: { amount: 'foo', rawText: 'USD 1.234' },

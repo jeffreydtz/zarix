@@ -47,4 +47,14 @@ describe('pending inbox preview matches the confirm request', () => {
     const draft = effectiveInboxItem({ ...ITEM, direction: 'income', tool_payload: { type: 'income', amount: 100 } });
     expect(confirmPreviewFromDraft(draft, ACCOUNTS).directionLabel).toBe('Ingreso');
   });
+
+  it('cleared amount stays null in preview and POST instead of restoring parked amount', () => {
+    const draft = effectiveInboxItem(ITEM, { amount: null });
+    const preview = confirmPreviewFromDraft(draft, ACCOUNTS);
+    const request = confirmRequestFromDraft(draft);
+    expect(preview.amount).toBeNull();
+    expect(request.amount).toBeNull();
+    expect(preview.amount).not.toBe(999);
+    expect(request.amount).not.toBe(100);
+  });
 });

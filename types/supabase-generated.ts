@@ -836,6 +836,12 @@ isOneToOne: false
 "claim_pending_inbox_item":
 { Args: { "p_item_id": string,"p_user_id": string }; Returns: unknown
                            },
+"discard_pending_inbox_item":
+{ Args: { "p_item_id": string,"p_user_id": string }; Returns: unknown
+                           },
+"purge_rate_limit_counters":
+{ Args: { "p_older_than"?: string }; Returns: number
+                           },
 "create_transaction_once":
 { Args: { "p_installments"?: number,"p_request_hash": string,"p_request_id": string,"p_transaction": Json,"p_user_id": string }; Returns: Json
                            },

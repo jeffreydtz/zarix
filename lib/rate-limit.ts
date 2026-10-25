@@ -22,6 +22,8 @@ function prune(now: number) {
   }
 }
 
+export const SHARED_RPC_TIMEOUT_MS = 1500;
+
 export async function rateLimitAllowShared(
   key: string,
   max: number,
@@ -29,16 +31,34 @@ export async function rateLimitAllowShared(
 ): Promise<boolean> {
   const { createBareServiceClient } = await import('@/lib/supabase/server');
   const supabase = createBareServiceClient();
-  const { data, error } = await supabase.rpc('rate_limit_hit', {
-    p_key: key,
-    p_max: max,
-    p_window_ms: windowMs,
-  });
-  if (error) {
+  try {
+    const rpc = supabase.rpc('rate_limit_hit', {
+      p_key: key,
+      p_max: max,
+      p_window_ms: windowMs,
+    });
+    const timed = new Promise<{ data: unknown; error: { message?: string } | null }>((resolve) => {
+      const timer = setTimeout(() => {
+        resolve({ data: null, error: { message: 'rate_limit_hit timeout' } });
+      }, SHARED_RPC_TIMEOUT_MS);
+      void Promise.resolve(rpc).then((result) => {
+        clearTimeout(timer);
+        resolve(result as { data: unknown; error: { message?: string } | null });
+      }, () => {
+        clearTimeout(timer);
+        resolve({ data: null, error: { message: 'rate_limit_hit failed' } });
+      });
+    });
+    const { data, error } = await timed;
+    if (error) {
+      console.error('[rate-limit] shared counter unavailable');
+      return false;
+    }
+    return data === true;
+  } catch {
     console.error('[rate-limit] shared counter unavailable');
     return false;
   }
-  return data === true;
 }
 
 export function rateLimitAllow(

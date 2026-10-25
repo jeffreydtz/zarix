@@ -22,6 +22,28 @@ ALTER TABLE public.pending_inbox_items
   CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded', 'uncertain'));
 
 DROP INDEX IF EXISTS pending_inbox_fingerprint_pending_unique;
+
+-- Preflight: historical confirmed duplicates would make the reserved unique
+-- index fail with 23505. Keep the newest row's fingerprint; rewrite older
+-- collisions to a unique legacy value so legitimate later purchases survive.
+UPDATE public.pending_inbox_items AS p
+   SET fingerprint = 'legacy-collision:' || p.id::text
+ WHERE p.fingerprint IS NOT NULL
+   AND p.status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+   AND p.id IN (
+     SELECT id FROM (
+       SELECT id,
+              row_number() OVER (
+                PARTITION BY user_id, fingerprint
+                ORDER BY created_at DESC, id DESC
+              ) AS rn
+         FROM public.pending_inbox_items
+        WHERE fingerprint IS NOT NULL
+          AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+     ) ranked
+     WHERE rn > 1
+   );
+
 CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_fingerprint_reserved_unique
   ON public.pending_inbox_items (user_id, fingerprint)
   WHERE status IN ('pending', 'confirming', 'confirmed', 'uncertain');
@@ -56,6 +78,74 @@ $$;
 
 REVOKE ALL ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
+
+-- Atomic discard: never confirming; serialize with claim via the same advisory lock;
+-- refuse if a ledger receipt exists. DEFINER so the receipt lookup can read
+-- transaction_requests; auth.uid() still constrains authenticated callers.
+-- Lookup errors abort the function (no silent "no tx").
+CREATE OR REPLACE FUNCTION public.discard_pending_inbox_item(
+  p_user_id UUID,
+  p_item_id UUID
+) RETURNS SETOF public.pending_inbox_items
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  rec public.pending_inbox_items%ROWTYPE;
+  prior_id TEXT;
+BEGIN
+  IF p_user_id IS NULL OR p_item_id IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  SELECT * INTO rec
+    FROM public.pending_inbox_items
+   WHERE id = p_item_id AND user_id = p_user_id
+   FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pendiente no encontrado.';
+  END IF;
+  IF rec.status = 'confirmed' THEN
+    RAISE EXCEPTION 'Este pendiente ya fue confirmado.';
+  END IF;
+  IF rec.status = 'discarded' THEN
+    RAISE EXCEPTION 'Este pendiente ya fue descartado.';
+  END IF;
+  IF rec.status = 'confirming' THEN
+    RAISE EXCEPTION 'Este pendiente se está confirmando.';
+  END IF;
+  IF rec.status NOT IN ('pending', 'uncertain') THEN
+    RAISE EXCEPTION 'Este pendiente se está confirmando.';
+  END IF;
+  SELECT response->>'id' INTO prior_id
+    FROM public.transaction_requests
+   WHERE user_id = p_user_id
+     AND request_id = 'wallet:' || p_item_id::text;
+  IF prior_id IS NOT NULL THEN
+    RAISE EXCEPTION 'Este pendiente ya tiene un movimiento. No se puede descartar.';
+  END IF;
+  UPDATE public.pending_inbox_items
+     SET status = 'discarded',
+         discarded_at = now(),
+         claim_id = NULL,
+         updated_at = now()
+   WHERE id = p_item_id
+     AND user_id = p_user_id
+     AND status = rec.status
+  RETURNING * INTO rec;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Este pendiente se está confirmando.';
+  END IF;
+  RETURN NEXT rec;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.discard_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.discard_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 2. Shared atomic rate-limit counters (token + user)
@@ -110,6 +200,29 @@ $$;
 
 REVOKE ALL ON FUNCTION public.rate_limit_hit(TEXT, INTEGER, INTEGER) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.rate_limit_hit(TEXT, INTEGER, INTEGER) TO service_role;
+
+CREATE INDEX IF NOT EXISTS rate_limit_counters_window_start_idx
+  ON public.rate_limit_counters (window_start);
+
+CREATE OR REPLACE FUNCTION public.purge_rate_limit_counters(
+  p_older_than INTERVAL DEFAULT INTERVAL '2 hours'
+) RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+DECLARE
+  deleted INTEGER := 0;
+BEGIN
+  DELETE FROM public.rate_limit_counters
+   WHERE window_start < clock_timestamp() - p_older_than;
+  GET DIAGNOSTICS deleted = ROW_COUNT;
+  RETURN deleted;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.purge_rate_limit_counters(INTERVAL) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.purge_rate_limit_counters(INTERVAL) TO service_role;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 3. Installment writes keep the originating channel

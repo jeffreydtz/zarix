@@ -1,27 +1,32 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const captured = vi.hoisted(() => ({ update: null as Record<string, unknown> | null }));
+const captured = vi.hoisted(() => ({
+  update: null as Record<string, unknown> | null,
+  select: '' as string,
+  rpc: vi.fn(),
+}));
 
 vi.mock('@/lib/supabase/server', () => ({
   createServiceClientSync: () => ({
-    rpc: vi.fn().mockResolvedValue({ data: null, error: { message: 'zarix_vault_unavailable' } }),
+    rpc: captured.rpc,
     from: () => ({
-      select: () => ({
-        eq: () => ({
-          maybeSingle: async () => ({
-            data: {
-              gemini_api_key: null,
-              gemini_api_key_enc: captured.update?.gemini_api_key_enc ?? null,
-            },
+      select: (cols: string) => {
+        captured.select = cols;
+        return {
+          eq: () => ({
+            maybeSingle: async () => ({
+              data: {
+                gemini_api_key_enc: captured.update?.gemini_api_key_enc ?? null,
+              },
+            }),
+            single: async () => ({
+              data: {
+                gemini_api_key_enc: captured.update?.gemini_api_key_enc ?? null,
+              },
+            }),
           }),
-          single: async () => ({
-            data: {
-              gemini_api_key: null,
-              gemini_api_key_enc: captured.update?.gemini_api_key_enc ?? null,
-            },
-          }),
-        }),
-      }),
+        };
+      },
       update: (payload: Record<string, unknown>) => {
         captured.update = payload;
         return { eq: async () => ({ error: null }) };
@@ -33,6 +38,7 @@ vi.mock('@/lib/supabase/server', () => ({
 import {
   decryptSecret,
   encryptSecret,
+  getUserSecret,
   secretLooksEncrypted,
   setUserSecret,
   SECRETS_UNAVAILABLE_MESSAGE,
@@ -45,6 +51,9 @@ describe('user secrets fail closed', () => {
   const prev = process.env.ZARIX_SECRETS_MASTER_KEY;
   beforeEach(() => {
     captured.update = null;
+    captured.select = '';
+    captured.rpc.mockReset();
+    captured.rpc.mockResolvedValue({ data: null, error: { message: 'zarix_vault_unavailable' } });
   });
   afterEach(() => {
     if (prev === undefined) delete process.env.ZARIX_SECRETS_MASTER_KEY;
@@ -79,5 +88,20 @@ describe('user secrets fail closed', () => {
     expect(captured.update?.gemini_api_key).toBeNull();
     expect(String(captured.update?.gemini_api_key_enc || '')).toMatch(/^aesgcm:v1:/);
     expect(JSON.stringify(captured.update)).not.toContain('synthetic-gemini-key-not-real');
+  });
+
+  it('reads only the encrypted column, never the plaintext secret', async () => {
+    process.env.ZARIX_SECRETS_MASTER_KEY = KEY;
+    await getUserSecret(FIXTURE_A, 'gemini_api_key');
+    expect(captured.select).toBe('gemini_api_key_enc');
+    expect(captured.select).not.toMatch(/(^|,\s*)gemini_api_key(\s|,|$)/);
+    expect(captured.select).not.toContain('telegram_bot_token,');
+  });
+
+  it('does not fall back to plaintext when a vault pointer is present', async () => {
+    captured.update = { gemini_api_key_enc: 'vault:v1:00000000-0000-4000-8000-000000000001' };
+    captured.rpc.mockResolvedValue({ data: null, error: { message: 'zarix_vault_unavailable' } });
+    await expect(getUserSecret(FIXTURE_A, 'gemini_api_key')).resolves.toBeNull();
+    expect(captured.select).toBe('gemini_api_key_enc');
   });
 });
