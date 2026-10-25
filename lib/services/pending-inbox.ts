@@ -869,8 +869,7 @@ export async function confirmPendingItems(input: {
 }): Promise<PendingBatchConfirmResult> {
   const ids = canonicalPendingInboxIds(input.itemIds);
   if (ids.length === 0) {
-    const empty = [] as PendingBatchConfirmResult;
-    empty.executedCount = 0;
+    const empty = Object.assign([] as PendingInboxItem[], { executedCount: 0 });
     return empty;
   }
   const supabase = createServiceClientSync();

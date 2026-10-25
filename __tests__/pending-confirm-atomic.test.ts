@@ -60,7 +60,7 @@ vi.mock('@/lib/ai/registry/execute', () => ({
 vi.mock('@/lib/services/accounts', () => ({
   accountsService: {
     list: (...args: unknown[]) => mocks.listAccounts(...args),
-    findByNameFuzzy: (...args: unknown[]) => mocks.findAccount(...args),
+    findByNameFuzzy: mocks.findAccount,
   },
 }));
 

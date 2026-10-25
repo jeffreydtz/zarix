@@ -32,7 +32,10 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
 
     const raw = await req.text();
     if (rawJsonHasInvalidMoney(raw)) {
-      return NextResponse.json({ error: 'El monto debe ser un número mayor a 0' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'El monto en ARS, USD o EUR admite hasta dos decimales.' },
+        { status: 400 }
+      );
     }
     let body: Record<string, unknown>;
     try {

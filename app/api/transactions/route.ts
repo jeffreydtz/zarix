@@ -63,7 +63,10 @@ export async function POST(req: NextRequest) {
     }
     const raw = await req.text();
     if (rawJsonHasInvalidMoney(raw)) {
-      return NextResponse.json({ error: 'Monto inválido' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'El monto en ARS, USD o EUR admite hasta dos decimales.' },
+        { status: 400 }
+      );
     }
     let body: Record<string, unknown>;
     try {
