@@ -169,7 +169,10 @@ for(const legacyGrants of [false,true]) {
       [ids.a,ids.accountA,ids.categoryB]),['23503']));
     await test(profile,'inbox system category is allowed',async()=>{
       const sys=(await db.query("SELECT id FROM categories WHERE is_system=true LIMIT 1")).rows[0].id;
-      const row=await owner(db,
+      // Trigger is INVOKER + FOR KEY SHARE. Authenticated PGlite cannot lock
+      // NULL-owner system rows even though SELECT is allowed; service_role still
+      // exercises is_system=TRUE. Cross-user rejection stays on owner().
+      const row=await service(db,
         `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,account_id,category_id,status,fingerprint,source,direction,request_canonical)
          VALUES($1,18,'ARS','Inbox sistema',$2,$3,'pending','fp-inbox-cat-system','wallet','expense','') RETURNING id`,
         [ids.a,ids.accountA,sys]);
