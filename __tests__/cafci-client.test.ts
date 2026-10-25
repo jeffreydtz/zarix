@@ -506,3 +506,84 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 });
+
+describe('CAFCI failure diagnostics', () => {
+  const catalog = [{ id: 10, nombre: 'IOL Dolar Ahorro Plus', clases: [{ id: 20, simbolo: 'IOLDOLD', moneda: 'USD' }] }];
+
+  beforeEach(() => resetCafciCatalogCacheForTest());
+  afterEach(() => {
+    resetCafciCatalogCacheForTest();
+    vi.unstubAllGlobals();
+  });
+
+  it('tags a catalog 403 with stage and capped Server header', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 403,
+      headers: new Headers({ server: 'awselb/2.0' }),
+      json: async () => ({}),
+    }));
+    const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(CafciHttpError);
+    expect(err).toMatchObject({ status: 403, stage: 'catalog', server: 'awselb/2.0', message: 'CAFCI catalog 403' });
+    expect(isCafciForbidden(err)).toBe(true);
+  });
+
+  it('tags a ficha 401 after a good catalog', async () => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => catalog })
+      .mockResolvedValueOnce({ ok: false, status: 401, headers: new Headers(), json: async () => ({}) }));
+    const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
+    expect(err).toMatchObject({ name: 'CafciHttpError', status: 401, stage: 'ficha', message: 'CAFCI ficha 401' });
+    expect((err as CafciHttpError).server).toBeUndefined();
+  });
+
+  it('caps a hostile Server header and strips control characters', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 502,
+      headers: { get: () => `bad\r\n${'x'.repeat(500)}` },
+      json: async () => ({}),
+    }));
+    const err = (await fetchFciQuote('IOLDOLD').catch((e: unknown) => e)) as CafciHttpError;
+    expect(err.server?.length).toBeLessThanOrEqual(60);
+    expect(err.server).not.toMatch(/[\r\n]/);
+  });
+
+  it('wraps a network failure with the stage', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('fetch failed')));
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
+      name: 'CafciFetchError',
+      stage: 'catalog',
+      message: 'CAFCI catalog TypeError: fetch failed',
+    });
+  });
+
+  it('wraps an invalid JSON ficha with the stage', async () => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => catalog })
+      .mockResolvedValueOnce({ ok: true, json: async () => { throw new SyntaxError('Unexpected token <'); } }));
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ name: 'CafciFetchError', stage: 'ficha' });
+  });
+
+  it('reports no_match, ambiguous_match and unparseable_ficha without changing the null result', async () => {
+    const ambiguous = [
+      { id: 1, clases: [{ id: 2, simbolo: 'DUPE' }] },
+      { id: 3, clases: [{ id: 4, simbolo: 'DUPE' }] },
+    ];
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => [...catalog, ...ambiguous] })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { valorCuotaparte: null } }) }));
+    const reasons: string[] = [];
+    const onMiss = (r: string) => reasons.push(r);
+    await expect(fetchFciQuote('NOPE', onMiss)).resolves.toBeNull();
+    await expect(fetchFciQuote('DUPE', onMiss)).resolves.toBeNull();
+    await expect(fetchFciQuote('IOLDOLD', onMiss)).resolves.toBeNull();
+    await expect(fetchFciQuote('  ', onMiss)).resolves.toBeNull();
+    expect(reasons).toEqual(['no_match', 'ambiguous_match', 'unparseable_ficha', 'empty_ticker']);
+  });
+
+  it('ignores a throwing onMiss callback', async () => {
+    await expect(fetchFciQuote('', () => { throw new Error('boom'); })).resolves.toBeNull();
+  });
+});

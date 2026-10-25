@@ -20,13 +20,46 @@ export const CAFCI_HEADERS = {
   Referer: 'https://www.cafci.org.ar/',
 } as const;
 
+/** Which CAFCI request failed: the fund catalog (`/fondo`) or one class ficha. */
+export type CafciStage = 'catalog' | 'ficha';
+
+/** Why fetchFciQuote returned null without throwing. */
+export type CafciMissReason = 'empty_ticker' | 'no_match' | 'ambiguous_match' | 'unparseable_ficha';
+
+/** Max length of any diagnostic string copied from a CAFCI response. */
+const DIAG_MAX = 60;
+
+function capDiag(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const clean = value.replace(/[^\x20-\x7e]/g, '').trim();
+  return clean ? clean.slice(0, DIAG_MAX) : undefined;
+}
+
 export class CafciHttpError extends Error {
   readonly status: number;
+  readonly stage: CafciStage | undefined;
+  /** `Server` response header (e.g. `awselb/2.0`), capped; tells a WAF/ELB block from the app. */
+  readonly server: string | undefined;
 
-  constructor(status: number) {
-    super(`CAFCI ${status}`);
+  constructor(status: number, stage?: CafciStage, server?: string | null) {
+    super(stage ? `CAFCI ${stage} ${status}` : `CAFCI ${status}`);
     this.name = 'CafciHttpError';
     this.status = status;
+    this.stage = stage;
+    this.server = capDiag(server);
+  }
+}
+
+/** Network/timeout/JSON failure on a CAFCI request (no HTTP status). */
+export class CafciFetchError extends Error {
+  readonly stage: CafciStage;
+
+  constructor(stage: CafciStage, cause: unknown) {
+    const name = cause instanceof Error ? cause.name : typeof cause;
+    const msg = cause instanceof Error ? cause.message : String(cause);
+    super(`CAFCI ${stage} ${name}: ${msg}`.slice(0, 200));
+    this.name = 'CafciFetchError';
+    this.stage = stage;
   }
 }
 
@@ -233,14 +266,31 @@ export function resolveCafciCurrencySources(opts: {
   return { currency: seen };
 }
 
-async function fetchJson(url: string): Promise<unknown> {
-  const res = await fetch(url, {
-    headers: CAFCI_HEADERS,
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    cache: 'no-store',
-  });
-  if (!res.ok) throw new CafciHttpError(res.status);
-  return res.json();
+async function fetchJson(url: string, stage: CafciStage): Promise<unknown> {
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: CAFCI_HEADERS,
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      cache: 'no-store',
+    });
+  } catch (error) {
+    throw new CafciFetchError(stage, error);
+  }
+  if (!res.ok) {
+    let server: string | null = null;
+    try {
+      server = res.headers?.get?.('server') ?? null;
+    } catch {
+      server = null;
+    }
+    throw new CafciHttpError(res.status, stage, server);
+  }
+  try {
+    return await res.json();
+  } catch (error) {
+    throw new CafciFetchError(stage, error);
+  }
 }
 
 function classesFromCatalogPayload(json: unknown): CafciClass[] {
@@ -272,23 +322,30 @@ async function loadCatalog(): Promise<CafciClass[]> {
   if (catalogCache && Date.now() - catalogCache.ts < CATALOG_TTL_MS) {
     return catalogCache.classes;
   }
-  const json = await fetchJson(`${CAFCI_BASE}/fondo`);
+  const json = await fetchJson(`${CAFCI_BASE}/fondo`, 'catalog');
   const classes = classesFromCatalogPayload(json);
   catalogCache = { ts: Date.now(), classes };
   return classes;
 }
 
-function matchClass(classes: CafciClass[], ticker: string): CafciClass | null {
+function matchClassDetailed(
+  classes: CafciClass[],
+  ticker: string
+): { match: CafciClass } | { match: null; reason: 'no_match' | 'ambiguous_match' } {
   const key = fold(ticker);
-  if (!key) return null;
+  if (!key) return { match: null, reason: 'no_match' };
   const exact = classes.filter((c) => c.keys.includes(key));
-  if (exact.length === 1) return exact[0];
-  if (exact.length > 1) return null;
+  if (exact.length === 1) return { match: exact[0] };
+  if (exact.length > 1) return { match: null, reason: 'ambiguous_match' };
   const partial = classes.filter((c) =>
     c.keys.some((k) => k !== key && (k.startsWith(key) || key.startsWith(k)))
   );
-  if (partial.length === 1) return partial[0];
-  return null;
+  if (partial.length === 1) return { match: partial[0] };
+  return { match: null, reason: partial.length > 1 ? 'ambiguous_match' : 'no_match' };
+}
+
+function matchClass(classes: CafciClass[], ticker: string): CafciClass | null {
+  return matchClassDetailed(classes, ticker).match;
 }
 
 function parseFicha(json: unknown): {
@@ -328,15 +385,31 @@ function parseFicha(json: unknown): {
   };
 }
 
-export async function fetchFciQuote(ticker: string): Promise<FciQuote | null> {
+/**
+ * `onMiss` is diagnostics only: it is told why the result is null and never
+ * changes what is returned or thrown.
+ */
+export async function fetchFciQuote(
+  ticker: string,
+  onMiss?: (reason: CafciMissReason) => void
+): Promise<FciQuote | null> {
+  const miss = (reason: CafciMissReason): null => {
+    try {
+      onMiss?.(reason);
+    } catch {
+      // diagnostics must never affect the quote
+    }
+    return null;
+  };
   const symbol = ticker.trim().toUpperCase();
-  if (!symbol) return null;
+  if (!symbol) return miss('empty_ticker');
   const classes = await loadCatalog();
-  const match = matchClass(classes, symbol);
-  if (!match) return null;
-  const json = await fetchJson(`${CAFCI_BASE}/fondo/${match.fondoId}/clase/${match.claseId}/ficha`);
+  const matched = matchClassDetailed(classes, symbol);
+  if (!matched.match) return miss(matched.reason);
+  const match = matched.match;
+  const json = await fetchJson(`${CAFCI_BASE}/fondo/${match.fondoId}/clase/${match.claseId}/ficha`, 'ficha');
   const parsed = parseFicha(json);
-  if (!parsed) return null;
+  if (!parsed) return miss('unparseable_ficha');
   const resolved = resolveCafciCurrencySources({
     catalogClass: match.classCurrency !== undefined ? match.classCurrency : match.currency,
     fichaClass: parsed.fichaClass,
