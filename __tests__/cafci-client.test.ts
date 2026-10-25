@@ -220,6 +220,12 @@ describe('CAFCI client headers and 403', () => {
     ['USD MEP', 'USD'],
     ['USD Cable', 'USD'],
     ['USD CCL', 'USD'],
+    ['Dolar EEUU', 'USD'],
+    ['Dólar billete', 'USD'],
+    ['US Dollar', 'USD'],
+    ['U.S. Dollar', 'USD'],
+    ['Dólar USA', 'USD'],
+    ['U$S', 'USD'],
   ] as const)('maps CAFCI label %s to %s', (label, expected) => {
     expect(parseCafciCurrencyLabel(label)).toBe(expected);
   });
@@ -241,6 +247,12 @@ describe('CAFCI client headers and 403', () => {
     'Yen',
     'Swiss Franc',
     'Swiss Francs',
+    'Sol peruano',
+    'Indian Rupee',
+    'HKD',
+    'Dólar canadiense',
+    'Peso mexicano',
+    'Peso uruguayo',
   ])('treats %s as unsupported instead of ARS/USD', (label) => {
     expect(parseCafciCurrencyLabel(label)).toBe('unsupported');
   });
@@ -361,7 +373,10 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
-  it.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL', 'Dólares estadounidenses MEP'] as const)(
+  it.each([
+    'Dólar MEP', 'Dólar Cable', 'Dólares CCL', 'Dólares estadounidenses MEP',
+    'Dolar EEUU', 'Dólar billete', 'US Dollar', 'U.S. Dollar', 'Dólar USA',
+  ] as const)(
     'prices IOLDOLD 1.098 USD when CAFCI names %s',
     async (moneda) => {
       const fetchMock = vi.fn()

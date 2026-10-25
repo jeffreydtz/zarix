@@ -59,8 +59,8 @@ const cronRequest = () => new NextRequest('http://localhost/api/cron/update-pric
   headers: { authorization: 'Bearer synthetic-cron-secret' },
 });
 
-const quoteRequest = () =>
-  new NextRequest('http://localhost/api/investments/quote?symbol=IOLDOLD&type=fci&currency=USD');
+const quoteRequest = (currency = 'USD') =>
+  new NextRequest(`http://localhost/api/investments/quote?symbol=IOLDOLD&type=fci&currency=${currency}`);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -112,7 +112,16 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL', 'Dólares estadounidenses MEP'] as const)('IOLDOLD CAFCI %s → 1.098 USD', (moneda) => {
+describe.each([
+  'Dolar EEUU',
+  'Dólar billete',
+  'US Dollar',
+  'U.S. Dollar',
+  'Dólar USA',
+  'Dólar MEP',
+  'Dólares CCL',
+  'Dólares estadounidenses MEP',
+] as const)('IOLDOLD CAFCI %s → 1.098 USD', (moneda) => {
   it('interactive quote path', async () => {
     stubCafci(moneda);
     const response = await quoteGet(quoteRequest());
@@ -131,7 +140,39 @@ describe.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL', 'Dólares estadouni
   });
 });
 
-describe.each(['Canadian Dollar', 'Mexican Peso'] as const)('IOLDOLD CAFCI %s skips', (moneda) => {
+describe.each(['Pesos', 'Peso Argentino'] as const)('IOLDOLD CAFCI %s → ARS', (moneda) => {
+  it('interactive quote path', async () => {
+    mocks.investments[0].market_currency = 'ARS';
+    mocks.investments[0].purchase_currency = 'ARS';
+    stubCafci(moneda);
+    const response = await quoteGet(quoteRequest('ARS'));
+    const body = await response.json();
+    expect(body).toMatchObject({ ok: true, symbol: 'IOLDOLD', currency: 'ARS' });
+    expect(body.price).toBeCloseTo(1.098, 8);
+  });
+
+  it('cron update-prices path', async () => {
+    mocks.investments[0].market_currency = 'ARS';
+    mocks.investments[0].purchase_currency = 'ARS';
+    stubCafci(moneda);
+    const response = await cronGet(cronRequest());
+    expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(mocks.updates).toHaveLength(1);
+    expect(mocks.updates[0].market_currency).toBe('ARS');
+    expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
+  });
+});
+
+describe.each([
+  'Sol peruano',
+  'Indian Rupee',
+  'HKD',
+  'EUR',
+  'Canadian Dollar',
+  'Dólar canadiense',
+  'Peso mexicano',
+  'Peso uruguayo',
+] as const)('IOLDOLD CAFCI %s skips', (moneda) => {
   it('interactive quote path', async () => {
     stubCafci(moneda);
     const response = await quoteGet(quoteRequest());

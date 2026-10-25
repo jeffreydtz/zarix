@@ -112,7 +112,7 @@ function classKeys(fondo: Record<string, unknown>, clase: Record<string, unknown
   return [...new Set(names.map(fold).filter(Boolean))];
 }
 
-/** Folded CAFCI labels that mean Argentine pesos. Anything else with "peso" is unknown. */
+/** Folded CAFCI labels that mean Argentine pesos. */
 const CAFCI_ARS_LABELS = new Set([
   'ARS',
   'PESO',
@@ -123,7 +123,7 @@ const CAFCI_ARS_LABELS = new Set([
   'PESOSARGENTINOS',
 ]);
 
-/** Folded CAFCI labels that mean US dollars. Canadian/other dollars are unknown. */
+/** Folded CAFCI labels that mean US dollars (incl. U$S → USS). */
 const CAFCI_USD_LABELS = new Set([
   'USD',
   'US',
@@ -153,63 +153,40 @@ const CAFCI_USD_LABELS = new Set([
   'DOLARESESTADOUNIDENSESCCL',
 ]);
 
-/** Folded labels that are a foreign currency, not ARS/USD. */
-const CAFCI_FOREIGN_LABELS = new Set([
-  'EUR',
-  'EURO',
-  'EUROS',
-  'CAD',
-  'MXN',
-  'BRL',
-  'GBP',
-  'CLP',
-  'UYU',
-  'COP',
-  'PEN',
-  'JPY',
-  'CNY',
-  'RMB',
-  'CHF',
-  'AUD',
-  'NZD',
-  'REAL',
-  'REALES',
-  'YEN',
-  'YENES',
-  'PESOMEXICANO',
-  'PESOSMEXICANOS',
-  'MEXICANPESO',
-  'MEXICANPESOS',
-  'DOLARCANADIENSE',
-  'DOLARESCANADIENSES',
-  'DOLLARCANADIAN',
-  'DOLLARSCANADIAN',
-  'CANADIANDOLLAR',
-  'CANADIANDOLLARS',
-  'BRAZILIANREAL',
-  'BRAZILIANREALES',
-  'POUNDSTERLING',
-  'SWISSFRANC',
-  'SWISSFRANCS',
-  'LIBRAESTERLINA',
-  'FRANCOSUIZO',
-  'FRANCOSSUIZOS',
-  'REALBRASILENO',
-  'REALESBRASILENOS',
-]);
+const CAFCI_USD_OTHER_MARKERS = [
+  'CANAD', 'AUSTRAL', 'NEOZEL', 'ZELAND', 'HONGKONG', 'SINGAP', 'TAIWAN',
+  'JAMAIC', 'BAHAM', 'BELIZ', 'CARIBE', 'CARIBB',
+] as const;
 
-const CAFCI_FOREIGN_NAME = /DOLAR|DOLLAR|PESO|EURO|REAL|POUND|YEN|FRANC|LIBRA|STERLING|YUAN/;
+const CAFCI_PESO_OTHER_MARKERS = [
+  'MEXIC', 'CHILE', 'URUGU', 'COLOMB', 'FILIP', 'PHILIPP', 'DOMINIC', 'CUBA', 'BOLIV',
+] as const;
 
-/** First explicit label: ARS/USD, unsupported (EUR, CAD, MXN, …), or missing. */
+function hasFoldedMarker(folded: string, markers: readonly string[]): boolean {
+  return markers.some((marker) => folded.includes(marker));
+}
+
+/**
+ * Folded/uppercased, accents and punctuation stripped.
+ * 1. Ignore (missing): empty, '$', pure numbers, LOCAL.
+ * 2. Exact ARS/USD lists.
+ * 3. Contains DOLAR/DOLLAR → USD unless another-country marker; PESO → ARS unless marker.
+ * 4. Any other letters → unsupported (skip).
+ */
 export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
-  if (value == null || typeof value === 'object' || typeof value === 'number' || typeof value === 'boolean') {
-    return null;
-  }
+  if (value == null || typeof value === 'object' || typeof value === 'boolean') return null;
+  if (typeof value === 'number') return null;
   const folded = fold(String(value));
-  if (!folded) return null;
+  if (!folded || folded === 'LOCAL' || /^\d+$/.test(folded)) return null;
   if (CAFCI_USD_LABELS.has(folded)) return 'USD';
   if (CAFCI_ARS_LABELS.has(folded)) return 'ARS';
-  if (CAFCI_FOREIGN_LABELS.has(folded) || CAFCI_FOREIGN_NAME.test(folded)) return 'unsupported';
+  if (folded.includes('DOLAR') || folded.includes('DOLLAR')) {
+    return hasFoldedMarker(folded, CAFCI_USD_OTHER_MARKERS) ? 'unsupported' : 'USD';
+  }
+  if (folded.includes('PESO')) {
+    return hasFoldedMarker(folded, CAFCI_PESO_OTHER_MARKERS) ? 'unsupported' : 'ARS';
+  }
+  if (/[A-Z]/.test(folded)) return 'unsupported';
   return null;
 }
 
