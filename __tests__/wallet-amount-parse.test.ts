@@ -72,6 +72,20 @@ describe('wallet amount parser (table)', () => {
     expect(parsed.amountAmbiguous).toBe(true);
   });
 
+  it('keeps a date-only YYYY-MM-DD as a Cordoba civil date, not midnight UTC', () => {
+    const civil = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Argentina/Cordoba',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date());
+    const parsed = parseWalletPayload({
+      json: { amount: 18, currency: 'ARS', merchant: 'Café', date: civil },
+    });
+    expect(parsed.occurredAt).toBe(civil);
+    expect(parsed.occurredAt).not.toBe(new Date(`${civil}T00:00:00.000Z`).toISOString());
+  });
+
   it('rejects GBP (and £) in free text so it cannot auto-confirm as ARS', () => {
     const text = parseWalletText('Compra GBP 100 en COTO con tarjeta Visa');
     expect(text.currencyUnsupported).toBe(true);

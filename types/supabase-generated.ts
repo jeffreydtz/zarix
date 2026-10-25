@@ -839,6 +839,9 @@ isOneToOne: false
 "discard_pending_inbox_item":
 { Args: { "p_item_id": string,"p_user_id": string }; Returns: unknown
                            },
+"reserve_pending_inbox_item":
+{ Args: { "p_client_keyed": boolean,"p_fingerprint": string,"p_fingerprints": string[],"p_ingest_key": string,"p_lock_key": string,"p_lookback_ms": number,"p_row": Json,"p_user_id": string }; Returns: Json
+                           },
 "purge_rate_limit_counters":
 { Args: { "p_older_than"?: string }; Returns: number
                            },

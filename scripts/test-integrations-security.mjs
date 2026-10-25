@@ -101,6 +101,16 @@ try {
     await rejects(() => queryAs(db, 'anon', null, "SELECT rate_limit_hit('pat-token:sec', 1, 1000)"));
   });
 
+  await test('reserve_pending_inbox_item is service-only', async () => {
+    const row = JSON.stringify({ amount: 1, currency: 'ARS', merchant: 'x', source: 'wallet', status: 'pending' });
+    await rejects(() => owner(db,
+      "SELECT reserve_pending_inbox_item($1,'lock-key-fixture',ARRAY['fp']::text[],900000,'ingest-key',false,'fp',$2::jsonb)",
+      [ids.a, row]));
+    await rejects(() => queryAs(db, 'anon', null,
+      "SELECT reserve_pending_inbox_item($1,'lock-key-fixture',ARRAY['fp']::text[],900000,'ingest-key',false,'fp',$2::jsonb)",
+      [ids.a, row]));
+  });
+
   await test('discard_pending_inbox_item DEFINER uses pg_catalog search_path', async () => {
     const row = (await db.query(`SELECT pg_get_functiondef(p.oid) AS def
       FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace

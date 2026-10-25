@@ -160,6 +160,38 @@ export function inboxFingerprintCandidates(
   return previous === current ? [current] : [current, previous];
 }
 
+const HYPHENATED_UUID_RE =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+/** Lowercase hyphenated UUID. Rejects dashless and any other format at every inbox entry. */
+export function canonicalPendingInboxId(raw: string): string {
+  const value = String(raw ?? '').trim();
+  if (!HYPHENATED_UUID_RE.test(value)) {
+    throw new ApiError('Identificador de pendiente inválido.', 400);
+  }
+  return value.toLowerCase();
+}
+
+/** Window-independent identity so lookup+insert serialize across the 15-minute bucket split. */
+export function inboxDedupeLockKey(
+  userId: string,
+  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'merchant' | 'cardName' | 'direction'>,
+  ingestKey: string
+): string {
+  if (ingestKey) return `idemp:${ingestKey}`;
+  const sign = payload.direction === 'income' ? '-' : '+';
+  const material = [
+    userId,
+    sign,
+    payload.direction,
+    payload.amount ?? '',
+    payload.currency || 'ARS',
+    normalizeCard(payload.cardName),
+    (payload.merchant || '').toLowerCase(),
+  ].join('|');
+  return createHash('sha256').update(material).digest('hex');
+}
+
 function parkedBodyKey(payload: ParkedToolPayload | null | undefined): string {
   if (!payload) return '';
   return JSON.stringify({
@@ -283,39 +315,18 @@ async function ingestWalletItemUnlocked(input: {
     clientKey || '',
     nowMs
   );
-  // Anonymous fingerprint encodes a 15-minute window. Look back one extra bucket
-  // so a retry that crosses the boundary still matches. Unique index is atomic.
-  const supabase = createServiceClientSync();
-
-  if (clientKey) {
-    const existing = await loadByIngestKey(input.userId, clientKey);
-    if (existing) {
-      if (existing.fingerprint && existing.fingerprint !== fp) {
-        throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
-      }
-      return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
-    }
-  } else {
-    const { data: dupes } = await supabase
-      .from('pending_inbox_items')
-      .select('*')
-      .eq('user_id', input.userId)
-      .in('fingerprint', fingerprintCandidates)
-      .in('status', ACTIVE_EVENT_STATUSES)
-      .order('created_at', { ascending: false })
-      .limit(1);
-    if (dupes?.[0]) {
-      return { item: dupes[0] as PendingInboxItem, duplicate: true, autoConfirmed: dupes[0].status === 'confirmed' };
-    }
-  }
-
   const accountId = await resolveCardAccount(input.userId, payload.cardName);
   const suggestion = await suggestCategoryFromMerchant({ userId: input.userId, merchant: payload.merchant });
-
-  const { data, error } = await supabase
-    .from('pending_inbox_items')
-    .insert({
-      user_id: input.userId,
+  const supabase = createServiceClientSync();
+  const { data: reserved, error } = await supabase.rpc('reserve_pending_inbox_item', {
+    p_user_id: input.userId,
+    p_lock_key: inboxDedupeLockKey(input.userId, payload, clientKey || ''),
+    p_fingerprints: fingerprintCandidates,
+    p_lookback_ms: INBOX_DEDUPE_WINDOW_MS,
+    p_ingest_key: ingestKey,
+    p_client_keyed: Boolean(clientKey),
+    p_fingerprint: fp,
+    p_row: {
       amount: payload.amount,
       currency: payload.currency,
       merchant: payload.merchant,
@@ -333,28 +344,21 @@ async function ingestWalletItemUnlocked(input: {
       amount_ambiguous: payload.amountAmbiguous,
       source: 'wallet',
       fingerprint: fp,
-    })
-    .select('*')
-    .single();
+    },
+  });
 
   if (error) {
-    if (isUniqueViolation(error)) {
-      const byKey = clientKey ? await loadByIngestKey(input.userId, ingestKey) : null;
-      if (byKey?.fingerprint && byKey.fingerprint !== fp) {
-        throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
-      }
-      let existing = byKey;
-      if (!existing) {
-        for (const candidate of fingerprintCandidates) {
-          existing = await loadByFingerprint(input.userId, candidate);
-          if (existing) break;
-        }
-      }
-      if (existing) return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
+    if (/Idempotency-Key ya se usó/i.test(error.message || '')) {
+      throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
     }
     throw error;
   }
+  const reservedRow = reserved as { item?: PendingInboxItem; duplicate?: boolean } | null;
+  const data = reservedRow?.item;
   if (!data) throw new ApiError('No se pudo guardar el pendiente.');
+  if (reservedRow?.duplicate) {
+    return { item: data, duplicate: true, autoConfirmed: data.status === 'confirmed' };
+  }
 
   if (input.req) {
     await recordIntegrationAudit({
@@ -504,7 +508,7 @@ async function loadFinancialContext(userId: string): Promise<FinancialContext> {
 }
 
 export function pendingInboxRequestId(itemId: string): string {
-  return `wallet:${itemId}`;
+  return `wallet:${canonicalPendingInboxId(itemId)}`;
 }
 
 function directionFromType(type: string | undefined): 'expense' | 'income' {
@@ -545,8 +549,10 @@ export async function confirmPendingItem(input: {
   source?: WriteChannel;
   req?: Request;
 }): Promise<PendingInboxItem> {
-  return withPatUserScope(input.userId, () =>
-    withFinancialRequestContext(pendingInboxRequestId(input.itemId), () => confirmPendingItemUnlocked(input))
+  const itemId = canonicalPendingInboxId(input.itemId);
+  const next = { ...input, itemId };
+  return withPatUserScope(next.userId, () =>
+    withFinancialRequestContext(pendingInboxRequestId(itemId), () => confirmPendingItemUnlocked(next))
   );
 }
 
@@ -842,10 +848,11 @@ function discardRpcError(error: { message?: string; code?: string } | null): nev
 }
 
 export async function discardPendingItem(input: { userId: string; itemId: string; req?: Request }): Promise<void> {
+  const itemId = canonicalPendingInboxId(input.itemId);
   const supabase = createServiceClientSync();
   const { data, error } = await supabase.rpc('discard_pending_inbox_item', {
     p_user_id: input.userId,
-    p_item_id: input.itemId,
+    p_item_id: itemId,
   });
   if (error) discardRpcError(error);
   const row = (Array.isArray(data) ? data[0] : data) as PendingInboxItem | undefined;
@@ -857,7 +864,7 @@ export async function discardPendingItem(input: { userId: string; itemId: string
       source: ledgerChannelFor(row),
       ipHash: auditIpFromRequest(input.req),
       userAgent: auditUserAgent(input.req),
-      metadata: { itemId: input.itemId },
+      metadata: { itemId },
     });
   }
 }
