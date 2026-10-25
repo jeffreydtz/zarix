@@ -705,7 +705,17 @@ async function confirmPendingItemUnlocked(input: {
       }
       result = {
         ...result,
-        executed: result.executed?.length ? result.executed : [{ id: priorAfter.id as string, summary: '', amount: 0, currency: 'ARS' }],
+        executed: result.executed?.length
+          ? result.executed
+          : [
+              {
+                id: priorAfter.id as string,
+                summary: '',
+                amount: 0,
+                currency: 'ARS',
+                accountName: '',
+              },
+            ],
       };
     }
     ledgerCommitted = true;
