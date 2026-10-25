@@ -54,7 +54,7 @@ CREATE OR REPLACE FUNCTION public.claim_pending_inbox_item(
 ) RETURNS SETOF public.pending_inbox_items
 LANGUAGE plpgsql
 SECURITY INVOKER
-SET search_path = public
+SET search_path = pg_catalog, pg_temp
 AS $$
 BEGIN
   IF p_user_id IS NULL OR p_item_id IS NULL THEN
@@ -63,12 +63,13 @@ BEGIN
   IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
     RAISE EXCEPTION 'No autorizado';
   END IF;
-  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
   RETURN QUERY
   UPDATE public.pending_inbox_items
      SET status = 'confirming',
-         claim_id = gen_random_uuid(),
-         updated_at = now()
+         claim_id = pg_catalog.gen_random_uuid(),
+         updated_at = pg_catalog.now()
    WHERE id = p_item_id
      AND user_id = p_user_id
      AND status IN ('pending', 'uncertain')

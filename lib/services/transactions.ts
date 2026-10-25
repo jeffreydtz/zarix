@@ -16,6 +16,7 @@ import {
 } from '@/lib/transaction-date';
 import { observe, observedStep } from '@/lib/observability/correlation';
 import type { Transaction, Account } from '@/types/database';
+import { integerCentsFromToken, numberToDecimalString } from '@/lib/money-amount';
 
 /**
  * PostgREST interpreta guiones en UUID como operadores si van sin comillas en `in.(...)`.
@@ -160,7 +161,14 @@ export async function computeTransferAmounts(
   const inputCurrency = normalizeCurrency(currency);
   const source = normalizeCurrency(sourceCurrency);
   const destination = normalizeCurrency(destinationCurrency);
-  if (!Number.isFinite(amount) || amount <= 0 || Math.abs(roundFiat(amount,inputCurrency)-amount)>1e-8) {
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error('Monto inválido o con demasiados decimales.');
+  }
+  const transferFiat = ['ARS', 'USD', 'EUR'].includes(inputCurrency);
+  if (transferFiat && integerCentsFromToken(numberToDecimalString(amount)) == null) {
+    throw new Error('Monto inválido o con demasiados decimales.');
+  }
+  if (!transferFiat && Math.abs(roundFiat(amount, inputCurrency) - amount) > 1e-8) {
     throw new Error('Monto inválido o con demasiados decimales.');
   }
   if (inputCurrency !== source && inputCurrency !== destination) {
@@ -263,8 +271,12 @@ class TransactionsService {
     if (!Number.isFinite(input.amount) || input.amount <= 0) {
       throw new Error('El monto debe ser finito y mayor a cero.');
     }
+    const fiat = ['ARS', 'USD', 'EUR'].includes(input.currency);
+    if (fiat && integerCentsFromToken(numberToDecimalString(input.amount)) == null) {
+      throw new ApiError('El monto en ARS, USD o EUR admite hasta dos decimales.');
+    }
     const amount = roundFiat(input.amount, input.currency);
-    if (amount <= 0 || Math.abs(amount - input.amount) > 1e-8) {
+    if (amount <= 0 || (!fiat && Math.abs(amount - input.amount) > 1e-8)) {
       throw new ApiError('El monto en ARS, USD o EUR admite hasta dos decimales.');
     }
     input = { ...input, amount };
@@ -722,7 +734,14 @@ class TransactionsService {
     currency: string,
     accountCurrency: string
   ): Promise<{ amount_in_account_currency: number; exchange_rate: number | null }> {
-    if (!Number.isFinite(amount) || amount <= 0 || Math.abs(roundFiat(amount,currency)-amount)>1e-8) {
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new Error('Monto inválido o con demasiados decimales.');
+    }
+    const editFiat = ['ARS', 'USD', 'EUR'].includes((currency || '').toUpperCase());
+    if (editFiat && integerCentsFromToken(numberToDecimalString(amount)) == null) {
+      throw new Error('Monto inválido o con demasiados decimales.');
+    }
+    if (!editFiat && Math.abs(roundFiat(amount, currency) - amount) > 1e-8) {
       throw new Error('Monto inválido o con demasiados decimales.');
     }
     const { amountInAccountCurrency, exchangeRate } = await computeAmountInAccountCurrencyForAccount(

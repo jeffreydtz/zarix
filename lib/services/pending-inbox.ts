@@ -19,6 +19,7 @@ import { withFinancialRequestContext } from '@/lib/financial-request-context';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import type { ToolArgs, WriteChannel } from '@/lib/ai/registry/types';
+import { formatCents, integerCentsFromToken, numberToDecimalString } from '@/lib/money-amount';
 
 export { inboxDedupeLockKey };
 
@@ -195,18 +196,14 @@ function normalizeInstallments(value: unknown): number {
   return Math.min(36, Math.floor(n));
 }
 
-function hasAtMostTwoDecimals(value: number): boolean {
-  const scaled = value * 100;
-  return Math.abs(scaled - Math.round(scaled)) < 1e-8;
-}
-
 function canonicalAmountString(value: number | null | undefined): string | null {
   if (value == null || !Number.isFinite(Number(value))) return null;
-  const n = Number(value);
-  if (!hasAtMostTwoDecimals(n)) {
+  const token = numberToDecimalString(Number(value));
+  const cents = integerCentsFromToken(token);
+  if (cents == null) {
     throw new ApiError('El monto no puede tener más de dos decimales.', 400);
   }
-  return n.toFixed(2);
+  return formatCents(cents);
 }
 
 export const INBOX_REQUEST_CANONICAL_VERSION = 'v1';
@@ -370,6 +367,7 @@ export async function ingestWalletItem(input: {
   userId: string;
   json?: Record<string, unknown> | null;
   text?: string | null;
+  rawJson?: string | null;
   idempotencyKey?: string | null;
   req?: Request;
 }): Promise<{ item: PendingInboxItem; duplicate: boolean; autoConfirmed: boolean }> {
@@ -380,10 +378,11 @@ async function ingestWalletItemUnlocked(input: {
   userId: string;
   json?: Record<string, unknown> | null;
   text?: string | null;
+  rawJson?: string | null;
   idempotencyKey?: string | null;
   req?: Request;
 }): Promise<{ item: PendingInboxItem; duplicate: boolean; autoConfirmed: boolean }> {
-  const payload = parseWalletPayload({ json: input.json, text: input.text });
+  const payload = parseWalletPayload({ json: input.json, text: input.text, rawJson: input.rawJson });
   if (payload.currencyUnsupported || !isTransactionCurrency(payload.currency)) {
     throw new ApiError('Moneda no admitida. Usá ARS, USD o EUR.', 400);
   }
@@ -747,6 +746,42 @@ function confirmableInboxStatus(status: string): boolean {
   return status === 'pending' || status === 'uncertain' || status === 'confirming';
 }
 
+function parkedConfirmFields(row: PendingInboxItem) {
+  const parked = row.tool_payload;
+  const amount =
+    (typeof parked?.amount === 'number' ? parked.amount : null) ??
+    (typeof row.amount === 'number' ? row.amount : null);
+  const accountId =
+    (typeof parked?.accountId === 'string' ? parked.accountId : null) ?? row.account_id;
+  const type = String(parked?.type || (row.direction === 'income' ? 'income' : 'expense'));
+  const accountName = typeof parked?.account === 'string' ? parked.account : null;
+  return { amount, accountId, type, accountName };
+}
+
+function preflightConfirmItem(row: PendingInboxItem | undefined): { error: string; status: number } | null {
+  if (!row) return { error: 'Pendiente no encontrado.', status: 400 };
+  if (row.status === 'discarded') return { error: 'Este pendiente ya fue descartado.', status: 400 };
+  if (row.status === 'confirmed') return null;
+  if (row.status === 'confirming' && !isStaleConfirming(row)) {
+    return { error: 'Este pendiente se está confirmando.', status: 409 };
+  }
+  if (!(confirmableInboxStatus(row.status) || isStaleConfirming(row))) {
+    return { error: 'Este pendiente no se puede confirmar.', status: 400 };
+  }
+  const { amount, accountId, type, accountName } = parkedConfirmFields(row);
+  if (amount == null || !Number.isFinite(amount) || amount <= 0) {
+    return { error: 'Falta el monto para confirmar.', status: 400 };
+  }
+  const amountToken = numberToDecimalString(amount);
+  if (integerCentsFromToken(amountToken) == null) {
+    return { error: 'El monto no puede tener más de dos decimales.', status: 400 };
+  }
+  if (!accountId && type !== 'transfer' && !accountName) {
+    return { error: 'Elegí la cuenta de Zarix para esta tarjeta.', status: 400 };
+  }
+  return null;
+}
+
 export async function confirmPendingItems(input: {
   userId: string;
   itemIds: string[];
@@ -763,23 +798,28 @@ export async function confirmPendingItems(input: {
     .in('id', ids);
   if (error) throw error;
   const byId = new Map(((data ?? []) as PendingInboxItem[]).map((row) => [row.id, row]));
-  const statuses: PendingBatchItemStatus[] = ids.map((id) => {
-    const row = byId.get(id);
-    if (!row) return { pendingId: id, status: 'missing', error: 'Pendiente no encontrado.' };
-    if (row.status === 'discarded') {
-      return { pendingId: id, status: 'discarded', error: 'Este pendiente ya fue descartado.' };
+  const blocked = ids
+    .map((id) => ({ id, err: preflightConfirmItem(byId.get(id)) }))
+    .find((item) => item.err);
+  if (blocked?.err) {
+    throw new ApiError(blocked.err.error, blocked.err.status);
+  }
+  const neededAccountIds = [
+    ...new Set(
+      ids.flatMap((id) => {
+        const row = byId.get(id);
+        if (!row || row.status === 'confirmed') return [];
+        const { accountId } = parkedConfirmFields(row);
+        return accountId ? [accountId] : [];
+      })
+    ),
+  ];
+  if (neededAccountIds.length > 0) {
+    const accounts = await accountsService.list(input.userId);
+    const known = new Set(accounts.map((account) => account.id));
+    if (neededAccountIds.some((accountId) => !known.has(accountId))) {
+      throw new ApiError('La cuenta no existe.', 400);
     }
-    if (row.status === 'confirmed') return { pendingId: id, status: 'confirmed' };
-    if (confirmableInboxStatus(row.status) || isStaleConfirming(row)) {
-      return { pendingId: id, status: row.status };
-    }
-    return { pendingId: id, status: row.status, error: 'Este pendiente no se puede confirmar.' };
-  });
-  if (statuses.some((item) => item.error)) {
-    throw new ApiError(
-      statuses.find((item) => item.error)?.error || 'Hay pendientes que no se pueden confirmar.',
-      400
-    );
   }
   const out: PendingInboxItem[] = [];
   for (const id of ids) {

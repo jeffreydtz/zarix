@@ -15,6 +15,7 @@ vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
 import { transactionsService } from '@/lib/services/transactions';
 import { getMonthFlow } from '@/lib/services/month-flow';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
+import { parseCivilMonthQuery } from '@/lib/transaction-date';
 
 const accountId = '00000000-0000-0000-0000-000000000001';
 const destinationId = '00000000-0000-0000-0000-000000000002';
@@ -199,6 +200,24 @@ describe('financial summaries explicitly exclude unavailable conversions', () =>
     expect(flow).toMatchObject({ spentARS: 2, incomeARS: 0, daysLeft: 17, excludedCurrencies: ['USD'] });
     expect(flow.projectedSpendARS).toBeCloseTo(2 + 2 / 14 * 17 + 3, 8);
     expect(mocks.writes).toEqual([]);
+  });
+
+  it('treats ?month=2026-10 as the Córdoba October month, not UTC September', async () => {
+    const sep = {
+      id: 'sep-10', user_id: 'U1', account_id: accountId, destination_account_id: null,
+      type: 'expense', amount: 10, currency: 'ARS', amount_in_account_currency: 10,
+      transaction_date: '2026-09-15T12:00:00-03:00', category: { name: 'Sintética', icon: 'X' },
+    };
+    const oct = {
+      ...sep, id: 'oct-18', amount: 18, amount_in_account_currency: 18,
+      transaction_date: '2026-10-15T12:00:00-03:00',
+    };
+    mocks.rows = [sep, oct];
+    const utcParsed = await transactionsService.getMonthSummary('U1', new Date('2026-10'));
+    expect(utcParsed.totalExpenses).toBe(10);
+    const summary = await transactionsService.getMonthSummary('U1', parseCivilMonthQuery('2026-10'));
+    expect(summary.totalExpenses).toBe(18);
+    expect(summary.transactionCount).toBe(1);
   });
 
   it('counts 31 Oct 23:30 Córdoba in the October summary', async () => {

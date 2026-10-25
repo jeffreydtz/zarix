@@ -1,4 +1,10 @@
 import { parseTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import {
+  extractJsonNumberToken,
+  integerCentsFromToken,
+  moneyAmountFromToken,
+  numberToDecimalString,
+} from '@/lib/money-amount';
 
 const CREDIT_CARD_PHRASE = /tarjeta\s+de\s+cr[eé]dito|credit\s+card/gi;
 
@@ -30,6 +36,7 @@ export type AmountParseResult = {
   amount: number | null;
   ambiguous: boolean;
   direction: 'expense' | 'income';
+  excessDecimals?: boolean;
 };
 
 const MAX_TEXT = 4000;
@@ -59,7 +66,23 @@ function localeHintFromText(text: string): 'AR' | 'US' | 'unknown' {
   return 'unknown';
 }
 
-function parseGroupedNumber(raw: string, localeHint: 'AR' | 'US' | 'unknown'): { value: number; ambiguous: boolean } | null {
+function parsedMoney(
+  n: number,
+  raw: string,
+  ambiguous: boolean
+): { value: number; ambiguous: boolean; excessDecimals?: boolean } | null {
+  if (!Number.isFinite(n)) return null;
+  if (integerCentsFromToken(raw) == null) {
+    return { value: n, ambiguous: true, excessDecimals: true };
+  }
+  const exact = moneyAmountFromToken(raw);
+  return { value: exact ?? round2(n), ambiguous };
+}
+
+function parseGroupedNumber(
+  raw: string,
+  localeHint: 'AR' | 'US' | 'unknown'
+): { value: number; ambiguous: boolean; excessDecimals?: boolean } | null {
   const s = raw.replace(/\s/g, '');
   if (!s) return null;
   const hasComma = s.includes(',');
@@ -70,10 +93,10 @@ function parseGroupedNumber(raw: string, localeHint: 'AR' | 'US' | 'unknown'): {
     const lastDot = s.lastIndexOf('.');
     if (lastComma > lastDot) {
       const n = Number(s.replace(/\./g, '').replace(',', '.'));
-      return Number.isFinite(n) ? { value: round2(n), ambiguous: false } : null;
+      return parsedMoney(n, s, false);
     }
     const n = Number(s.replace(/,/g, ''));
-    return Number.isFinite(n) ? { value: round2(n), ambiguous: false } : null;
+    return parsedMoney(n, s, false);
   }
 
   if (hasComma && !hasDot) {
@@ -81,11 +104,11 @@ function parseGroupedNumber(raw: string, localeHint: 'AR' | 'US' | 'unknown'): {
     const frac = parts[parts.length - 1] ?? '';
     if (parts.length === 2 && frac.length <= 2) {
       const n = Number(s.replace(',', '.'));
-      return Number.isFinite(n) ? { value: round2(n), ambiguous: false } : null;
+      return parsedMoney(n, s, false);
     }
     if (frac.length === 3 && parts.every((p, i) => i === 0 || p.length === 3)) {
       const n = Number(s.replace(/,/g, ''));
-      return Number.isFinite(n) ? { value: round2(n), ambiguous: false } : null;
+      return parsedMoney(n, s, false);
     }
     return null;
   }
@@ -96,28 +119,39 @@ function parseGroupedNumber(raw: string, localeHint: 'AR' | 'US' | 'unknown'): {
     if (parts.length > 2) {
       if (parts.slice(1).every((p) => p.length === 3)) {
         const n = Number(s.replace(/\./g, ''));
-        return Number.isFinite(n) ? { value: round2(n), ambiguous: false } : null;
+        return parsedMoney(n, s, false);
       }
       return null;
     }
     if (frac.length === 3) {
       if (localeHint === 'US') {
-        const asDecimal = Number(s);
-        return Number.isFinite(asDecimal) ? { value: round2(asDecimal), ambiguous: true } : null;
+        if (integerCentsFromToken(s) == null) {
+          const asDecimal = Number(s);
+          if (!Number.isFinite(asDecimal)) return null;
+          return { value: asDecimal, ambiguous: true, excessDecimals: true };
+        }
+        const exact = moneyAmountFromToken(s);
+        if (exact == null) return null;
+        return { value: exact, ambiguous: true };
       }
       const n = Number(s.replace(/\./g, ''));
       if (!Number.isFinite(n)) return null;
-      return { value: round2(n), ambiguous: localeHint === 'unknown' };
+      return parsedMoney(n, s.replace(/\./g, ''), localeHint === 'unknown');
     }
     if (frac.length <= 2) {
       const n = Number(s);
-      return Number.isFinite(n) ? { value: round2(n), ambiguous: false } : null;
+      return parsedMoney(n, s, false);
+    }
+    if (frac.length > 2) {
+      const n = Number(s);
+      if (!Number.isFinite(n)) return null;
+      return { value: n, ambiguous: true, excessDecimals: true };
     }
     return null;
   }
 
   const n = Number(s);
-  return Number.isFinite(n) ? { value: round2(n), ambiguous: false } : null;
+  return parsedMoney(n, s, false);
 }
 
 const CANDIDATE_RE =
@@ -158,12 +192,15 @@ export function parseAmountFromText(text: string): AmountParseResult {
   }
 
   const parsed = parseGroupedNumber(preferred.raw, hint);
-  if (!parsed || !(parsed.value > 0) || parsed.value > MAX_AMOUNT) {
-    return { amount: null, ambiguous: true, direction: refund ? 'income' : 'expense' };
-  }
-
   const extraAnchored = ranked.filter((c) => c.anchored && c.raw !== preferred.raw).length > 0;
   const direction: 'expense' | 'income' = preferred.signed || refund ? 'income' : 'expense';
+  if (parsed?.excessDecimals) {
+    return { amount: null, ambiguous: true, direction, excessDecimals: true };
+  }
+  if (!parsed || !(parsed.value > 0) || parsed.value > MAX_AMOUNT) {
+    return { amount: null, ambiguous: true, direction };
+  }
+
   return {
     amount: parsed.value,
     ambiguous: parsed.ambiguous || extraAnchored,
@@ -171,11 +208,45 @@ export function parseAmountFromText(text: string): AmountParseResult {
   };
 }
 
-function parseAmountValue(v: unknown): AmountParseResult {
+function parseAmountValue(v: unknown, amountToken?: string | null): AmountParseResult {
+  const token = typeof amountToken === 'string' && amountToken.trim() ? amountToken.trim() : null;
+  if (token) {
+    const signed = /^\s*-/.test(token) || (typeof v === 'number' && v < 0);
+    const direction: 'expense' | 'income' = signed ? 'income' : 'expense';
+    const cents = integerCentsFromToken(token);
+    if (cents == null) {
+      const grouped = parseGroupedNumber(
+        token
+          .replace(/^[+-]\s*/, '')
+          .replace(/^(ARS|USD|EUR|U\$S|US\$)\$?\s*/i, '')
+          .replace(/^\$\s*/, '')
+          .replace(/\s+/g, ''),
+        localeHintFromText(token) === 'unknown' ? 'US' : localeHintFromText(token)
+      );
+      if (grouped?.excessDecimals) {
+        return { amount: null, ambiguous: true, direction, excessDecimals: true };
+      }
+      if (typeof v === 'string') {
+        return parseAmountValue(v);
+      }
+      return { amount: null, ambiguous: true, direction, excessDecimals: true };
+    }
+    const amount = moneyAmountFromToken(token);
+    if (amount == null || !(amount > 0) || amount > MAX_AMOUNT) {
+      return { amount: null, ambiguous: false, direction: 'expense' };
+    }
+    return { amount, ambiguous: false, direction };
+  }
   if (typeof v === 'number' && Number.isFinite(v)) {
     const abs = Math.abs(v);
+    const direction: 'expense' | 'income' = v < 0 ? 'income' : 'expense';
     if (!(abs > 0) || abs > MAX_AMOUNT) return { amount: null, ambiguous: false, direction: 'expense' };
-    return { amount: round2(abs), ambiguous: false, direction: v < 0 ? 'income' : 'expense' };
+    const tokenFromNumber = numberToDecimalString(abs);
+    const amount = integerCentsFromToken(tokenFromNumber) != null ? moneyAmountFromToken(tokenFromNumber) : null;
+    if (amount == null) {
+      return { amount: null, ambiguous: true, direction, excessDecimals: true };
+    }
+    return { amount, ambiguous: false, direction };
   }
   if (typeof v === 'string') {
     const trimmed = v.trim();
@@ -188,13 +259,17 @@ function parseAmountValue(v: unknown): AmountParseResult {
       .replace(/^\$\s*/, '')
       .replace(/\s+/g, '');
     const parsed = parseGroupedNumber(numeric, hint === 'unknown' ? 'US' : hint);
+    const direction: 'expense' | 'income' = signed ? 'income' : 'expense';
+    if (parsed?.excessDecimals) {
+      return { amount: null, ambiguous: true, direction, excessDecimals: true };
+    }
     if (!parsed || !(parsed.value > 0) || parsed.value > MAX_AMOUNT) {
       return { amount: null, ambiguous: false, direction: 'expense' };
     }
     return {
       amount: parsed.value,
       ambiguous: parsed.ambiguous,
-      direction: signed ? 'income' : 'expense',
+      direction,
     };
   }
   return { amount: null, ambiguous: false, direction: 'expense' };
@@ -243,6 +318,7 @@ export function isWalletTimestampFresh(iso: string | null | undefined, now: numb
 export function parseWalletPayload(input: {
   json?: Record<string, unknown> | null;
   text?: string | null;
+  rawJson?: string | null;
 }): WalletIngestPayload {
   const json = input.json && typeof input.json === 'object' ? input.json : null;
   const text = typeof input.text === 'string' ? input.text.slice(0, MAX_TEXT) : jsonText(json);
@@ -255,13 +331,18 @@ export function parseWalletPayload(input: {
   const jsonUnsupported = Boolean(jsonCurrencyText) && parsedJsonCurrency == null;
   const currencyUnsupported = jsonUnsupported || fromText.currencyUnsupported;
   const jsonAmountRaw = json ? json.amount ?? json.importe ?? json.value : undefined;
-  const jsonAmount = jsonAmountRaw != null ? parseAmountValue(jsonAmountRaw) : null;
+  const amountToken =
+    (input.rawJson ? extractJsonNumberToken(input.rawJson) : null) ??
+    (typeof jsonAmountRaw === 'string' ? jsonAmountRaw : null);
+  const jsonAmount = jsonAmountRaw != null ? parseAmountValue(jsonAmountRaw, amountToken) : null;
   const jsonAmountUsable = jsonAmount != null && jsonAmount.amount != null;
+  const jsonExcessDecimals = Boolean(jsonAmount?.excessDecimals);
   // If a JSON amount was present but unusable we fell back to rawText — recompute
   // ambiguity from that text and treat the fallback as ambiguous so auto-confirm
-  // cannot fire on a guessed number.
+  // cannot fire on a guessed number. Excess decimals never round and never fall back.
   const amountAmbiguous =
     currencyUnsupported ||
+    jsonExcessDecimals ||
     (jsonAmountUsable && jsonAmount
       ? jsonAmount.ambiguous
       : jsonAmountRaw != null
@@ -269,7 +350,7 @@ export function parseWalletPayload(input: {
         : fromText.amountAmbiguous);
 
   return {
-    amount: jsonAmountUsable && jsonAmount ? jsonAmount.amount : fromText.amount,
+    amount: jsonExcessDecimals ? null : jsonAmountUsable && jsonAmount ? jsonAmount.amount : fromText.amount,
     currency: jsonUnsupported
       ? jsonCurrencyText
       : parsedJsonCurrency ?? fromText.currency,
