@@ -115,28 +115,34 @@ function classKeys(fondo: Record<string, unknown>, clase: Record<string, unknown
 const CAFCI_USD_WORDS = new Set([
   'DOLAR', 'DOLARES', 'DOLLAR', 'DOLLARS', 'USD', 'US', 'U', 'S',
   'EEUU', 'EE', 'UU', 'USA', 'ESTADOUNIDENSE', 'ESTADOUNIDENSES',
-  'AMERICANO', 'AMERICANOS', 'MEP', 'CABLE', 'CCL', 'BILLETE', 'BILLETES', 'U$S',
+  'AMERICANO', 'AMERICANOS', 'MEP', 'CABLE', 'CCL', 'BILLETE', 'BILLETES', 'U$S', 'US$',
 ]);
-const CAFCI_USD_CORE = new Set(['DOLAR', 'DOLARES', 'DOLLAR', 'DOLLARS', 'USD', 'U$S']);
+const CAFCI_USD_CORE = new Set(['DOLAR', 'DOLARES', 'DOLLAR', 'DOLLARS', 'USD', 'U$S', 'US$']);
 
 const CAFCI_ARS_WORDS = new Set([
-  'PESO', 'PESOS', 'ARGENTINO', 'ARGENTINOS', 'ARS', '$', 'MONEDA', 'LOCAL',
+  'PESO', 'PESOS', 'ARGENTINO', 'ARGENTINOS', 'ARGENTINA', 'ARS', '$', 'MONEDA', 'LOCAL',
 ]);
 const CAFCI_ARS_CORE = new Set(['PESO', 'PESOS', 'ARS']);
 
-/** Accents stripped, uppercased; U$S and $ kept as tokens, then split on other non-alphanumerics. */
+/** NFKD + strip marks; keep U$S, US$, and $; any letter/number run is a token. */
 function cafciLabelTokens(value: string): string[] {
-  const folded = value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toUpperCase();
-  return folded.match(/U\$S|\$|[A-Z0-9]+/g) ?? [];
+  return value
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toUpperCase()
+    .match(/U\$S|US\$|\$|[\p{L}\p{N}]+/gu) ?? [];
+}
+
+function hasUsdCore(tokens: string[]): boolean {
+  if (tokens.length === 1 && tokens[0] === 'US') return true;
+  return tokens.some((token) => CAFCI_USD_CORE.has(token));
 }
 
 /**
  * Token allowlist (no substring heuristics).
  * Ignore (missing): empty, only '$', only numbers, exactly LOCAL.
- * USD: every word in the USD set and at least one core USD token.
+ * USD: every word in the USD set and at least one core USD token
+ *      ('US' is core only as the sole token).
  * ARS: every word in the ARS set and at least one of PESO/PESOS/ARS.
  * Anything else → unsupported (skip).
  */
@@ -147,7 +153,7 @@ export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
   if (tokens.length === 0) return null;
   if (tokens.length === 1 && (tokens[0] === '$' || tokens[0] === 'LOCAL')) return null;
   if (tokens.every((token) => /^\d+$/.test(token))) return null;
-  if (tokens.every((token) => CAFCI_USD_WORDS.has(token)) && tokens.some((token) => CAFCI_USD_CORE.has(token))) {
+  if (tokens.every((token) => CAFCI_USD_WORDS.has(token)) && hasUsdCore(tokens)) {
     return 'USD';
   }
   if (tokens.every((token) => CAFCI_ARS_WORDS.has(token)) && tokens.some((token) => CAFCI_ARS_CORE.has(token))) {

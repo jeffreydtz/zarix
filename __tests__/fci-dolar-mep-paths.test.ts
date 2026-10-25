@@ -53,11 +53,17 @@ const USD_LABELS = [
   'Dólar Cable',
   'Dólar Estadounidense',
   'U$S',
+  'ＵＳＤ',
+  'US',
+  'US$',
 ] as const;
 const ARS_LABELS = [
   'Pesos',
   'Peso Argentino',
   'Pesos Argentinos',
+  'Peso Argentina',
+  'PESOS ARGENTINA',
+  'Peso Argentina / ARS',
   'ARS',
   'ARS - Moneda local',
   'Peso',
@@ -73,6 +79,10 @@ const SKIP_LABELS = [
   'Sol peruano',
   'HKD',
   'EUR',
+  'Dólar ＣＡＮＡＤＩＥＮＳＥ',
+  'Dólar канадский',
+  'Peso ＭＥＸＩＣＡＮＯ',
+  'US Peso',
 ] as const;
 
 function stubCafci(moneda: string) {

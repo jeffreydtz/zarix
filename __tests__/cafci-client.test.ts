@@ -191,6 +191,9 @@ describe('CAFCI client headers and 403', () => {
     ['Peso', 'ARS'],
     ['Peso Argentino', 'ARS'],
     ['Pesos Argentinos', 'ARS'],
+    ['Peso Argentina', 'ARS'],
+    ['PESOS ARGENTINA', 'ARS'],
+    ['Peso Argentina / ARS', 'ARS'],
     ['ARS', 'ARS'],
     ['ARS - Moneda local', 'ARS'],
     ['Dólar', 'USD'],
@@ -202,6 +205,9 @@ describe('CAFCI client headers and 403', () => {
     ['Dollar', 'USD'],
     ['Dollars', 'USD'],
     ['USD', 'USD'],
+    ['ＵＳＤ', 'USD'],
+    ['US', 'USD'],
+    ['US$', 'USD'],
     ['Dólar MEP', 'USD'],
     ['Dólares MEP', 'USD'],
     ['Dólar Cable', 'USD'],
@@ -260,9 +266,11 @@ describe('CAFCI client headers and 403', () => {
     'Pesos/Dólares',
     'Peso Ley',
     'Moneda local',
-    'Peso Argentina',
-    'US',
     'Dollar de Fiyi',
+    'Dólar ＣＡＮＡＤＩＥＮＳＥ',
+    'Dólar канадский',
+    'Peso ＭＥＸＩＣＡＮＯ',
+    'US Peso',
   ])('treats %s as unsupported instead of ARS/USD', (label) => {
     expect(parseCafciCurrencyLabel(label)).toBe('unsupported');
   });
@@ -410,7 +418,7 @@ describe('CAFCI client headers and 403', () => {
   it.each([
     'Dólar MEP', 'Dólares CCL', 'Dólares estadounidenses MEP',
     'Dolar EEUU', 'Dólar billete', 'US Dollar', 'U.S. Dollar', 'Dólar USA',
-    'USD Billete', 'USD billetes', 'U$S MEP',
+    'USD Billete', 'USD billetes', 'U$S MEP', 'ＵＳＤ', 'US', 'US$',
   ] as const)(
     'prices IOLDOLD 1.098 USD when CAFCI names %s',
     async (moneda) => {
@@ -441,6 +449,7 @@ describe('CAFCI client headers and 403', () => {
   it.each([
     'Canadian Dollar', 'Mexican Peso', 'Dolar fiyiano', 'NZ Dollar',
     'Pesos/Dólares', 'HKD', 'EUR',
+    'Dólar ＣＡＮＡＤＩＥＮＳＥ', 'Dólar канадский', 'Peso ＭＥＸＩＣＡＮＯ', 'US Peso',
   ] as const)(
     'skips IOLDOLD when CAFCI names %s',
     async (moneda) => {
