@@ -289,7 +289,13 @@ export async function executeBotTransaction(
       ...(txData.installments && txData.installments > 1 ? { installments: txData.installments } : {}),
       idempotencyIntent,
     });
-    return successFromPersisted(createdTransaction, conversionNote);
+    const persistedMatchesAttempt =
+      Number(createdTransaction.amount) === finalAmount &&
+      String(createdTransaction.currency || txCurrency) === finalCurrency;
+    return successFromPersisted(
+      createdTransaction,
+      persistedMatchesAttempt ? conversionNote : ''
+    );
   } catch (txError: unknown) {
     if (txError instanceof FxUnavailableError) {
       return { kind: 'abort', reply: txError.message };

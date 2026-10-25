@@ -23,41 +23,63 @@ function prune(now: number) {
 }
 
 export const SHARED_RPC_TIMEOUT_MS = 1500;
+export const SHARED_LIMITER_UNAVAILABLE_MESSAGE =
+  'El limitador no está disponible. Reintentá en un momento.';
+
+export type SharedRateLimitDecision = 'allow' | 'exhausted' | 'unavailable';
+
+type RpcResult = { data: unknown; error: { message?: string } | null };
+
+function withRpcAbort<T>(rpc: T, signal: AbortSignal): T {
+  const abortable = rpc as T & { abortSignal?: (s: AbortSignal) => T };
+  if (typeof abortable.abortSignal === 'function') {
+    return abortable.abortSignal(signal);
+  }
+  return rpc;
+}
 
 export async function rateLimitAllowShared(
   key: string,
   max: number,
   windowMs: number
-): Promise<boolean> {
+): Promise<SharedRateLimitDecision> {
   const { createBareServiceClient } = await import('@/lib/supabase/server');
   const supabase = createBareServiceClient();
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    if (!controller.signal.aborted) controller.abort();
+  }, SHARED_RPC_TIMEOUT_MS);
   try {
-    const rpc = supabase.rpc('rate_limit_hit', {
-      p_key: key,
-      p_max: max,
-      p_window_ms: windowMs,
+    const rpc = withRpcAbort(
+      supabase.rpc('rate_limit_hit', {
+        p_key: key,
+        p_max: max,
+        p_window_ms: windowMs,
+      }),
+      controller.signal
+    );
+    const aborted = new Promise<RpcResult>((resolve) => {
+      const fail = () => resolve({ data: null, error: { message: 'rate_limit_hit timeout' } });
+      if (controller.signal.aborted) fail();
+      else controller.signal.addEventListener('abort', fail, { once: true });
     });
-    const timed = new Promise<{ data: unknown; error: { message?: string } | null }>((resolve) => {
-      const timer = setTimeout(() => {
-        resolve({ data: null, error: { message: 'rate_limit_hit timeout' } });
-      }, SHARED_RPC_TIMEOUT_MS);
-      void Promise.resolve(rpc).then((result) => {
-        clearTimeout(timer);
-        resolve(result as { data: unknown; error: { message?: string } | null });
-      }, () => {
-        clearTimeout(timer);
-        resolve({ data: null, error: { message: 'rate_limit_hit failed' } });
-      });
-    });
-    const { data, error } = await timed;
+    const { data, error } = await Promise.race([
+      Promise.resolve(rpc as PromiseLike<RpcResult>),
+      aborted,
+    ]);
     if (error) {
       console.error('[rate-limit] shared counter unavailable');
-      return false;
+      return 'unavailable';
     }
-    return data === true;
+    if (data === true) return 'allow';
+    if (data === false) return 'exhausted';
+    console.error('[rate-limit] shared counter unavailable');
+    return 'unavailable';
   } catch {
     console.error('[rate-limit] shared counter unavailable');
-    return false;
+    return 'unavailable';
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -92,4 +114,10 @@ export function clientIpFromRequest(req: Request): string {
 
 export function rateLimitExceededResponse(message = 'Demasiados intentos. Esperá un minuto.') {
   return { error: message, status: 429 as const };
+}
+
+export function sharedLimiterUnavailableResponse(
+  message = SHARED_LIMITER_UNAVAILABLE_MESSAGE
+) {
+  return { error: message, status: 503 as const };
 }

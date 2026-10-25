@@ -152,6 +152,31 @@ describe('executeBotTransaction', () => {
     expect((second as { reply: string }).reply).not.toMatch(/2000/);
   });
 
+  it('builds concurrent-replay reply amounts from the persisted transaction, not this attempt FX', async () => {
+    mocks.peek.mockResolvedValue(null);
+    mocks.getExchangeRate.mockResolvedValue(200);
+    mocks.create.mockResolvedValue({ id: 'tx-1', amount: 1000, currency: 'ARS' });
+    const result = await executeBotTransaction(
+      FIXTURE_USER,
+      financialContext,
+      {
+        type: 'expense',
+        amount: 10,
+        currency: 'USD',
+        accountId: ACCOUNT_ID,
+        description: 'USD on ARS card',
+      },
+      { requestId: 'fx-race-001' }
+    );
+    expect(result.kind).toBe('success');
+    const success = result as { reply: string; executed?: { amount: number; currency: string } };
+    expect(success.executed?.amount).toBe(1000);
+    expect(success.executed?.currency).toBe('ARS');
+    expect(success.reply).toMatch(/1000/);
+    expect(success.reply).not.toMatch(/2000/);
+    expect(success.reply).not.toMatch(/\$200\.00/);
+  });
+
   it('aborts an explicit unsupported currency instead of coercing to ARS', async () => {
     const result = await executeBotTransaction(FIXTURE_USER, financialContext, {
       type: 'expense',

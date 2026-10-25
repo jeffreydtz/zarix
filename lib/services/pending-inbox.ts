@@ -94,6 +94,18 @@ const ACTIVE_EVENT_STATUSES: PendingInboxItem['status'][] = [
   'uncertain',
 ];
 
+/** Auto-confirm needs a stable event identity so a receive-time bucket split cannot double-save. */
+export function hasStableInboxIdentity(
+  occurredAt: string | null | undefined,
+  ingestKey: string | null | undefined
+): boolean {
+  return Boolean(ingestKey?.trim()) || Boolean(occurredAt);
+}
+
+export function inboxEffectiveCivilDate(occurredAt: string | null, nowMs = Date.now()): string {
+  return walletCivilDate(occurredAt) ?? walletCivilDate(new Date(nowMs).toISOString()) ?? '';
+}
+
 export function inboxReservationBucket(
   occurredAt: string | null,
   ingestKey: string,
@@ -124,8 +136,28 @@ export function inboxEventFingerprint(
     (payload.merchant || '').toLowerCase(),
     bucket,
     ingestKey,
+    inboxEffectiveCivilDate(occurredAt, nowMs),
   ].join('|');
   return createHash('sha256').update(material).digest('hex');
+}
+
+export function inboxFingerprintCandidates(
+  userId: string,
+  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'merchant' | 'cardName' | 'direction'>,
+  occurredAt: string | null,
+  ingestKey: string,
+  nowMs = Date.now()
+): string[] {
+  const current = inboxEventFingerprint(userId, payload, occurredAt, ingestKey, nowMs);
+  if (ingestKey) return [current];
+  const previous = inboxEventFingerprint(
+    userId,
+    payload,
+    occurredAt,
+    ingestKey,
+    nowMs - INBOX_DEDUPE_WINDOW_MS
+  );
+  return previous === current ? [current] : [current, previous];
 }
 
 function parkedBodyKey(payload: ParkedToolPayload | null | undefined): string {
@@ -242,9 +274,17 @@ async function ingestWalletItemUnlocked(input: {
     throw new ApiError('Idempotency-Key inválida.');
   }
   const ingestKey = clientKey || randomUUID();
-  const fp = inboxEventFingerprint(input.userId, payload, occurredAt, clientKey || '');
-  // Anonymous fingerprint already encodes a 15-minute window. The created_at
-  // lookup is a fast path; the unique index is the atomic reservation.
+  const nowMs = Date.now();
+  const fp = inboxEventFingerprint(input.userId, payload, occurredAt, clientKey || '', nowMs);
+  const fingerprintCandidates = inboxFingerprintCandidates(
+    input.userId,
+    payload,
+    occurredAt,
+    clientKey || '',
+    nowMs
+  );
+  // Anonymous fingerprint encodes a 15-minute window. Look back one extra bucket
+  // so a retry that crosses the boundary still matches. Unique index is atomic.
   const supabase = createServiceClientSync();
 
   if (clientKey) {
@@ -256,14 +296,13 @@ async function ingestWalletItemUnlocked(input: {
       return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
     }
   } else {
-    const windowStart = new Date(Date.now() - INBOX_DEDUPE_WINDOW_MS).toISOString();
     const { data: dupes } = await supabase
       .from('pending_inbox_items')
       .select('*')
       .eq('user_id', input.userId)
-      .eq('fingerprint', fp)
-      .gte('created_at', windowStart)
+      .in('fingerprint', fingerprintCandidates)
       .in('status', ACTIVE_EVENT_STATUSES)
+      .order('created_at', { ascending: false })
       .limit(1);
     if (dupes?.[0]) {
       return { item: dupes[0] as PendingInboxItem, duplicate: true, autoConfirmed: dupes[0].status === 'confirmed' };
@@ -304,7 +343,13 @@ async function ingestWalletItemUnlocked(input: {
       if (byKey?.fingerprint && byKey.fingerprint !== fp) {
         throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
       }
-      const existing = byKey || (await loadByFingerprint(input.userId, fp));
+      let existing = byKey;
+      if (!existing) {
+        for (const candidate of fingerprintCandidates) {
+          existing = await loadByFingerprint(input.userId, candidate);
+          if (existing) break;
+        }
+      }
       if (existing) return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
     }
     throw error;
@@ -337,7 +382,11 @@ async function ingestWalletItemUnlocked(input: {
     !payload.currencyUnsupported &&
     isTransactionCurrency(payload.currency) &&
     payload.direction === 'expense';
-  if (prefs?.wallet_auto_confirm && complete) {
+  if (
+    prefs?.wallet_auto_confirm &&
+    complete &&
+    hasStableInboxIdentity(occurredAt, clientKey)
+  ) {
     try {
       const confirmed = await confirmPendingItem({
         userId: input.userId,

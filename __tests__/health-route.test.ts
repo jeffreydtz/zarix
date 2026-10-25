@@ -72,21 +72,56 @@ describe('public health response', () => {
     expect(response.status).toBe(429);
     expect(await response.json()).toEqual({ status: 'busy' });
   });
-  it('reports missing_rpc when rate_limit_hit is absent', async () => {
+  it('reports missing_rpc when rate_limit_hit is absent without exposing the migration id', async () => {
+    const logged: unknown[] = [];
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation((...args) => {
+      logged.push(args);
+    });
     state.rateLimitError = { message: 'Could not find the function public.rate_limit_hit in the schema cache' };
     const response = await GET(request());
     expect(response.status).toBe(503);
-    expect(await response.json()).toMatchObject({
+    const body = await response.json();
+    expect(body).toEqual({
       status: 'degraded',
       db: 'ok',
       rateLimit: 'missing_rpc',
-      hint: expect.stringMatching(/20261024200000/),
+      latencyMs: expect.any(Number),
     });
+    expect(JSON.stringify(body)).not.toMatch(/20261024200000/);
+    expect(JSON.stringify(logged)).toMatch(/missing_rpc/);
+    expect(JSON.stringify(logged)).toMatch(/20261024200000/);
+    errorSpy.mockRestore();
+  });
+  it('classifies permission-denied as error, not missing_rpc, and keeps the migration id in logs', async () => {
+    const logged: unknown[] = [];
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation((...args) => {
+      logged.push(args);
+    });
+    state.rateLimitError = { message: 'permission denied for function rate_limit_hit' };
+    const response = await GET(request());
+    expect(response.status).toBe(503);
+    const body = await response.json();
+    expect(body).toEqual({
+      status: 'degraded',
+      db: 'ok',
+      rateLimit: 'error',
+      latencyMs: expect.any(Number),
+    });
+    expect(JSON.stringify(body)).not.toMatch(/20261024200000/);
+    expect(JSON.stringify(logged)).toMatch(/permission-denied/);
+    expect(JSON.stringify(logged)).not.toMatch(/missing_rpc/);
+    errorSpy.mockRestore();
   });
   it('runbook applies 200000 before deploying application code', () => {
     const src = readFileSync('supabase/manual/README.md', 'utf8');
     expect(src).toMatch(/20261024200000_inbox_dedupe_uncertain_rate_limit/);
     expect(src).toMatch(/rate_limit_hit/);
     expect(src.indexOf('20261024200000')).toBeLessThan(src.indexOf('Deploy the #16 application code'));
+    const foundation = readFileSync('supabase/migrations/20261024180000_ai_integrations_foundation.sql', 'utf8');
+    expect(foundation).toMatch(/20261024200000_inbox_dedupe_uncertain_rate_limit/);
+    expect(foundation.indexOf('20261024200000')).toBeLessThan(foundation.indexOf('Deploy #16 code'));
+    const revoke = readFileSync('supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql', 'utf8');
+    expect(revoke).toMatch(/20261024200000_inbox_dedupe_uncertain_rate_limit/);
+    expect(revoke.indexOf('20261024200000')).toBeLessThan(revoke.indexOf('Deploy the #16 application code'));
   });
 });
