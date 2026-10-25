@@ -285,6 +285,7 @@ async function executeRegistryToolImpl(
           executedCount: confirmed.length,
           total: ids.length,
           pendingIds: confirmed.map((item) => item.id),
+          items: confirmed.map((item) => ({ pendingId: item.id, status: item.status })),
           untrusted: true,
           untrusted_instruction: UNTRUSTED_INSTRUCTION,
         },

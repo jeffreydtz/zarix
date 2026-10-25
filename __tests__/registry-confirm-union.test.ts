@@ -232,6 +232,7 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
           userId: FIXTURE_A,
           financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
           source: 'mcp',
+          canConfirmRemote: true,
         }
       )
     ).rejects.toMatchObject({ status: 400 });
