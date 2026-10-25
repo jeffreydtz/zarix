@@ -112,7 +112,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL'] as const)('IOLDOLD CAFCI %s → 1.098 USD', (moneda) => {
+describe.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL', 'Dólares estadounidenses MEP'] as const)('IOLDOLD CAFCI %s → 1.098 USD', (moneda) => {
   it('interactive quote path', async () => {
     stubCafci(moneda);
     const response = await quoteGet(quoteRequest());
@@ -128,5 +128,21 @@ describe.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL'] as const)('IOLDOLD 
     expect(mocks.updates).toHaveLength(1);
     expect(mocks.updates[0].market_currency).toBe('USD');
     expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
+  });
+});
+
+describe.each(['Canadian Dollar', 'Mexican Peso'] as const)('IOLDOLD CAFCI %s skips', (moneda) => {
+  it('interactive quote path', async () => {
+    stubCafci(moneda);
+    const response = await quoteGet(quoteRequest());
+    expect(await response.json()).toMatchObject({ ok: false });
+  });
+
+  it('cron update-prices path', async () => {
+    stubCafci(moneda);
+    const response = await cronGet(cronRequest());
+    const body = await response.json();
+    expect(body.processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
   });
 });

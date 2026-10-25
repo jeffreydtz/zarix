@@ -214,6 +214,9 @@ describe('CAFCI client headers and 403', () => {
     ['Dólar Estadounidense MEP', 'USD'],
     ['Dólar Estadounidense Cable', 'USD'],
     ['Dólar Estadounidense CCL', 'USD'],
+    ['Dólares estadounidenses MEP', 'USD'],
+    ['Dólares estadounidenses Cable', 'USD'],
+    ['Dólares estadounidenses CCL', 'USD'],
     ['USD MEP', 'USD'],
     ['USD Cable', 'USD'],
     ['USD CCL', 'USD'],
@@ -229,6 +232,15 @@ describe('CAFCI client headers and 403', () => {
     'CAD',
     'MXN',
     'BRL',
+    'Canadian Dollar',
+    'Canadian Dollars',
+    'Mexican Peso',
+    'Mexican Pesos',
+    'Brazilian Real',
+    'Pound Sterling',
+    'Yen',
+    'Swiss Franc',
+    'Swiss Francs',
   ])('treats %s as unsupported instead of ARS/USD', (label) => {
     expect(parseCafciCurrencyLabel(label)).toBe('unsupported');
   });
@@ -349,7 +361,7 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
-  it.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL'] as const)(
+  it.each(['Dólar MEP', 'Dólar Cable', 'Dólares CCL', 'Dólares estadounidenses MEP'] as const)(
     'prices IOLDOLD 1.098 USD when CAFCI names %s',
     async (moneda) => {
       const fetchMock = vi.fn()
@@ -372,6 +384,34 @@ describe('CAFCI client headers and 403', () => {
         ticker: 'IOLDOLD',
         price: 1.098,
         currency: 'USD',
+      });
+    }
+  );
+
+  it.each(['Canadian Dollar', 'Mexican Peso'] as const)(
+    'skips IOLDOLD when CAFCI names %s',
+    async (moneda) => {
+      expect(parseCafciCurrencyLabel(moneda)).toBe('unsupported');
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{
+              id: 1,
+              nombre: 'IOL Dolar',
+              clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+            }],
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ data: { valorCuotaparte: 1.098, moneda } }),
+        });
+      vi.stubGlobal('fetch', fetchMock);
+      await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+        price: 1.098,
+        currency: null,
+        currencySkip: 'unsupported',
       });
     }
   );

@@ -343,8 +343,8 @@ describe('refreshQuotesForInvestments currency keys', () => {
     expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
   });
 
-  it.each([0, null, Number.NaN])(
-    'skips unknown CAFCI + stored USD when last price is %s',
+  it.each([0, null, Number.NaN, -1])(
+    'skips unknown CAFCI + stored USD when last price is %s and there is no purchase anchor',
     async (current_price) => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       mocks.fci.mockResolvedValue({
@@ -360,6 +360,74 @@ describe('refreshQuotesForInvestments currency keys', () => {
       expect(warn.mock.calls.some((call) => String(call[0]).includes('skip FCI currency'))).toBe(true);
     }
   );
+
+  it.each([0, Number.NaN, -1])(
+    'does not fall back to purchase_price when current_price is present-but-invalid (%s)',
+    async (current_price) => {
+      mocks.fci.mockResolvedValue({
+        ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      });
+      const map = await refreshQuotesForInvestments([
+        {
+          type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+          current_price, purchase_price: 1,
+        },
+      ]);
+      expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    }
+  );
+
+  it('prices a new IOLDOLD USD book from purchase_price 1.00 when current_price is null', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: null, purchase_price: 1,
+      },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toMatchObject({
+      price: 1.098, currency: 'USD',
+    });
+  });
+
+  it('skips unlabeled CONIOLA 179.598 vs purchase_price 0.14 USD when current_price is null', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: null, purchase_price: 0.14,
+      },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'CONIOLA', 'USD'))).toBeUndefined();
+  });
+
+  it('accepts numeric-string current_price 1.09 on both per-position and shared-key paths', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const shared = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: '1.09',
+      },
+    ]);
+    expect(shared.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toMatchObject({
+      price: 1.098, currency: 'USD',
+    });
+    const priced = {
+      id: 'fixture-ioldold-string',
+      type: 'fci' as const, ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+      current_price: '1.09',
+    };
+    const perPosition = await refreshQuotesForInvestments([priced]);
+    expect(perPosition.get(quoteCacheKeyForPosition(priced)!)).toMatchObject({
+      price: 1.098, currency: 'USD',
+    });
+  });
 
   it('stores an ARS FCI cuotaparte in pesos', async () => {
     mocks.fci.mockResolvedValue({

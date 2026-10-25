@@ -40,7 +40,7 @@ import {
   parseCafciCurrency,
   cafciClassesFromCatalogForTest,
 } from '@/lib/market-data/cafci-client';
-import { resolveFciQuoteCurrency } from '@/lib/market-data/quote-currency';
+import { fciUsdPlausibilityAnchor, resolveFciQuoteCurrency } from '@/lib/market-data/quote-currency';
 
 describe('USD quote adaptation for D tickers', () => {
   it('prefers the D board when the position is marked USD', () => {
@@ -267,6 +267,18 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     expect(resolveFciQuoteCurrency({
       sourceCurrency: null, storedCurrency: 'USD', sourcePrice: 179.598, storedPrice: 0.138,
     })).toEqual({ currency: null, reason: 'unknown' });
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: null, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBe(1);
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: 0, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBeNull();
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: '1.09', purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBeCloseTo(1.09);
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: null, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'ARS',
+    })).toBeNull();
     expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
     expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'USD' })).toEqual({ currency: 'ARS' });
     expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({ currency: 'USD' });

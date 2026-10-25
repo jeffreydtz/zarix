@@ -148,9 +148,12 @@ const CAFCI_USD_LABELS = new Set([
   'DOLARESTADOUNIDENSEMEP',
   'DOLARESTADOUNIDENSECABLE',
   'DOLARESTADOUNIDENSECCL',
+  'DOLARESESTADOUNIDENSESMEP',
+  'DOLARESESTADOUNIDENSESCABLE',
+  'DOLARESESTADOUNIDENSESCCL',
 ]);
 
-/** Folded labels that are a foreign currency, not ARS/USD. Anything else is ignored. */
+/** Folded labels that are a foreign currency, not ARS/USD. */
 const CAFCI_FOREIGN_LABELS = new Set([
   'EUR',
   'EURO',
@@ -171,13 +174,31 @@ const CAFCI_FOREIGN_LABELS = new Set([
   'NZD',
   'REAL',
   'REALES',
+  'YEN',
+  'YENES',
   'PESOMEXICANO',
   'PESOSMEXICANOS',
+  'MEXICANPESO',
+  'MEXICANPESOS',
   'DOLARCANADIENSE',
   'DOLARESCANADIENSES',
   'DOLLARCANADIAN',
   'DOLLARSCANADIAN',
+  'CANADIANDOLLAR',
+  'CANADIANDOLLARS',
+  'BRAZILIANREAL',
+  'BRAZILIANREALES',
+  'POUNDSTERLING',
+  'SWISSFRANC',
+  'SWISSFRANCS',
+  'LIBRAESTERLINA',
+  'FRANCOSUIZO',
+  'FRANCOSSUIZOS',
+  'REALBRASILENO',
+  'REALESBRASILENOS',
 ]);
+
+const CAFCI_FOREIGN_NAME = /DOLAR|DOLLAR|PESO|EURO|REAL|POUND|YEN|FRANC|LIBRA|STERLING|YUAN/;
 
 /** First explicit label: ARS/USD, unsupported (EUR, CAD, MXN, …), or missing. */
 export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
@@ -188,14 +209,15 @@ export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
   if (!folded) return null;
   if (CAFCI_USD_LABELS.has(folded)) return 'USD';
   if (CAFCI_ARS_LABELS.has(folded)) return 'ARS';
-  if (CAFCI_FOREIGN_LABELS.has(folded)) return 'unsupported';
+  if (CAFCI_FOREIGN_LABELS.has(folded) || CAFCI_FOREIGN_NAME.test(folded)) return 'unsupported';
   return null;
 }
 
 /**
- * Every present field at one CAFCI level. Missing, numeric, and non-currency
- * words (Local, $) are ignored. A recognizable foreign currency, or ARS vs USD,
- * makes the whole level a skip.
+ * Every present field at one CAFCI level. Missing, numeric ids, and
+ * non-currency words (Local, $) are ignored. A recognizable currency name that
+ * is not ARS/USD (EUR, Canadian Dollar, Mexican Peso, …), or ARS vs USD, makes
+ * the whole level a skip.
  */
 export function firstCurrencyLabel(...candidates: unknown[]): CafciCurrencyLabel {
   const present: Array<'ARS' | 'USD' | 'unsupported'> = [];

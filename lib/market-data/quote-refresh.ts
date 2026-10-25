@@ -1,6 +1,7 @@
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
+  fciUsdPlausibilityAnchor,
   listingCandidates,
   resolveFciQuoteCurrency,
   resolveQuoteCurrency,
@@ -29,7 +30,8 @@ export interface QuoteRefreshPosition {
   market_currency: string | null;
   purchase_currency: string | null;
   /** Last stored cuotaparte; FCI unknown+USD plausibility vs this price. */
-  current_price?: number | null;
+  current_price?: number | string | null;
+  purchase_price?: number | string | null;
   /** When set, FCI results are keyed per position so plausibility is not shared. */
   id?: string | null;
 }
@@ -279,7 +281,12 @@ export async function refreshQuotesForInvestments(
         ticker,
         cacheKey: quoteCacheKeyForPosition(inv) ?? cacheKey,
         currency,
-        storedPrice: inv.current_price ?? null,
+        storedPrice: fciUsdPlausibilityAnchor({
+          currentPrice: inv.current_price,
+          purchasePrice: inv.purchase_price,
+          marketCurrency: inv.market_currency,
+          purchaseCurrency: inv.purchase_currency,
+        }),
         id: inv.id ?? null,
       });
       continue;

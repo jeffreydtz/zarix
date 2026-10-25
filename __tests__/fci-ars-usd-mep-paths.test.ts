@@ -45,8 +45,19 @@ const cronRequest = () => new NextRequest('http://localhost/api/cron/update-pric
   headers: { authorization: 'Bearer synthetic-cron-secret' },
 });
 
-const quoteRequest = (symbol: string, currency: string) =>
-  new NextRequest(`http://localhost/api/investments/quote?symbol=${symbol}&type=fci&currency=${currency}`);
+const quoteRequest = (
+  symbol: string,
+  currency: string,
+  extras?: { purchasePrice?: string; purchaseCurrency?: string },
+) => {
+  const url = new URL('http://localhost/api/investments/quote');
+  url.searchParams.set('symbol', symbol);
+  url.searchParams.set('type', 'fci');
+  url.searchParams.set('currency', currency);
+  if (extras?.purchasePrice) url.searchParams.set('purchasePrice', extras.purchasePrice);
+  if (extras?.purchaseCurrency) url.searchParams.set('purchaseCurrency', extras.purchaseCurrency);
+  return new NextRequest(url);
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -130,6 +141,28 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
     expect(await response.json()).toMatchObject({ ok: false });
   });
 
+  it('prices a new IOLDOLD from purchasePrice 1.00 USD when current_price is absent', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await quoteGet(quoteRequest('IOLDOLD', 'USD', {
+      purchasePrice: '1', purchaseCurrency: 'USD',
+    }));
+    const body = await response.json();
+    expect(body).toMatchObject({ ok: true, symbol: 'IOLDOLD', currency: 'USD' });
+    expect(body.price).toBeCloseTo(1.098, 8);
+  });
+
+  it('skips unlabeled CONIOLA 179.598 vs purchasePrice 0.14 on the interactive path', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await quoteGet(quoteRequest('CONIOLA', 'USD', {
+      purchasePrice: '0.14', purchaseCurrency: 'USD',
+    }));
+    expect(await response.json()).toMatchObject({ ok: false });
+  });
+
   it('returns IOLDOLD 1.098 USD on the interactive path when CAFCI names USD', async () => {
     mocks.fci.mockResolvedValue({
       ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
@@ -171,6 +204,38 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
 
   it('does not overwrite CONIOLA when CAFCI omits moneda and the peso cuotaparte fails the USD ratio guard', async () => {
     mocks.investments[0].current_price = 0.138;
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    const body = await response.json();
+    expect(body.processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('prices a new IOLDOLD from purchase_price 1.00 USD when current_price is null', async () => {
+    mocks.investments = [{
+      id: 'fixture-fci-ioldold-new',
+      type: 'fci',
+      ticker: 'IOLDOLD',
+      market_currency: 'USD',
+      purchase_currency: 'USD',
+      purchase_price: 1,
+      current_price: null,
+      is_manual_price: false,
+    }];
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(mocks.updates).toHaveLength(1);
+    expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
+  });
+
+  it('does not overwrite CONIOLA when current_price is null and purchase_price 0.14 fails the ratio guard', async () => {
+    mocks.investments[0].current_price = null;
+    mocks.investments[0].purchase_price = 0.14;
     mocks.fci.mockResolvedValue({
       ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
     });

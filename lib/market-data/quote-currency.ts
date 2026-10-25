@@ -108,6 +108,44 @@ function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | n
 const FCI_UNKNOWN_USD_RATIO_MIN = 0.5;
 const FCI_UNKNOWN_USD_RATIO_MAX = 2;
 
+function asFiniteNumber(value: unknown): number | null {
+  if (value == null || value === '') return null;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function isPresentPrice(value: unknown): boolean {
+  if (value == null || value === '') return false;
+  return !(typeof value === 'string' && !value.trim());
+}
+
+/**
+ * Unknown-USD plausibility anchor: a valid current_price (>0, finite, including
+ * numeric strings like '1.09'). If current_price is absent (null/empty), fall
+ * back to purchase_price only when purchase_currency equals market_currency and
+ * that currency is USD. A present-but-invalid current_price (0/NaN/negative)
+ * does not fall back.
+ */
+export function fciUsdPlausibilityAnchor(opts: {
+  currentPrice?: unknown;
+  purchasePrice?: unknown;
+  marketCurrency?: string | null;
+  purchaseCurrency?: string | null;
+}): number | null {
+  const current = asFiniteNumber(opts.currentPrice);
+  if (current != null && current > 0) return current;
+  if (isPresentPrice(opts.currentPrice)) return null;
+  const market = (opts.marketCurrency || '').trim().toUpperCase();
+  const purchaseCcy = (opts.purchaseCurrency || '').trim().toUpperCase();
+  if (market !== 'USD' || purchaseCcy !== 'USD') return null;
+  const purchase = asFiniteNumber(opts.purchasePrice);
+  return purchase != null && purchase > 0 ? purchase : null;
+}
+
 /**
  * Unknown CAFCI + stored USD: accept the cuotaparte as USD only when a positive
  * stored last price exists and new/stored is in [0.5, 2]. CONIOLA ~179.598 vs
@@ -117,9 +155,9 @@ export function fciUnknownUsdPricePlausible(
   sourcePrice: number | null | undefined,
   storedPrice: number | null | undefined,
 ): boolean {
-  const next = Number(sourcePrice);
-  const prev = Number(storedPrice);
-  if (!(next > 0) || !(prev > 0)) return false;
+  const next = asFiniteNumber(sourcePrice);
+  const prev = asFiniteNumber(storedPrice);
+  if (next == null || prev == null || !(next > 0) || !(prev > 0)) return false;
   const ratio = next / prev;
   return ratio >= FCI_UNKNOWN_USD_RATIO_MIN && ratio <= FCI_UNKNOWN_USD_RATIO_MAX;
 }
