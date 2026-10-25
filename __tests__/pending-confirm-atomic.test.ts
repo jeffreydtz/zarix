@@ -497,6 +497,17 @@ describe('pending inbox confirm idempotency', () => {
   });
 
   it('reusing an ingest key with a different body returns 409', async () => {
+    const originalCanonical = inboxRequestCanonical({
+      source: 'api',
+      amount: 10,
+      currency: 'ARS',
+      direction: 'expense',
+      merchant: 'Café',
+      accountId: null,
+      cardName: null,
+      occurredAt: null,
+      installments: 1,
+    });
     const existing = {
       ...itemRow('pending'),
       amount: 10,
@@ -504,8 +515,11 @@ describe('pending inbox confirm idempotency', () => {
       merchant: 'Café',
       source: 'api',
       account_id: null,
+      occurred_at: null,
+      card_name: null,
       ingest_key: 'idem-park-fixture-009',
       idempotency_key: 'idem-park-fixture-009',
+      request_canonical: originalCanonical,
       tool_payload: { type: 'expense', amount: 10, description: 'Café', _tool: 'create_transaction' },
     };
     mocks.from.mockImplementation(() => {
