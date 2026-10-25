@@ -55,6 +55,7 @@ import { asRole, bootDatabase, ids, seedDatabase } from '../scripts/lib/test-iso
 import { createPgliteSupabaseClient } from './helpers/pglite-supabase-client';
 
 const PENDING_A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9';
+const PENDING_UPPER = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
 
 async function readMcpJson(res: Response): Promise<Record<string, unknown>> {
   const text = await res.text();
@@ -107,7 +108,8 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       await tx.query(
         `INSERT INTO pending_inbox_items(
            id, user_id, amount, currency, merchant, account_id, status, fingerprint, source, direction, tool_payload
-         ) VALUES ($1,$2,18,'ARS','MCP Café',$3,'pending','fp-mcp-http-a','mcp','expense',$4::jsonb)`,
+         ) VALUES ($1,$2,18,'ARS','MCP Café',$3,'pending','fp-mcp-http-a','mcp','expense',$4::jsonb),
+                  ($5,$2,18,'ARS','MCP Upper',$3,'pending','fp-mcp-http-upper','mcp','expense',$6::jsonb)`,
         [
           PENDING_A,
           ids.a,
@@ -118,6 +120,15 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
             currency: 'ARS',
             accountId: ids.accountA,
             description: 'MCP Café',
+            _tool: 'create_transaction',
+          }),
+          PENDING_UPPER,
+          JSON.stringify({
+            type: 'expense',
+            amount: 18,
+            currency: 'ARS',
+            accountId: ids.accountA,
+            description: 'MCP Upper',
             _tool: 'create_transaction',
           }),
         ]
@@ -199,5 +210,69 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     const otherLedger = await query('SELECT id FROM transactions WHERE user_id=$1', [ids.b]);
     expect(otherLedger.rows).toHaveLength(0);
     expect(JSON.stringify(deniedBody)).not.toContain(ids.a);
+  });
+
+  it('canonicalizes an uppercase pendingId so confirm cannot double-write', async () => {
+    const headers = {
+      authorization: `Bearer ${tokenA}`,
+      'content-type': 'application/json',
+      accept: 'application/json, text/event-stream',
+    };
+    const call = (pendingId: string, id: number) =>
+      mcpPost(
+        new NextRequest('http://localhost/api/mcp', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id,
+            method: 'tools/call',
+            params: {
+              name: 'create_transaction',
+              arguments: { confirm: true, pendingId },
+            },
+          }),
+        })
+      );
+    const upper = await call(PENDING_UPPER.toUpperCase(), 4);
+    expect(upper.status).toBeLessThan(500);
+    const upperBody = toolText(await readMcpJson(upper));
+    expect(upperBody.success).toBe(true);
+
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const ledger = await query('SELECT id, amount FROM transactions WHERE user_id=$1 AND description=$2', [
+      ids.a,
+      'MCP Upper',
+    ]);
+    expect(ledger.rows).toHaveLength(1);
+    expect(Number(ledger.rows[0].amount)).toBe(18);
+    const receipts = await query('SELECT request_id FROM transaction_requests WHERE user_id=$1 AND request_id LIKE $2', [
+      ids.a,
+      'wallet:%',
+    ]);
+    expect(receipts.rows.map((row) => row.request_id)).toEqual(
+      expect.arrayContaining([`wallet:${PENDING_UPPER}`])
+    );
+    expect(receipts.rows.map((row) => row.request_id)).not.toContain(`wallet:${PENDING_UPPER.toUpperCase()}`);
+
+    const retry = await call(PENDING_UPPER, 5);
+    const retryBody = toolText(await readMcpJson(retry));
+    expect(retryBody.success).toBe(true);
+    const ledgerAfter = await query('SELECT id FROM transactions WHERE user_id=$1 AND description=$2', [
+      ids.a,
+      'MCP Upper',
+    ]);
+    expect(ledgerAfter.rows).toHaveLength(1);
+
+    const dashless = await call(PENDING_UPPER.replaceAll('-', ''), 6);
+    const dashlessBody = toolText(await readMcpJson(dashless));
+    expect(dashlessBody.success).toBe(false);
+    expect(JSON.stringify(dashlessBody)).toMatch(/inválido/i);
+    expect(
+      (await query('SELECT id FROM transactions WHERE user_id=$1 AND description=$2', [ids.a, 'MCP Upper'])).rows
+    ).toHaveLength(1);
   });
 });

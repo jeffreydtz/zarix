@@ -171,7 +171,10 @@ export async function mcpHandler(req: Request): Promise<Response> {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
   } catch (error) {
-    if (error instanceof ApiError && (error.status === 429 || error.status === 401 || error.status === 403)) {
+    if (
+      error instanceof ApiError &&
+      (error.status === 429 || error.status === 401 || error.status === 403 || error.status === 503)
+    ) {
       return Response.json({ error: error.message }, { status: error.status });
     }
     return Response.json({ error: 'Unauthorized' }, { status: 401 });

@@ -203,5 +203,25 @@ describe('wallet ingest auth surface', () => {
     expect((await ingest(req())).status).toBe(429);
     mocks.rpc.mockResolvedValue({ data: null, error: { message: 'rate_limit_hit timeout' } });
     expect((await ingest(req())).status).toBe(503);
+    mocks.rpc.mockImplementation(async (fn: string) => {
+      if (fn === 'rate_limit_hit') return { data: true, error: null };
+      if (fn === 'reserve_pending_inbox_item') {
+        return {
+          data: {
+            item: {
+              id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9',
+              status: 'pending',
+              amount: 1,
+              currency: 'ARS',
+              merchant: 'Café',
+            },
+            duplicate: false,
+          },
+          error: null,
+        };
+      }
+      return { data: true, error: null };
+    });
+    expect((await ingest(req())).status).toBe(201);
   });
 });

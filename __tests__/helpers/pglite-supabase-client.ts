@@ -9,6 +9,16 @@ const RPC_ARGS: Record<string, string[]> = {
   discard_pending_inbox_item: ['p_user_id', 'p_item_id'],
   create_transaction_once: ['p_user_id', 'p_request_id', 'p_request_hash', 'p_transaction', 'p_installments'],
   get_multicurrency_balances: ['p_user_id', 'p_account_ids'],
+  reserve_pending_inbox_item: [
+    'p_user_id',
+    'p_lock_key',
+    'p_fingerprints',
+    'p_lookback_ms',
+    'p_ingest_key',
+    'p_client_keyed',
+    'p_fingerprint',
+    'p_row',
+  ],
 };
 
 const SETOF_RPC = new Set(['claim_pending_inbox_item', 'discard_pending_inbox_item']);
@@ -184,6 +194,11 @@ export function createPgliteSupabaseClient(db: { query: (sql: string, params?: u
       state.limitN = n;
       return self;
     };
+    builder.gte = (column: string, value: unknown) => {
+      const n = state.filters.reduce((count, filter) => count + filter.params.length, 0) + 1;
+      state.filters.push({ sql: `${ident(column)} >= $${n}`, params: [value] });
+      return self;
+    };
     builder.insert = (row: Record<string, unknown>) => {
       state.op = 'insert';
       state.row = row;
@@ -219,6 +234,8 @@ export function createPgliteSupabaseClient(db: { query: (sql: string, params?: u
         });
         const placeholders = params.map((_, index) => {
           if (name === 'create_transaction_once' && keys[index] === 'p_transaction') return `$${index + 1}::jsonb`;
+          if (name === 'reserve_pending_inbox_item' && keys[index] === 'p_row') return `$${index + 1}::jsonb`;
+          if (name === 'reserve_pending_inbox_item' && keys[index] === 'p_fingerprints') return `$${index + 1}::text[]`;
           return `$${index + 1}`;
         });
         if (SETOF_RPC.has(name)) {

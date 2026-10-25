@@ -88,6 +88,28 @@ describe('REST /api/v1', () => {
     expect(body.tools.some((t: { name: string }) => t.name === 'create_transaction')).toBe(false);
   });
 
+  it('surfaces limiter allow, exhausted 429 and unavailable 503 over REST HTTP', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
+        hash_version: 1, revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
+      },
+      error: null,
+    }));
+    const req = () => new NextRequest('http://localhost/api/v1/tools', {
+      headers: { authorization: `Bearer ${generated.token}` },
+    });
+    const spy = vi.spyOn(rateLimit, 'rateLimitAllowShared');
+    spy.mockResolvedValue('exhausted');
+    expect((await listTools(req())).status).toBe(429);
+    spy.mockResolvedValue('unavailable');
+    expect((await listTools(req())).status).toBe(503);
+    spy.mockResolvedValue('allow');
+    expect((await listTools(req())).status).toBe(200);
+    spy.mockRestore();
+  });
+
   it('rejects write tools on a read-only token', async () => {
     const generated = generatePersonalAccessToken();
     mocks.from.mockImplementation(() => chain({
@@ -178,6 +200,40 @@ describe('MCP /api/mcp', () => {
     expect(res.status).toBe(429);
     expect(spy).toHaveBeenCalled();
     expect(spy.mock.calls.some((call) => String(call[0]).startsWith('pat-token:'))).toBe(true);
+    spy.mockRestore();
+  });
+
+  it('surfaces limiter allow, exhausted 429 and unavailable 503 over HTTP (not 401)', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
+        hash_version: 1, revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
+      },
+      error: null,
+    }));
+    const { POST } = await import('@/app/api/mcp/route');
+    const req = () => new NextRequest('http://localhost/api/mcp', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${generated.token}`,
+      },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }),
+    });
+    const spy = vi.spyOn(rateLimit, 'rateLimitAllowShared');
+    spy.mockResolvedValue('exhausted');
+    expect((await POST(req())).status).toBe(429);
+    spy.mockResolvedValue('unavailable');
+    const unavailable = await POST(req());
+    expect(unavailable.status).toBe(503);
+    const unavailableBody = await unavailable.text();
+    expect(unavailableBody.toLowerCase()).not.toContain('unauthorized');
+    spy.mockResolvedValue('allow');
+    const allowed = await POST(req());
+    expect(allowed.status).not.toBe(401);
+    expect(allowed.status).not.toBe(429);
+    expect(allowed.status).not.toBe(503);
     spy.mockRestore();
   });
 
