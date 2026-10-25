@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse, requireUser } from '@/lib/api-handler';
 import { assertSameOrigin } from '@/lib/auth/origin';
-import { confirmPendingItem, discardPendingItem } from '@/lib/services/pending-inbox';
+import {
+  canonicalPendingInboxId,
+  confirmPendingItem,
+  discardPendingItem,
+} from '@/lib/services/pending-inbox';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   try {
     assertSameOrigin(req);
     const { user } = await requireUser();
-    const { id } = await params;
+    const id = canonicalPendingInboxId((await params).id);
     const body = await req.json().catch(() => ({}));
     const action = body.action === 'discard' ? 'discard' : 'confirm';
     if (action === 'discard') {

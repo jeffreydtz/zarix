@@ -5,7 +5,7 @@ ALTER TABLE public.pending_inbox_items
   DROP CONSTRAINT IF EXISTS pending_inbox_items_status_check;
 ALTER TABLE public.pending_inbox_items
   ADD CONSTRAINT pending_inbox_items_status_check
-  CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded'));
+  CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded', 'uncertain'));
 
 CREATE OR REPLACE FUNCTION public.claim_pending_inbox_item(
   p_user_id UUID,

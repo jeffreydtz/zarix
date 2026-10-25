@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
         merchant: result.item.merchant,
         status: result.item.status,
       },
+      autoConfirmed: result.autoConfirmed,
+      duplicate: result.duplicate,
       note: 'Dato de ejemplo. No es un gasto real.',
     }, { status: 201 });
   } catch (error) {

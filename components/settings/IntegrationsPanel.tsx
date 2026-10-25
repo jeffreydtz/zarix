@@ -138,7 +138,10 @@ export default function IntegrationsPanel({
       const res = await fetch('/api/ingest/wallet/test', { method: 'POST' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Falló el envío de prueba');
-      setMessage('✅ Envío de ejemplo cargado en la bandeja de pendientes.');
+      const status = data.autoConfirmed ? 'autoConfirmed' : data.item?.status || 'pending';
+      setMessage(
+        `✅ Envío de ejemplo: ${status}. Revisalo en Bandeja de pendientes.`
+      );
     } catch (e) {
       setMessage(`❌ ${(e as Error).message}`);
     } finally {
@@ -274,8 +277,16 @@ export default function IntegrationsPanel({
           <li>En el iPhone abrí Atajos → Automatización personal → transacción de Wallet (o “Transacción”).</li>
           <li>Agregá la acción “Obtener contenido de URL”.</li>
           <li>Método POST, URL <code className="text-foreground">{ingestUrl || 'https://tu-dominio/api/ingest/wallet'}</code>.</li>
-          <li>Cabeceras: <code className="text-foreground">Authorization: Bearer TU_TOKEN</code> y <code className="text-foreground">Content-Type: application/json</code>.</li>
-          <li>Cuerpo JSON con monto, moneda, comercio, tarjeta y fecha (ver plantilla).</li>
+          <li>
+            Cabeceras: <code className="text-foreground">Authorization: Bearer TU_TOKEN</code>,{' '}
+            <code className="text-foreground">Content-Type: application/json</code> y, si querés auto-confirmar
+            sin fecha, <code className="text-foreground">Idempotency-Key</code>.
+          </li>
+          <li>Cuerpo JSON con monto, moneda, comercio, tarjeta y fecha (ver plantilla). Sin fecha ni Idempotency-Key no hay auto-confirmación.</li>
+          <li>
+            Mostrá el status de la respuesta (<code className="text-foreground">autoConfirmed</code> o{' '}
+            <code className="text-foreground">pending</code>) y un enlace a Pendientes.
+          </li>
         </ol>
         <pre className="overflow-x-auto rounded-xl bg-secondary p-3 text-xs">{EXAMPLE_BODY}</pre>
         <div className="flex flex-wrap gap-2">
@@ -304,7 +315,9 @@ export default function IntegrationsPanel({
         <p className="text-sm text-muted-foreground">
           Dispará una automatización cuando llega la notificación de la app de tu banco o Wallet. Hacé POST al mismo
           endpoint con el texto crudo de la notificación (Content-Type: text/plain) y el Bearer token. Zarix parsea el
-          monto y el comercio con una heurística; no hace falta una llamada paga a IA.
+          monto y el comercio con una heurística; no hace falta una llamada paga a IA. La auto-confirmación exige una
+          fecha (timestamp) o Idempotency-Key; sin eso el aviso queda pending. Mostrá autoConfirmed/pending de la
+          respuesta y un enlace a Pendientes.
         </p>
         <p className="text-sm text-muted-foreground">
           Guía completa en{' '}

@@ -5296,7 +5296,7 @@ GRANT SELECT, INSERT ON public.integration_audit_log TO service_role;
 -- END supabase/migrations/20261024180000_ai_integrations_foundation.sql
 
 -- BEGIN supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
--- SHA256 d367685854283a88869f24114382899a26bcff4ea2efd4336396b812546fcec8
+-- SHA256 f880267d0ad3e707b92852842cb01b624e7715889209196b633e0c52ce26f0e2
 -- Atomic pending-inbox confirm + authenticated claim helper.
 -- Idempotent. Does not rewrite financial amounts.
 
@@ -5304,7 +5304,7 @@ ALTER TABLE public.pending_inbox_items
   DROP CONSTRAINT IF EXISTS pending_inbox_items_status_check;
 ALTER TABLE public.pending_inbox_items
   ADD CONSTRAINT pending_inbox_items_status_check
-  CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded'));
+  CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded', 'uncertain'));
 
 CREATE OR REPLACE FUNCTION public.claim_pending_inbox_item(
   p_user_id UUID,
@@ -5339,7 +5339,7 @@ GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authent
 -- END supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
 
 -- BEGIN supabase/migrations/20261024200000_inbox_dedupe_uncertain_rate_limit.sql
--- SHA256 566331e293c7ebbb86a43ac01d7582af6265f031253aba824c6ccfb1b9533de1
+-- SHA256 9306aa271cb87167e617b68ff472ac8f091b80b4bfb71ab2c2602ff3b8b1fb86
 -- Inbox event identity survives confirmation, uncertain confirm state,
 -- shared rate-limit counters, installment write-channel, vault assert.
 -- Idempotent. Additive. NEVER `supabase db push`.
@@ -5495,6 +5495,126 @@ $$;
 
 REVOKE ALL ON FUNCTION public.discard_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.discard_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
+
+-- Lookup + insert under one advisory lock so a retry that crosses the 15-minute
+-- fingerprint bucket cannot insert a second pending item. Lookback is rolling
+-- created_at >= now()-p_lookback_ms so genuine purchases more than 15 minutes
+-- apart still land as separate rows.
+CREATE OR REPLACE FUNCTION public.reserve_pending_inbox_item(
+  p_user_id UUID,
+  p_lock_key TEXT,
+  p_fingerprints TEXT[],
+  p_lookback_ms INTEGER,
+  p_ingest_key TEXT,
+  p_client_keyed BOOLEAN,
+  p_fingerprint TEXT,
+  p_row JSONB
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+DECLARE
+  rec public.pending_inbox_items%ROWTYPE;
+  lookback INTERVAL;
+BEGIN
+  IF p_user_id IS NULL OR p_lock_key IS NULL OR length(p_lock_key) < 8
+     OR p_fingerprint IS NULL OR p_ingest_key IS NULL OR p_row IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_advisory_xact_lock(
+    hashtextextended(p_user_id::text || ':inbox-dedupe:' || p_lock_key, 0));
+
+  IF COALESCE(p_client_keyed, false) THEN
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+    IF FOUND THEN
+      IF rec.fingerprint IS NOT NULL AND rec.fingerprint IS DISTINCT FROM p_fingerprint THEN
+        RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+      END IF;
+      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+    END IF;
+  ELSE
+    lookback := make_interval(secs => GREATEST(COALESCE(p_lookback_ms, 900000), 0) / 1000.0);
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id
+       AND fingerprint = ANY(COALESCE(p_fingerprints, ARRAY[]::text[]))
+       AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+       AND created_at >= now() - lookback
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1;
+    IF FOUND THEN
+      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+    END IF;
+  END IF;
+
+  BEGIN
+    INSERT INTO public.pending_inbox_items (
+      user_id, amount, currency, merchant, card_name, account_id, category_id,
+      occurred_at, raw_payload, raw_text, status, suggestion_source,
+      idempotency_key, ingest_key, direction, amount_ambiguous, source, fingerprint
+    ) VALUES (
+      p_user_id,
+      NULLIF(p_row->>'amount', '')::numeric,
+      COALESCE(NULLIF(p_row->>'currency', ''), 'ARS'),
+      NULLIF(p_row->>'merchant', ''),
+      NULLIF(p_row->>'card_name', ''),
+      NULLIF(p_row->>'account_id', '')::uuid,
+      NULLIF(p_row->>'category_id', '')::uuid,
+      NULLIF(p_row->>'occurred_at', '')::timestamptz,
+      CASE WHEN p_row ? 'raw_payload' AND jsonb_typeof(p_row->'raw_payload') <> 'null'
+           THEN p_row->'raw_payload' ELSE NULL END,
+      NULLIF(p_row->>'raw_text', ''),
+      COALESCE(NULLIF(p_row->>'status', ''), 'pending'),
+      NULLIF(p_row->>'suggestion_source', ''),
+      NULLIF(p_row->>'idempotency_key', ''),
+      COALESCE(NULLIF(p_row->>'ingest_key', ''), p_ingest_key),
+      COALESCE(NULLIF(p_row->>'direction', ''), 'expense'),
+      COALESCE((p_row->>'amount_ambiguous')::boolean, false),
+      COALESCE(NULLIF(p_row->>'source', ''), 'wallet'),
+      p_fingerprint
+    )
+    RETURNING * INTO rec;
+    RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', false);
+  EXCEPTION WHEN unique_violation THEN
+    IF COALESCE(p_client_keyed, false) THEN
+      SELECT * INTO rec
+        FROM public.pending_inbox_items
+       WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+      IF FOUND THEN
+        IF rec.fingerprint IS NOT NULL AND rec.fingerprint IS DISTINCT FROM p_fingerprint THEN
+          RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+        END IF;
+        RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+      END IF;
+    END IF;
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id
+       AND (
+         fingerprint = p_fingerprint
+         OR fingerprint = ANY(COALESCE(p_fingerprints, ARRAY[]::text[]))
+       )
+       AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1;
+    IF FOUND THEN
+      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+    END IF;
+    RAISE;
+  END;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT[], INTEGER, TEXT, BOOLEAN, TEXT, JSONB)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT[], INTEGER, TEXT, BOOLEAN, TEXT, JSONB)
+  TO service_role;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 2. Shared atomic rate-limit counters (token + user)
@@ -5664,8 +5784,11 @@ BEGIN
     RAISE EXCEPTION 'No autorizado';
   END IF;
   -- Wallet inbox writes share discard's lock order: inbox key, then request key.
-  IF p_request_id ~ '^wallet:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN
+  -- Canonicalize wallet:{uuid} (hyphenated or 32-hex, any case) so lock, receipt
+  -- and discarded check share one identity. JS still rejects dashless at entry.
+  IF p_request_id ~* '^wallet:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32})$' THEN
     v_inbox_item := substring(p_request_id from 8)::uuid;
+    p_request_id := 'wallet:' || v_inbox_item::text;
     PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || v_inbox_item::text, 0));
   END IF;
   PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':' || p_request_id, 0));

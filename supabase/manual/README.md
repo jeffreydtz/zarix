@@ -16,7 +16,7 @@ timestamp as the version. Do not touch prod from this repository's CI.
 3. `apply_migration` `supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql`
 4. `apply_migration` `supabase/migrations/20261024200000_inbox_dedupe_uncertain_rate_limit.sql`
    (required before this build: `rate_limit_hit`, `uncertain` inbox, fingerprint reservation,
-   `discard_pending_inbox_item`). Without it, REST/Wallet PAT auth fail-closed with HTTP 429.
+   `discard_pending_inbox_item`). Without it, REST/Wallet/MCP PAT auth fail-closed with HTTP 503.
 5. Verify before deploying application code:
    ```sql
    SELECT proname FROM pg_proc

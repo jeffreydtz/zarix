@@ -346,6 +346,94 @@ try {
     assert.equal(other, true);
   });
 
+  await test('wallet request ids canonicalize so uppercase and dashless share one receipt', async () => {
+    const itemId = randomUUID();
+    const lower = `wallet:${itemId}`;
+    const upper = `wallet:${itemId.toUpperCase()}`;
+    const dashless = `wallet:${itemId.replaceAll('-', '')}`;
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,18,'ARS','UUID case',$3,'pending','fp-uuid-case','wallet')`, [itemId, ids.a, ids.accountA]);
+    const payload = {
+      user_id: ids.a, type: 'expense', account_id: ids.accountA, amount: 18, currency: 'ARS',
+      amount_in_account_currency: 18, description: 'UUID case', source: 'wallet',
+    };
+    const hash = digest(JSON.stringify(payload));
+    const first = (await service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1) AS receipt',
+      [ids.a, upper, hash, JSON.stringify(payload)])).rows[0].receipt;
+    const replayLower = (await service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1) AS receipt',
+      [ids.a, lower, hash, JSON.stringify(payload)])).rows[0].receipt;
+    const replayDashless = (await service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1) AS receipt',
+      [ids.a, dashless, hash, JSON.stringify(payload)])).rows[0].receipt;
+    assert.equal(first.id, replayLower.id);
+    assert.equal(first.id, replayDashless.id);
+    const stored = (await service(db, 'SELECT request_id FROM transaction_requests WHERE user_id=$1 AND request_id IN ($2,$3,$4)',
+      [ids.a, upper, lower, dashless])).rows.map(r => r.request_id);
+    assert.deepEqual(stored, [lower]);
+    assert.equal((await service(db, "SELECT count(*)::int AS n FROM transactions WHERE description='UUID case' AND user_id=$1", [ids.a])).rows[0].n, 1);
+    await assert.rejects(
+      () => owner(db, 'SELECT id FROM discard_pending_inbox_item($1,$2)', [ids.a, itemId]),
+      /movimiento|descartar/i
+    );
+  });
+
+  await test('dashless wallet request still refuses a discarded inbox row', async () => {
+    const itemId = randomUUID();
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,19,'ARS','Dashless discard',$3,'pending','fp-dashless-discard','wallet')`, [itemId, ids.a, ids.accountA]);
+    const discarded = (await owner(db, 'SELECT status FROM discard_pending_inbox_item($1,$2)', [ids.a, itemId])).rows[0];
+    assert.equal(discarded.status, 'discarded');
+    const payload = {
+      user_id: ids.a, type: 'expense', account_id: ids.accountA, amount: 19, currency: 'ARS',
+      amount_in_account_currency: 19, description: 'Dashless discard', source: 'wallet',
+    };
+    await assert.rejects(
+      () => service(db, 'SELECT create_transaction_once($1,$2,$3,$4::jsonb,1)',
+        [ids.a, `wallet:${itemId.replaceAll('-', '')}`, digest(JSON.stringify(payload)), JSON.stringify(payload)]),
+      /descartado/i
+    );
+    assert.equal((await service(db, "SELECT count(*)::int AS n FROM transactions WHERE description='Dashless discard' AND user_id=$1", [ids.a])).rows[0].n, 0);
+  });
+
+  await test('anonymous reserve lookback is 15 minutes and serializes across buckets', async () => {
+    const lockKey = 'lock-lookback-fixture-aaaa';
+    const fpOld = 'fp-lookback-old';
+    const fpNew = 'fp-lookback-new';
+    const row = JSON.stringify({
+      amount: 40, currency: 'ARS', merchant: 'Lookback café', direction: 'expense', source: 'wallet', status: 'pending',
+    });
+    await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,created_at)
+      VALUES($1,40,'ARS','Lookback café','pending',$2,'wallet','expense', now() - interval '16 minutes')`,
+      [ids.a, fpOld]);
+    const missed = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3::text[],$4,$5,false,$6,$7::jsonb) AS r`,
+      [ids.a, lockKey, [fpNew, fpOld], 900000, randomUUID(), fpNew, row])).rows[0].r;
+    assert.equal(missed.duplicate, false);
+    const again = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3::text[],$4,$5,false,$6,$7::jsonb) AS r`,
+      [ids.a, lockKey, [fpNew, fpOld], 900000, randomUUID(), fpNew, row])).rows[0].r;
+    assert.equal(again.duplicate, true);
+    assert.equal(again.item.id, missed.item.id);
+
+    const fpRecent = 'fp-lookback-recent';
+    const fpRetry = 'fp-lookback-retry';
+    const recent = (await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,created_at)
+      VALUES($1,40,'ARS','Lookback recent','pending',$2,'wallet','expense', now() - interval '20 seconds') RETURNING id`,
+      [ids.a, fpRecent])).rows[0];
+    const hit = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3::text[],$4,$5,false,$6,$7::jsonb) AS r`,
+      [ids.a, 'lock-lookback-fixture-bbbb', [fpRetry, fpRecent], 900000, randomUUID(), fpRetry, row])).rows[0].r;
+    assert.equal(hit.duplicate, true);
+    assert.equal(hit.item.id, recent.id);
+  });
+
+  await test('status CHECK can be re-applied after uncertain rows exist', async () => {
+    const itemId = randomUUID();
+    await service(db, `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source)
+      VALUES($1,$2,3,'ARS','Uncertain check',$3,'uncertain','fp-uncertain-check','wallet')`, [itemId, ids.a, ids.accountA]);
+    await db.query('ALTER TABLE public.pending_inbox_items DROP CONSTRAINT IF EXISTS pending_inbox_items_status_check');
+    await db.query(`ALTER TABLE public.pending_inbox_items
+      ADD CONSTRAINT pending_inbox_items_status_check
+      CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded', 'uncertain'))`);
+    assert.equal((await service(db, 'SELECT status FROM pending_inbox_items WHERE id=$1', [itemId])).rows[0].status, 'uncertain');
+  });
+
   await test('create_transaction_once installments keep mcp source', async () => {
     const payload = {
       user_id: ids.a, type: 'expense', account_id: ids.accountA, amount: 30, currency: 'ARS',
@@ -390,6 +478,10 @@ const report = {
     'fingerprint collision preflight',
     'rate-limit counter purge',
     'shared rate-limit counters',
+    'wallet uuid request id canonicalize',
+    'dashless wallet request refuses discarded',
+    'anonymous reserve 15min lookback',
+    'status CHECK re-apply with uncertain',
     'installment source mcp',
   ],
   results,

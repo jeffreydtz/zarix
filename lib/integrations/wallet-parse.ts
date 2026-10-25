@@ -183,7 +183,24 @@ function parseAmountValue(v: unknown): AmountParseResult {
 
 function parseTimestamp(v: unknown): string | null {
   if (v == null || v === '') return null;
-  const d = new Date(String(v));
+  const s = String(v).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    const [year, month, day] = s.split('-').map(Number);
+    if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+    const civilNoon = new Date(`${s}T12:00:00-03:00`);
+    if (Number.isNaN(civilNoon.getTime())) return null;
+    const roundTrip = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Argentina/Cordoba',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(civilNoon);
+    if (roundTrip !== s) return null;
+    const t = civilNoon.getTime();
+    if (t < Date.now() - 366 * 86400000 || t > Date.now() + 86400000) return null;
+    return s;
+  }
+  const d = new Date(s);
   if (Number.isNaN(d.getTime())) return null;
   const t = d.getTime();
   if (t < Date.now() - 366 * 86400000 || t > Date.now() + 86400000) return null;

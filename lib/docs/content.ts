@@ -87,15 +87,16 @@ export const DOCS_PAGES: DocsPage[] = [
           '1. Creá un token con permiso ingest en Configuración → Integraciones. Copialo: se muestra una sola vez.',
           '2. En Atajos, Automatización personal, disparador de transacción de Wallet.',
           '3. Acción “Obtener contenido de URL”, método POST a https://zarix-phi.vercel.app/api/ingest/wallet',
-          '4. Cabecera Authorization: Bearer zrxp_… y Content-Type application/json.',
+          '4. Cabecera Authorization: Bearer zrxp_… y Content-Type application/json. Idempotency-Key opcional; sin fecha ni esa clave no hay auto-confirmación.',
           '5. Cuerpo JSON: amount, currency, merchant, cardName, timestamp. El monto o el comercio pueden ir vacíos.',
+          '6. En el Atajo mostrá el status de la respuesta (autoConfirmed o pending) y un enlace a /pendientes.',
         ],
       },
       {
         heading: 'Plantilla (ejemplo)',
         body: [
           '{ "amount": 1250.50, "currency": "ARS", "merchant": "Ejemplo Café (dato de ejemplo)", "cardName": "Visa Ejemplo", "timestamp": "2026-10-24T18:00:00-03:00" }',
-          'Zarix no crea el movimiento al toque: lo deja en la bandeja de pendientes. Si el monto es ambiguo, no auto-confirma. La primera vez que mapeás “Visa Ejemplo” a una cuenta, lo recuerda.',
+          'Zarix no crea el movimiento al toque: lo deja en la bandeja de pendientes. La auto-confirmación exige una fecha (timestamp) o Idempotency-Key, monto claro y comercio conocido. La primera vez que mapeás “Visa Ejemplo” a una cuenta, lo recuerda.',
         ],
       },
     ],
@@ -109,6 +110,7 @@ export const DOCS_PAGES: DocsPage[] = [
         heading: 'Misma API que Apple',
         body: [
           'POST a /api/ingest/wallet con Bearer token (permiso ingest). Podés mandar JSON o text/plain con el cuerpo de la notificación.',
+          'La auto-confirmación exige una fecha (timestamp) o una cabecera Idempotency-Key; sin eso el aviso queda pending. Mostrá autoConfirmed/pending de la respuesta y un enlace a /pendientes.',
           'Ejemplo de texto (dato de ejemplo): “Compra de $1.250,50 en Ejemplo Café con Visa Ejemplo”. Zarix extrae monto y comercio con una heurística. No hace falta una llamada paga a Gemini.',
         ],
       },
@@ -215,7 +217,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: '¿El atajo crea el gasto solo?',
         body: [
-          'No. Lo manda a la bandeja de pendientes. Si activás el auto-confirm y el comercio ya es conocido, se confirma solo.',
+          'No. Lo manda a la bandeja de pendientes. Si activás el auto-confirm, hay fecha o Idempotency-Key, y el comercio ya es conocido, se confirma solo (autoConfirmed). Si no, el status queda pending en /pendientes.',
         ],
       },
       {
