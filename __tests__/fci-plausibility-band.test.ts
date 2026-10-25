@@ -36,7 +36,7 @@ const cases = [
   ['CONIOLA', 'ARS', 'USD', 179.598, 1.40, false],
   ['PRTAVAB', 'ARS', 'ARS', 1241.954, 1240, true],
   ['PRTAVAB', 'ARS', 'ARS', 1241.954, 400, false],
-  ['IOLDOLD', 'USD', 'USD', 1.098, null, true],
+  ['IOLDOLD', 'USD', 'USD', 1.098, null, false],
 ] as const;
 
 function position(ticker = 'IOLDOLD', market = 'USD', anchor: number | null = 1.09) {
@@ -94,8 +94,10 @@ describe.each(['cron', 'interactive', 'list'] as const)('FCI band on %s', (path)
         ...(anchor != null ? { currentPrice: String(anchor) } : {}),
       }).toString();
       const body = await (await quoteGet(new NextRequest(url))).json();
-      expect(body.ok).toBe(accepted);
-      if (accepted) expect(body.price).toBeCloseTo(candidate, 8);
+      // Unanchored discovery is a non-persisting preview only.
+      expect(body.ok).toBe(accepted || anchor == null);
+      if (accepted || anchor == null) expect(body.price).toBeCloseTo(candidate, 8);
+      expect(mocks.updates).toEqual([]);
     } else {
       if (path === 'cron') {
         await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
@@ -104,14 +106,16 @@ describe.each(['cron', 'interactive', 'list'] as const)('FCI band on %s', (path)
       } else {
         const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
         expect(rows).toHaveLength(1);
-        if (!accepted) expect(rows[0].current_price).toBe(anchor);
+        if (!accepted && anchor != null) expect(rows[0].current_price).toBe(anchor);
       }
       expect(mocks.updates).toHaveLength(accepted ? 1 : 0);
       if (accepted) expect(mocks.updates[0].current_price).toBeCloseTo(candidate, 8);
     }
-    if (!accepted) expect(console.warn).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
-      ticker, reason: 'fci_implausible',
-    }));
+    if (!accepted && !(path === 'interactive' && anchor == null)) {
+      expect(console.warn).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+        ticker, reason: anchor == null ? 'no_anchor' : 'fci_implausible',
+      }));
+    }
     expect(fetch).not.toHaveBeenCalled();
   });
 });
@@ -161,9 +165,12 @@ it('preserves a stale blue observation on valuation flags and skips snapshot wri
   expect(mocks.snapshots).not.toHaveBeenCalled();
 });
 
-it('uses a valid current anchor, otherwise a matching purchase price, with inclusive endpoints', () => {
+it('prefers current, then matching or MEP-converted purchase anchors, with inclusive endpoints', () => {
+  expect(fciPlausibilityAnchor({ currentPrice: 1240, purchasePrice: 10, marketCurrency: 'ARS', purchaseCurrency: 'USD', mepArsPerUsd: 1300 })).toBe(1240);
   expect(fciPlausibilityAnchor({ currentPrice: 0, purchasePrice: 1240, marketCurrency: 'ARS', purchaseCurrency: 'ARS' })).toBe(1240);
   expect(fciPlausibilityAnchor({ currentPrice: null, purchasePrice: 1, marketCurrency: 'ARS', purchaseCurrency: 'USD' })).toBeNull();
+  expect(fciPlausibilityAnchor({ currentPrice: null, purchasePrice: 0.95, marketCurrency: 'ARS', purchaseCurrency: 'USD', mepArsPerUsd: 1300 })).toBe(1235);
+  expect(fciPlausibilityAnchor({ currentPrice: null, purchasePrice: 1417, marketCurrency: 'USD', purchaseCurrency: 'ARS', mepArsPerUsd: 1300 })).toBe(1.09);
   expect(fciPricePlausible(0.5, 1)).toBe(true);
   expect(fciPricePlausible(2, 1)).toBe(true);
   expect(fciPricePlausible(0.499, 1)).toBe(false);
@@ -190,13 +197,121 @@ it.each(['cron', 'interactive', 'list'] as const)('rejects an ARS scale error on
   }));
 });
 
-it('preserves first pricing when no valid current or matching-currency purchase anchor exists', async () => {
-  // Without a market override the existing write uses the confirmed source ARS.
-  // The purchase in USD is not a comparable anchor and must not block discovery.
-  mocks.positions = [{ ...position('PRTAVAB', 'USD', 1), market_currency: null, current_price: null }];
-  mocks.fci.mockResolvedValue({ price: 1241.954, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
-  await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
-  expect(mocks.updates).toEqual([expect.objectContaining({ current_price: 1241.954, market_currency: 'ARS' })]);
+describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (path) => {
+  async function refresh() {
+    if (path === 'cron') {
+      await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
+        headers: { authorization: 'Bearer fixture-cron-secret' },
+      }));
+    } else {
+      await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+    }
+    expect(fetch).not.toHaveBeenCalled();
+  }
+
+  beforeEach(() => {
+    mocks.positions = [{ ...position('PRTAVAB', 'USD', 0.95), market_currency: null, current_price: null }];
+    mocks.fci.mockResolvedValue({ price: 1241.954, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  });
+
+  function expectNoAnchor() {
+    expect(mocks.updates).toEqual([]);
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('fci_implausible'), expect.objectContaining({
+      ticker: 'PRTAVAB', id: 'fixture-position', reason: 'no_anchor',
+    }));
+  }
+
+  it.each([true, false])('rejects a 1000x ARS quote for a USD purchase (MEP available=%s)', async (hasMep) => {
+    mocks.positions = [{ ...position('PRTAVAB', 'USD', 1), market_currency: null, current_price: null }];
+    mocks.fci.mockResolvedValue({ price: 1_240_000, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    if (!hasMep) mocks.dolar.mockResolvedValue({ status: 'unavailable' });
+    await refresh();
+    expect(mocks.updates).toEqual([]);
+    if (hasMep) {
+      expect(console.warn).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+        ticker: 'PRTAVAB', id: 'fixture-position', reason: 'fci_implausible', anchor: 1300,
+      }));
+    } else {
+      expectNoAnchor();
+    }
+  });
+
+  it('converts the USD purchase to an ARS anchor with fresh MEP before first pricing', async () => {
+    // No market override: the confirmed CAFCI source sets the write currency.
+    // 0.95 USD * 1300 = 1235 ARS, so 1241.954 ARS is within the band.
+    await refresh();
+    expect(mocks.updates).toEqual([expect.objectContaining({
+      id: 'fixture-position', current_price: 1241.954, market_currency: 'ARS',
+    })]);
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it('applies the band to the converted 1235 ARS purchase anchor', async () => {
+    mocks.fci.mockResolvedValue({ price: 2470.001, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    await refresh();
+    expect(mocks.updates).toEqual([]);
+    expect(console.warn).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+      ticker: 'PRTAVAB', id: 'fixture-position', reason: 'fci_implausible', anchor: 1235,
+    }));
+  });
+
+  it('converts an ARS purchase to a USD anchor when CAFCI confirms USD', async () => {
+    mocks.positions = [{ ...position('IOLDOLD', 'ARS', 1417), market_currency: null, current_price: null }];
+    mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: new Date().toISOString() });
+    await refresh();
+    expect(mocks.updates).toEqual([expect.objectContaining({
+      id: 'fixture-position', current_price: 1.098, market_currency: 'USD',
+    })]);
+  });
+
+  it('skips first pricing without either a current or purchase price', async () => {
+    mocks.positions = [{ ...position('PRTAVAB', 'ARS', null), market_currency: null }];
+    await refresh();
+    expectNoAnchor();
+  });
+
+  it.each(['unavailable', 'exception', 'stale', 'expired', 'undated', 'invalid'] as const)(
+    'skips a purchase conversion when MEP is %s', async (mode) => {
+      const now = new Date();
+      if (mode === 'exception') {
+        mocks.dolar.mockRejectedValue(new Error('fixture MEP unavailable'));
+      } else {
+        mocks.dolar.mockResolvedValue({
+          blue: { sell: 1300, buy: 1280, timestamp: now },
+          ...(mode === 'unavailable' ? {} : {
+            mep: {
+              sell: mode === 'invalid' ? 0 : 1300, buy: 1280,
+              timestamp: mode === 'undated' ? null : new Date(now.getTime() - (mode === 'expired' ? 24 * 3600_000 + 1000 : 2 * 3600_000)),
+              stale: mode === 'stale',
+            },
+          }),
+        });
+      }
+      await refresh();
+      expectNoAnchor();
+    },
+  );
+
+  it.each([[24, true], [24 + 1 / 3600, false]] as const)(
+    'requires MEP at most 24 hours old for a purchase anchor (age=%s)', async (hours, accepted) => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      try {
+        vi.setSystemTime(new Date('2026-10-25T12:00:00Z'));
+        mocks.dolar.mockResolvedValue({
+          blue: { sell: 1300, buy: 1280, timestamp: new Date() },
+          mep: { sell: 1300, buy: 1280, timestamp: new Date(Date.now() - hours * 3600_000), stale: false },
+        });
+        await refresh();
+        if (accepted) {
+          expect(mocks.updates).toEqual([expect.objectContaining({ current_price: 1241.954, market_currency: 'ARS' })]);
+        } else {
+          expectNoAnchor();
+        }
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
 });
 
 it.each(['cron', 'interactive', 'portfolio'] as const)('keeps 72-hour MEP out of persisted prices and snapshots through %s', async (path) => {

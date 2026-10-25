@@ -81,6 +81,7 @@ beforeEach(() => {
     ticker: 'CONIOLA',
     market_currency: 'USD',
     purchase_currency: 'USD',
+    purchase_price: 0.14,
     is_manual_price: false,
   }];
   mocks.update.mockImplementation((payload: Record<string, unknown>) => ({

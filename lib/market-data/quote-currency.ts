@@ -118,20 +118,30 @@ function asFiniteNumber(value: unknown): number | null {
   return null;
 }
 
-/** A position's anchor must be expressed in its market currency. */
+/** A position's anchor must be expressed in its effective write currency. */
 export function fciPlausibilityAnchor(opts: {
   currentPrice?: unknown;
   purchasePrice?: unknown;
   marketCurrency?: string | null;
   purchaseCurrency?: string | null;
+  /** Only supply a fresh, executable MEP rate (<=24h and not flagged stale). */
+  mepArsPerUsd?: number | null;
 }): number | null {
   const market = knownQuoteCurrency(opts.marketCurrency);
   if (!market) return null;
   const current = asFiniteNumber(opts.currentPrice);
   if (current != null && current > 0) return current;
-  if (knownQuoteCurrency(opts.purchaseCurrency) !== market) return null;
   const purchase = asFiniteNumber(opts.purchasePrice);
-  return purchase != null && purchase > 0 ? purchase : null;
+  if (purchase == null || purchase <= 0) return null;
+  const purchaseCurrency = knownQuoteCurrency(opts.purchaseCurrency);
+  if (purchaseCurrency === market) return purchase;
+  if (!purchaseCurrency) return null;
+  return adaptQuoteToMarketCurrency({
+    price: purchase,
+    currency: purchaseCurrency,
+    changePct: null,
+    timestamp: null,
+  }, market, opts.mepArsPerUsd ?? null)?.price ?? null;
 }
 
 /** Kept for callers that used the original USD-only guard. */

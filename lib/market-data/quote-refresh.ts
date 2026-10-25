@@ -101,10 +101,6 @@ export function dedupeByTicker<T extends { ticker: string }>(jobs: T[]): T[] {
   return out;
 }
 
-function positiveStoredPrice(value: number | null | undefined): boolean {
-  return value != null && Number.isFinite(value) && value > 0;
-}
-
 export const FCI_REFRESH_CONCURRENCY = 3;
 export const FCI_REFRESH_BUDGET_MS = 20_000;
 
@@ -234,7 +230,12 @@ function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number
  */
 export async function refreshQuotesForInvestments(
   investments: QuoteRefreshPosition[],
-  options?: { allowStaleFx?: boolean; fciBudgetMs?: number }
+  options?: {
+    allowStaleFx?: boolean;
+    fciBudgetMs?: number;
+    /** Discovery only: results must never be used for automatic persistence. */
+    allowUnanchoredFciPreview?: boolean;
+  }
 ): Promise<InvestmentQuoteMap> {
   const fetchedAt = new Date().toISOString();
   const stamp = (quote: ConvertibleQuote): QuoteResult | null => {
@@ -329,6 +330,8 @@ export async function refreshQuotesForInvestments(
   const mep = dolar?.mep;
   const mepExecutable = isExecutableDolarQuote(mep, 'mep');
   const mepArsPerUsd = mepExecutable || options?.allowStaleFx ? mepRate(dolar) : null;
+  // Display estimates may use stale FX; plausibility anchors for writes may not.
+  const anchorMepArsPerUsd = mepExecutable && !mep?.stale ? mepRate(dolar) : null;
   const mepObserved = mep?.asOf ?? mep?.timestamp;
   const mepAsOf = mepObserved && Number.isFinite(new Date(mepObserved).getTime())
     ? new Date(mepObserved).toISOString() : null;
@@ -404,6 +407,7 @@ export async function refreshQuotesForInvestments(
       purchasePrice: fci.purchasePrice,
       marketCurrency: effectiveCurrency,
       purchaseCurrency: fci.purchaseCurrency,
+      mepArsPerUsd: anchorMepArsPerUsd,
     });
     let stamped: QuoteResult | null = null;
     if (q === 'error' || !q || !(q.price > 0)) {
@@ -414,6 +418,15 @@ export async function refreshQuotesForInvestments(
         reason: q.currencySkip,
         cafci: q.currency,
         stored: fci.currency,
+      });
+    } else if (storedPrice == null && !options?.allowUnanchoredFciPreview) {
+      console.warn('[quotes] fci_implausible', {
+        reason: 'no_anchor',
+        ticker: fci.ticker,
+        id: fci.id,
+        candidate: q.price,
+        anchor: null,
+        currency: effectiveCurrency,
       });
     } else {
       const resolved = resolveFciQuoteCurrency({
@@ -472,17 +485,9 @@ export async function refreshQuotesForInvestments(
     fciByKey.set(fci.cacheKey, rows);
   }
   for (const [key, rows] of fciByKey) {
-    if (rows.length === 1) {
-      if (rows[0].stamped) out.set(key, rows[0].stamped);
-      continue;
-    }
-    const withStored = rows.filter((row) => positiveStoredPrice(row.storedPrice));
-    if (withStored.length === 0) {
-      if (rows.every((row) => row.stamped) && rows[0].stamped) out.set(key, rows[0].stamped);
-      continue;
-    }
-    if (withStored.every((row) => row.stamped) && withStored[0].stamped) {
-      out.set(key, withStored[0].stamped);
+    // Callers without position IDs share a key: every position must pass its guard.
+    if (rows.every((row) => row.stamped) && rows[0].stamped) {
+      out.set(key, rows[0].stamped);
     }
   }
 

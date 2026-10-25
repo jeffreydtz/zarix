@@ -37,7 +37,8 @@ export async function GET(req: NextRequest) {
       purchase_price: purchasePrice,
       current_price: currentPrice,
     };
-    const quotes = await refreshQuotesForInvestments([position]);
+    // This endpoint only previews discovery quotes; persistence paths require an anchor.
+    const quotes = await refreshQuotesForInvestments([position], { allowUnanchoredFciPreview: true });
     const cacheKey = quoteCacheKeyForPosition(position);
     const hit = cacheKey ? quotes.get(cacheKey) : undefined;
     if (!hit || hit.price <= 0) {
