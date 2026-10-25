@@ -11,6 +11,11 @@ describe('public docs', () => {
     ]));
     const blob = JSON.stringify(DOCS_PAGES);
     expect(blob).toMatch(/ejemplo/i);
+    expect(blob).toMatch(/\/api\/mcp/);
+    expect(blob).toMatch(/\/api\/v1/);
+    expect(blob).toMatch(/Idempotency-Key/);
+    expect(blob).toMatch(/confirm=true/);
+    expect(blob).not.toMatch(/segunda etapa/);
     expect(blob.toLowerCase()).not.toContain('@hotmail.com');
     expect(docsNav().every((n) => n.href.startsWith('/docs'))).toBe(true);
     expect(findDocsPage('nope')).toBeUndefined();
@@ -28,6 +33,7 @@ describe('public docs', () => {
     expect(isPublicAppPath('/settings')).toBe(false);
     expect(isPublicAppPath('/settings/integraciones')).toBe(false);
     expect(isPublicAppPath('/pendientes')).toBe(false);
+    expect(isPublicAppPath('/api/v1/openapi.json')).toBe(true);
   });
 
   it('documents auto-confirm identity, returned status, and limiter 503', () => {
@@ -41,5 +47,9 @@ describe('public docs', () => {
     expect(readme).not.toMatch(/fail-closed with HTTP 429/);
     const check = readFileSync('supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql', 'utf8');
     expect(check).toMatch(/uncertain/);
+    const prompts = readFileSync('lib/ai/prompts.ts', 'utf8');
+    expect(prompts).not.toMatch(/Este mismo flujo vale en el chat, Telegram y MCP/);
+    expect(prompts).toMatch(/chat de la app y en Telegram/);
+    expect(prompts).toMatch(/MCP o REST/);
   });
 });

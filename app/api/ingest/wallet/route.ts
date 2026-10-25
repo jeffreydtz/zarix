@@ -123,6 +123,7 @@ function publicItem(item: {
   status: string;
   direction?: string;
   created_at: string;
+  possible_duplicate_of?: string | null;
 }) {
   return {
     id: item.id,
@@ -133,5 +134,6 @@ function publicItem(item: {
     status: item.status,
     direction: item.direction === 'income' ? 'income' : 'expense',
     createdAt: item.created_at,
+    possibleDuplicateOf: item.possible_duplicate_of ?? null,
   };
 }

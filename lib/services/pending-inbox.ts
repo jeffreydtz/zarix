@@ -13,8 +13,6 @@ import { inboxDedupeLockKey } from '@/lib/inbox-dedupe-lock-key';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { suggestCategoryFromMerchant } from '@/lib/integrations/merchant-category';
 import { auditIpFromRequest, auditUserAgent, recordIntegrationAudit } from '@/lib/integrations/audit';
-import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
-import type { User } from '@/types/database';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { withPatUserScope } from '@/lib/supabase/request-scope';
 import { withFinancialRequestContext } from '@/lib/financial-request-context';
@@ -147,6 +145,8 @@ export function inboxEventFingerprint(
   ].join('|');
   return createHash('sha256').update(material).digest('hex');
 }
+
+const VOLATILE_PARKED_KEYS = new Set(['pendingId', 'pendingIds', 'confirm', 'requestId']);
 
 const HYPHENATED_UUID_RE =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -539,7 +539,7 @@ async function ingestWalletItemUnlocked(input: {
 
 export async function parkRegistryWrite(input: {
   userId: string;
-  amount: number | null;
+  amount?: number | null;
   currency: string;
   merchant?: string | null;
   accountId?: string | null;
@@ -551,13 +551,17 @@ export async function parkRegistryWrite(input: {
 }): Promise<PendingInboxItem> {
   const clientKey = input.ingestKey?.trim() || null;
   const ingestKey = clientKey || randomUUID();
-  const toolPayload = input.toolPayload ?? null;
+  const toolPayload = input.toolPayload
+    ? Object.fromEntries(
+        Object.entries(input.toolPayload).filter(([key]) => !VOLATILE_PARKED_KEYS.has(key))
+      ) as ParkedToolPayload
+    : null;
   const type = String(toolPayload?.type || 'expense').trim().toLowerCase() || 'expense';
   const direction = (type === 'income' ? 'income' : 'expense') as 'expense' | 'income';
   const accountId =
     input.accountId ?? (typeof toolPayload?.accountId === 'string' ? toolPayload.accountId : null);
   const payload = {
-    amount: input.amount,
+    amount: input.amount ?? null,
     currency: input.currency,
     merchant: input.merchant ?? null,
     cardName: null as string | null,
@@ -599,7 +603,7 @@ export async function parkRegistryWrite(input: {
     p_client_keyed: Boolean(clientKey),
     p_lookback_ms: INBOX_DEDUPE_WINDOW_MS,
     p_row: {
-      amount: input.amount,
+      amount: input.amount ?? null,
       currency: input.currency,
       merchant: input.merchant ?? null,
       account_id: accountId,
@@ -679,18 +683,8 @@ export async function listPendingItems(userId: string, status: 'pending' | 'all'
 }
 
 async function loadFinancialContext(userId: string): Promise<FinancialContext> {
-  const supabase = createServiceClientSync();
-  const [userProfile, accounts, categories] = await Promise.all([
-    supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', userId).single(),
-    accountsService.list(userId),
-    // System catalog rows are user_id NULL. Owner-only .eq() would hide them.
-    supabase.from('categories').select('*').or(`user_id.eq.${userId},user_id.is.null`),
-  ]);
-  return {
-    user: userProfile.data as unknown as User,
-    accounts,
-    categories: (categories.data ?? []) as FinancialContext['categories'],
-  };
+  const { loadRegistryFinancialContext } = await import('@/lib/ai/registry/context');
+  return loadRegistryFinancialContext(userId);
 }
 
 export function pendingInboxRequestId(itemId: string): string {
@@ -958,7 +952,12 @@ async function confirmPendingItemUnlocked(input: {
   let committed = false;
   let ledgerCommitted = false;
   try {
-    const parked = row.tool_payload;
+    const parked = { ...(row.tool_payload || {}) };
+    const toolName = String(parked._tool || 'create_transaction');
+    delete parked._tool;
+    delete parked.pendingId;
+    delete parked.pendingIds;
+    delete parked.confirm;
     const amount =
       input.amount !== undefined
         ? input.amount == null || !Number.isFinite(Number(input.amount))
@@ -968,54 +967,57 @@ async function confirmPendingItemUnlocked(input: {
           (typeof row.amount === 'number' ? row.amount : null);
     const accountId =
       input.accountId ??
-      (typeof parked?.accountId === 'string' ? parked.accountId : null) ??
+      (typeof parked.accountId === 'string' ? parked.accountId : null) ??
       row.account_id;
+    const needsLedgerAmount = toolName === 'create_transaction' || toolName === 'create_transactions';
     const currencyRaw = String(
       input.currency || row.currency || parked?.currency || 'ARS'
     ).trim().toUpperCase();
-    if (!isTransactionCurrency(currencyRaw)) {
+    if (needsLedgerAmount && !isTransactionCurrency(currencyRaw)) {
       throw new ApiError('Moneda no admitida. Usá ARS, USD o EUR.');
     }
-    if (amount == null || !Number.isFinite(amount) || amount <= 0) {
+    if (needsLedgerAmount && (amount == null || !Number.isFinite(amount) || amount <= 0)) {
       throw new ApiError('Falta el monto para confirmar.');
     }
-    if (!accountId && parked?.type !== 'transfer' && !parked?.account) {
+    if (needsLedgerAmount && !accountId && parked.type !== 'transfer' && !parked.account) {
       throw new ApiError('Elegí la cuenta de Zarix para esta tarjeta.');
     }
 
     const accounts = await accountsService.list(input.userId);
     const account = accountId ? accounts.find((a) => a.id === accountId) : null;
-    if (accountId && !account) {
+    if (needsLedgerAmount && accountId && !account) {
       throw new ApiError('La cuenta no existe.');
     }
 
     const financialContext = await loadFinancialContext(input.userId);
     const rawOccurred =
       input.occurredAt ??
-      (typeof parked?.transactionDate === 'string' ? parked.transactionDate : null) ??
-      (typeof parked?.date === 'string' ? parked.date : null) ??
+      (typeof parked.transactionDate === 'string' ? parked.transactionDate : null) ??
+      (typeof parked.date === 'string' ? parked.date : null) ??
       row.occurred_at;
     const occurred = occurredAtForStorage(rawOccurred);
-    const txType = String(parked?.type || (row.direction === 'income' ? 'income' : 'expense'));
-    const args: ToolArgs = {
-      type: txType,
-      amount,
-      currency: currencyRaw,
-      account: parked?.account || account?.name,
-      accountId: accountId ?? undefined,
-      category: parked?.category,
-      categoryId: input.categoryId ?? row.category_id ?? (typeof parked?.categoryId === 'string' ? parked.categoryId : undefined),
-      destinationAccount: parked?.destinationAccount,
-      destinationAccountId: parked?.destinationAccountId,
-      description: input.merchant || row.merchant || (typeof parked?.description === 'string' ? parked.description : 'Wallet'),
-      transactionDate: occurred ?? undefined,
-      installments: parked?.installments,
-      confirm: true,
-    };
+    const txType = String(parked.type || (row.direction === 'income' ? 'income' : 'expense'));
+    const args: ToolArgs = { ...parked, confirm: true };
+    if (needsLedgerAmount) {
+      args.type = txType;
+      args.amount = amount != null && Number.isFinite(amount) && amount > 0 ? amount : parked.amount;
+      args.currency = currencyRaw;
+      args.account = parked.account || account?.name;
+      args.accountId = accountId ?? parked.accountId;
+      args.category = parked.category;
+      args.categoryId = input.categoryId ?? row.category_id ?? parked.categoryId;
+      args.destinationAccount = parked.destinationAccount;
+      args.destinationAccountId = parked.destinationAccountId;
+      args.description =
+        input.merchant ||
+        row.merchant ||
+        (typeof parked.description === 'string' ? parked.description : 'Wallet');
+      args.transactionDate = occurred ?? undefined;
+    }
 
     let result: Awaited<ReturnType<typeof executeRegistryTool>>;
     try {
-      result = await executeRegistryTool('create_transaction', args, {
+      result = await executeRegistryTool(toolName, args, {
         userId: input.userId,
         financialContext,
         source: 'wallet',

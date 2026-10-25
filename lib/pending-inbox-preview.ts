@@ -6,6 +6,7 @@ export type InboxToolPayload = {
   installments?: number;
   destinationAccount?: string;
   currency?: string;
+  _tool?: string;
 };
 
 export type InboxDraft = {

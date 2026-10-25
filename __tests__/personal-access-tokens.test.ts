@@ -112,7 +112,8 @@ describe('personal access tokens', () => {
   it('compares hashes in constant time', () => {
     const { token, hash } = generatePersonalAccessToken();
     expect(hashesMatch(hashPersonalAccessToken(token), hash)).toBe(true);
-    expect(hashesMatch(hashPersonalAccessToken(token), hash.replace(/a/g, 'b'))).toBe(false);
+    const flipped = `${hash.slice(0, -1)}${hash.endsWith('0') ? '1' : '0'}`;
+    expect(hashesMatch(hashPersonalAccessToken(token), flipped)).toBe(false);
     expect(hashesMatch(hash, null)).toBe(false);
   });
 
@@ -202,5 +203,25 @@ describe('wallet ingest auth surface', () => {
     expect((await ingest(req())).status).toBe(429);
     mocks.rpc.mockResolvedValue({ data: null, error: { message: 'rate_limit_hit timeout' } });
     expect((await ingest(req())).status).toBe(503);
+    mocks.rpc.mockImplementation(async (fn: string) => {
+      if (fn === 'rate_limit_hit') return { data: true, error: null };
+      if (fn === 'reserve_pending_inbox_item') {
+        return {
+          data: {
+            item: {
+              id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9',
+              status: 'pending',
+              amount: 1,
+              currency: 'ARS',
+              merchant: 'Café',
+            },
+            duplicate: false,
+          },
+          error: null,
+        };
+      }
+      return { data: true, error: null };
+    });
+    expect((await ingest(req())).status).toBe(201);
   });
 });

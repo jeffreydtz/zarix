@@ -94,6 +94,7 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
         userId: FIXTURE_A,
         financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
         source: 'mcp',
+        canConfirmRemote: true,
       }
     );
     expect(result.response.success).toBe(true);
@@ -111,6 +112,7 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
         userId: FIXTURE_A,
         financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
         source: 'mcp',
+        canConfirmRemote: true,
       }
     );
     expect(mocks.confirmMany).toHaveBeenCalledWith(
@@ -133,6 +135,7 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
         userId: FIXTURE_A,
         financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
         source: 'mcp',
+        canConfirmRemote: true,
       }
     );
     expect(mocks.confirm.mock.calls[0][0].userId).toBe(FIXTURE_A);
@@ -229,6 +232,7 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
           userId: FIXTURE_A,
           financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
           source: 'mcp',
+          canConfirmRemote: true,
         }
       )
     ).rejects.toMatchObject({ status: 400 });

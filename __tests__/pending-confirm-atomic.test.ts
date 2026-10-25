@@ -496,6 +496,66 @@ describe('pending inbox confirm idempotency', () => {
     });
   });
 
+  it('reusing an ingest key with a different body returns 409', async () => {
+    const originalCanonical = inboxRequestCanonical({
+      source: 'api',
+      amount: 10,
+      currency: 'ARS',
+      direction: 'expense',
+      merchant: 'Café',
+      accountId: null,
+      cardName: null,
+      occurredAt: null,
+      installments: 1,
+    });
+    const existing = {
+      ...itemRow('pending'),
+      amount: 10,
+      currency: 'ARS',
+      merchant: 'Café',
+      source: 'api',
+      account_id: null,
+      occurred_at: null,
+      card_name: null,
+      ingest_key: 'idem-park-fixture-009',
+      idempotency_key: 'idem-park-fixture-009',
+      request_canonical: originalCanonical,
+      tool_payload: { type: 'expense', amount: 10, description: 'Café', _tool: 'create_transaction' },
+    };
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.maybeSingle = async () => ({ data: existing, error: null });
+      q.insert = () => self;
+      q.single = async () => ({ data: existing, error: null });
+      return q;
+    });
+    await expect(
+      parkRegistryWrite({
+        userId: FIXTURE_USER,
+        amount: 99,
+        currency: 'ARS',
+        merchant: 'Otro',
+        source: 'api',
+        ingestKey: 'idem-park-fixture-009',
+        toolPayload: { type: 'expense', amount: 99, description: 'Otro', _tool: 'create_transaction' },
+      })
+    ).rejects.toMatchObject({ status: 409 });
+
+    const replay = await parkRegistryWrite({
+      userId: FIXTURE_USER,
+      amount: 10,
+      currency: 'ARS',
+      merchant: 'Café',
+      source: 'api',
+      ingestKey: 'idem-park-fixture-009',
+      toolPayload: { type: 'expense', amount: 10, description: 'Café', _tool: 'create_transaction' },
+    });
+    expect(replay.id).toBe(existing.id);
+  });
+
   it('confirm uses the parked type, not a hardcoded expense', async () => {
     const parked = {
       ...itemRow('confirming'),
@@ -527,9 +587,84 @@ describe('pending inbox confirm idempotency', () => {
       return q;
     });
     await confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM });
+    expect(mocks.execute.mock.calls[0][0]).toBe('create_transaction');
     expect(mocks.execute.mock.calls[0][1]).toMatchObject({ type: 'income', confirm: true });
   });
 
+  it('confirm uses parked transfer destination and dispatches parked _tool for delete', async () => {
+    const transfer = {
+      ...itemRow('confirming'),
+      tool_payload: {
+        _tool: 'create_transaction',
+        type: 'transfer',
+        amount: 500,
+        account: 'Banco',
+        destinationAccount: 'Efectivo',
+        accountId: ACCOUNT_ID,
+      },
+    };
+    mocks.rpc.mockResolvedValue({ data: [transfer], error: null });
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table: 'pending_inbox_items', value });
+        return self;
+      };
+      q.maybeSingle = async () => ({ data: { ...transfer, status: 'confirmed' }, error: null });
+      q.single = async () => ({ data: transfer, error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM });
+    expect(mocks.execute.mock.calls[0][1]).toMatchObject({
+      type: 'transfer',
+      destinationAccount: 'Efectivo',
+      confirm: true,
+    });
+
+    mocks.execute.mockClear();
+    const deleted = {
+      ...itemRow('confirming'),
+      amount: null,
+      tool_payload: {
+        _tool: 'delete_last_transaction',
+        transactionId: 'tx-preview',
+        type: 'expense',
+        amount: 10,
+        description: 'Café',
+      },
+    };
+    mocks.rpc.mockResolvedValue({ data: [deleted], error: null });
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table: 'pending_inbox_items', value });
+        return self;
+      };
+      q.maybeSingle = async () => ({ data: { ...deleted, status: 'confirmed' }, error: null });
+      q.single = async () => ({ data: deleted, error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM });
+    expect(mocks.execute.mock.calls[0][0]).toBe('delete_last_transaction');
+    expect(mocks.execute.mock.calls[0][1]).toMatchObject({
+      transactionId: 'tx-preview',
+      confirm: true,
+    });
+  });
   it('fingerprints opposite directions as distinct events', () => {
     const base = {
       amount: 100,

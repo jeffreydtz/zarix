@@ -167,6 +167,8 @@ export type AuthenticatedPat = {
   userId: string;
   tokenId: string;
   scopes: string[];
+  /** Unix seconds. Always set so MCP AuthInfo.expiresAt is populated. */
+  expiresAtUnix: number;
 };
 
 async function lookupPatByPresentedToken(token: string): Promise<PatRow | null> {
@@ -190,11 +192,12 @@ async function lookupPatByPresentedToken(token: string): Promise<PatRow | null> 
 
 export async function authenticatePersonalAccessToken(
   req: Request,
-  needed: PatScope
+  needed?: PatScope,
+  options?: { source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp'; skipRateLimit?: boolean }
 ): Promise<AuthenticatedPat> {
   const ip = clientIpFromRequest(req);
   const ipHash = hashClientIp(ip);
-  if (!rateLimitAllow(`pat-preauth:${ipHash}`, 60, 60_000)) {
+  if (!options?.skipRateLimit && !rateLimitAllow(`pat-preauth:${ipHash}`, 60, 60_000)) {
     throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
   }
   const presented = parseBearerToken(req.headers.get('authorization'));
@@ -210,21 +213,23 @@ export async function authenticatePersonalAccessToken(
   if (!row.expires_at || Date.parse(row.expires_at) <= Date.now()) {
     throw new ApiError('Unauthorized', 401);
   }
-  const tokenLimiter = await rateLimitAllowShared(`pat-token:${row.id}`, 60, 60_000);
-  if (tokenLimiter !== 'allow') {
-    throw new ApiError(
-      tokenLimiter === 'exhausted' ? 'Demasiados intentos. Esperá un minuto.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
-      tokenLimiter === 'exhausted' ? 429 : 503
-    );
+  if (!options?.skipRateLimit) {
+    const tokenLimiter = await rateLimitAllowShared(`pat-token:${row.id}`, 60, 60_000);
+    if (tokenLimiter !== 'allow') {
+      throw new ApiError(
+        tokenLimiter === 'exhausted' ? 'Demasiados intentos. Esperá un minuto.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+        tokenLimiter === 'exhausted' ? 429 : 503
+      );
+    }
+    const userLimiter = await rateLimitAllowShared(`pat-user:${row.user_id}`, 120, 60_000);
+    if (userLimiter !== 'allow') {
+      throw new ApiError(
+        userLimiter === 'exhausted' ? 'Demasiados intentos. Esperá un minuto.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
+        userLimiter === 'exhausted' ? 429 : 503
+      );
+    }
   }
-  const userLimiter = await rateLimitAllowShared(`pat-user:${row.user_id}`, 120, 60_000);
-  if (userLimiter !== 'allow') {
-    throw new ApiError(
-      userLimiter === 'exhausted' ? 'Demasiados intentos. Esperá un minuto.' : SHARED_LIMITER_UNAVAILABLE_MESSAGE,
-      userLimiter === 'exhausted' ? 429 : 503
-    );
-  }
-  if (!scopesInclude(row.scopes, needed)) {
+  if (needed && !scopesInclude(row.scopes, needed)) {
     throw new ApiError('Este token no tiene el permiso necesario.', 403);
   }
   const last = row.last_used_at ? Date.parse(row.last_used_at) : 0;
@@ -236,13 +241,18 @@ export async function authenticatePersonalAccessToken(
       .eq('user_id', row.user_id);
     if (usedErr) console.error('[pat] last_used_at update failed');
   }
+  const source = options?.source ?? (needed === 'ingest' ? 'wallet' : 'api');
   await recordIntegrationAudit({
     userId: row.user_id,
     action: 'token.use',
-    source: needed === 'ingest' ? 'wallet' : 'api',
+    source,
     ipHash: auditIpFromRequest(req),
     userAgent: auditUserAgent(req),
-    metadata: { tokenId: row.id, scope: needed },
+    metadata: { tokenId: row.id, scope: needed ?? 'any' },
   });
-  return { userId: row.user_id, tokenId: row.id, scopes: row.scopes };
+  const parsedExpiry = row.expires_at ? Date.parse(row.expires_at) : NaN;
+  const expiresAtUnix = Number.isFinite(parsedExpiry)
+    ? Math.floor(parsedExpiry / 1000)
+    : Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
+  return { userId: row.user_id, tokenId: row.id, scopes: row.scopes, expiresAtUnix };
 }

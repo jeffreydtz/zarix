@@ -119,13 +119,13 @@ export const DOCS_PAGES: DocsPage[] = [
   {
     slug: 'tokens-api',
     title: 'Tokens y API',
-    description: 'Tokens personales, permisos y el ingest de Wallet. El REST v1 llega en una segunda etapa.',
+    description: 'Tokens personales, permisos, ingest de Wallet y REST v1.',
     sections: [
       {
         heading: 'Tokens personales',
         body: [
           'Creás, listás y revocás tokens en Configuración → Integraciones. Caducan en 1 año (no se puede dejar sin vencimiento). Zarix guarda SHA-256 del token de 256 bits (hash_version=1). hash_version=2 queda reservado para un pepper dedicado; no está habilitado y no usa SUPABASE_JWT_SECRET. Nunca se guarda el valor.',
-          'Permisos: read, write, ingest. Podés revocar en cualquier momento. Cada uso queda en el registro de auditoría (IP hasheada).',
+          'Permisos: read, write, ingest, write:confirm. write estaciona un movimiento en la bandeja. write:confirm deja que MCP/REST confirme el pendiente por su cuenta (payload congelado). Está apagado por defecto: un token robado con write:confirm puede cargar gastos. Preferí confirmar en Pendientes o Telegram. Podés revocar en cualquier momento. Cada uso queda en el registro de auditoría (IP hasheada).',
         ],
       },
       {
@@ -135,9 +135,12 @@ export const DOCS_PAGES: DocsPage[] = [
         ],
       },
       {
-        heading: 'REST y MCP',
+        heading: 'REST v1',
         body: [
-          'La API REST /api/v1 y el servidor MCP remoto se documentan cuando se activen. Mientras tanto, el chat de la app y Telegram ya usan el mismo registro de herramientas.',
+          'GET /api/v1/openapi.json describe las herramientas remotas. En v1 las únicas escrituras son create_transaction y create_transactions (borrar, editar, cuentas y recurrentes siguen en la app y Telegram). GET /api/v1/tools las lista según el token (un PAT de solo lectura no ve las de escritura). POST /api/v1/tools/{nombre} las ejecuta.',
+          'Idempotency-Key (header) gana sobre requestId del cuerpo; la clave no caduca. El mismo cuerpo y canal reusa el pendiente (incluso confirmado o descartado). Otro cuerpo o canal da 409, sin reescribir la clave. Confirmá SOLO con {confirm:true, pendingId} o pendingIds: campos extra (monto, cuenta) se rechazan y no escriben. Un PAT write estaciona; hace falta write:confirm para confirmar por API.',
+          'create_transaction(s) no escriben el libro al toque: quedan en pendientes. El payload estacionado se ejecuta tal cual (cuotas e destino incluidos).',
+          'Ejemplo (dato de ejemplo): curl -X POST -H "Authorization: Bearer zrxp_…" -H "Content-Type: application/json" -H "Idempotency-Key: ejemplo-001" -d "{\\"type\\":\\"expense\\",\\"amount\\":10}" https://zarix-phi.vercel.app/api/v1/tools/create_transaction',
         ],
       },
     ],
@@ -148,11 +151,25 @@ export const DOCS_PAGES: DocsPage[] = [
     description: 'Claude, Grok, ChatGPT y Cursor usarán el mismo registro de herramientas.',
     sections: [
       {
-        heading: 'En preparación',
+        heading: 'URL y token',
         body: [
-          'Zarix va a exponer un servidor MCP remoto en /api/mcp autenticado con el mismo token personal.',
-          'Las herramientas de lectura llevan la anotación readOnlyHint. Las de escritura piden el permiso write.',
-          'Esta página se completa con snippets de Claude, Grok, ChatGPT y Cursor cuando esa pieza esté publicada.',
+          'Servidor remoto: https://zarix-phi.vercel.app/api/mcp (Streamable HTTP). Authorization: Bearer zrxp_… con permiso read (y write si querés estacionar movimientos). Para confirmar por MCP hace falta write:confirm; si no, una persona confirma en la bandeja. Idempotency-Key del header gana sobre requestId del cuerpo.',
+          'Hoy el camino soportado es un PAT. Los conectores alojados de Claude y ChatGPT necesitan OAuth; esa vía está detrás de ZARIX_MCP_OAUTH_ENABLED y todavía no está disponible.',
+          'Las escrituras se auditan con source mcp. Sin confirm=true quedan en la bandeja. Gemini debe mostrar el preview y solo reintentar con confirm=true si el usuario acepta.',
+        ],
+      },
+      {
+        heading: 'Claude / ChatGPT (conectores alojados)',
+        body: [
+          'Los conectores remotos de Claude y ChatGPT no aceptan un Bearer estático: piden OAuth. Esa bandera está apagada. Mientras tanto usá PAT + REST, o un cliente que mande headers.',
+        ],
+      },
+      {
+        heading: 'Cursor, Codex CLI, Claude Code / Desktop',
+        body: [
+          'Cursor mcp.json: { "zarix": { "url": "https://zarix-phi.vercel.app/api/mcp", "headers": { "Authorization": "Bearer zrxp_…" } } }.',
+          'Claude Code / Desktop y Codex CLI: mismo URL Streamable HTTP y el header Authorization. REST: POST /api/v1/tools/{nombre} con el mismo Bearer.',
+          'No uses la cuenta real del dueño de Zarix: creá un token de prueba (fixture).',
         ],
       },
     ],

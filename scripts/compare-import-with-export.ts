@@ -4,7 +4,7 @@
  *
  * Opción A — directo desde DB (usa .env.local: NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY):
  *   npx tsx scripts/compare-import-with-export.ts /ruta/a/import --supabase
- *   Opcional: COMPARE_USER_ID=<uuid> si hay más de un usuario en `users`.
+ *   Opcional: COMPARE_USER_ID=<uuid de fixture>. Nunca el user id ni el email del owner.
  *
  * Opción B — JSON exportado (sesión iniciada):
  *   GET /api/export/transactions?format=json
@@ -330,9 +330,26 @@ function mapDbRowToNormalized(tx: {
   };
 }
 
+async function assertDedicatedTestIdentity(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<void> {
+  const { data } = await supabase.auth.admin.getUserById(userId);
+  const email = String(data?.user?.email || '').trim().toLowerCase();
+  const [localPart, domain] = email.split('@');
+  if (localPart === 'jef_dietz' || domain === 'hotmail.com') {
+    throw new Error(
+      'Refusing the owner/support mailbox. Use a dedicated fixture such as test-a@zarix.invalid.'
+    );
+  }
+}
+
 async function resolveUserId(supabase: SupabaseClient): Promise<string> {
   const fromEnv = process.env.COMPARE_USER_ID?.trim();
-  if (fromEnv) return fromEnv;
+  if (fromEnv) {
+    await assertDedicatedTestIdentity(supabase, fromEnv);
+    return fromEnv;
+  }
 
   const { data: users, error: usersErr } = await supabase.from('users').select('id');
   if (usersErr) throw usersErr;
@@ -383,6 +400,7 @@ async function fetchTransactionsFromSupabase(): Promise<NormalizedRow[]> {
   });
 
   const userId = await resolveUserId(supabase);
+  await assertDedicatedTestIdentity(supabase, userId);
 
   const { data, error } = await supabase
     .from('transactions')

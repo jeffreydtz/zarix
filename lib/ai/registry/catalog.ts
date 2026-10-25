@@ -132,12 +132,38 @@ export const WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(
   TOOL_CATALOG.filter((t) => !t.readOnly).map((t) => t.name)
 );
 
+/** MCP/REST v1 write surface. Gemini and Telegram keep the full catalog. */
+export const REMOTE_WRITE_TOOLS: ReadonlySet<string> = new Set([
+  'create_transaction',
+  'create_transactions',
+]);
+
 export function getRegistryTool(name: string): RegistryTool | undefined {
   return TOOL_CATALOG.find((t) => t.name === name);
 }
 
-/** Read-scoped PATs must not even see write tools in tools/list. */
+export function isRemoteWriteTool(name: string): boolean {
+  return REMOTE_WRITE_TOOLS.has(name);
+}
+
+export function remoteToolCatalog(): RegistryTool[] {
+  return TOOL_CATALOG.filter((t) => t.readOnly || REMOTE_WRITE_TOOLS.has(t.name));
+}
+
+function remoteDescription(tool: RegistryTool): string {
+  if (tool.name === 'create_transaction') {
+    return 'Registra UN movimiento. Primera llamada: queda en pendientes. Confirmá solo con {confirm:true, pendingId} (payload congelado). write para estacionar; write:confirm para confirmar por MCP/REST.';
+  }
+  if (tool.name === 'create_transactions') {
+    return 'Registra VARIOS movimientos. Primera llamada: pendientes. Confirmá solo con {confirm:true, pendingIds}. write para estacionar; write:confirm para confirmar por MCP/REST.';
+  }
+  return tool.description;
+}
+
+/** PAT/MCP/REST list. In-app Gemini still uses TOOL_CATALOG. */
 export function toolsVisibleToScopes(scopes: readonly string[] | null | undefined): RegistryTool[] {
   const allowed = new Set(scopes ?? []);
-  return TOOL_CATALOG.filter((t) => t.scopes.every((s) => allowed.has(s)));
+  return remoteToolCatalog()
+    .filter((t) => t.scopes.every((s) => allowed.has(s)))
+    .map((t) => (t.readOnly ? t : { ...t, description: remoteDescription(t) }));
 }

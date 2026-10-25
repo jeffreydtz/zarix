@@ -645,6 +645,8 @@ const report = {
     'cross-user denial',
     'read vs write scopes',
     'fixture-only identities',
+    'docs public / private pages (vitest isPublicAppPath)',
+    '/api/v1 and /api/mcp read vs write + cross-user (vitest)',
     'anonymous fingerprint not unique',
     'late ledger write after discard refused',
     'authenticated discard requires uid',

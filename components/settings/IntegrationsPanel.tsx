@@ -202,14 +202,29 @@ export default function IntegrationsPanel({
               onChange={(e) => setExpiresAt(e.target.value)}
             />
           </label>
-          <div className="flex gap-3 text-sm">
+          <div className="flex flex-wrap gap-3 text-sm">
             {['read', 'write', 'ingest'].map((s) => (
               <label key={s} className="inline-flex items-center gap-1">
                 <input type="checkbox" checked={scopes.includes(s)} onChange={() => toggleScope(s)} />
                 {s}
               </label>
             ))}
+            <label className="inline-flex items-center gap-1">
+              <input
+                type="checkbox"
+                checked={scopes.includes('write:confirm')}
+                onChange={() => toggleScope('write:confirm')}
+              />
+              write:confirm
+            </label>
           </div>
+          {scopes.includes('write:confirm') && (
+            <p className="text-xs text-amber-700 dark:text-amber-400">
+              write:confirm deja que una IA (MCP/REST) confirme movimientos por su cuenta, sin que pases por la
+              bandeja. Un token robado con este permiso puede cargar gastos. Preferí confirmar vos en Pendientes
+              o Telegram. write solo estaciona; no confirma.
+            </p>
+          )}
           <button type="button" className="btn-primary" disabled={loading} onClick={createToken}>
             Crear token
           </button>
