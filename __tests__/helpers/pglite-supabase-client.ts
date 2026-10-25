@@ -6,6 +6,7 @@ type RpcResult = { data: unknown; error: { message?: string; code?: string } | n
 const RPC_ARGS: Record<string, string[]> = {
   rate_limit_hit: ['p_key', 'p_max', 'p_window_ms'],
   claim_pending_inbox_item: ['p_user_id', 'p_item_id'],
+  claim_pending_inbox_items: ['p_user_id', 'p_item_ids'],
   discard_pending_inbox_item: ['p_user_id', 'p_item_id'],
   create_transaction_once: ['p_user_id', 'p_request_id', 'p_request_hash', 'p_transaction', 'p_installments'],
   get_multicurrency_balances: ['p_user_id', 'p_account_ids'],
@@ -19,7 +20,7 @@ const RPC_ARGS: Record<string, string[]> = {
   ],
 };
 
-const SETOF_RPC = new Set(['claim_pending_inbox_item', 'discard_pending_inbox_item']);
+const SETOF_RPC = new Set(['claim_pending_inbox_item', 'claim_pending_inbox_items', 'discard_pending_inbox_item']);
 
 function ident(name: string): string {
   if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) throw new Error(`invalid identifier ${name}`);
@@ -251,6 +252,7 @@ export function createPgliteSupabaseClient(db: { query: (sql: string, params?: u
         const placeholders = params.map((_, index) => {
           if (name === 'create_transaction_once' && keys[index] === 'p_transaction') return `$${index + 1}::jsonb`;
           if (name === 'reserve_pending_inbox_item' && keys[index] === 'p_row') return `$${index + 1}::jsonb`;
+          if (name === 'claim_pending_inbox_items' && keys[index] === 'p_item_ids') return `$${index + 1}::uuid[]`;
           return `$${index + 1}`;
         });
         if (SETOF_RPC.has(name)) {

@@ -1,5 +1,9 @@
 # Integrations (#16) production runbook
 
+#16/#17 are live. Prod has `20261024180000`–`20261024240000` applied.
+Never edit those files. Forward-only from
+`supabase/migrations/20261025010000_inbox_claim_category_search_path.sql`.
+
 Never `supabase db push` against production. Prod's `schema_migrations` recorded
 #15 as `20261024182913` (`investment_type_on`) and `20261024182923`
 (`investment_backlog`), not the filenames `20261024170000` / `20261024170100`.
@@ -64,4 +68,6 @@ only; never rewrite or delete the existing prod rows:
 #16 versions to record after `apply_migration`: `20261024180000`, `20261024190000`, `20261024200000`, `20261024210000`, `20261024220000`, `20261024230000`, `20261024240000`.
 The REVOKE file has no migration version.
 
-`20261024220000` backfills existing keyed inbox rows (preview/staging only; prod has none of 180000–240000) as `legacy:<id>`. Those keys stay bound and retry with a JS canonical as 409; they are never released. Query bounds use UTC−03 (Córdoba since 2009). Historical DST (−02) is out of the supported range; grouping still uses the IANA zone.
+`20261024220000` backfills existing keyed inbox rows as `legacy:<id>`. Those keys stay bound and retry with a JS canonical as 409; they are never released. Query bounds use UTC−03 (Córdoba since 2009). Historical DST (−02) is out of the supported range; grouping still uses the IANA zone.
+
+Follow-up (after #16/#17): `apply_migration` `supabase/migrations/20261025010000_inbox_claim_category_search_path.sql`.

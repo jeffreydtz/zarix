@@ -101,4 +101,47 @@ describe('Wallet HTTP ingest decimal precision', () => {
     expect(mocks.execute).not.toHaveBeenCalled();
     expect(mocks.rpc.mock.calls.some((call) => call[0] === 'claim_pending_inbox_item')).toBe(false);
   });
+
+  it('POSTs amount 1e2 through ingest and parks null instead of 1.00', async () => {
+    const captured: { row: Record<string, unknown> | null } = { row: null };
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_row?: Record<string, unknown> }) => {
+      if (fn === 'reserve_pending_inbox_item') {
+        captured.row = args.p_row ?? null;
+        return {
+          data: {
+            item: {
+              ...args.p_row,
+              id: ITEM_ID,
+              user_id: FIXTURE_USER,
+              status: 'pending',
+            },
+            duplicate: false,
+          },
+          error: null,
+        };
+      }
+      return { data: null, error: null };
+    });
+
+    const raw = '{"amount":1e2,"currency":"ARS","merchant":"Café","cardName":"Visa Ejemplo","timestamp":"2026-10-25T12:00:00.000Z"}';
+    const response = await walletPost(
+      new NextRequest('http://localhost/api/ingest/wallet', {
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer zrxp_' + 'a'.repeat(64),
+          'content-type': 'application/json',
+        },
+        body: raw,
+      })
+    );
+    expect(response.status).toBe(201);
+    const body = (await response.json()) as { autoConfirmed: boolean; item: { amount: number | null } };
+    expect(body.autoConfirmed).toBe(false);
+    expect(body.item.amount).toBeNull();
+    expect(captured.row?.amount).toBeNull();
+    expect(captured.row?.amount).not.toBe(1);
+    expect(captured.row?.amount).not.toBe(100);
+    expect(captured.row?.amount_ambiguous).toBe(true);
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
 });

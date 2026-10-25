@@ -157,6 +157,15 @@ describe('CNF-10 application bot catches omit arbitrary provider/data exceptions
     assertSafeErrorLog('Bot error:');
   });
 
+  it('does not map arbitrary 404/account substrings onto specialized replies', async () => {
+    mocks.chat.mockRejectedValue(new Error('account 404 not found'));
+    const { handleTelegramUpdate } = await import('@/lib/telegram/bot');
+    await handleTelegramUpdate(update('text'));
+    expect(mocks.replies.at(-1)).toBe('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
+    expect(mocks.replies.at(-1)).not.toMatch(/cuentas|IA no está disponible/i);
+    assertSafeErrorLog('Bot error:');
+  });
+
   it('text memory failure retains its warning and omits raw exception/message', async () => {
     mocks.append.mockRejectedValue(error());
     const { handleTelegramUpdate } = await import('@/lib/telegram/bot');

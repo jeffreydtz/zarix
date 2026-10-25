@@ -231,6 +231,7 @@ describe('CAFCI client headers and 403', () => {
     ['US Dollar', 'USD'],
     ['U.S. Dollar', 'USD'],
     ['Dólar USA', 'USD'],
+    ['Dólar de Estados Unidos', 'USD'],
     ['U$S', 'USD'],
   ] as const)('maps CAFCI label %s to %s', (label, expected) => {
     expect(parseCafciCurrencyLabel(label)).toBe(expected);

@@ -97,16 +97,25 @@ describe('parseBotTransactionDateInput', () => {
 describe('parseCivilMonthQuery', () => {
   it('treats YYYY-MM as Córdoba noon on day 1, not UTC midnight', () => {
     const month = parseCivilMonthQuery('2026-10');
-    expect(month.toISOString()).toBe('2026-10-01T15:00:00.000Z');
+    expect(month).not.toBeNull();
+    expect(month!.toISOString()).toBe('2026-10-01T15:00:00.000Z');
     expect(new Date('2026-10').toISOString()).toBe('2026-10-01T00:00:00.000Z');
-    expect(month.getTime()).not.toBe(new Date('2026-10').getTime());
+    expect(month!.getTime()).not.toBe(new Date('2026-10').getTime());
   });
 
-  it('falls back to now for an unparseable month', () => {
+  it('falls back to now only when the month param is missing', () => {
     const now = new Date('2026-09-15T12:00:00.000Z');
-    expect(parseCivilMonthQuery('nope', now)).toBe(now);
     expect(parseCivilMonthQuery(null, now)).toBe(now);
+    expect(parseCivilMonthQuery(undefined, now)).toBe(now);
   });
+
+  it.each(['', '   ', 'nope', '2026-13', '2026-00', '2026-10-32'])(
+    'returns null for a present invalid month %s',
+    (input) => {
+      const now = new Date('2026-09-15T12:00:00.000Z');
+      expect(parseCivilMonthQuery(input, now)).toBeNull();
+    }
+  );
 });
 
 describe('Córdoba civil grouping and month bounds', () => {

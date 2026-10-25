@@ -39,4 +39,20 @@ describe('integer cents money check (no float*100)', () => {
     expect(integerCentsFromToken(extractJsonNumberToken('{"amount":40.129}')!)).toBeNull();
     expect(integerCentsFromToken(extractJsonNumberToken('{"amount":1234567.89}')!)).toBe(BigInt(123456789));
   });
+
+  it('rejects exponent notation instead of parking the mantissa as 1.00', () => {
+    expect(extractJsonNumberToken('{"amount":1e2}')).toBe('1e2');
+    expect(extractJsonNumberToken('{"amount":1E2}')).toBe('1E2');
+    expect(extractJsonNumberToken('{"amount":1.0e2}')).toBe('1.0e2');
+    expect(extractJsonNumberToken('{"amount":1e-2}')).toBe('1e-2');
+    expect(extractJsonNumberToken('{"amount":"1e2"}')).toBe('1e2');
+    expect(integerCentsFromToken('1e2')).toBeNull();
+    expect(integerCentsFromToken('1E2')).toBeNull();
+    expect(integerCentsFromToken(extractJsonNumberToken('{"amount":1e2}')!)).toBeNull();
+    expect(hasAtMostTwoMoneyDecimals('1e2')).toBe(false);
+    expect(hasAtMostTwoMoneyDecimals(1e21)).toBe(false);
+    expect(moneyAmountFromToken('1e2')).toBeNull();
+    expect(moneyAmountFromToken('1e2')).not.toBe(1);
+    expect(JSON.parse('{"amount":1e2}').amount).toBe(100);
+  });
 });

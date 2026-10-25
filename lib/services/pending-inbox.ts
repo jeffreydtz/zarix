@@ -717,7 +717,7 @@ async function loadPriorLedger(
   return response?.id ? response : null;
 }
 
-export async function confirmPendingItem(input: {
+type ConfirmPendingItemInput = {
   userId: string;
   itemId: string;
   amount?: number | null;
@@ -728,7 +728,10 @@ export async function confirmPendingItem(input: {
   occurredAt?: string;
   source?: WriteChannel;
   req?: Request;
-}): Promise<PendingInboxItem> {
+  claimedRow?: PendingInboxItem;
+};
+
+export async function confirmPendingItem(input: ConfirmPendingItemInput): Promise<PendingInboxItem> {
   const itemId = canonicalPendingInboxId(input.itemId);
   const next = { ...input, itemId };
   return withPatUserScope(next.userId, () =>
@@ -821,6 +824,24 @@ export async function confirmPendingItems(input: {
       throw new ApiError('La cuenta no existe.', 400);
     }
   }
+  const needClaim = ids.filter((id) => byId.get(id)?.status !== 'confirmed');
+  const claimedById = new Map<string, PendingInboxItem>();
+  if (needClaim.length > 0) {
+    const { data: claimed, error: claimErr } = await supabase.rpc('claim_pending_inbox_items', {
+      p_user_id: input.userId,
+      p_item_ids: needClaim,
+    });
+    if (claimErr) {
+      const message = String(claimErr.message || '');
+      if (/No autorizado/i.test(message)) throw new ApiError('No autorizado.', 403);
+      throw new ApiError('Este pendiente se está confirmando.', 409);
+    }
+    const rows = (Array.isArray(claimed) ? claimed : claimed ? [claimed] : []) as PendingInboxItem[];
+    if (rows.length !== needClaim.length) {
+      throw new ApiError('Este pendiente se está confirmando.', 409);
+    }
+    for (const row of rows) claimedById.set(row.id, row);
+  }
   const out: PendingInboxItem[] = [];
   for (const id of ids) {
     const row = byId.get(id);
@@ -828,23 +849,22 @@ export async function confirmPendingItems(input: {
       out.push(row);
       continue;
     }
-    out.push(await confirmPendingItem({ userId: input.userId, itemId: id, source: input.source, req: input.req }));
+    const claimedRow = claimedById.get(id);
+    if (!claimedRow) throw new ApiError('Este pendiente se está confirmando.', 409);
+    out.push(
+      await confirmPendingItem({
+        userId: input.userId,
+        itemId: id,
+        source: input.source,
+        req: input.req,
+        claimedRow,
+      })
+    );
   }
   return out;
 }
 
-async function confirmPendingItemUnlocked(input: {
-  userId: string;
-  itemId: string;
-  amount?: number | null;
-  currency?: string;
-  merchant?: string;
-  accountId?: string;
-  categoryId?: string;
-  occurredAt?: string;
-  source?: WriteChannel;
-  req?: Request;
-}): Promise<PendingInboxItem> {
+async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promise<PendingInboxItem> {
   const supabase = createServiceClientSync();
   const requestId = pendingInboxRequestId(input.itemId);
   const claim = async () =>
@@ -853,7 +873,13 @@ async function confirmPendingItemUnlocked(input: {
       p_item_id: input.itemId,
     });
 
-  let { data: claimed, error: claimErr } = await claim();
+  let claimed: unknown = input.claimedRow ?? null;
+  let claimErr: { message?: string } | null = null;
+  if (!input.claimedRow) {
+    const result = await claim();
+    claimed = result.data;
+    claimErr = result.error;
+  }
   if (claimErr) throw claimErr;
   let claimedRow = Array.isArray(claimed) ? claimed[0] : claimed;
 

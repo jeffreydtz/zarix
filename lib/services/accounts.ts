@@ -329,8 +329,10 @@ class AccountsService {
 
     const [usdRates, multicurrencyBalances] = await Promise.all([
       this.buildUsdRates(
-        accounts.flatMap((a) => [a.currency, a.secondary_currency || ''])
-          .filter(currency => !options?.allowPartialValuation || ACCOUNT_CURRENCIES.has(normalizeAccountCurrency(currency))),
+        accounts.flatMap((a) => [
+          a.currency,
+          ...(a.is_multicurrency && a.secondary_currency ? [a.secondary_currency] : []),
+        ]).filter(currency => !options?.allowPartialValuation || ACCOUNT_CURRENCIES.has(normalizeAccountCurrency(currency))),
         blueRate
       ),
       this.computeMulticurrencyBalances(userId, accounts as Account[]),
@@ -353,9 +355,11 @@ class AccountsService {
           valuationIssue: { reason: 'unsupported_currency' as const, currencies: [...new Set(unsupported)] },
         };
       }
+      const isMulti = account.type === 'credit_card' && Boolean(account.is_multicurrency);
       const rateToUSD = this.getRateToUsd(usdRates, account.currency);
-      const secondaryRateToUSD = this.getRateToUsd(usdRates, account.secondary_currency);
-      const isMulti = account.type === 'credit_card' && account.is_multicurrency;
+      const secondaryRateToUSD = isMulti
+        ? this.getRateToUsd(usdRates, account.secondary_currency)
+        : null;
       const unavailable = blueRate == null || rateToUSD == null || (isMulti && secondaryRateToUSD == null);
       let balanceUSD: number | null = null;
       let balanceARSBlue: number | null = null;

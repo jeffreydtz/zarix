@@ -163,6 +163,46 @@ for(const legacyGrants of [false,true]) {
     });
     await test(profile,'cross-tenant investment account is rejected',()=>rejects(()=>owner(db,"INSERT INTO investments(user_id,account_id,type,name,quantity,purchase_price,purchase_currency,purchase_date) VALUES($1,$2,'stock_us','Prueba',1,1,'USD','2026-10-01')",[ids.a,ids.accountB]),['23503']));
     await test(profile,'cross-tenant category is rejected',()=>rejects(()=>owner(db,"INSERT INTO budgets(user_id,category_id,month,amount) VALUES($1,$2,'2026-10-01',100)",[ids.a,ids.categoryB]),['23503']));
+    await test(profile,'inbox cross-tenant category is rejected',()=>rejects(()=>owner(db,
+      `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,account_id,category_id,status,fingerprint,source,direction,request_canonical)
+       VALUES($1,18,'ARS','Inbox cruzado',$2,$3,'pending','fp-inbox-cat-cross','wallet','expense','')`,
+      [ids.a,ids.accountA,ids.categoryB]),['23503']));
+    await test(profile,'inbox system category is allowed',async()=>{
+      const sys=(await db.query("SELECT id FROM categories WHERE is_system=true LIMIT 1")).rows[0].id;
+      const row=await owner(db,
+        `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,account_id,category_id,status,fingerprint,source,direction,request_canonical)
+         VALUES($1,18,'ARS','Inbox sistema',$2,$3,'pending','fp-inbox-cat-system','wallet','expense','') RETURNING id`,
+        [ids.a,ids.accountA,sys]);
+      assert.equal(row.rows.length,1);
+    });
+    await test(profile,'inbox own category and null category are allowed',async()=>{
+      const own=await owner(db,
+        `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,account_id,category_id,status,fingerprint,source,direction,request_canonical)
+         VALUES($1,18,'ARS','Inbox propio',$2,$3,'pending','fp-inbox-cat-own','wallet','expense','') RETURNING id`,
+        [ids.a,ids.accountA,ids.categoryA]);
+      const none=await owner(db,
+        `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,account_id,category_id,status,fingerprint,source,direction,request_canonical)
+         VALUES($1,18,'ARS','Inbox sin cat',$2,NULL,'pending','fp-inbox-cat-null','wallet','expense','') RETURNING id`,
+        [ids.a,ids.accountA]);
+      assert.equal(own.rows.length,1);
+      assert.equal(none.rows.length,1);
+    });
+    await test(profile,'batch inbox claim is all-or-nothing',async()=>{
+      const pendingId='cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
+      const discardedId='cccccccc-cccc-4ccc-8ccc-ccccccccccc2';
+      await service(db,
+        `INSERT INTO pending_inbox_items(id,user_id,amount,currency,merchant,account_id,status,fingerprint,source,direction,request_canonical)
+         VALUES($1,$2,18,'ARS','Claim pending',$3,'pending','fp-claim-pending','wallet','expense',''),
+               ($4,$2,18,'ARS','Claim discarded',$3,'discarded','fp-claim-discarded','wallet','expense','')`,
+        [pendingId,ids.a,ids.accountA,discardedId]);
+      await rejects(()=>service(db,'SELECT * FROM claim_pending_inbox_items($1,ARRAY[$2,$3]::uuid[])',[ids.a,pendingId,discardedId]),['P0001']);
+      const rows=await service(db,'SELECT id,status FROM pending_inbox_items WHERE id IN ($1,$2) ORDER BY id',[pendingId,discardedId]);
+      assert.equal(rows.rows.find(r=>r.id===pendingId).status,'pending');
+      assert.equal(rows.rows.find(r=>r.id===discardedId).status,'discarded');
+      const claimed=await service(db,'SELECT * FROM claim_pending_inbox_items($1,ARRAY[$2]::uuid[])',[ids.a,pendingId]);
+      assert.equal(claimed.rows.length,1);
+      assert.equal(claimed.rows[0].status,'confirming');
+    });
     await test(profile,'own category and budget work',async()=>{
       const row=await owner(db,"INSERT INTO budgets(user_id,category_id,month,amount) VALUES($1,$2,'2026-10-01',100) RETURNING id",[ids.a,ids.categoryA]);assert.equal(row.rows.length,1);
     });

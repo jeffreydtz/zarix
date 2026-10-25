@@ -41,7 +41,7 @@ function centsFromSingleSeparator(token: string, sep: '.' | ','): bigint | null 
  */
 export function integerCentsFromToken(raw: string): bigint | null {
   const s = stripMoneyDecorations(raw);
-  if (!s || !/^[\d.,]+$/.test(s)) return null;
+  if (!s || /[eE]/.test(s) || !/^[\d.,]+$/.test(s)) return null;
 
   if (s.includes(',') && s.includes('.')) {
     const lastComma = s.lastIndexOf(',');
@@ -67,20 +67,13 @@ export function formatCents(cents: bigint): string {
   return `${sign}${whole}.${frac.toString().padStart(2, '0')}`;
 }
 
-/** IEEE round-trip string, expanded if scientific. Never toFixed rounding. */
+/** IEEE round-trip string. Scientific toString is rejected, never expanded. */
 export function numberToDecimalString(value: number): string {
   if (!Number.isFinite(value)) return '';
   const abs = Math.abs(value);
   const s = abs.toString();
-  if (!/[eE]/.test(s)) return s;
-  const match = s.match(/^(\d+)(?:\.(\d+))?e([+-]?\d+)$/i);
-  if (!match) return s;
-  const digits = `${match[1]}${match[2] ?? ''}`;
-  const exp = Number(match[3]) - (match[2]?.length ?? 0);
-  if (exp >= 0) return `${digits}${'0'.repeat(exp)}`;
-  const pad = -exp;
-  if (pad >= digits.length) return `0.${'0'.repeat(pad - digits.length)}${digits}`;
-  return `${digits.slice(0, digits.length - pad)}.${digits.slice(digits.length - pad)}`;
+  if (/[eE]/.test(s)) return '';
+  return s;
 }
 
 const JSON_AMOUNT_KEYS = ['amount', 'importe', 'value'] as const;
@@ -95,7 +88,10 @@ export function extractJsonNumberToken(
   for (const key of keys) {
     const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const number = src.match(
-      new RegExp(`"${escaped}"\\s*:\\s*(-?(?:0|[1-9]\\d*)(?:\\.\\d+)?)`, 'i')
+      new RegExp(
+        `"${escaped}"\\s*:\\s*(-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)`,
+        'i'
+      )
     );
     if (number?.[1]) return number[1];
     const quoted = src.match(new RegExp(`"${escaped}"\\s*:\\s*"([^"]*)"`, 'i'));

@@ -312,6 +312,23 @@ describe('weekend FX resilience', () => {
     await expect(cotizacionesService.getExchangeRate('ARS', 'USD')).rejects.toBeInstanceOf(FxUnavailableError);
   });
 
+  it('keeps 30h EUR/USD displayable under the 96h override but rejects executable EUR/USD', async () => {
+    vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS', '345600');
+    vi.mocked(fetch).mockImplementation(async url => {
+      if (String(url).includes('EURUSD')) return json({ chart: { result: [{ meta: {
+        regularMarketPrice: 1.1, regularMarketTime: time(30).getTime() / 1000,
+      } }] } });
+      if (String(url).includes('criptoya')) return json(live());
+      throw new Error('fixture outage');
+    });
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    expect(await cotizacionesService.getTransactionsFxRates(['EUR'])).toMatchObject({
+      usdArs: 1300, eurArs: expect.closeTo(1430), fxUnavailable: false,
+    });
+    await expect(cotizacionesService.getExchangeRate('EUR', 'USD')).rejects.toThrow('vencida');
+    await expect(cotizacionesService.getExchangeRate('USD', 'EUR')).rejects.toThrow('vencida');
+  });
+
   it('rechecks the executable hard age while the display cache remains within 96h', async () => {
     vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS', '345600');
     const payload = { blue: { bid: 1290, ask: 1300, timestamp: (Date.now() - 24 * hour + 1000) / 1000 } };

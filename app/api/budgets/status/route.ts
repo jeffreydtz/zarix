@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { budgetsService } from '@/lib/services/budgets';
-import { errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse } from '@/lib/api-handler';
+import { parseCivilMonthQuery } from '@/lib/transaction-date';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,12 +18,14 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const monthParam = searchParams.get('month');
-    const month = monthParam ? new Date(monthParam) : new Date();
+    const month = parseCivilMonthQuery(searchParams.get('month'));
+    if (!month) {
+      throw new ApiError('Mes inválido. Usá YYYY-MM.', 400);
+    }
 
     const status = await budgetsService.getStatus(user.id, month);
     return NextResponse.json(status);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Budget status error:', error);
     return errorResponse(error);
   }

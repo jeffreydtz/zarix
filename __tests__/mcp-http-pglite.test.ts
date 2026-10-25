@@ -815,6 +815,41 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     );
   });
 
+  it('Wallet HTTP 1e2 parks null instead of 1.00 and never writes the ledger', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const raw =
+      '{"amount":1e2,"currency":"ARS","merchant":"Exponent café","cardName":"Visa Ejemplo","timestamp":"2026-10-25T12:00:00.000Z"}';
+    const res = await walletPost(
+      new NextRequest('http://localhost/api/ingest/wallet', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'wallet-http-1e2',
+        },
+        body: raw,
+      })
+    );
+    expect(res.status).toBe(201);
+    const json = (await res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
+    expect(json.autoConfirmed).toBe(false);
+    expect(json.item.amount).toBeNull();
+    const row = await query('SELECT amount, amount_ambiguous, status FROM pending_inbox_items WHERE id=$1', [
+      json.item.id,
+    ]);
+    expect(row.rows[0].amount).toBeNull();
+    expect(row.rows[0].amount).not.toBe(1);
+    expect(row.rows[0].amount_ambiguous).toBe(true);
+    expect(row.rows[0].status).toBe('pending');
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+  });
+
   it('REST accepts 1048576.37 into the inbox and rejects 40.129 without a ledger write', async () => {
     const query = (sql: string, params: unknown[] = []) =>
       asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>

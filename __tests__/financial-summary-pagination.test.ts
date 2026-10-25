@@ -215,7 +215,9 @@ describe('financial summaries explicitly exclude unavailable conversions', () =>
     mocks.rows = [sep, oct];
     const utcParsed = await transactionsService.getMonthSummary('U1', new Date('2026-10'));
     expect(utcParsed.totalExpenses).toBe(10);
-    const summary = await transactionsService.getMonthSummary('U1', parseCivilMonthQuery('2026-10'));
+    const october = parseCivilMonthQuery('2026-10');
+    expect(october).not.toBeNull();
+    const summary = await transactionsService.getMonthSummary('U1', october!);
     expect(summary.totalExpenses).toBe(18);
     expect(summary.transactionCount).toBe(1);
   });

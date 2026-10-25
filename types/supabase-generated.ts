@@ -839,6 +839,9 @@ isOneToOne: false
 "claim_pending_inbox_item":
 { Args: { "p_item_id": string,"p_user_id": string }; Returns: unknown
                            },
+"claim_pending_inbox_items":
+{ Args: { "p_item_ids": string[],"p_user_id": string }; Returns: unknown
+                           },
 "discard_pending_inbox_item":
 { Args: { "p_item_id": string,"p_user_id": string }; Returns: unknown
                            },

@@ -758,7 +758,7 @@ bot.on(message('text'), async (ctx) => {
         });
       }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Bot error:');
 
     if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
@@ -766,14 +766,6 @@ bot.on(message('text'), async (ctx) => {
       return ctx.reply(GEMINI_SETUP_MSG);
     }
 
-    if (error.message?.includes('404') || error.message?.includes('not found')) {
-      return ctx.reply('El servicio de IA no está disponible temporalmente. Probá de nuevo en unos minutos.');
-    }
-    
-    if (error.message?.includes('account')) {
-      return ctx.reply('No encontré esa cuenta. Usá /cuentas para ver cuáles tenés disponibles.');
-    }
-    
     return ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
   }
 });

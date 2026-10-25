@@ -1258,7 +1258,97 @@ describe('pending inbox confirm idempotency', () => {
       itemIds: [FIXTURE_ITEM, FIXTURE_ITEM.toUpperCase()],
     });
     expect(confirmed).toHaveLength(1);
-    expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_item')).toHaveLength(1);
+    expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_items')).toHaveLength(1);
+    expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_item')).toHaveLength(0);
+  });
+
+  it('claims every batch item in one RPC and does not call the single-item claim', async () => {
+    const secondId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const pending = itemRow('pending');
+    const second = itemRow('pending', { id: secondId, fingerprint: 'fp-batch-2' });
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_item_ids?: string[] }) => {
+      if (fn === 'claim_pending_inbox_items') {
+        expect(args.p_item_ids).toEqual([FIXTURE_ITEM, secondId]);
+        return {
+          data: [itemRow('confirming'), itemRow('confirming', { id: secondId })],
+          error: null,
+        };
+      }
+      return { data: null, error: { message: `unexpected rpc ${fn}` } };
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        return { data: itemRow('confirmed'), error: null };
+      };
+      q.single = async () => ({ data: itemRow('confirmed'), error: null });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({ data: table === 'pending_inbox_items' ? [pending, second] : [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const confirmed = await confirmPendingItems({
+      userId: FIXTURE_USER,
+      itemIds: [FIXTURE_ITEM, secondId],
+    });
+    expect(confirmed).toHaveLength(2);
+    expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_items')).toHaveLength(1);
+    expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_item')).toHaveLength(0);
+    expect(mocks.execute).toHaveBeenCalledTimes(2);
+  });
+
+  it('fails the whole concurrent batch when the atomic claim loses', async () => {
+    let claimed = false;
+    mocks.rpc.mockImplementation(async (fn: string) => {
+      if (fn !== 'claim_pending_inbox_items') return { data: null, error: { message: `unexpected rpc ${fn}` } };
+      if (claimed) return { data: null, error: { message: 'Este pendiente se está confirmando.' } };
+      claimed = true;
+      return { data: [itemRow('confirming')], error: null };
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        return { data: itemRow('confirmed'), error: null };
+      };
+      q.single = async () => ({ data: itemRow('confirmed'), error: null });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({ data: table === 'pending_inbox_items' ? [itemRow('pending')] : [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const results = await Promise.allSettled([
+      confirmPendingItems({ userId: FIXTURE_USER, itemIds: [FIXTURE_ITEM] }),
+      confirmPendingItems({ userId: FIXTURE_USER, itemIds: [FIXTURE_ITEM] }),
+    ]);
+    const fulfilled = results.filter((result) => result.status === 'fulfilled');
+    const rejected = results.filter((result) => result.status === 'rejected');
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(1);
+    expect((rejected[0] as PromiseRejectedResult).reason).toMatchObject({ status: 409 });
+    expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_items')).toHaveLength(2);
+    expect(mocks.rpc.mock.calls.filter((call: unknown[]) => call[0] === 'claim_pending_inbox_item')).toHaveLength(0);
   });
 
   it('normalizes UUID, instants, currency defaults, trim and installments in request_canonical', () => {
