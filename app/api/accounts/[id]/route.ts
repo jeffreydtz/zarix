@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
-import { errorResponse } from '@/lib/api-handler';
+import { errorResponse, requireUser } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user } = await requireUser();
 
     const account = await accountsService.getById(params.id, user.id);
     if (!account) {
@@ -22,10 +15,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     return NextResponse.json(account);
   } catch (error: any) {
     console.error('Account GET error:', error);
-    return NextResponse.json(
-      { error: 'Cuenta no encontrada' },
-      { status: 404 }
-    );
+    return errorResponse(error);
   }
 }
 

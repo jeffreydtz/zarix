@@ -117,9 +117,15 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
       const data = await r.json();
       if (data.ok && typeof data.price === 'number') {
         const formatted = data.price.toLocaleString('es-AR', { maximumFractionDigits: 6 });
+        const fxDate = typeof data.fxAsOf === 'string' ? new Date(data.fxAsOf) : null;
+        const fxReference = fxDate && Number.isFinite(fxDate.getTime())
+          ? `FX del ${fxDate.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`
+          : 'fecha de FX no disponible';
         setQuoteState({
-          status: 'ok',
-          message: `Cotización ${data.currency} ${formatted}${typeof data.changePct === 'number' ? ` · ${data.changePct >= 0 ? '+' : ''}${Number(data.changePct).toFixed(2)}% hoy` : ''}`,
+          status: data.fxStale ? 'warn' : 'ok',
+          message: data.fxStale
+            ? `Valor estimado ${data.currency} ${formatted} · ${fxReference}. Usa la última cotización disponible.`
+            : `Cotización ${data.currency} ${formatted}${typeof data.changePct === 'number' ? ` · ${data.changePct >= 0 ? '+' : ''}${Number(data.changePct).toFixed(2)}% hoy` : ''}`,
         });
       } else {
         setQuoteState({
@@ -433,6 +439,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                   </button>
                   {quoteState.message && (
                     <span
+                      role="status"
                       className={`text-xs inline-flex items-center gap-1 ${
                         quoteState.status === 'ok'
                           ? 'text-success'

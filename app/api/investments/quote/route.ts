@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { errorResponse, requireUser } from '@/lib/api-handler';
 import type { InvestmentType } from '@/types/database';
 import { quoteCacheKeyForPosition, refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
 import { investmentNeedsTicker } from '@/lib/investments/type-meta';
@@ -8,18 +8,13 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireUser();
 
     const symbol = req.nextUrl.searchParams.get('symbol')?.trim() || '';
     const type = req.nextUrl.searchParams.get('type') as InvestmentType | null;
     const marketCurrency = req.nextUrl.searchParams.get('currency')?.trim().toUpperCase() || null;
+    const currentPrice = req.nextUrl.searchParams.get('currentPrice')
+      ?? req.nextUrl.searchParams.get('current_price');
     const purchasePrice = req.nextUrl.searchParams.get('purchasePrice')
       ?? req.nextUrl.searchParams.get('purchase_price');
     const purchaseCurrency = (
@@ -40,9 +35,13 @@ export async function GET(req: NextRequest) {
       market_currency: marketCurrency,
       purchase_currency: purchaseCurrency || marketCurrency,
       purchase_price: purchasePrice,
-      current_price: null,
+      current_price: currentPrice,
     };
-    const quotes = await refreshQuotesForInvestments([position]);
+    // This endpoint only previews discovery quotes; persistence paths require an anchor.
+    const quotes = await refreshQuotesForInvestments([position], {
+      allowUnanchoredFciPreview: true,
+      allowStaleFx: true,
+    });
     const cacheKey = quoteCacheKeyForPosition(position);
     const hit = cacheKey ? quotes.get(cacheKey) : undefined;
     if (!hit || hit.price <= 0) {
@@ -55,10 +54,11 @@ export async function GET(req: NextRequest) {
       price: hit.price,
       currency: hit.currency,
       changePct: hit.changePct,
+      fxStale: Boolean(hit.fxStale),
+      fxAsOf: hit.fxAsOf ?? null,
       source: 'refresh',
     });
   } catch (error: unknown) {
-    console.error('investments quote error:', error);
-    return NextResponse.json({ ok: false, error: 'No se pudo obtener la cotización' }, { status: 200 });
+    return errorResponse(error);
   }
 }

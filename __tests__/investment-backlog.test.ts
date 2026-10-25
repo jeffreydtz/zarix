@@ -141,6 +141,7 @@ describe('liquid net worth excludes positions and broker cash', () => {
     expect(now.totalARSBlue).toBe(80000);
     expect(now.positionsUSD).toBe(500);
     expect(now.investmentsUSD).toBe(500);
+    if (now.investmentsUSD == null) throw new Error('Fixture portfolio must be valued');
     expect(now.totalUSD).toBeLessThan(now.investmentsUSD);
   });
 
@@ -272,7 +273,7 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     })).toBe(1);
     expect(fciUsdPlausibilityAnchor({
       currentPrice: 0, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
-    })).toBeNull();
+    })).toBe(1);
     expect(fciUsdPlausibilityAnchor({
       currentPrice: '1.09', purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
     })).toBeCloseTo(1.09);

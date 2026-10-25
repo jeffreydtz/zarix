@@ -1,9 +1,11 @@
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
+import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
+  type QuoteResult,
 } from '@/lib/market-data/quote-refresh';
 import type { InvestmentType } from '@/types/database';
 
@@ -24,17 +26,15 @@ interface PriceRow {
 class UpdatePricesJob extends IterativeCronJob<PriceRow> {
   readonly name = 'update-prices';
 
-  private quotes = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null }>();
+  private quotes = new Map<string, QuoteResult>();
   private integrationErrors = 0;
 
   protected async execute(supabase: ServiceClient): Promise<Record<string, unknown>> {
     try {
-      const dolar = await cotizacionesService.getDolarQuotes();
-      const sell = Number(dolar?.blue?.sell);
-      if (!(Number.isFinite(sell) && sell > 0)) {
-        throw new Error('Cotización FX inválida');
-      }
+      const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'], executable: true });
+      requireExecutableDolarQuote(dolar.mep, 'MEP', 'mep');
     } catch (e) {
+      if (!(e instanceof FxUnavailableError)) throw e;
       this.integrationErrors++;
       console.error('Error fetching USD rate:', e);
     }
@@ -61,9 +61,10 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
         const key = this.cacheKey(inv);
         if (!key) continue;
         const quote = this.quotes.get(key);
-        if (!quote || !(quote.price > 0)) this.integrationErrors++;
+        if (!quote || !(quote.price > 0) || quote.fxStale) this.integrationErrors++;
       }
     } catch (e) {
+      if (!(e instanceof FxUnavailableError)) throw e;
       this.integrationErrors++;
       console.error('Error refreshing investment quotes:', e);
       this.quotes = new Map();
@@ -78,14 +79,14 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     const key = this.cacheKey(inv);
     if (!key) return false;
     const q = this.quotes.get(key);
-    return Boolean(q && q.price > 0);
+    return Boolean(q && q.price > 0 && !q.fxStale);
   }
 
   protected async processItem(supabase: ServiceClient, inv: PriceRow): Promise<void> {
     const key = this.cacheKey(inv);
     if (!key) return;
     const q = this.quotes.get(key);
-    if (!q || q.price <= 0) return;
+    if (!q || q.price <= 0 || q.fxStale) return;
     const { error } = await supabase
       .from('investments')
       .update({
@@ -103,7 +104,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     try {
       for (const [key, quote] of this.quotes.entries()) {
         if (!key.startsWith('crypto:')) continue;
-        if (!(quote.price > 0)) continue;
+        if (!(quote.price > 0) || quote.fxStale) continue;
         const ticker = key.split(':')[1];
         if (!ticker) continue;
         const { error } = await supabase.from('exchange_rates').upsert({

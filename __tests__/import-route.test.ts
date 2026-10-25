@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import { requireExecutableDolarQuote } from '@/lib/executable-fx';
 
 const mocks = vi.hoisted(() => ({
   insert: vi.fn(), rpc: vi.fn(), scope: vi.fn(), fx: vi.fn(),
@@ -79,6 +80,20 @@ beforeEach(() => {
 });
 
 describe('import authorization and preservation', () => {
+  it('keeps a conversion pending without a monetary write when its available display quote is expired', async () => {
+    mocks.fx.mockImplementation(async () => requireExecutableDolarQuote({
+      type: 'blue', buy: 1290, sell: 1300,
+      timestamp: new Date(Date.now() - 24 * 24 * 60 * 60 * 1000), stale: true,
+    }, 'USD→ARS').sell);
+    const response = await request(JSON.stringify([{ type: 'expense', date: '2026-01-15',
+      amount: 100, currency: 'USD', account: 'Caja "ARS"' }]));
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ imported: 0, pending: 1, skipped: 0,
+      error: expect.stringContaining('Cotización no disponible, inválida o vencida') });
+    expect(mocks.rows).toHaveLength(0);
+    expect(mocks.rpc.mock.calls.some(([name]) => name === 'create_import_transaction_once')).toBe(false);
+  });
+
   it('remaps backup IDs by names only to the authenticated user, preserving historical equivalents',async()=>{
     const response=await request(JSON.stringify({data:{accounts:[{id:'foreign-id',name:'Caja "ARS"',currency:'ARS'}],
       categories:[{id:'foreign-category',name:'Comida'}],transactions:[{account_id:'foreign-id',category_id:'foreign-category',

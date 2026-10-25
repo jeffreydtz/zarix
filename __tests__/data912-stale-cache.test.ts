@@ -30,7 +30,7 @@ describe('data912 stale-cache timestamps', () => {
   beforeEach(() => {
     resetData912CacheForTest();
     vi.clearAllMocks();
-    mocks.dolar.mockResolvedValue({ blue: { sell: 1300, buy: 1280 }, mep: { sell: 1300, buy: 1280 } });
+    mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: 1300, buy: 1280  }, mep: { timestamp: new Date(), sell: 1300, buy: 1280  } });
     mocks.yahoo.mockResolvedValue(new Map());
     mocks.stooq.mockResolvedValue(null);
     mocks.fci.mockResolvedValue(null);

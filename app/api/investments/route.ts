@@ -2,20 +2,13 @@ import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
-import { errorResponse } from '@/lib/api-handler';
+import { errorResponse, requireUser } from '@/lib/api-handler';
 import type { InvestmentType } from '@/types/database';
 import { INVESTMENT_TYPES } from '@/lib/investments/type-meta';
 
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user } = await requireUser();
 
     const investments = await investmentsService.list(user.id);
     return NextResponse.json(investments);

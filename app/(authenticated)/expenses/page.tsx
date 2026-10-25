@@ -1,6 +1,10 @@
-import { redirect } from 'next/navigation';
+import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
+import { redirect, unstable_rethrow } from 'next/navigation';
+import { getCachedUser } from '@/lib/auth/session';
+import FinancialDataError from '@/components/ui/FinancialDataError';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
+import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import TransactionsFilters from '@/components/expenses/TransactionsFilters';
@@ -15,16 +19,14 @@ export default async function ExpensesPage(
   const searchParams = await props.searchParams;
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       redirect('/login');
     }
 
     const [accounts, categoriesRes, transactions] = await Promise.all([
-      accountsService.list(user.id).catch(() => []),
+      accountsService.list(user.id),
       supabase
         .from('categories')
         .select('*')
@@ -40,11 +42,16 @@ export default async function ExpensesPage(
           minAmount: searchParams.minAmount ? parseFloat(searchParams.minAmount) : undefined,
           maxAmount: searchParams.maxAmount ? parseFloat(searchParams.maxAmount) : undefined,
           limit: 2000,
-        })
-        .catch(() => []),
+        }),
     ]);
+    if (categoriesRes.error) throw categoriesRes.error;
     const categories = categoriesRes.data;
-
+    const currencies = [...new Set([
+      ...transactions.map(transaction => transaction.currency),
+      ...accounts.flatMap(account => account.is_multicurrency && account.secondary_currency
+        ? [account.currency, account.secondary_currency] : [account.currency]),
+    ])];
+    const fx = await cotizacionesService.getTransactionsFxRates(currencies);
 
     return (
       <PageScaffold
@@ -56,6 +63,7 @@ export default async function ExpensesPage(
           />
         }
       >
+        <FxStatusBanner {...combinedFxStatus([...accounts, { fxUnavailable: !fx || fx.fxUnavailable, fxStale: fx?.stale, fxAsOf: fx?.asOf?.toISOString() }])} />
         <div className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground -mt-2">
           Traídos: {transactions.length}
         </div>
@@ -68,7 +76,8 @@ export default async function ExpensesPage(
       </PageScaffold>
     );
   } catch (error) {
-    console.error('Expenses page error:', error);
-    redirect('/login');
+    unstable_rethrow(error);
+    console.error('[expenses] Financial data unavailable');
+    return <FinancialDataError retryHref="/expenses" />;
   }
 }

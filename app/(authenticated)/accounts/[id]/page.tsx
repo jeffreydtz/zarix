@@ -1,5 +1,8 @@
+import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, redirect, unstable_rethrow } from 'next/navigation';
+import { getCachedUser } from '@/lib/auth/session';
+import FinancialDataError from '@/components/ui/FinancialDataError';
 import { createClient } from '@/lib/supabase/server';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import CorrectDebtBalanceSign from '@/components/accounts/CorrectDebtBalanceSign';
@@ -18,9 +21,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
   const params = await props.params;
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       redirect('/login');
@@ -29,22 +30,22 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
     // params.id === account.id; usamos params.id en el filtro para poder
     // resolver getById en paralelo con el resto (un round-trip menos).
     const [account, accounts, transactions, categoriesResult, fxRates] = await Promise.all([
-      accountsService.getById(params.id, user.id).catch(() => null),
-      accountsService.list(user.id, { allowPartialValuation: true }).catch(() => []),
+      accountsService.getById(params.id, user.id),
+      accountsService.list(user.id, { allowPartialValuation: true }),
       transactionsService
-        .list(user.id, { involveAccountId: params.id, limit: 500 })
-        .catch(() => []),
+        .list(user.id, { involveAccountId: params.id, limit: 500 }),
       supabase
         .from('categories')
         .select('*')
         .or(`user_id.eq.${user.id},is_system.eq.true`),
-      cotizacionesService.getTransactionsFxRates().catch(() => null),
+      cotizacionesService.getTransactionsFxRates(),
     ]);
 
     if (!account) {
       notFound();
     }
 
+    if (categoriesResult.error) throw categoriesResult.error;
     const categories = categoriesResult.data || [];
 
     const balance = Number(account.balance);
@@ -110,7 +111,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
                         {account.secondary_currency}
                       </span>
                     </p>
-                    {!enriched.valuationIssue && <p className="text-sm font-medium tabular-nums text-muted-foreground">
+                    {!enriched.valuationIssue && !enriched.fxUnavailable && <p className="text-sm font-medium tabular-nums text-muted-foreground">
                       Total (ARS blue):{' '}
                       <span className="font-semibold text-destructive">
                         -$
@@ -171,6 +172,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
             </div>
           </div>
 
+          <FxStatusBanner {...combinedFxStatus(enriched ? [enriched] : [])} />
           <RepairCurrencyRangePanel accountId={account.id} />
 
           <TransactionsList
@@ -181,7 +183,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
             viewAccountContext={{
               accountId: account.id,
               accountCurrency: account.currency,
-              fx: fxRates
+              fx: fxRates?.usdArs != null && fxRates.eurArs != null
                 ? { usdToArs: fxRates.usdArs, eurArs: fxRates.eurArs }
                 : undefined,
               usdToArs: fxRates?.usdArs ?? undefined,
@@ -191,17 +193,8 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
       </div>
     );
   } catch (error) {
-    // notFound() y redirect() lanzan errores de control de Next (digest NEXT_*).
-    // Si los tragamos acá, un account inexistente termina redirigido a /login en
-    // vez de mostrar el 404. Re-lanzamos esos para que Next los maneje.
-    const digest =
-      error && typeof error === 'object' && 'digest' in error
-        ? (error as { digest?: unknown }).digest
-        : undefined;
-    if (typeof digest === 'string' && digest.startsWith('NEXT_')) {
-      throw error;
-    }
-    console.error('Account detail page error:', error);
-    redirect('/login');
+    unstable_rethrow(error);
+    console.error('[account-detail] Financial data unavailable');
+    return <FinancialDataError retryHref={`/accounts/${params.id}`} />;
   }
 }

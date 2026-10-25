@@ -1,7 +1,9 @@
+import { FxUnavailableError, isExecutableDolarQuote } from '@/lib/executable-fx';
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
-  fciUsdPlausibilityAnchor,
+  fciPlausibilityAnchor,
+  fciPricePlausible,
   listingCandidates,
   resolveFciQuoteCurrency,
   resolveQuoteCurrency,
@@ -22,6 +24,17 @@ export interface QuoteResult {
   changePct: number | null;
   currency: string;
   timestamp: string | null;
+  fxStale?: boolean;
+  fxAsOf?: string | null;
+}
+
+export class InvestmentQuoteMap extends Map<string, QuoteResult> {
+  readonly unavailableFxKeys = new Set<string>();
+
+  override set(key: string, quote: QuoteResult): this {
+    this.unavailableFxKeys.delete(key);
+    return super.set(key, quote);
+  }
 }
 
 export interface QuoteRefreshPosition {
@@ -29,7 +42,7 @@ export interface QuoteRefreshPosition {
   ticker: string | null;
   market_currency: string | null;
   purchase_currency: string | null;
-  /** Last stored cuotaparte; FCI unknown+USD plausibility vs this price. */
+  /** Last stored cuotaparte in market_currency, used as the plausibility anchor. */
   current_price?: number | string | null;
   purchase_price?: number | string | null;
   /** When set, FCI results are keyed per position so plausibility is not shared. */
@@ -86,10 +99,6 @@ export function dedupeByTicker<T extends { ticker: string }>(jobs: T[]): T[] {
     out.push(job);
   }
   return out;
-}
-
-function positiveStoredPrice(value: number | null | undefined): boolean {
-  return value != null && Number.isFinite(value) && value > 0;
 }
 
 export const FCI_REFRESH_CONCURRENCY = 3;
@@ -221,8 +230,13 @@ function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number
  */
 export async function refreshQuotesForInvestments(
   investments: QuoteRefreshPosition[],
-  options?: { mepArsPerUsd?: number | null; fciBudgetMs?: number }
-): Promise<Map<string, QuoteResult>> {
+  options?: {
+    allowStaleFx?: boolean;
+    fciBudgetMs?: number;
+    /** Discovery only: results must never be used for automatic persistence. */
+    allowUnanchoredFciPreview?: boolean;
+  }
+): Promise<InvestmentQuoteMap> {
   const fetchedAt = new Date().toISOString();
   const stamp = (quote: ConvertibleQuote): QuoteResult | null => {
     if (quote.stale) {
@@ -233,6 +247,8 @@ export async function refreshQuotesForInvestments(
         changePct: quote.changePct,
         currency: quote.currency,
         timestamp: original,
+        fxStale: quote.fxStale,
+        fxAsOf: quote.fxAsOf,
       };
     }
     return {
@@ -240,9 +256,11 @@ export async function refreshQuotesForInvestments(
       changePct: quote.changePct,
       currency: quote.currency,
       timestamp: quoteTimestampOrFetchedAt(quote, fetchedAt),
+      fxStale: quote.fxStale,
+      fxAsOf: quote.fxAsOf,
     };
   };
-  const out = new Map<string, QuoteResult>();
+  const out = new InvestmentQuoteMap();
   const yahooSymbolToCacheKeys = new Map<string, Set<string>>();
   const addYahoo = (symbol: string, cacheKey: string) => {
     let set = yahooSymbolToCacheKeys.get(symbol);
@@ -257,7 +275,9 @@ export async function refreshQuotesForInvestments(
     ticker: string;
     cacheKey: string;
     currency: string;
-    storedPrice: number | null;
+    currentPrice: number | string | null | undefined;
+    purchasePrice: number | string | null | undefined;
+    purchaseCurrency: string | null;
     id: string | null;
   }> = [];
   const argPositions: Array<{
@@ -281,12 +301,9 @@ export async function refreshQuotesForInvestments(
         ticker,
         cacheKey: quoteCacheKeyForPosition(inv) ?? cacheKey,
         currency,
-        storedPrice: fciUsdPlausibilityAnchor({
-          currentPrice: inv.current_price,
-          purchasePrice: inv.purchase_price,
-          marketCurrency: inv.market_currency,
-          purchaseCurrency: inv.purchase_currency,
-        }),
+        currentPrice: inv.current_price,
+        purchasePrice: inv.purchase_price,
+        purchaseCurrency: inv.purchase_currency,
         id: inv.id ?? null,
       });
       continue;
@@ -309,13 +326,31 @@ export async function refreshQuotesForInvestments(
     }
   }
 
-  const dolar = await cotizacionesService.getDolarQuotes().catch(() => null);
-  const mepArsPerUsd = options?.mepArsPerUsd ?? mepRate(dolar);
+  const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'], executable: !options?.allowStaleFx }).catch(error => {
+    if (!(error instanceof FxUnavailableError)) throw error;
+    return null;
+  });
+  const mep = dolar?.mep;
+  const mepExecutable = isExecutableDolarQuote(mep, 'mep');
+  const mepArsPerUsd = mepExecutable || options?.allowStaleFx ? mepRate(dolar) : null;
+  // Display estimates may use stale FX; plausibility anchors for writes may not.
+  const anchorMepArsPerUsd = mepExecutable ? mepRate(dolar) : null;
+  const mepObserved = mep?.asOf ?? mep?.timestamp;
+  const mepAsOf = mepObserved && Number.isFinite(new Date(mepObserved).getTime())
+    ? new Date(mepObserved).toISOString() : null;
 
-  const adapt = (quote: ConvertibleQuote, currency: string): QuoteResult | null => {
+  const adapt = (quote: ConvertibleQuote, currency: string, cacheKey: string): QuoteResult | null => {
     if (!currency) return quote;
+    const needsMep = quote.currency.trim().toUpperCase() !== currency.trim().toUpperCase();
     const adapted = adaptQuoteToMarketCurrency(quote, currency, mepArsPerUsd);
-    if (!adapted) return null;
+    if (!adapted) {
+      if (needsMep) out.unavailableFxKeys.add(cacheKey);
+      return null;
+    }
+    if (needsMep) {
+      adapted.fxStale = !mepExecutable;
+      adapted.fxAsOf = mepAsOf;
+    }
     return adapted;
   };
 
@@ -323,7 +358,7 @@ export async function refreshQuotesForInvestments(
     if (arg) {
       const lookedUp = lookupArgentineSymbol(arg, pos.type, pos.ticker, pos.currency);
       if (lookedUp.status === 'hit') {
-        const adapted = adapt(lookedUp.quote, pos.currency);
+        const adapted = adapt(lookedUp.quote, pos.currency, pos.cacheKey);
         const stamped = adapted ? stamp(adapted) : null;
         if (stamped) {
           out.set(pos.cacheKey, stamped);
@@ -368,6 +403,15 @@ export async function refreshQuotesForInvestments(
   }>>();
   for (const fci of fciTickers) {
     const q = fciQuoteByTicker.get(fci.ticker);
+    // Resolve the currency of the actual write before choosing its anchor.
+    const effectiveCurrency = fci.currency || (q && q !== 'error' ? q.currency : null);
+    const storedPrice = fciPlausibilityAnchor({
+      currentPrice: fci.currentPrice,
+      purchasePrice: fci.purchasePrice,
+      marketCurrency: effectiveCurrency,
+      purchaseCurrency: fci.purchaseCurrency,
+      mepArsPerUsd: anchorMepArsPerUsd,
+    });
     let stamped: QuoteResult | null = null;
     if (q === 'error' || !q || !(q.price > 0)) {
       console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker });
@@ -378,17 +422,27 @@ export async function refreshQuotesForInvestments(
         cafci: q.currency,
         stored: fci.currency,
       });
+    } else if (storedPrice == null && !options?.allowUnanchoredFciPreview) {
+      console.warn('[quotes] fci_implausible', {
+        reason: 'no_anchor',
+        ticker: fci.ticker,
+        id: fci.id,
+        candidate: q.price,
+        anchor: null,
+        currency: effectiveCurrency,
+      });
     } else {
       const resolved = resolveFciQuoteCurrency({
         sourceCurrency: q.currency,
         storedCurrency: fci.currency,
         sourcePrice: q.price,
-        storedPrice: fci.storedPrice,
+        storedPrice,
       });
       if (!resolved.currency) {
         console.warn('[quotes] skip FCI currency', {
           ticker: fci.ticker,
-          reason: resolved.reason,
+          reason: fci.currency === 'USD' && storedPrice != null ? 'fci_implausible' : resolved.reason,
+          id: fci.id,
           cafci: q.currency,
           stored: fci.currency,
         });
@@ -401,6 +455,7 @@ export async function refreshQuotesForInvestments(
             timestamp: q.timestamp,
           },
           fci.currency || resolved.currency,
+          fci.cacheKey,
         );
         if (!adapted) {
           console.warn('[quotes] skip FCI currency', {
@@ -408,6 +463,15 @@ export async function refreshQuotesForInvestments(
             reason: 'mep',
             cafci: q.currency,
             stored: fci.currency,
+          });
+        } else if (storedPrice != null && !fciPricePlausible(adapted.price, storedPrice)) {
+          console.warn('[quotes] skip FCI price', {
+            reason: 'fci_implausible',
+            ticker: fci.ticker,
+            id: fci.id,
+            candidate: adapted.price,
+            anchor: storedPrice,
+            currency: adapted.currency,
           });
         } else {
           stamped = stamp(adapted);
@@ -418,23 +482,15 @@ export async function refreshQuotesForInvestments(
     rows.push({
       ticker: fci.ticker,
       currency: fci.currency,
-      storedPrice: fci.storedPrice,
+      storedPrice,
       stamped,
     });
     fciByKey.set(fci.cacheKey, rows);
   }
   for (const [key, rows] of fciByKey) {
-    if (rows.length === 1) {
-      if (rows[0].stamped) out.set(key, rows[0].stamped);
-      continue;
-    }
-    const withStored = rows.filter((row) => positiveStoredPrice(row.storedPrice));
-    if (withStored.length === 0) {
-      if (rows.every((row) => row.stamped) && rows[0].stamped) out.set(key, rows[0].stamped);
-      continue;
-    }
-    if (withStored.every((row) => row.stamped) && withStored[0].stamped) {
-      out.set(key, withStored[0].stamped);
+    // Callers without position IDs share a key: every position must pass its guard.
+    if (rows.every((row) => row.stamped) && rows[0].stamped) {
+      out.set(key, rows[0].stamped);
     }
   }
 
@@ -469,7 +525,7 @@ export async function refreshQuotesForInvestments(
             changePct: Number.isFinite(q.changePct) ? q.changePct : null,
             currency: source,
             timestamp: quoteSourceTimestamp(q),
-          }, desired);
+          }, desired, cacheKey);
           const stamped = adapted ? stamp(adapted) : null;
           if (stamped) {
             out.set(cacheKey, stamped);
@@ -494,7 +550,7 @@ export async function refreshQuotesForInvestments(
               changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
               currency: stooq.currency,
               timestamp: quoteSourceTimestamp(stooq),
-            }, desired);
+            }, desired, cacheKey);
             const stamped = adapted ? stamp(adapted) : null;
             if (stamped) out.set(cacheKey, stamped);
           }
@@ -517,7 +573,8 @@ export async function refreshQuotesForInvestments(
         });
         if (stamped) out.set(quoteCacheKey('crypto', sym, 'USD'), stamped);
       }
-    } catch {
+    } catch (error) {
+      if (!(error instanceof FxUnavailableError)) throw error;
       /* último precio guardado */
     }
   }
