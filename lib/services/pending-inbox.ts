@@ -4,7 +4,12 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { executeRegistryTool } from '@/lib/ai/registry/execute';
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { accountsService } from '@/lib/services/accounts';
-import { parseWalletPayload, type WalletIngestPayload } from '@/lib/integrations/wallet-parse';
+import {
+  isWalletTimestampFresh,
+  parseWalletPayload,
+  type WalletIngestPayload,
+} from '@/lib/integrations/wallet-parse';
+import { inboxDedupeLockKey } from '@/lib/inbox-dedupe-lock-key';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { suggestCategoryFromMerchant } from '@/lib/integrations/merchant-category';
 import { auditIpFromRequest, auditUserAgent, recordIntegrationAudit } from '@/lib/integrations/audit';
@@ -16,6 +21,8 @@ import { withFinancialRequestContext } from '@/lib/financial-request-context';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import type { ToolArgs, WriteChannel } from '@/lib/ai/registry/types';
+
+export { inboxDedupeLockKey };
 
 export const WALLET_CIVIL_TIMEZONE = 'America/Argentina/Cordoba';
 export const STALE_CONFIRMING_MS = 2 * 60 * 1000;
@@ -165,25 +172,8 @@ export function canonicalPendingInboxIds(raw: string[]): string[] {
   return out;
 }
 
-/** Advisory lock for anonymous possible-duplicates: user + amount + currency + direction. */
-export function inboxDedupeLockKey(
-  userId: string,
-  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'direction'> &
-    Partial<Pick<WalletIngestPayload, 'merchant' | 'cardName'>>,
-  ingestKey: string
-): string {
-  if (ingestKey) return `idemp:${ingestKey}`;
-  const material = [
-    userId,
-    payload.direction || 'expense',
-    payload.amount ?? '',
-    (payload.currency || 'ARS').toUpperCase(),
-  ].join('|');
-  return createHash('sha256').update(material).digest('hex');
-}
-
-function roundCanonicalAmount(value: number): number {
-  return Math.round(value * 100) / 100;
+function nfcNorm(value: string | null | undefined): string {
+  return String(value ?? '').normalize('NFC').trim().toLowerCase();
 }
 
 function normalizeOccurredUtc(iso: string | null | undefined): string | null {
@@ -205,32 +195,60 @@ function normalizeInstallments(value: unknown): number {
   return Math.min(36, Math.floor(n));
 }
 
-/** Immutable request identity. Set once at insert; confirm must not rewrite it. */
-export function inboxRequestCanonical(input: {
+function hasAtMostTwoDecimals(value: number): boolean {
+  const scaled = value * 100;
+  return Math.abs(scaled - Math.round(scaled)) < 1e-8;
+}
+
+function canonicalAmountString(value: number | null | undefined): string | null {
+  if (value == null || !Number.isFinite(Number(value))) return null;
+  const n = Number(value);
+  if (!hasAtMostTwoDecimals(n)) {
+    throw new ApiError('El monto no puede tener más de dos decimales.', 400);
+  }
+  return n.toFixed(2);
+}
+
+export const INBOX_REQUEST_CANONICAL_VERSION = 'v1';
+
+export type InboxRequestCanonicalInput = {
   source: string;
   amount?: number | null;
   currency?: string | null;
+  type?: string | null;
   direction?: string | null;
   occurredAt?: string | null;
   merchant?: string | null;
   cardName?: string | null;
   accountId?: string | null;
+  accountName?: string | null;
+  categoryId?: string | null;
+  categoryName?: string | null;
+  destinationAccountId?: string | null;
+  destinationAccountName?: string | null;
   installments?: number | null;
-}): string {
-  const amountRaw = input.amount;
-  const amount =
-    amountRaw == null || !Number.isFinite(Number(amountRaw)) ? null : roundCanonicalAmount(Number(amountRaw));
-  return JSON.stringify({
+};
+
+/** Immutable request identity. Set once at insert; confirm must not rewrite it. */
+export function inboxRequestCanonical(input: InboxRequestCanonicalInput): string {
+  const type =
+    nfcNorm(input.type || input.direction || 'expense') || 'expense';
+  return `${INBOX_REQUEST_CANONICAL_VERSION}:${JSON.stringify({
     account_id: normalizeAccountId(input.accountId),
-    amount,
+    account_name: nfcNorm(input.accountName),
+    amount: canonicalAmountString(input.amount),
     card: normalizeCard(input.cardName ?? null),
+    category_id: normalizeAccountId(input.categoryId),
+    category_name: nfcNorm(input.categoryName),
     currency: (String(input.currency || 'ARS').trim().toUpperCase() || 'ARS'),
-    direction: (String(input.direction || 'expense').trim().toLowerCase() || 'expense'),
+    destination_account_id: normalizeAccountId(input.destinationAccountId),
+    destination_account_name: nfcNorm(input.destinationAccountName),
     installments: normalizeInstallments(input.installments),
-    merchant: String(input.merchant || '').trim().toLowerCase(),
+    merchant: nfcNorm(input.merchant),
     occurred_at: normalizeOccurredUtc(input.occurredAt),
-    source: String(input.source || 'wallet').trim().toLowerCase(),
-  });
+    source: nfcNorm(input.source || 'wallet') || 'wallet',
+    type,
+  })}`;
 }
 
 export function canonicalInboxPayloadKey(input: {
@@ -245,37 +263,51 @@ export function canonicalInboxPayloadKey(input: {
   installments?: number | null;
   toolPayload?: ParkedToolPayload | null;
 }): string {
+  const parked = input.toolPayload;
   return inboxRequestCanonical({
     source: input.source,
     amount: input.amount,
     currency: input.currency,
+    type: typeof parked?.type === 'string' ? parked.type : input.direction,
     direction: input.direction,
     merchant: input.merchant,
     accountId: input.accountId,
-    occurredAt: input.occurredAt ?? (typeof input.toolPayload?.transactionDate === 'string'
-      ? input.toolPayload.transactionDate
-      : typeof input.toolPayload?.date === 'string'
-        ? input.toolPayload.date
+    accountName: typeof parked?.account === 'string' ? parked.account : null,
+    categoryId: typeof parked?.categoryId === 'string' ? parked.categoryId : null,
+    categoryName: typeof parked?.category === 'string' ? parked.category : null,
+    destinationAccountId: typeof parked?.destinationAccountId === 'string' ? parked.destinationAccountId : null,
+    destinationAccountName: typeof parked?.destinationAccount === 'string' ? parked.destinationAccount : null,
+    occurredAt: input.occurredAt ?? (typeof parked?.transactionDate === 'string'
+      ? parked.transactionDate
+      : typeof parked?.date === 'string'
+        ? parked.date
         : null),
     cardName: input.cardName ?? null,
-    installments: input.installments ?? (typeof input.toolPayload?.installments === 'number'
-      ? input.toolPayload.installments
+    installments: input.installments ?? (typeof parked?.installments === 'number'
+      ? parked.installments
       : 1),
   });
 }
 
 function storedRequestCanonical(row: PendingInboxItem): string {
   if (row.request_canonical) return row.request_canonical;
+  const parked = row.tool_payload;
   return inboxRequestCanonical({
     source: row.source,
     amount: row.amount,
     currency: row.currency,
+    type: typeof parked?.type === 'string' ? parked.type : row.direction,
     direction: row.direction,
     merchant: row.merchant,
     cardName: row.card_name,
     accountId: row.account_id,
+    accountName: typeof parked?.account === 'string' ? parked.account : null,
+    categoryId: row.category_id ?? (typeof parked?.categoryId === 'string' ? parked.categoryId : null),
+    categoryName: typeof parked?.category === 'string' ? parked.category : null,
+    destinationAccountId: typeof parked?.destinationAccountId === 'string' ? parked.destinationAccountId : null,
+    destinationAccountName: typeof parked?.destinationAccount === 'string' ? parked.destinationAccount : null,
     occurredAt: row.occurred_at,
-    installments: typeof row.tool_payload?.installments === 'number' ? row.tool_payload.installments : 1,
+    installments: typeof parked?.installments === 'number' ? parked.installments : 1,
   });
 }
 
@@ -369,17 +401,53 @@ async function ingestWalletItemUnlocked(input: {
       : typeof input.json?.account_id === 'string'
         ? input.json.account_id
         : null;
+  const requestAccountName =
+    typeof input.json?.account === 'string'
+      ? input.json.account
+      : typeof input.json?.accountName === 'string'
+        ? input.json.accountName
+        : null;
+  const requestCategoryId =
+    typeof input.json?.categoryId === 'string'
+      ? input.json.categoryId
+      : typeof input.json?.category_id === 'string'
+        ? input.json.category_id
+        : null;
+  const requestCategoryName = typeof input.json?.category === 'string' ? input.json.category : null;
+  const requestDestinationId =
+    typeof input.json?.destinationAccountId === 'string'
+      ? input.json.destinationAccountId
+      : typeof input.json?.destination_account_id === 'string'
+        ? input.json.destination_account_id
+        : null;
   const requestCanonical = inboxRequestCanonical({
     source: 'wallet',
     amount: payload.amount,
     currency: payload.currency,
+    type: payload.direction,
     direction: payload.direction,
     occurredAt,
     merchant: payload.merchant,
     cardName: payload.cardName,
     accountId: requestAccountId,
+    accountName: requestAccountName,
+    categoryId: requestCategoryId,
+    categoryName: requestCategoryName,
+    destinationAccountId: requestDestinationId,
     installments: 1,
   });
+  if (clientKey) {
+    const existing = await loadByIngestKey(input.userId, ingestKey);
+    if (existing) {
+      if (existing.source !== 'wallet' || storedRequestCanonical(existing) !== requestCanonical) {
+        throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
+      }
+      return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
+    }
+  }
+  if (payload.occurredAt && !isWalletTimestampFresh(payload.occurredAt)) {
+    throw new ApiError('La fecha del movimiento está fuera de rango.', 400);
+  }
   const suggestion = await suggestCategoryFromMerchant({ userId: input.userId, merchant: payload.merchant });
   const supabase = createServiceClientSync();
   const { data: reserved, error } = await supabase.rpc('reserve_pending_inbox_item', {
@@ -472,7 +540,7 @@ async function ingestWalletItemUnlocked(input: {
 
 export async function parkRegistryWrite(input: {
   userId: string;
-  amount: number;
+  amount: number | null;
   currency: string;
   merchant?: string | null;
   accountId?: string | null;
@@ -485,7 +553,7 @@ export async function parkRegistryWrite(input: {
   const clientKey = input.ingestKey?.trim() || null;
   const ingestKey = clientKey || randomUUID();
   const toolPayload = input.toolPayload ?? null;
-  const type = String(toolPayload?.type || 'expense');
+  const type = String(toolPayload?.type || 'expense').trim().toLowerCase() || 'expense';
   const direction = (type === 'income' ? 'income' : 'expense') as 'expense' | 'income';
   const accountId =
     input.accountId ?? (typeof toolPayload?.accountId === 'string' ? toolPayload.accountId : null);
@@ -502,10 +570,16 @@ export async function parkRegistryWrite(input: {
     source: input.source,
     amount: input.amount,
     currency: input.currency,
+    type,
     direction,
     merchant: input.merchant ?? null,
     cardName: null,
     accountId,
+    accountName: typeof toolPayload?.account === 'string' ? toolPayload.account : null,
+    categoryId: input.categoryId ?? (typeof toolPayload?.categoryId === 'string' ? toolPayload.categoryId : null),
+    categoryName: typeof toolPayload?.category === 'string' ? toolPayload.category : null,
+    destinationAccountId: typeof toolPayload?.destinationAccountId === 'string' ? toolPayload.destinationAccountId : null,
+    destinationAccountName: typeof toolPayload?.destinationAccount === 'string' ? toolPayload.destinationAccount : null,
     occurredAt,
     installments: typeof toolPayload?.installments === 'number' ? toolPayload.installments : 1,
   });
@@ -669,15 +743,58 @@ export async function confirmPendingItem(input: {
   );
 }
 
+export type PendingBatchItemStatus = {
+  pendingId: string;
+  status: string;
+  error?: string;
+};
+
+function confirmableInboxStatus(status: string): boolean {
+  return status === 'pending' || status === 'uncertain' || status === 'confirming';
+}
+
 export async function confirmPendingItems(input: {
   userId: string;
   itemIds: string[];
   source?: WriteChannel;
   req?: Request;
 }): Promise<PendingInboxItem[]> {
+  const ids = canonicalPendingInboxIds(input.itemIds);
+  if (ids.length === 0) return [];
+  const supabase = createServiceClientSync();
+  const { data, error } = await supabase
+    .from('pending_inbox_items')
+    .select('*')
+    .eq('user_id', input.userId)
+    .in('id', ids);
+  if (error) throw error;
+  const byId = new Map(((data ?? []) as PendingInboxItem[]).map((row) => [row.id, row]));
+  const statuses: PendingBatchItemStatus[] = ids.map((id) => {
+    const row = byId.get(id);
+    if (!row) return { pendingId: id, status: 'missing', error: 'Pendiente no encontrado.' };
+    if (row.status === 'discarded') {
+      return { pendingId: id, status: 'discarded', error: 'Este pendiente ya fue descartado.' };
+    }
+    if (row.status === 'confirmed') return { pendingId: id, status: 'confirmed' };
+    if (confirmableInboxStatus(row.status) || isStaleConfirming(row)) {
+      return { pendingId: id, status: row.status };
+    }
+    return { pendingId: id, status: row.status, error: 'Este pendiente no se puede confirmar.' };
+  });
+  if (statuses.some((item) => item.error)) {
+    throw new ApiError(
+      statuses.find((item) => item.error)?.error || 'Hay pendientes que no se pueden confirmar.',
+      400
+    );
+  }
   const out: PendingInboxItem[] = [];
-  for (const itemId of canonicalPendingInboxIds(input.itemIds)) {
-    out.push(await confirmPendingItem({ userId: input.userId, itemId, source: input.source, req: input.req }));
+  for (const id of ids) {
+    const row = byId.get(id);
+    if (row?.status === 'confirmed') {
+      out.push(row);
+      continue;
+    }
+    out.push(await confirmPendingItem({ userId: input.userId, itemId: id, source: input.source, req: input.req }));
   }
   return out;
 }

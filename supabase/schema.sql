@@ -6080,9 +6080,13 @@ GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BO
 -- END supabase/migrations/20261024210000_inbox_possible_duplicate.sql
 
 -- BEGIN supabase/migrations/20261024220000_inbox_request_canonical.sql
--- SHA256 74323d8beaee590599ecf786720756e44e5ad94ce3289c6004250f897e8a0b5c
+-- SHA256 5140225ba1ebe4f342b24b92601f5cf050e2e90890dd905406376d0de02b290a
 -- Immutable request identity for keyed Wallet/REST/MCP replay.
--- Compute the canonical string in JS; SQL stores it once and compares it.
+-- Compute the canonical string in JS (`v1:{json}`); SQL stores it once and compares it.
+-- Prod currently has none of 180000–240000 (latest applied 20261024182923), so this
+-- backfill is a no-op there. Preview/staging keyed rows created before this file
+-- get `legacy:<id>`, which never matches JS canonical: those keys stay bound
+-- (409 on retry) and are not released.
 -- Forward-only and re-runnable. NEVER `supabase db push`.
 -- Fail closed if Vault is missing at apply time. PGlite tests stub schema vault.
 
@@ -6258,6 +6262,29 @@ REVOKE ALL ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLE
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLEAN, INTEGER, JSONB)
   TO service_role;
+
+REVOKE UPDATE (request_canonical) ON public.pending_inbox_items FROM PUBLIC, anon, authenticated;
+
+CREATE OR REPLACE FUNCTION public.pending_inbox_freeze_request_canonical()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  IF NEW.request_canonical IS DISTINCT FROM OLD.request_canonical THEN
+    RAISE EXCEPTION 'request_canonical is immutable';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS pending_inbox_freeze_request_canonical ON public.pending_inbox_items;
+CREATE TRIGGER pending_inbox_freeze_request_canonical
+  BEFORE UPDATE ON public.pending_inbox_items
+  FOR EACH ROW
+  EXECUTE FUNCTION public.pending_inbox_freeze_request_canonical();
+
+REVOKE ALL ON FUNCTION public.pending_inbox_freeze_request_canonical() FROM PUBLIC, anon, authenticated;
 -- END supabase/migrations/20261024220000_inbox_request_canonical.sql
 
 -- BEGIN supabase/migrations/20261024230000_inbox_possible_duplicate_owner_fk.sql
@@ -6309,7 +6336,7 @@ END $$;
 -- END supabase/migrations/20261024230000_inbox_possible_duplicate_owner_fk.sql
 
 -- BEGIN supabase/migrations/20261024240000_installments_cordoba_calendar.sql
--- SHA256 6fc84c444995663f7f3dfc92ff5e2f8e73054ac40f5dee207b813b94f1a7f0c8
+-- SHA256 c7f6348c36e88a3e0f7a98d6a6b5420e45896bb21096424a8b2fcdf75f40a124
 -- Add installment months on the Córdoba civil calendar, then convert to timestamptz.
 -- Independent of the session TimeZone. Forward-only; do not edit 20261024200000.
 -- NEVER `supabase db push`.
@@ -6327,6 +6354,7 @@ CREATE OR REPLACE FUNCTION public.cordoba_add_months(p_start TIMESTAMPTZ, p_mont
 RETURNS TIMESTAMPTZ
 LANGUAGE sql
 IMMUTABLE
+SET search_path = pg_catalog, pg_temp
 SET timezone = 'UTC'
 AS $$
   SELECT (
@@ -6350,7 +6378,7 @@ CREATE OR REPLACE FUNCTION public.create_installment_transactions(
   p_installments INTEGER,
   p_category_id UUID,
   p_description TEXT,
-  p_start_date TIMESTAMPTZ,
+  p_start_date TIMESTAMPTZ DEFAULT NOW(),
   p_source TEXT DEFAULT 'web'
 )
 RETURNS UUID
