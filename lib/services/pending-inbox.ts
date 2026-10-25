@@ -5,6 +5,7 @@ import { executeRegistryTool } from '@/lib/ai/registry/execute';
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { accountsService } from '@/lib/services/accounts';
 import { parseWalletPayload, type WalletIngestPayload } from '@/lib/integrations/wallet-parse';
+import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { suggestCategoryFromMerchant } from '@/lib/integrations/merchant-category';
 import { auditIpFromRequest, auditUserAgent, recordIntegrationAudit } from '@/lib/integrations/audit';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
@@ -43,7 +44,7 @@ export type PendingInboxItem = {
   account_id: string | null;
   category_id: string | null;
   occurred_at: string | null;
-  status: 'pending' | 'confirming' | 'confirmed' | 'discarded';
+  status: 'pending' | 'confirming' | 'confirmed' | 'discarded' | 'uncertain';
   suggestion_source: string | null;
   idempotency_key: string | null;
   ingest_key: string;
@@ -82,15 +83,25 @@ export function occurredAtForStorage(iso: string | null | undefined): string | n
   return iso;
 }
 
-function fingerprint(
+const ACTIVE_EVENT_STATUSES: PendingInboxItem['status'][] = [
+  'pending',
+  'confirming',
+  'confirmed',
+  'uncertain',
+];
+
+export function inboxEventFingerprint(
   userId: string,
-  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'merchant' | 'cardName'>,
+  payload: Pick<WalletIngestPayload, 'amount' | 'currency' | 'merchant' | 'cardName' | 'direction'>,
   occurredAt: string | null,
   ingestKey: string
 ): string {
   const bucket = occurredAt ? occurredAt.slice(0, 16) : 'none';
+  const sign = payload.direction === 'income' ? '-' : '+';
   const material = [
     userId,
+    sign,
+    payload.direction,
     payload.amount ?? '',
     payload.currency || 'ARS',
     normalizeCard(payload.cardName),
@@ -188,7 +199,7 @@ async function loadByFingerprint(userId: string, fp: string): Promise<PendingInb
     .select('*')
     .eq('user_id', userId)
     .eq('fingerprint', fp)
-    .in('status', ['pending', 'confirming'])
+    .in('status', ACTIVE_EVENT_STATUSES)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -213,13 +224,16 @@ async function ingestWalletItemUnlocked(input: {
   req?: Request;
 }): Promise<{ item: PendingInboxItem; duplicate: boolean; autoConfirmed: boolean }> {
   const payload = parseWalletPayload({ json: input.json, text: input.text });
+  if (payload.currencyUnsupported || !isTransactionCurrency(payload.currency)) {
+    throw new ApiError('Moneda no admitida. Usá ARS, USD o EUR.', 400);
+  }
   const occurredAt = occurredAtForStorage(payload.occurredAt);
   const clientKey = input.idempotencyKey?.trim() || null;
   if (clientKey && !validTransactionRequestId(clientKey) && !/^[A-Za-z0-9._:-]{8,200}$/.test(clientKey)) {
     throw new ApiError('Idempotency-Key inválida.');
   }
   const ingestKey = clientKey || randomUUID();
-  const fp = fingerprint(input.userId, payload, occurredAt, clientKey || '');
+  const fp = inboxEventFingerprint(input.userId, payload, occurredAt, clientKey || '');
   const supabase = createServiceClientSync();
 
   if (clientKey) {
@@ -238,7 +252,7 @@ async function ingestWalletItemUnlocked(input: {
       .eq('user_id', input.userId)
       .eq('fingerprint', fp)
       .gte('created_at', windowStart)
-      .in('status', ['pending', 'confirming', 'confirmed'])
+      .in('status', ACTIVE_EVENT_STATUSES)
       .limit(1);
     if (dupes?.[0]) {
       return { item: dupes[0] as PendingInboxItem, duplicate: true, autoConfirmed: dupes[0].status === 'confirmed' };
@@ -309,6 +323,8 @@ async function ingestWalletItemUnlocked(input: {
     Boolean(accountId) &&
     suggestion.source === 'history' &&
     !payload.amountAmbiguous &&
+    !payload.currencyUnsupported &&
+    isTransactionCurrency(payload.currency) &&
     payload.direction === 'expense';
   if (prefs?.wallet_auto_confirm && complete) {
     try {
@@ -349,15 +365,16 @@ export async function parkRegistryWrite(input: {
       return existing;
     }
   }
+  const type = String(toolPayload?.type || 'expense');
   const payload = {
     amount: input.amount ?? null,
     currency: input.currency,
     merchant: input.merchant ?? null,
     cardName: null as string | null,
+    direction: (type === 'income' ? 'income' : 'expense') as 'expense' | 'income',
   };
   const occurredAt = occurredAtForStorage(input.occurredAt ?? null);
-  const fp = fingerprint(input.userId, payload, occurredAt, ingestKey);
-  const type = String(toolPayload?.type || 'expense');
+  const fp = inboxEventFingerprint(input.userId, payload, occurredAt, ingestKey);
   const supabase = createServiceClientSync();
   const { data, error } = await supabase
     .from('pending_inbox_items')
@@ -401,12 +418,14 @@ export async function parkRegistryWrite(input: {
 export async function listPendingItems(userId: string, status: 'pending' | 'all' = 'pending'): Promise<PendingInboxItem[]> {
   const supabase = createServiceClientSync();
   let q = supabase.from('pending_inbox_items').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(100);
-  if (status === 'pending') q = q.in('status', ['pending', 'confirming']);
+  if (status === 'pending') q = q.in('status', ['pending', 'confirming', 'uncertain']);
   const { data, error } = await q;
   if (error) throw error;
   const rows = (data ?? []) as PendingInboxItem[];
   if (status !== 'pending') return rows;
-  return rows.filter((item) => item.status === 'pending' || isStaleConfirming(item));
+  return rows.filter(
+    (item) => item.status === 'pending' || item.status === 'uncertain' || isStaleConfirming(item)
+  );
 }
 
 async function loadFinancialContext(userId: string): Promise<FinancialContext> {
@@ -420,6 +439,27 @@ export function pendingInboxRequestId(itemId: string): string {
 
 function directionFromType(type: string | undefined): 'expense' | 'income' {
   return type === 'income' ? 'income' : 'expense';
+}
+
+function ledgerChannelFor(row: Pick<PendingInboxItem, 'source'>): WriteChannel {
+  const src = row.source;
+  if (src === 'mcp' || src === 'api' || src === 'wallet' || src === 'telegram' || src === 'web') return src;
+  return 'wallet';
+}
+
+async function loadPriorLedger(
+  userId: string,
+  requestId: string
+): Promise<{ id?: string } | null> {
+  const supabase = createServiceClientSync();
+  const { data } = await supabase
+    .from('transaction_requests')
+    .select('response')
+    .eq('user_id', userId)
+    .eq('request_id', requestId)
+    .maybeSingle();
+  const response = data?.response as { id?: string } | null;
+  return response?.id ? response : null;
 }
 
 export async function confirmPendingItem(input: {
@@ -465,6 +505,7 @@ async function confirmPendingItemUnlocked(input: {
   req?: Request;
 }): Promise<PendingInboxItem> {
   const supabase = createServiceClientSync();
+  const requestId = pendingInboxRequestId(input.itemId);
   const claim = async () =>
     supabase.rpc('claim_pending_inbox_item', {
       p_user_id: input.userId,
@@ -486,7 +527,23 @@ async function confirmPendingItemUnlocked(input: {
     if (existing.status === 'confirmed') return existing as PendingInboxItem;
     if (existing.status === 'discarded') throw new ApiError('Este pendiente ya fue descartado.');
     if (isStaleConfirming(existing as PendingInboxItem)) {
+      const prior = await loadPriorLedger(input.userId, requestId);
       const staleClaimId = (existing as PendingInboxItem).claim_id;
+      if (prior) {
+        const { data: recovered } = await supabase
+          .from('pending_inbox_items')
+          .update({
+            status: 'confirmed',
+            confirmed_transaction_id: prior.id ?? null,
+            claim_id: null,
+          })
+          .eq('id', input.itemId)
+          .eq('user_id', input.userId)
+          .eq('status', 'confirming')
+          .select('*')
+          .maybeSingle();
+        if (recovered) return recovered as PendingInboxItem;
+      }
       let release = supabase
         .from('pending_inbox_items')
         .update({ status: 'pending', claim_id: null })
@@ -521,7 +578,38 @@ async function confirmPendingItemUnlocked(input: {
       .eq('claim_id', myClaimId);
   };
 
+  const markUncertain = async () => {
+    if (!myClaimId) return;
+    await supabase
+      .from('pending_inbox_items')
+      .update({ status: 'uncertain' })
+      .eq('id', input.itemId)
+      .eq('user_id', input.userId)
+      .eq('status', 'confirming')
+      .eq('claim_id', myClaimId);
+  };
+
+  const prior = await loadPriorLedger(input.userId, requestId);
+  if (prior) {
+    const { data: recovered, error: recErr } = await supabase
+      .from('pending_inbox_items')
+      .update({
+        status: 'confirmed',
+        confirmed_transaction_id: prior.id ?? null,
+        claim_id: null,
+      })
+      .eq('id', input.itemId)
+      .eq('user_id', input.userId)
+      .eq('status', 'confirming')
+      .eq('claim_id', myClaimId)
+      .select('*')
+      .maybeSingle();
+    if (recErr) throw recErr;
+    if (recovered) return recovered as PendingInboxItem;
+  }
+
   let committed = false;
+  let ledgerCommitted = false;
   try {
     const parked = { ...(row.tool_payload || {}) };
     const toolName = String(parked._tool || 'create_transaction');
@@ -538,6 +626,12 @@ async function confirmPendingItemUnlocked(input: {
       (typeof parked.accountId === 'string' ? parked.accountId : null) ??
       row.account_id;
     const needsLedgerAmount = toolName === 'create_transaction' || toolName === 'create_transactions';
+    const currencyRaw = String(
+      input.currency || row.currency || parked?.currency || 'ARS'
+    ).trim().toUpperCase();
+    if (needsLedgerAmount && !isTransactionCurrency(currencyRaw)) {
+      throw new ApiError('Moneda no admitida. Usá ARS, USD o EUR.');
+    }
     if (needsLedgerAmount && (amount == null || !Number.isFinite(amount) || amount <= 0)) {
       throw new ApiError('Falta el monto para confirmar.');
     }
@@ -552,18 +646,13 @@ async function confirmPendingItemUnlocked(input: {
     }
 
     const financialContext = await loadFinancialContext(input.userId);
-    const requestId = pendingInboxRequestId(row.id);
     const occurred = occurredAtForStorage(input.occurredAt ?? row.occurred_at);
     const txType = String(parked.type || (row.direction === 'income' ? 'income' : 'expense'));
     const args: ToolArgs = { ...parked, confirm: true };
     if (needsLedgerAmount) {
       args.type = txType;
       args.amount = amount != null && Number.isFinite(amount) && amount > 0 ? amount : parked.amount;
-      args.currency =
-        input.currency ||
-        row.currency ||
-        account?.currency ||
-        (typeof parked.currency === 'string' ? parked.currency : 'ARS');
+      args.currency = currencyRaw;
       args.account = parked.account || account?.name;
       args.accountId = accountId ?? parked.accountId;
       args.category = parked.category;
@@ -585,11 +674,13 @@ async function confirmPendingItemUnlocked(input: {
       userId: input.userId,
       financialContext,
       source: 'wallet',
+      ledgerSource: ledgerChannelFor(row),
       requestId,
     });
     if (result.response?.success !== true) {
       throw new ApiError(String(result.response?.error || 'No se pudo confirmar el movimiento.'));
     }
+    ledgerCommitted = true;
 
     if (accountId) {
       await rememberCardAccount(input.userId, row.card_name, accountId);
@@ -600,12 +691,12 @@ async function confirmPendingItemUnlocked(input: {
       .update({
         status: 'confirmed',
         amount,
-        currency: input.currency || row.currency,
+        currency: currencyRaw,
         merchant: input.merchant ?? row.merchant,
         account_id: accountId,
         category_id: input.categoryId ?? row.category_id,
         occurred_at: occurred,
-        confirmed_transaction_id: result.executed?.[0]?.id ?? null,
+        confirmed_transaction_id: result.executed?.[0]?.id ?? prior?.id ?? null,
         idempotency_key: row.idempotency_key || requestId,
         ingest_key: row.ingest_key || requestId,
         direction: directionFromType(txType),
@@ -634,7 +725,7 @@ async function confirmPendingItemUnlocked(input: {
       await recordIntegrationAudit({
         userId: input.userId,
         action: 'inbox.confirm',
-        source: input.source ?? 'wallet',
+        source: ledgerChannelFor(row),
         ipHash: auditIpFromRequest(input.req),
         userAgent: auditUserAgent(input.req),
         metadata: { itemId: input.itemId },
@@ -643,18 +734,40 @@ async function confirmPendingItemUnlocked(input: {
     committed = true;
     return updated as PendingInboxItem;
   } finally {
-    if (!committed) await revertClaim();
+    if (!committed) {
+      if (ledgerCommitted) await markUncertain();
+      else await revertClaim();
+    }
   }
 }
 
 export async function discardPendingItem(input: { userId: string; itemId: string; req?: Request }): Promise<void> {
   const supabase = createServiceClientSync();
-  const { data, error } = await supabase
+  const { data: existing } = await supabase
     .from('pending_inbox_items')
-    .update({ status: 'discarded', discarded_at: new Date().toISOString() })
+    .select('*')
     .eq('id', input.itemId)
     .eq('user_id', input.userId)
-    .eq('status', 'pending')
+    .maybeSingle();
+  if (!existing) throw new ApiError('Pendiente no encontrado.', 404);
+  const row = existing as PendingInboxItem;
+  if (row.status === 'confirmed') throw new ApiError('Este pendiente ya fue confirmado.');
+  if (row.status === 'discarded') throw new ApiError('Este pendiente ya fue descartado.');
+  if (row.status === 'confirming' && !isStaleConfirming(row)) {
+    throw new ApiError('Este pendiente se está confirmando.', 409);
+  }
+  if (row.status === 'uncertain' || row.status === 'confirming') {
+    const prior = await loadPriorLedger(input.userId, pendingInboxRequestId(input.itemId));
+    if (prior) {
+      throw new ApiError('Este pendiente ya tiene un movimiento. No se puede descartar.', 409);
+    }
+  }
+  const { data, error } = await supabase
+    .from('pending_inbox_items')
+    .update({ status: 'discarded', discarded_at: new Date().toISOString(), claim_id: null })
+    .eq('id', input.itemId)
+    .eq('user_id', input.userId)
+    .in('status', ['pending', 'uncertain', 'confirming'])
     .select('id')
     .maybeSingle();
   if (error) throw error;
@@ -663,7 +776,7 @@ export async function discardPendingItem(input: { userId: string; itemId: string
     await recordIntegrationAudit({
       userId: input.userId,
       action: 'inbox.discard',
-      source: 'wallet',
+      source: ledgerChannelFor(row),
       ipHash: auditIpFromRequest(input.req),
       userAgent: auditUserAgent(input.req),
       metadata: { itemId: input.itemId },

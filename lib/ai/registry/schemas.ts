@@ -121,8 +121,8 @@ export const createRecurringSchema = z.object({
 });
 
 export const TOOL_SCHEMAS = {
-  create_transaction: createTransactionSchema,
-  create_transactions: createTransactionsSchema,
+  create_transaction: z.union([createTransactionSchema, remoteConfirmSchema]),
+  create_transactions: z.union([createTransactionsSchema, remoteConfirmSchema]),
   create_account: createAccountSchema,
   delete_last_transaction: deleteLastTransactionSchema,
   edit_last_transaction: editLastTransactionSchema,

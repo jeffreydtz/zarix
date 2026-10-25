@@ -5,11 +5,12 @@ const FIXTURE_USER = '11111111-1111-4111-8111-111111111111';
 const mocks = vi.hoisted(() => ({
   from: vi.fn(),
   invoke: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
-  createServiceClientSync: () => ({ from: mocks.from }),
-  createBareServiceClient: () => ({ from: mocks.from }),
+  createServiceClientSync: () => ({ from: mocks.from, rpc: mocks.rpc }),
+  createBareServiceClient: () => ({ from: mocks.from, rpc: mocks.rpc }),
 }));
 
 vi.mock('@/lib/integrations/invoke-registry', async () => {
@@ -44,6 +45,7 @@ function chain(result: unknown) {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.spyOn(console, 'error').mockImplementation(() => {});
+  mocks.rpc.mockResolvedValue({ data: true, error: null });
   mocks.invoke.mockResolvedValue({ response: { success: true, accounts: [] } });
 });
 afterEach(() => { vi.restoreAllMocks(); });
@@ -56,6 +58,12 @@ describe('REST /api/v1', () => {
       expect(doc.paths[`/api/v1/tools/${tool.name}`]).toBeTruthy();
     }
     expect(doc.paths['/api/v1/tools/create_transaction']).toBeTruthy();
+    const createTxSchema = (doc.paths['/api/v1/tools/create_transaction'] as {
+      post: { requestBody: { content: { 'application/json': { schema: { anyOf?: unknown[] } } } } };
+    }).post.requestBody.content['application/json'].schema;
+    expect(createTxSchema.anyOf?.length).toBe(2);
+    expect(JSON.stringify(createTxSchema)).toContain('"confirm"');
+    expect(JSON.stringify(createTxSchema)).toContain('"pendingId"');
     expect(doc.paths['/api/v1/tools/delete_last_transaction']).toBeUndefined();
     expect(doc.paths['/api/v1/tools/create_recurring']).toBeUndefined();
     expect(JSON.stringify(doc)).not.toMatch(/hotmail/i);

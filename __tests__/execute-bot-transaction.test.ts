@@ -113,6 +113,39 @@ describe('executeBotTransaction', () => {
     });
   });
 
+  it('looks up retries from the original amount before credit-card FX', async () => {
+    mocks.getExchangeRate.mockResolvedValueOnce(100);
+    const payload = {
+      type: 'expense' as const,
+      amount: 10,
+      currency: 'USD',
+      accountId: ACCOUNT_ID,
+      description: 'USD on ARS card',
+    };
+    await executeBotTransaction(FIXTURE_USER, financialContext, payload, { requestId: 'fx-retry-001' });
+    mocks.getExchangeRate.mockResolvedValueOnce(200);
+    await executeBotTransaction(FIXTURE_USER, financialContext, payload, { requestId: 'fx-retry-001' });
+    expect(mocks.create).toHaveBeenCalledTimes(2);
+    const first = mocks.create.mock.calls[0][0] as { amount: number; currency: string; idempotencyIntent: Record<string, unknown> };
+    const second = mocks.create.mock.calls[1][0] as { amount: number; currency: string; idempotencyIntent: Record<string, unknown> };
+    expect(first.amount).toBe(1000);
+    expect(second.amount).toBe(2000);
+    expect(first.idempotencyIntent).toMatchObject({ amount: 10, currency: 'USD', type: 'expense' });
+    expect(second.idempotencyIntent).toEqual(first.idempotencyIntent);
+  });
+
+  it('aborts an explicit unsupported currency instead of coercing to ARS', async () => {
+    const result = await executeBotTransaction(FIXTURE_USER, financialContext, {
+      type: 'expense',
+      amount: 10,
+      currency: 'GBP',
+      accountId: ACCOUNT_ID,
+    });
+    expect(result.kind).toBe('abort');
+    expect(String((result as { reply: string }).reply)).toMatch(/Moneda no admitida/);
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
   it('aborts a credit-card FX conversion when executable FX is unavailable', async () => {
     const { FxUnavailableError } = await import('@/lib/executable-fx');
     mocks.getExchangeRate.mockRejectedValue(new FxUnavailableError('USD→ARS'));

@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { createMcpHandler, withMcpAuth } from 'mcp-handler';
 import { fromJsonSchema, type AuthInfo } from '@modelcontextprotocol/server';
 import { TOOL_SCHEMAS } from '@/lib/ai/registry';
-import { zodToJsonSchema } from '@/lib/ai/registry/json-schema';
+import { advertisedToolJsonSchema } from '@/lib/ai/registry/json-schema';
 import { invokeRegistryForPat, resolveIdempotencyKey, toolsVisibleToScopes } from '@/lib/integrations/invoke-registry';
 import { authenticatePersonalAccessToken } from '@/lib/services/personal-access-tokens';
 import { looksLikePersonalAccessToken, parseBearerToken, hashPersonalAccessToken } from '@/lib/auth/personal-access-token';
@@ -32,7 +32,7 @@ function authFrom(ctx: { http?: { req?: Request; authInfo?: AuthInfo } }): AuthI
 
 function jsonSchemaForTool(name: string) {
   const schema = TOOL_SCHEMAS[name as keyof typeof TOOL_SCHEMAS];
-  return fromJsonSchema(zodToJsonSchema(schema) as { type: 'object' });
+  return fromJsonSchema(advertisedToolJsonSchema(schema) as { type: 'object' });
 }
 
 function sanitizeToolError(error: unknown): string {

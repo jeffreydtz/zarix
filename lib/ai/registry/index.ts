@@ -14,4 +14,4 @@ export { geminiFunctionDeclarations, registryToolToGemini } from './gemini';
 export { maskSensitiveText, maskSensitiveValue, asUntrustedData, UNTRUSTED_INSTRUCTION } from './mask';
 export { TOOL_SCHEMAS, remoteConfirmSchema, remoteConfirmHasExtraFields, FROZEN_CONFIRM_KEYS } from './schemas';
 export { loadRegistryFinancialContext } from './context';
-export { zodToJsonSchema } from './json-schema';
+export { advertisedToolJsonSchema, zodToJsonSchema } from './json-schema';

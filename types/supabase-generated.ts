@@ -822,7 +822,10 @@ isOneToOne: false
 { Args: { "p_batch_id": string,"p_request_hash": string,"p_request_id": string,"p_skip_duplicates"?: boolean,"p_transaction": Json,"p_user_id": string }; Returns: Json
                            },
 "create_installment_transactions":
-{ Args: { "p_account_id": string,"p_category_id": string,"p_currency": string,"p_description": string,"p_installments": number,"p_start_date"?: string,"p_total_amount": number,"p_user_id": string }; Returns: string
+{ Args: { "p_account_id": string,"p_category_id": string,"p_currency": string,"p_description": string,"p_installments": number,"p_start_date"?: string,"p_source"?: string,"p_total_amount": number,"p_user_id": string }; Returns: string
+                           },
+"rate_limit_hit":
+{ Args: { "p_key": string,"p_max": number,"p_window_ms": number }; Returns: boolean
                            },
 "create_investment_once":
 { Args: { "p_investment": Json,"p_request_hash": string,"p_request_id": string,"p_user_id": string }; Returns: Json

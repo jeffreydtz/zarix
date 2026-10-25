@@ -44,6 +44,37 @@ CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$
 $$;
 GRANT USAGE ON SCHEMA public, auth, extensions TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION auth.uid(), auth.role() TO anon, authenticated, service_role;
+CREATE SCHEMA vault;
+CREATE TABLE vault.secrets (
+  id uuid PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
+  name text UNIQUE,
+  secret text,
+  description text
+);
+CREATE VIEW vault.decrypted_secrets AS
+  SELECT id, name, secret AS decrypted_secret, description FROM vault.secrets;
+CREATE FUNCTION vault.create_secret(p_secret text, p_name text, p_description text)
+RETURNS uuid LANGUAGE plpgsql AS $$
+DECLARE sid uuid;
+BEGIN
+  INSERT INTO vault.secrets(name, secret, description) VALUES (p_name, p_secret, p_description)
+  RETURNING id INTO sid;
+  RETURN sid;
+END $$;
+CREATE FUNCTION vault.update_secret(p_id uuid, p_secret text, p_name text, p_description text)
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  UPDATE vault.secrets
+     SET secret = p_secret,
+         name = COALESCE(p_name, name),
+         description = COALESCE(p_description, description)
+   WHERE id = p_id;
+END $$;
+GRANT USAGE ON SCHEMA vault TO service_role;
+GRANT ALL ON TABLE vault.secrets TO service_role;
+GRANT SELECT ON vault.decrypted_secrets TO service_role;
+GRANT EXECUTE ON FUNCTION vault.create_secret(text, text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION vault.update_secret(uuid, text, text, text) TO service_role;
 `;
 export async function emptyDatabase({ legacyGrants = false } = {}) {
   const db = await PGlite.create({ extensions: { uuid_ossp, pg_trgm } });

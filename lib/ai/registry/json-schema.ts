@@ -50,6 +50,18 @@ function describe(schema: z.ZodTypeAny): JsonSchema {
     case 'ZodObject':
       node = objectSchema(inner);
       break;
+    case 'ZodLiteral': {
+      const value = inner._def.value as string | number | boolean;
+      const literalType =
+        typeof value === 'number' ? 'number' : typeof value === 'boolean' ? 'boolean' : 'string';
+      node = { type: literalType, const: value, enum: [value] };
+      break;
+    }
+    case 'ZodUnion':
+      node = {
+        anyOf: (inner._def.options as z.ZodTypeAny[]).map((option) => describe(option)),
+      };
+      break;
     default:
       node = {};
   }
@@ -78,4 +90,13 @@ function objectSchema(schema: z.ZodTypeAny): JsonSchema {
 
 export function zodToJsonSchema(schema: z.ZodTypeAny): JsonSchema {
   return describe(schema);
+}
+
+/** MCP requires type:object at the root; keep union writes as anyOf. */
+export function advertisedToolJsonSchema(schema: z.ZodTypeAny): JsonSchema {
+  const json = zodToJsonSchema(schema);
+  if (Array.isArray(json.anyOf) && json.type !== 'object') {
+    return { type: 'object', anyOf: json.anyOf };
+  }
+  return json;
 }

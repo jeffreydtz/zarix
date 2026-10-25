@@ -2,29 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import {
+  confirmPreviewFromDraft,
+  confirmRequestFromDraft,
+  effectiveInboxItem,
+  type InboxDraft,
+} from '@/lib/pending-inbox-preview';
 
-type ToolPayload = {
-  type?: string;
-  amount?: number;
-  account?: string;
-  accountId?: string;
-  installments?: number;
-  destinationAccount?: string;
-  _tool?: string;
-};
-
-type Item = {
-  id: string;
-  amount: number | null;
-  currency: string;
-  merchant: string | null;
-  card_name: string | null;
-  account_id: string | null;
-  status: string;
-  occurred_at: string | null;
-  created_at: string;
-  tool_payload?: ToolPayload | null;
-};
+type Item = InboxDraft;
 
 type Account = { id: string; name: string; currency: string };
 
@@ -53,17 +38,11 @@ export default function PendientesPage() {
   };
 
   const confirm = async (item: Item) => {
-    const draft = { ...item, ...editing[item.id] };
+    const draft = effectiveInboxItem(item, editing[item.id]);
     const res = await fetch(`/api/pending-inbox/${item.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'confirm',
-        amount: draft.amount == null ? undefined : Number(draft.amount),
-        merchant: draft.merchant,
-        accountId: draft.account_id,
-        currency: draft.currency,
-      }),
+      body: JSON.stringify(confirmRequestFromDraft(draft)),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -104,23 +83,16 @@ export default function PendientesPage() {
         {message && <p className="text-sm text-foreground">{message}</p>}
         <ul className="space-y-3">
           {items.map((item) => {
-            const draft = { ...item, ...editing[item.id] };
-            const parked = item.tool_payload || {};
-            const parkedType = parked.type || 'expense';
-            const parkedAmount = parked.amount ?? draft.amount;
-            const parkedAccount =
-              accounts.find((a) => a.id === (parked.accountId || draft.account_id))?.name ||
-              parked.account ||
-              'cuenta sin elegir';
-            const parkedInstallments = parked.installments && parked.installments > 1 ? parked.installments : 1;
+            const draft = effectiveInboxItem(item, editing[item.id]);
+            const preview = confirmPreviewFromDraft(draft, accounts);
             return (
               <li key={item.id} className="card space-y-3">
                 <p className="text-sm font-medium text-foreground">
-                  Al confirmar: {parkedType}
-                  {parkedAmount != null ? ` · ${parkedAmount} ${draft.currency}` : ''}
-                  {` · ${parkedAccount}`}
-                  {parkedInstallments > 1 ? ` · ${parkedInstallments} cuotas` : ''}
-                  {parked.destinationAccount ? ` → ${parked.destinationAccount}` : ''}
+                  Al confirmar: {preview.directionLabel}
+                  {preview.amount != null ? ` · ${preview.amount} ${preview.currency}` : ''}
+                  {` · ${preview.accountName}`}
+                  {preview.installments > 1 ? ` · ${preview.installments} cuotas` : ''}
+                  {preview.destinationAccount ? ` → ${preview.destinationAccount}` : ''}
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="text-sm">
@@ -164,8 +136,9 @@ export default function PendientesPage() {
                   </label>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {draft.currency} · {new Date(item.created_at).toLocaleString('es-AR')}
+                  {preview.directionLabel} · {draft.currency} · {new Date(item.created_at).toLocaleString('es-AR')}
                   {item.status === 'confirming' ? ' · reintento (quedó a medias)' : ''}
+                  {item.status === 'uncertain' ? ' · resultado incierto (hay que reconciliar)' : ''}
                 </p>
                 <div className="flex gap-2">
                   <button type="button" className="btn-primary" onClick={() => confirm(item)}>

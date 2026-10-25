@@ -14,6 +14,6 @@ export function transactionRequestHash(input: Record<string, unknown>): string {
     }
     return value;
   };
-  const { requestId: _requestId, ...intent } = input;
+  const { requestId: _requestId, idempotencyIntent: _idempotencyIntent, ...intent } = input;
   return createHash('sha256').update(JSON.stringify(canonical(intent))).digest('hex');
 }

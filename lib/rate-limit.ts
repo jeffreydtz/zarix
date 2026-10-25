@@ -22,6 +22,25 @@ function prune(now: number) {
   }
 }
 
+export async function rateLimitAllowShared(
+  key: string,
+  max: number,
+  windowMs: number
+): Promise<boolean> {
+  const { createBareServiceClient } = await import('@/lib/supabase/server');
+  const supabase = createBareServiceClient();
+  const { data, error } = await supabase.rpc('rate_limit_hit', {
+    p_key: key,
+    p_max: max,
+    p_window_ms: windowMs,
+  });
+  if (error) {
+    console.error('[rate-limit] shared counter unavailable');
+    return false;
+  }
+  return data === true;
+}
+
 export function rateLimitAllow(
   key: string,
   max: number,

@@ -15,8 +15,10 @@ export type RegistryToolResult = {
 export type RegistryToolContext = {
   userId: string;
   financialContext: import('@/lib/ai/prompts').FinancialContext;
-  /** Channel that originated the write. Read tools ignore it. */
+  /** Channel that originated the write. Read tools ignore it. Inbox confirm stays 'wallet' so it does not re-park. */
   source?: WriteChannel;
+  /** Persisted transactions.source. Separate from transport `source` so inbox confirm can keep mcp/api/wallet. */
+  ledgerSource?: WriteChannel;
   /** If set, the executor rejects tools whose scopes are not a subset. */
   allowedScopes?: readonly ToolScope[];
   /** Durable request id. Header Idempotency-Key wins over body requestId. */

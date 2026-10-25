@@ -91,12 +91,28 @@ export function defaultPatExpiresAt(from = new Date()): string {
   return new Date(from.getTime() + PAT_DEFAULT_TTL_MS).toISOString();
 }
 
-/** Never returns null: null/false/invalid/past dates clamp to 1 year. Max TTL is 1 year. */
+/** Never returns null: null/false/invalid/past dates clamp to 1 year. Max TTL is 1 year. Creates only. */
 export function parsePatExpiry(input: unknown, fallback = defaultPatExpiresAt()): string {
   if (input === null || input === false || input === undefined || input === '') return fallback;
   const d = new Date(String(input));
   if (Number.isNaN(d.getTime())) return fallback;
   if (d.getTime() <= Date.now()) return fallback;
+  const max = Date.now() + PAT_DEFAULT_TTL_MS;
+  return new Date(Math.min(d.getTime(), max)).toISOString();
+}
+
+/** PATCH: reject missing, invalid, or past dates. Do not clamp to a new year. */
+export function parsePatExpiryForUpdate(input: unknown): string {
+  if (input === null || input === false || input === undefined || input === '') {
+    throw new Error('La fecha de vencimiento es inválida.');
+  }
+  const d = new Date(String(input));
+  if (Number.isNaN(d.getTime())) {
+    throw new Error('La fecha de vencimiento es inválida.');
+  }
+  if (d.getTime() <= Date.now()) {
+    throw new Error('La fecha de vencimiento ya pasó.');
+  }
   const max = Date.now() + PAT_DEFAULT_TTL_MS;
   return new Date(Math.min(d.getTime(), max)).toISOString();
 }
