@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import { FxUnavailableError } from '@/lib/executable-fx';
 
 const mocks = vi.hoisted(() => ({
   investments: [] as Array<Record<string, unknown>>,
@@ -32,7 +33,7 @@ vi.mock('@/lib/market-data/quote-refresh', () => {
     refreshQuotesForInvestments: async (investments: Array<{
       type: string; ticker: string | null; market_currency?: string | null;
     }>) => {
-      const map = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null }>();
+      const map = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null; fxStale?: boolean }>();
       for (const inv of investments) {
         const key = quoteCacheKeyForPosition(inv);
         if (!key) continue;
@@ -41,13 +42,13 @@ vi.mock('@/lib/market-data/quote-refresh', () => {
           const quote = await mocks.crypto(ticker);
           const price = Number(quote?.priceUSD);
           if (Number.isFinite(price) && price > 0) {
-            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null });
+            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null, fxStale: quote.fxStale });
           }
         } else {
           const quote = await mocks.stock(ticker);
           const price = Number(quote?.price);
           if (Number.isFinite(price) && price > 0) {
-            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null });
+            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null, fxStale: quote.fxStale });
           }
         }
       }
@@ -68,7 +69,7 @@ beforeEach(() => {
   mocks.investments = [{ id: 'investment-1', type: 'crypto', ticker: 'BTC', purchase_currency: 'USD' }];
   mocks.crypto.mockResolvedValue({ priceUSD: 100 });
   mocks.stock.mockResolvedValue({ price: 100 });
-  mocks.dolar.mockResolvedValue({ blue: { sell: 1200 } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), buy: 1200, sell: 1200  }, mep: { timestamp: new Date(), buy: 1200, sell: 1200  } });
   mocks.alert.mockResolvedValue(undefined);
   mocks.upsert.mockResolvedValue({ error: null });
   mocks.update.mockImplementation(() => ({ eq: vi.fn().mockResolvedValue({ error: null }) }));
@@ -86,21 +87,41 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllEnvs(); vi.restoreAllMocks(); });
 
 describe('quote cron provider failure reporting', () => {
-  it.each(['crypto', 'stock_us', 'stock_arg', 'cedear'])('counts %s fetch failures and alerts admin', async (type) => {
+  it('M4: returns a real error for a DB/RLS failure during executable FX resolution', async () => {
+    mocks.dolar.mockRejectedValue(Object.assign(new Error('Fixture permission failure'), { code: '42501' }));
+    const response = await GET(request());
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ error: 'Internal error' });
+    expect(mocks.dolar).toHaveBeenCalledWith({ require: ['mep'], executable: true });
+    expect(mocks.update).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+  it.each(['crypto', 'stock_us', 'stock_arg', 'cedear'])('reports unexpected %s refresh failures as errors and alerts admin', async (type) => {
     mocks.investments[0].type = type;
     mocks.crypto.mockRejectedValue(new Error('synthetic provider outage'));
     mocks.stock.mockRejectedValue(new Error('synthetic provider outage'));
     const response = await GET(request());
-    expect(await response.json()).toMatchObject({ total: 1, processed: 0, errors: 1 });
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ error: 'Internal error' });
     expect(mocks.update).not.toHaveBeenCalled();
-    expect(mocks.alert).toHaveBeenCalledWith('Cron "update-prices" terminó con 1 ítem(es) fallido(s).');
+    expect(mocks.alert).toHaveBeenCalledWith('Cron "update-prices" FALLÓ. Revisar el registro correlacionado.');
   });
 
   it('reports an FX failure even if an investment price updates', async () => {
-    mocks.dolar.mockRejectedValue(new Error('synthetic FX outage'));
+    mocks.dolar.mockRejectedValue(new FxUnavailableError('MEP'));
     const response = await GET(request());
     expect(await response.json()).toMatchObject({ total: 1, processed: 1, errors: 1 });
     expect(mocks.alert).toHaveBeenCalledOnce();
+  });
+
+  it.each(['crypto', 'stock_us'])('rejects a %s quote flagged fxStale at the write boundary', async (type) => {
+    mocks.investments[0].type = type;
+    mocks.crypto.mockResolvedValue({ priceUSD: 100, fxStale: true });
+    mocks.stock.mockResolvedValue({ price: 100, fxStale: true });
+    const response = await GET(request());
+    expect(await response.json()).toMatchObject({ total: 1, processed: 0, errors: 1 });
+    expect(mocks.update).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
   });
 
   it.each([0, -1, NaN, Infinity])('counts invalid crypto price %s without overwriting the investment', async (priceUSD) => {
@@ -111,8 +132,8 @@ describe('quote cron provider failure reporting', () => {
     expect(mocks.alert).toHaveBeenCalledOnce();
   });
 
-  it('counts an invalid FX quote as a provider failure', async () => {
-    mocks.dolar.mockResolvedValue({ blue: { sell: 0 } });
+  it('counts an invalid MEP quote as a provider failure without blocking native refresh', async () => {
+    mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), buy: 1200, sell: 1200  }, mep: { timestamp: new Date(), sell: 0  } });
     const response = await GET(request());
     expect(await response.json()).toMatchObject({ processed: 1, errors: 1 });
     expect(mocks.alert).toHaveBeenCalledOnce();
@@ -126,7 +147,7 @@ describe('quote cron provider failure reporting', () => {
   });
 
   it('adds provider failures to individual investment update failures', async () => {
-    mocks.dolar.mockRejectedValue(new Error('synthetic FX outage'));
+    mocks.dolar.mockRejectedValue(new FxUnavailableError('MEP'));
     mocks.update.mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: new Error('synthetic write failure') }) });
     const response = await GET(request());
     expect(await response.json()).toMatchObject({ total: 1, processed: 0, errors: 2 });
@@ -134,7 +155,7 @@ describe('quote cron provider failure reporting', () => {
 
   it('does not carry failure counts across invocations', async () => {
     mocks.crypto.mockRejectedValueOnce(new Error('temporary synthetic outage'));
-    expect(await (await GET(request())).json()).toMatchObject({ errors: 1 });
+    expect((await GET(request())).status).toBe(500);
     mocks.alert.mockClear();
     expect(await (await GET(request())).json()).toMatchObject({ processed: 1, errors: 0 });
     expect(mocks.alert).not.toHaveBeenCalled();
@@ -149,7 +170,7 @@ describe('FX refresh is independent of investment count', () => {
     expect(mocks.upsert).not.toHaveBeenCalled();
   });
   it('alerts on FX outage even when there are no investments', async () => {
-    mocks.investments = []; mocks.dolar.mockRejectedValue(new Error('synthetic outage'));
+    mocks.investments = []; mocks.dolar.mockRejectedValue(new FxUnavailableError('MEP'));
     expect(await (await GET(request())).json()).toMatchObject({ total: 0, errors: 1 });
     expect(mocks.alert).toHaveBeenCalledOnce();
   });

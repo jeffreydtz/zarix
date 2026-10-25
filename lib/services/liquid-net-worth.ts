@@ -28,26 +28,35 @@ export interface LiquidNetWorthInput {
     | 'creditCards'
     | 'blueReferences'
     | 'valuation'
+    | 'fxUnavailable'
+    | 'fxStale'
+    | 'fxAsOf'
   >;
   portfolio: {
-    totalCurrentValue?: number;
-    totalCurrentValueArsBlue?: number;
+    totalCurrentValue?: number | null;
+    totalCurrentValueArsBlue?: number | null;
     blueReference?: BlueFxReference;
+    fxUnavailable?: boolean;
+    fxStale?: boolean;
+    fxAsOf?: string | null;
     investments?: unknown[];
   } | null;
-  blueRate: number;
+  blueRate: number | null;
 }
 
 export function composeLiquidNetWorth(input: LiquidNetWorthInput): NetWorthNow {
   const { balances, portfolio, blueRate } = input;
-  const positionsUSD = portfolio?.totalCurrentValue ?? 0;
-  const positionsARSBlue = portfolio?.totalCurrentValueArsBlue ?? 0;
+  const positionsUSD = portfolio?.fxUnavailable ? null : portfolio?.totalCurrentValue ?? 0;
+  const positionsARSBlue = portfolio?.fxUnavailable ? null : portfolio?.totalCurrentValueArsBlue ?? 0;
   const hasPositions = (portfolio?.investments?.length ?? 0) > 0 || positionsUSD !== 0;
 
   return {
     ...(balances.valuation ? { valuation: balances.valuation } : {}),
+    fxUnavailable: Boolean(balances.fxUnavailable || blueRate == null),
+    fxStale: Boolean(balances.fxStale || portfolio?.fxStale),
+    fxAsOf: [balances.fxAsOf, portfolio?.fxAsOf].filter((date): date is string => Boolean(date)).sort()[0] ?? null,
     liquidUSD: balances.liquidUSD,
-    investmentsUSD: (balances.investmentsUSD ?? 0) + positionsUSD,
+    investmentsUSD: balances.fxUnavailable || positionsUSD == null ? null : (balances.investmentsUSD ?? 0) + positionsUSD,
     totalUSD: balances.liquidUSD,
     totalARSBlue: balances.liquidARSBlue,
     blueRate,

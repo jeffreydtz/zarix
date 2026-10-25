@@ -29,16 +29,26 @@ beforeEach(() => {
 });
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
-describe('get_quotes is read-only', () => {
-  it('does not insert into exchange_rates on a read', async () => {
+describe('display quotes vs executable FX writes', () => {
+  it('persists live provider samples on a display getDolarQuotes (weekend fallback)', async () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     await cotizacionesService.getDolarQuotes();
-    expect(mocks.insert).not.toHaveBeenCalled();
+    expect(mocks.insert).toHaveBeenCalled();
   });
 
-  it('persists only when the cron path asks for it', async () => {
+  it('getAllQuotes is the display path used by get_quotes (not executable)', async () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    await cotizacionesService.getDolarQuotes({ persist: true });
-    expect(mocks.insert).toHaveBeenCalled();
+    const quotes = await cotizacionesService.getAllQuotes();
+    expect(quotes.dolar.blue?.sell).toBe(1500);
+    expect(quotes.dolar.status).toBe('available');
+  });
+
+  it('getExchangeRate rejects when live FX is down and nothing executable is stored', async () => {
+    vi.mocked(fetch).mockRejectedValue(new Error('fixture outage'));
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toMatchObject({
+      name: 'FxUnavailableError',
+      code: 'FX_UNAVAILABLE',
+    });
   });
 });

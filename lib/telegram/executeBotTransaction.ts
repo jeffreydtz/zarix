@@ -2,6 +2,7 @@ import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error'
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
 import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
@@ -149,8 +150,12 @@ export async function executeBotTransaction(
           finalCurrency = selectedAccount.currency;
           conversionNote = ` (${txData.amount} ${txCurrency} × $${rate.toFixed(2)} = $${finalAmount.toFixed(2)} ${finalCurrency})`;
         }
-      } catch {
-        console.log('Could not get exchange rate, using original currency');
+      } catch (error) {
+        if (!(error instanceof FxUnavailableError)) throw error;
+        return {
+          kind: 'abort',
+          reply: error.message,
+        };
       }
     }
   }
@@ -244,6 +249,9 @@ export async function executeBotTransaction(
       },
     };
   } catch (txError: unknown) {
+    if (txError instanceof FxUnavailableError) {
+      return { kind: 'abort', reply: txError.message };
+    }
     console.error('Transaction error:', txError);
     // A transport error can happen after the ledger commit. Returning abort here
     // invites the model to issue a second write with a fresh operation key.

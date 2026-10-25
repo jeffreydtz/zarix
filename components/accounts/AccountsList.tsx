@@ -162,7 +162,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                             {secondaryCur}
                           </span>
                         </div>
-                        {!account.valuationIssue && <div className="text-[11px] sm:text-xs font-medium tabular-nums text-muted-foreground">
+                        {!account.valuationIssue && !account.fxUnavailable && <div className="text-[11px] sm:text-xs font-medium tabular-nums text-muted-foreground">
                           Total (ARS blue):{' '}
                           <span className="font-semibold text-destructive">
                             -$
@@ -301,7 +301,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
         })}
       </AnimatePresence>
 
-      {aggregates && (
+      {aggregates && !aggregates.fxUnavailable && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

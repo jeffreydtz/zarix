@@ -1189,6 +1189,7 @@ export async function POST(request: NextRequest) {
     let imported = 0;
     let skipped = 0;
     let pending = 0;
+    let fxUnavailable = false;
     const skippedDetails: ImportSkippedDetail[] = [];
 
     const pushSkip = (detail: ImportSkippedDetail) => {
@@ -1511,7 +1512,9 @@ export async function POST(request: NextRequest) {
             // A retry may miss a still-running earlier write before FX fails.
             // Unlike immutable file validation, unavailable live data cannot
             // prove that the original same-ID operation did not commit.
+            const previousPending = pending;
             await reconcileRow(identity);
+            if (pending > previousPending) fxUnavailable = true;
             continue;
           }
         }
@@ -1549,7 +1552,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: pending === 0,
       status: pending > 0 ? 'pending' : 'completed',
-      ...(pending > 0 ? { error: 'Hay movimientos pendientes de confirmación. Reintentá el mismo lote con el archivo original sin editarlo; no inicies un lote nuevo.' } : {}),
+      ...(pending > 0 ? {
+        error: `${fxUnavailable ? 'Cotización no disponible, inválida o vencida para convertir los movimientos. ' : ''}Hay movimientos pendientes de confirmación. Reintentá el mismo lote con el archivo original sin editarlo; no inicies un lote nuevo.`,
+      } : {}),
       batchId,
       imported,
       skipped,

@@ -8,6 +8,7 @@ import { investmentsService } from '@/lib/services/investments';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
 import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
+import { FxUnavailableError, isExecutableDolarQuote } from '@/lib/executable-fx';
 
 export interface NetWorthPoint {
   snapshot_date: string;
@@ -20,18 +21,21 @@ export interface NetWorthPoint {
 
 export interface NetWorthNow {
   liquidUSD: number;
-  investmentsUSD: number;
+  investmentsUSD: number | null;
   totalUSD: number;
   totalARSBlue: number;
-  blueRate: number;
+  blueRate: number | null;
+  fxUnavailable?: boolean;
+  fxStale?: boolean;
+  fxAsOf?: string | null;
   availableUSD?: number;
   availableARSBlue?: number;
   creditCardDebtUSD?: number;
   creditCardDebtARSBlue?: number;
   creditCards?: CreditCardDebtSlice[];
   brokerCashUSD?: number;
-  positionsUSD?: number;
-  positionsARSBlue?: number;
+  positionsUSD?: number | null;
+  positionsARSBlue?: number | null;
   /** Current components can have different quote samples; no universal source is inferred. */
   blueReferences?: BlueFxComponentReference[];
   valuation?: PartialAccountValuation;
@@ -61,11 +65,11 @@ const EMPTY_BALANCES = {
 function blueRateFromConvertedAccounts(
   balances: { blueReferences?: Array<{ rate: number }> },
   accounts: Array<{ blueReference?: { rate: number } }>
-): number {
+): number | null {
   const fromTotals = balances.blueReferences?.find((reference) => reference.rate > 0)?.rate;
   if (fromTotals && fromTotals > 0) return fromTotals;
   const fromRow = accounts.find((account) => (account.blueReference?.rate ?? 0) > 0)?.blueReference?.rate;
-  return fromRow && fromRow > 0 ? fromRow : 0;
+  return fromRow && fromRow > 0 ? fromRow : null;
 }
 
 export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
@@ -81,13 +85,19 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
       : EMPTY_BALANCES;
 
   let blueRate = blueRateFromConvertedAccounts(balances, accounts);
-  if (!(blueRate > 0)) {
-    const dolar = await cotizacionesService.getDolarQuotes().catch(() => null);
-    blueRate = dolar?.blue?.sell ?? 0;
+  let fallbackFx: { fxStale?: boolean; fxAsOf?: string | null } = {};
+  if (blueRate == null) {
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(error => {
+      if (!(error instanceof FxUnavailableError)) throw error;
+      return null;
+    });
+    blueRate = dolar?.blue?.sell ?? null;
+    fallbackFx = { fxStale: dolar?.blue?.stale,
+      fxAsOf: (dolar?.blue?.asOf ?? dolar?.blue?.timestamp)?.toISOString() ?? null };
   }
 
   return composeLiquidNetWorth({
-    balances,
+    balances: { ...balances, ...fallbackFx },
     portfolio,
     blueRate,
   });
@@ -100,15 +110,27 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
 export async function recordNetWorthSnapshot(userId: string): Promise<boolean> {
   try {
     const now = await computeNetWorth(userId);
-    if (now.valuation?.status === 'partial') {
+    if (now.valuation?.status === 'partial' || now.fxUnavailable || now.fxStale || now.investmentsUSD == null) {
       console.warn('[net-worth] snapshot salteado: valoración parcial');
       return false;
     }
     // Sin cotización no hay conversión confiable: mejor saltear el día que
     // guardar un total en 0 que ensucie el gráfico. Se loguea para que un
     // hueco en la serie sea diagnosticable.
-    if (!(now.blueRate > 0)) {
+    if (now.blueRate == null || !(now.blueRate > 0)) {
       console.warn('[net-worth] snapshot salteado: sin cotización blue');
+      return false;
+    }
+
+    // Validate the source times again at the write boundary, including every
+    // component sample. Display flags alone cannot authorize a persisted total.
+    const references = now.blueReferences?.length ? now.blueReferences.map(({ reference }) => reference)
+      : [{ rate: now.blueRate, observedAt: now.fxAsOf }];
+    if (references.some(reference => !isExecutableDolarQuote({
+      type: 'blue', buy: reference.rate, sell: reference.rate,
+      timestamp: new Date(reference.observedAt ?? Number.NaN),
+    }))) {
+      console.warn('[net-worth] snapshot salteado: cotización blue vencida o sin fecha');
       return false;
     }
 

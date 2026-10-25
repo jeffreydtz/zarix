@@ -1,5 +1,6 @@
 'use client';
 
+import FxStatusBanner from '@/components/ui/FxStatusBanner';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -146,6 +147,7 @@ export default function InvestmentsWorkspace({
         animate={{ opacity: 1, y: 0 }}
         transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
       >
+        <FxStatusBanner {...portfolio} />
         <PortfolioSummary
           totalValue={portfolio.totalCurrentValue}
           totalPnL={portfolio.totalPnL}

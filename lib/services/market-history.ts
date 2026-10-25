@@ -49,9 +49,8 @@ async function fetchSeries(
     .gte('timestamp', since.toISOString())
     .order('timestamp', { ascending: true });
 
-  if (error || !data) {
-    return [];
-  }
+  if (error) throw error;
+  if (!data) return [];
 
   return toDailySeries(data as ExchangeRateRow[]);
 }
@@ -59,21 +58,16 @@ async function fetchSeries(
 /**
  * Series de ~7 días (1 punto por día, el último del día) para el strip
  * "Mercado hoy" del dashboard: dólar blue (USD/ARS) y BTC/ETH (USD).
- * Arrays vacíos si no hay datos persistidos (nunca lanza).
+ * Arrays vacíos si no hay datos persistidos; los errores de DB se propagan.
  */
 export async function getMarketSparklines(): Promise<MarketSparklines> {
-  try {
-    const supabase = createServiceClientSync();
+  const supabase = createServiceClientSync();
 
-    const [blue, btc, eth] = await Promise.all([
-      fetchSeries(supabase, { source: 'blue', from: 'USD', to: 'ARS' }),
-      fetchSeries(supabase, { source: 'coingecko', from: 'BTC', to: 'USD' }),
-      fetchSeries(supabase, { source: 'coingecko', from: 'ETH', to: 'USD' }),
-    ]);
+  const [blue, btc, eth] = await Promise.all([
+    fetchSeries(supabase, { source: 'blue', from: 'USD', to: 'ARS' }),
+    fetchSeries(supabase, { source: 'coingecko', from: 'BTC', to: 'USD' }),
+    fetchSeries(supabase, { source: 'coingecko', from: 'ETH', to: 'USD' }),
+  ]);
 
-    return { blue, btc, eth };
-  } catch (error) {
-    console.error('Error fetching market sparklines:', error);
-    return { blue: [], btc: [], eth: [] };
-  }
+  return { blue, btc, eth };
 }

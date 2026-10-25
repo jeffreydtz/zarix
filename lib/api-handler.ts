@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server';
 import type { User as AuthUser } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { isRejectedSessionError } from '@/lib/auth/session-error';
+import { unstable_rethrow } from 'next/navigation';
+import { FxUnavailableError } from '@/lib/executable-fx';
 
 // ─────────────────────────────────────────────────────────────────
 // Utilidades compartidas para route handlers.
@@ -39,7 +41,8 @@ export async function requireUser(): Promise<AuthedContext> {
   let result;
   try {
     result = await supabase.auth.getUser();
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
     throw new ApiError('No pudimos verificar tu sesión. Volvé a intentar en unos minutos.', 503);
   }
   const { data: { user }, error } = result;
@@ -57,6 +60,10 @@ export async function requireUser(): Promise<AuthedContext> {
  * crudo de un error desconocido (evita exponer detalles de la DB).
  */
 export function errorResponse(error: unknown): NextResponse {
+  unstable_rethrow(error);
+  if (error instanceof FxUnavailableError) {
+    return NextResponse.json({ error: error.message }, { status: 503 });
+  }
   if (error instanceof ApiError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }

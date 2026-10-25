@@ -8,6 +8,7 @@ import { authenticatePersonalAccessToken } from '@/lib/services/personal-access-
 import { looksLikePersonalAccessToken, parseBearerToken, hashPersonalAccessToken } from '@/lib/auth/personal-access-token';
 import { mcpOAuthEnabled } from '@/lib/auth/mcp-oauth';
 import { ApiError } from '@/lib/api-handler';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 import { hashClientIp } from '@/lib/integrations/audit';
 import { MAX_JSONRPC_BATCH, canonicalAppOrigin, readLimitedText, rejectJsonRpcBatch } from '@/lib/http/body-limit';
@@ -35,7 +36,7 @@ function jsonSchemaForTool(name: string) {
 }
 
 function sanitizeToolError(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
+  if (error instanceof ApiError || error instanceof FxUnavailableError) return error.message;
   return MCP_ERROR;
 }
 

@@ -235,16 +235,21 @@ bot.command('cuentas', async (ctx) => {
     message += `${acc.icon || '💳'} *${escapeMd(acc.name)}*\n`;
     message += `   ${sign}$${acc.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })} ${acc.currency}\n`;
 
-    if (acc.currency !== 'ARS') {
-      message += `   ≈ $${acc.balance_ars_blue?.toLocaleString('es-AR') || 0} ARS\n`;
+    if (acc.currency !== 'ARS' && acc.balance_ars_blue != null) {
+      message += `   ≈ $${acc.balance_ars_blue.toLocaleString('es-AR')} ARS\n`;
     }
     message += `\n`;
   });
 
   message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
   message += `📊 *TOTAL PATRIMONIO*\n`;
-  message += `💵 $${total.totalARSBlue.toLocaleString('es-AR')} ARS (blue)\n`;
-  message += `💵 USD ${total.totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}\n`;
+  if (total.totalARSBlue == null || total.totalUSD == null) {
+    message += `Cotizaciones no disponibles. Saldos en moneda original.\n`;
+  } else {
+    message += `💵 $${total.totalARSBlue.toLocaleString('es-AR')} ARS (blue)\n`;
+    message += `💵 USD ${total.totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}\n`;
+    if (total.fxStale && total.fxAsOf) message += `Cotización del ${new Date(total.fxAsOf).toLocaleDateString('es-AR')}\n`;
+  }
 
   ctx.reply(message, { parse_mode: 'Markdown' });
 });
@@ -253,19 +258,17 @@ bot.command('cotizaciones', async (ctx) => {
   try {
     const quotes = await cotizacionesService.getAllQuotes();
 
-    let message = `💱 *COTIZACIONES* (actualizadas ahora)\n\n`;
-    message += `🇦🇷 *DÓLAR*\n`;
-    message += `💵 Blue: $${quotes.dolar.blue.sell.toFixed(2)}\n`;
-    message += `🏛️ Oficial: $${quotes.dolar.oficial.sell.toFixed(2)}\n`;
-    message += `📊 MEP: $${quotes.dolar.mep.sell.toFixed(2)}\n`;
-    message += `📈 CCL: $${quotes.dolar.ccl.sell.toFixed(2)}\n\n`;
-
-    message += `₿ *CRYPTO*\n`;
-    message += `BTC: USD ${quotes.crypto.btc.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 0 })} `;
-    message += `(${quotes.crypto.btc.change24h >= 0 ? '+' : ''}${quotes.crypto.btc.change24h.toFixed(2)}%)\n`;
-    message += `ETH: USD ${quotes.crypto.eth.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 0 })} `;
-    message += `(${quotes.crypto.eth.change24h >= 0 ? '+' : ''}${quotes.crypto.eth.change24h.toFixed(2)}%)\n`;
-    message += `USDT: USD ${quotes.crypto.usdt.priceUSD.toFixed(4)}\n`;
+    let message = `💱 *COTIZACIONES*\n\n🇦🇷 *DÓLAR*\n`;
+    for (const [type, label] of [['blue', 'Blue'], ['oficial', 'Oficial'], ['mep', 'MEP'], ['ccl', 'CCL']] as const) {
+      const quote = quotes.dolar[type];
+      message += `${label}: ${quote ? `$${quote.sell.toFixed(2)}` : 'No disponible'}`;
+      if (quote?.stale) message += ` (cotización del ${quote.timestamp.toLocaleDateString('es-AR')})`;
+      message += '\n';
+    }
+    message += `\n₿ *CRYPTO*\n`;
+    for (const [symbol, quote] of Object.entries(quotes.crypto)) {
+      message += `${symbol.toUpperCase()}: ${quote ? `USD ${quote.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 4 })}` : 'No disponible'}\n`;
+    }
 
     ctx.reply(message, { parse_mode: 'Markdown' });
   } catch (error) {

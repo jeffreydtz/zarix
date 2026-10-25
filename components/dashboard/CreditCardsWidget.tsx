@@ -30,7 +30,7 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
       </h3>
       <div className="space-y-4">
         {creditCards.map((card, index) => {
-          if (card.valuationIssue) {
+          if (card.valuationIssue || card.fxUnavailable) {
             return <div key={card.id} className="p-4 rounded-xl bg-secondary border border-border">
               <h4 className="font-semibold">{card.name}</h4>
               <p>{Number(card.multicurrency_balance_primary ?? card.balance).toLocaleString('es-AR')} {card.currency}</p>

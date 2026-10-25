@@ -38,7 +38,7 @@ beforeEach(() => {
     if (!reply) throw new Error(`Unexpected query ${table}`);
     return query(table, reply);
   });
-  mocks.dolar.mockResolvedValue({ blue: { sell: 1200, buy: 1150 } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: 1200, buy: 1150  } });
   mocks.fx.mockResolvedValue(1200);
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
@@ -92,7 +92,11 @@ describe('v2.13 investment valuation contracts',()=>{
  });
  it('CB-P06 preserves independent lots after a later purchase',async()=>{
   replies=[{data:[inv,{...inv,id:'I2',quantity:4,purchase_price:200,current_price:150},{...inv,id:'dummy',quantity:0}].slice(0,2).map(x=>({...x,current_price:150}))},{data:[{investment_id:'I1',realized_pnl_usd:80}]}];
-  const p=await investmentsService.list('U1');expect(p.reduce((n,x)=>n+x.quantity,0)).toBe(10);expect(p.reduce((n,x)=>n+x.cost_basis_usd,0)).toBe(1400);expect(p.reduce((n,x)=>n+x.market_value_usd,0)).toBe(1500);expect(p.reduce((n,x)=>n+x.profit_loss_usd,0)).toBe(100);expect(p[0].purchase_price).toBe(100);
+  const p=await investmentsService.list('U1');
+  const sumKnown=(field:'cost_basis_usd'|'market_value_usd'|'profit_loss_usd')=>p.reduce((sum,position)=>{
+   const value=position[field];if(value==null)throw new Error(`Fixture ${field} must be valued`);return sum+value;
+  },0);
+  expect(p.reduce((n,x)=>n+x.quantity,0)).toBe(10);expect(sumKnown('cost_basis_usd')).toBe(1400);expect(sumKnown('market_value_usd')).toBe(1500);expect(sumKnown('profit_loss_usd')).toBe(100);expect(p[0].purchase_price).toBe(100);
  });
  it('CB-P07 explicitly labels the purchase reference without fabricated timestamp',async()=>{
   replies=[{data:[{...inv,current_price:null,is_manual_price:false}]},{data:[]}];const[p]=await investmentsService.list('U1');expect(p.market_value_usd).toBe(600);expect(p.profit_loss_usd).toBe(0);expect(p.valuation_price_source).toBe('purchase_reference');expect(p.current_price_updated_at).toBeNull();

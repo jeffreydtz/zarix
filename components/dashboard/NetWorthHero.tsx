@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { animate } from 'framer-motion';
 import { subDays } from 'date-fns';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import FxStatusBanner from '@/components/ui/FxStatusBanner';
 import Amount from '@/components/ui/Amount';
 import ChartTooltip from '@/components/ui/ChartTooltip';
 import { axisProps } from '@/lib/chart-theme';
@@ -128,12 +129,12 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
   // Valor de HOY: viene de `now` (en vivo), no del historial. En la vista
   // "reales" el valor de hoy es igual al nominal (deflator de hoy = 1).
   const heroValue = view === 'usd' ? now.totalUSD : now.totalARSBlue;
-  const partial = now.valuation?.status === 'partial';
+  const partial = now.valuation?.status === 'partial' || now.fxUnavailable;
   const currency = currencyForView(view);
 
   // --- Count-up: SOLO en el montaje, una única vez. ---
   const hasAnimatedRef = useRef(false);
-  const [displayValue, setDisplayValue] = useState(0);
+  const [displayValue, setDisplayValue] = useState(heroValue);
 
   useEffect(() => {
     if (hasAnimatedRef.current) {
@@ -274,59 +275,63 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
             </li>
           ))}</ul>
         </div>}
-        <Amount
-          value={displayValue}
-          currency={currency}
-          decimals={moneyDecimals(heroValue, currency)}
-          className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl"
-        />
+        <FxStatusBanner fxUnavailable={now.fxUnavailable} fxStale={now.fxStale} fxAsOf={now.fxAsOf} />
+        {!now.fxUnavailable && <>
+          <Amount
+            value={displayValue}
+            currency={currency}
+            decimals={moneyDecimals(heroValue, currency)}
+            className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl"
+          />
 
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {view === 'ars' && <Amount value={now.totalUSD} currency="USD" decimals={moneyDecimals(now.totalUSD, 'USD')} prefix="≈ " />}
-          {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
-          {view === 'real' && 'en pesos de hoy'}
-        </p>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            {view === 'ars' && <Amount value={now.totalUSD} currency="USD" decimals={moneyDecimals(now.totalUSD, 'USD')} prefix="≈ " />}
+            {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
+            {view === 'real' && 'en pesos de hoy'}
+          </p>
 
-        {(now.creditCards?.length ?? 0) > 0 && (
-          <div className="mt-3 rounded-control border border-border/70 bg-surface-soft/60 px-3 py-2 text-xs space-y-1.5">
-            <p className="font-medium text-foreground">Cómo se arma el líquido</p>
-            <div className="flex justify-between gap-3 tabular-nums">
-              <span className="text-muted-foreground">Disponible (efectivo, bancos, billeteras)</span>
-              <span>
-                {hidden ? PRIVACY_MASK : formatMoney(
-                  view === 'usd' ? (now.availableUSD ?? 0) : (now.availableARSBlue ?? 0),
-                  currency
-                )}
-              </span>
-            </div>
-            {(now.creditCards ?? []).map((card) => (
-              <div key={card.accountId} className="space-y-0.5">
-                <div className="flex justify-between gap-3">
-                  <span className="text-muted-foreground">
-                    {card.name}{card.last4 ? ` · ${card.last4}` : ''}
-                  </span>
-                  <span className="tabular-nums text-destructive">
-                    {hidden ? PRIVACY_MASK : formatMoney(
-                      view === 'usd' ? card.usd : card.arsBlue,
-                      currency
-                    )}
-                  </span>
-                </div>
-                {card.isMulticurrency && card.secondaryCurrency ? (
-                  <p className="text-[11px] text-muted-foreground pl-0">
-                    {card.primaryCurrency} {hidden ? PRIVACY_MASK : card.primaryBalance.toLocaleString('es-AR')}
-                    {' · '}
-                    {card.secondaryCurrency} {hidden ? PRIVACY_MASK : Number(card.secondaryBalance ?? 0).toLocaleString('es-AR')}
-                  </p>
-                ) : null}
+          {(now.creditCards?.length ?? 0) > 0 && (
+            <div className="mt-3 rounded-control border border-border/70 bg-surface-soft/60 px-3 py-2 text-xs space-y-1.5">
+              <p className="font-medium text-foreground">Cómo se arma el líquido</p>
+              <div className="flex justify-between gap-3 tabular-nums">
+                <span className="text-muted-foreground">Disponible (efectivo, bancos, billeteras)</span>
+                <span>
+                  {hidden ? PRIVACY_MASK : formatMoney(
+                    view === 'usd' ? (now.availableUSD ?? 0) : (now.availableARSBlue ?? 0),
+                    currency
+                  )}
+                </span>
               </div>
-            ))}
-            <div className="flex justify-between gap-3 pt-1 border-t border-border/60 font-medium tabular-nums">
-              <span>Patrimonio líquido</span>
-              <span>{hidden ? PRIVACY_MASK : formatMoney(heroValue, currency)}</span>
+              {(now.creditCards ?? []).map((card) => (
+                <div key={card.accountId} className="space-y-0.5">
+                  <div className="flex justify-between gap-3">
+                    <span className="text-muted-foreground">
+                      {card.name}{card.last4 ? ` · ${card.last4}` : ''}
+                    </span>
+                    <span className="tabular-nums text-destructive">
+                      {hidden ? PRIVACY_MASK : formatMoney(
+                        view === 'usd' ? card.usd : card.arsBlue,
+                        currency
+                      )}
+                    </span>
+                  </div>
+                  {card.isMulticurrency && card.secondaryCurrency ? (
+                    <p className="text-[11px] text-muted-foreground pl-0">
+                      {card.primaryCurrency} {hidden ? PRIVACY_MASK : card.primaryBalance.toLocaleString('es-AR')}
+                      {' · '}
+                      {card.secondaryCurrency} {hidden ? PRIVACY_MASK : Number(card.secondaryBalance ?? 0).toLocaleString('es-AR')}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+              <div className="flex justify-between gap-3 pt-1 border-t border-border/60 font-medium tabular-nums">
+                <span>Patrimonio líquido</span>
+                <span>{hidden ? PRIVACY_MASK : formatMoney(heroValue, currency)}</span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+        </>}
 
         <div className="mt-2 space-y-1 text-xs text-muted-foreground">
           {now.blueReferences?.length ? now.blueReferences.map(({ component, reference }, index) => (

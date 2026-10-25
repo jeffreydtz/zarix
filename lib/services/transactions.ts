@@ -1,5 +1,6 @@
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { ApiError } from '@/lib/api-handler';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
@@ -48,8 +49,8 @@ export function applyArchivedAccountsTransactionFilter(query: any, activeIds: st
 }
 
 export interface ToArsConverter {
-  /** Convierte el monto original del movimiento a ARS. Devuelve 0 para monedas excluidas. */
-  toArs: (t: { amount: number; currency: string | null }) => number;
+  /** Convierte el monto original del movimiento a ARS. Devuelve null para monedas excluidas. */
+  toArs: (t: { amount: number; currency: string | null }) => number | null;
   /**
    * Monedas cuya cotización no se pudo obtener: sus movimientos se EXCLUYEN de
    * los totales (sumar 1:1 contaba 100 USD como 100 ARS). Los consumidores
@@ -61,7 +62,9 @@ export interface ToArsConverter {
 async function observedExchangeRate(from: string, to: string, unavailable: string): Promise<number> {
   return observedStep({ component: 'provider', action: 'lookup', failureClass: 'provider' }, async () => {
     const rate = await cotizacionesService.getExchangeRate(from, to);
-    if (!Number.isFinite(rate) || rate <= 0) throw new Error(unavailable);
+    if (!Number.isFinite(rate) || rate <= 0) {
+      throw Object.assign(new FxUnavailableError(`${from}/${to}`), { message: unavailable });
+    }
     return rate;
   });
 }
@@ -70,8 +73,10 @@ async function observedExchangeRate(from: string, to: string, unavailable: strin
  * Conversor a ARS por movimiento (monto original × cotización actual). Sumar
  * amount_in_account_currency mezcla ARS, USD, EUR, etc. en un total sin sentido
  * para usuarios multi-moneda; usar esto en resúmenes (dashboard y crons).
- * Si una cotización falla, esa moneda se excluye de los totales y queda
- * listada en `excludedCurrencies` para que el consumidor lo aclare.
+ * Los agregados no incluyen estimaciones con FX vencido ni marcado stale,
+ * aunque ese último valor siga disponible para mostrar saldos individuales.
+ * Si una cotización falla o está stale, esa moneda se excluye de los totales
+ * y queda listada en `excludedCurrencies` para que el consumidor lo aclare.
  */
 export async function buildToArsConverter(
   transactions: Array<{ currency: string | null }>
@@ -81,20 +86,36 @@ export async function buildToArsConverter(
   );
   const rateToArs = new Map<string, number>();
   const excludedCurrencies: string[] = [];
+  const fiatRates = currencies.some(c => c === 'USD' || c === 'EUR')
+    ? await cotizacionesService.getTransactionsFxRates(currencies).catch(error => {
+      if (!(error instanceof FxUnavailableError)) throw error;
+      return null;
+    })
+    : null;
   for (const c of currencies) {
     if (c === 'ARS') {
       rateToArs.set(c, 1);
       continue;
     }
     try {
-      const rate = await observedExchangeRate(c, 'ARS', 'Cotización inválida');
+      const fiat = c === 'USD' || c === 'EUR';
+      const rate = fiat
+        ? fiatRates && !fiatRates.stale ? (c === 'USD' ? fiatRates.usdArs : fiatRates.eurArs) : null
+        : await observedExchangeRate(c, 'ARS', 'Cotización inválida');
+      if (rate == null || !Number.isFinite(rate) || rate <= 0) {
+        throw new FxUnavailableError(`${c}/ARS`);
+      }
       rateToArs.set(c, rate);
-    } catch {
+    } catch (error) {
+      if (!(error instanceof FxUnavailableError)) throw error;
       excludedCurrencies.push(c);
     }
   }
   return {
-    toArs: (t) => Number(t.amount) * (rateToArs.get(normalizeCurrency(t.currency)) ?? 0),
+    toArs: (t) => {
+      const rate = rateToArs.get(normalizeCurrency(t.currency));
+      return rate == null ? null : Number(t.amount) * rate;
+    },
     excludedCurrencies,
   };
 }
@@ -627,15 +648,23 @@ class TransactionsService {
     // Monedas sin cotización quedan fuera de los totales (ver excludedCurrencies).
     const { toArs, excludedCurrencies } = await buildToArsConverter(transactions);
 
-    const totalExpenses = expenses.reduce((sum, t) => sum + toArs(t), 0);
-    const totalIncome = income.reduce((sum, t) => sum + toArs(t), 0);
+    const totalExpenses = expenses.reduce((sum, t) => {
+      const amount = toArs(t);
+      return amount == null ? sum : sum + amount;
+    }, 0);
+    const totalIncome = income.reduce((sum, t) => {
+      const amount = toArs(t);
+      return amount == null ? sum : sum + amount;
+    }, 0);
 
     const categoryMap = new Map<string, { name: string; icon: string; amount: number }>();
     expenses.forEach((t) => {
+      const amount = toArs(t);
+      if (amount == null) return;
       if (t.category) {
         const cat = t.category as { name: string; icon: string };
         const existing = categoryMap.get(cat.name) || { name: cat.name, icon: cat.icon, amount: 0 };
-        existing.amount += toArs(t);
+        existing.amount += amount;
         categoryMap.set(cat.name, existing);
       }
     });

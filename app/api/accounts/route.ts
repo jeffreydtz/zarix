@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
-import { errorResponse } from '@/lib/api-handler';
+import { errorResponse, requireUser } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user } = await requireUser();
 
     const lite = req.nextUrl.searchParams.get('lite') === '1';
     const accounts = lite

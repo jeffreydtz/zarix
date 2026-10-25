@@ -9,6 +9,7 @@ const SYSTEM_CATEGORY_ID = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
 
 const mocks = vi.hoisted(() => ({
   create: vi.fn(),
+  getExchangeRate: vi.fn(async (_from?: string, _to?: string) => 1),
 }));
 
 vi.mock('@/lib/services/transactions', () => ({
@@ -23,7 +24,9 @@ vi.mock('@/lib/services/accounts', () => ({
 }));
 
 vi.mock('@/lib/services/cotizaciones', () => ({
-  cotizacionesService: { getExchangeRate: async () => 1 },
+  cotizacionesService: {
+    getExchangeRate: (from: string, to?: string) => mocks.getExchangeRate(from, to),
+  },
 }));
 
 const financialContext = {
@@ -66,6 +69,7 @@ describe('executeBotTransaction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.create.mockResolvedValue({ id: 'tx-1' });
+    mocks.getExchangeRate.mockResolvedValue(1);
   });
 
   it('keeps a NULL-owner system categoryId on create', async () => {
@@ -107,5 +111,19 @@ describe('executeBotTransaction', () => {
       type: 'transfer',
       destinationAccountId: DEST_ID,
     });
+  });
+
+  it('aborts a credit-card FX conversion when executable FX is unavailable', async () => {
+    const { FxUnavailableError } = await import('@/lib/executable-fx');
+    mocks.getExchangeRate.mockRejectedValue(new FxUnavailableError('USD→ARS'));
+    const result = await executeBotTransaction(FIXTURE_USER, financialContext, {
+      type: 'expense',
+      amount: 10,
+      currency: 'USD',
+      accountId: ACCOUNT_ID,
+      description: 'USD on ARS card',
+    });
+    expect(result).toEqual({ kind: 'abort', reply: 'Cotización USD→ARS no disponible, inválida o vencida' });
+    expect(mocks.create).not.toHaveBeenCalled();
   });
 });
