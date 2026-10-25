@@ -2099,4 +2099,96 @@ describe('pending inbox confirm idempotency', () => {
     expect(confirmed.executedCount).toBe(1);
     expect(mocks.execute).toHaveBeenCalledTimes(1);
   });
+
+  it('surfaces a leftover release error in per-item results instead of calling it reverted', async () => {
+    const secondId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const thirdId = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc9';
+    const first = itemRow('pending');
+    const second = itemRow('pending', { id: secondId });
+    const third = itemRow('pending', { id: thirdId });
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_item_ids?: string[] }) => {
+      if (fn === 'claim_pending_inbox_items') {
+        expect(args.p_item_ids).toEqual([FIXTURE_ITEM, secondId, thirdId]);
+        return {
+          data: [
+            itemRow('confirming'),
+            itemRow('confirming', { id: secondId }),
+            itemRow('confirming', { id: thirdId }),
+          ],
+          error: null,
+        };
+      }
+      return { data: null, error: { message: `unexpected rpc ${fn}` } };
+    });
+    mocks.execute
+      .mockResolvedValueOnce({ response: { success: true }, executed: [{ id: 'tx-1' }] })
+      .mockRejectedValueOnce(new ApiError('ledger insert failed', 400));
+    const logged: unknown[][] = [];
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
+      logged.push(args);
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      let currentId: string | null = null;
+      q.select = () => self;
+      q.eq = (column: string, value: unknown) => {
+        if (column === 'id' && typeof value === 'string') currentId = value;
+        return self;
+      };
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        const chain: Record<string, unknown> = {};
+        chain.eq = (column: string, val: unknown) => {
+          if (column === 'id' && typeof val === 'string') currentId = val;
+          return chain;
+        };
+        chain.select = () => chain;
+        chain.maybeSingle = q.maybeSingle;
+        chain.then = (resolve: (v: unknown) => unknown) =>
+          resolve(
+            table === 'pending_inbox_items' && value.status === 'pending'
+              ? { data: null, error: { message: 'release failed' } }
+              : { data: null, error: null }
+          );
+        return chain;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'transaction_requests') return { data: null, error: null };
+        if (table === 'categories') {
+          return { data: { id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }, error: null };
+        }
+        return { data: itemRow('confirmed', { id: currentId || FIXTURE_ITEM }), error: null };
+      };
+      q.single = async () => ({ data: { id: FIXTURE_USER, default_currency: 'ARS' }, error: null });
+      q.then = (resolve: (v: unknown) => unknown) =>
+        resolve({
+          data:
+            table === 'pending_inbox_items'
+              ? [first, second, third]
+              : table === 'categories'
+                ? [{ id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }]
+                : [],
+          error: null,
+        });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const error = await confirmPendingItems({
+      userId: FIXTURE_USER,
+      itemIds: [FIXTURE_ITEM, secondId, thirdId],
+    }).catch((caught: unknown) => caught);
+    errorSpy.mockRestore();
+    expect(error).toBeInstanceOf(PendingBatchConfirmError);
+    const batch = error as PendingBatchConfirmError;
+    expect(batch.items).toEqual([
+      { pendingId: FIXTURE_ITEM, status: 'confirmed' },
+      { pendingId: secondId, status: 'failed', error: 'ledger insert failed' },
+      { pendingId: thirdId, status: 'failed', error: 'release failed' },
+    ]);
+    expect(logged.some((args) => args[0] === '[inbox] leftover claim release failed')).toBe(true);
+  });
 });

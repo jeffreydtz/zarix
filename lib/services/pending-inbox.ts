@@ -892,7 +892,10 @@ export async function confirmPendingItems(input: {
 
   const stale = pendingRows.filter((row) => isStaleConfirming(row));
   if (stale.length > 0) {
-    await releaseClaimedPendingItems(input.userId, stale);
+    const staleRelease = await releaseClaimedPendingItems(input.userId, stale);
+    if (staleRelease.length > 0) {
+      throw new ApiError(staleRelease[0]!.error, 409);
+    }
     for (const row of stale) {
       byId.set(row.id, { ...row, status: 'pending', claim_id: null });
     }
@@ -932,7 +935,10 @@ export async function confirmPendingItems(input: {
         }
       }
       if (unclaimed.length > 0) {
-        await releaseClaimedPendingItems(input.userId, [...claimedById.values()]);
+        const released = await releaseClaimedPendingItems(input.userId, [...claimedById.values()]);
+        if (released.length > 0) {
+          throw new ApiError(released[0]!.error, 409);
+        }
         throw new ApiError('Este pendiente se está confirmando.', 409);
       }
     }
@@ -976,12 +982,18 @@ export async function confirmPendingItems(input: {
     }
   }
   if (failed) {
-    await releaseClaimedPendingItems(
+    const releaseFailures = await releaseClaimedPendingItems(
       input.userId,
       leftoverIds.map((id) => claimedById.get(id)).filter((row): row is PendingInboxItem => Boolean(row))
     );
+    const releaseById = new Map(releaseFailures.map((item) => [item.id, item.error]));
     for (const id of leftoverIds) {
-      report.push({ pendingId: id, status: 'reverted' });
+      const releaseError = releaseById.get(id);
+      report.push(
+        releaseError
+          ? { pendingId: id, status: 'failed', error: releaseError }
+          : { pendingId: id, status: 'reverted' }
+      );
     }
     throw new PendingBatchConfirmError(report, failed, executedCount);
   }
@@ -990,18 +1002,30 @@ export async function confirmPendingItems(input: {
   return result;
 }
 
-async function releaseClaimedPendingItems(userId: string, rows: PendingInboxItem[]): Promise<void> {
+type ClaimReleaseFailure = { id: string; error: string };
+
+async function releaseClaimedPendingItems(
+  userId: string,
+  rows: PendingInboxItem[]
+): Promise<ClaimReleaseFailure[]> {
   const supabase = createServiceClientSync();
+  const failures: ClaimReleaseFailure[] = [];
   for (const row of rows) {
     if (row.status === 'confirmed' || !row.claim_id) continue;
-    await supabase
+    const { error } = await supabase
       .from('pending_inbox_items')
       .update({ status: 'pending', claim_id: null })
       .eq('id', row.id)
       .eq('user_id', userId)
       .eq('status', 'confirming')
       .eq('claim_id', row.claim_id);
+    if (error) {
+      const message = error.message?.trim() || 'No se pudo liberar el pendiente.';
+      console.error('[inbox] leftover claim release failed', { itemId: row.id, message });
+      failures.push({ id: row.id, error: message });
+    }
   }
+  return failures;
 }
 
 async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promise<PendingInboxItem> {

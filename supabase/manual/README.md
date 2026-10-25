@@ -74,3 +74,4 @@ Follow-up (after #16/#17), one file at a time:
 1. `apply_migration` `supabase/migrations/20261025010000_inbox_claim_category_search_path.sql`
 2. `apply_migration` `supabase/migrations/20261025020000_budget_status_cordoba.sql`
 3. `apply_migration` `supabase/migrations/20261025030000_category_system_select.sql`
+4. `apply_migration` `supabase/migrations/20261025040000_categories_force_rls.sql`
