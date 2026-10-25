@@ -45,8 +45,8 @@ export interface FciQuote {
   source: 'cafci' | 'yahoo';
 }
 
-/** ARS/USD, an explicit other label (EUR), or missing. */
-export type CafciCurrencyLabel = 'ARS' | 'USD' | 'unsupported' | null;
+/** ARS/USD, an explicit other label (EUR), mixed fields at one level, or missing. */
+export type CafciCurrencyLabel = 'ARS' | 'USD' | 'unsupported' | 'conflict' | null;
 
 interface CafciClass {
   fondoId: string;
@@ -112,30 +112,77 @@ function classKeys(fondo: Record<string, unknown>, clase: Record<string, unknown
   return [...new Set(names.map(fold).filter(Boolean))];
 }
 
-/** First explicit label: ARS/USD, unsupported (EUR, …), or missing. */
+const CAFCI_USD_WORDS = new Set([
+  'DOLAR', 'DOLARES', 'DOLLAR', 'DOLLARS', 'USD', 'US', 'U', 'S',
+  'EEUU', 'EE', 'UU', 'USA', 'ESTADOUNIDENSE', 'ESTADOUNIDENSES',
+  'AMERICANO', 'AMERICANOS', 'MEP', 'CABLE', 'CCL', 'BILLETE', 'BILLETES', 'U$S', 'US$',
+]);
+const CAFCI_USD_CORE = new Set(['DOLAR', 'DOLARES', 'DOLLAR', 'DOLLARS', 'USD', 'U$S', 'US$']);
+
+const CAFCI_ARS_WORDS = new Set([
+  'PESO', 'PESOS', 'ARGENTINO', 'ARGENTINOS', 'ARGENTINA', 'ARS', '$', 'MONEDA', 'LOCAL',
+]);
+const CAFCI_ARS_CORE = new Set(['PESO', 'PESOS', 'ARS']);
+
+/** NFKD + strip marks; keep U$S, US$, and $; any letter/number run is a token. */
+function cafciLabelTokens(value: string): string[] {
+  return value
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toUpperCase()
+    .match(/U\$S|US\$|\$|[\p{L}\p{N}]+/gu) ?? [];
+}
+
+function hasUsdCore(tokens: string[]): boolean {
+  if (tokens.length === 1 && tokens[0] === 'US') return true;
+  return tokens.some((token) => CAFCI_USD_CORE.has(token));
+}
+
+/**
+ * Token allowlist (no substring heuristics).
+ * Ignore (missing): empty, only '$', only numbers, exactly LOCAL.
+ * USD: every word in the USD set and at least one core USD token
+ *      ('US' is core only as the sole token).
+ * ARS: every word in the ARS set and at least one of PESO/PESOS/ARS.
+ * Anything else → unsupported (skip).
+ */
 export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
-  if (value == null || typeof value === 'object') return null;
-  const folded = fold(String(value));
-  if (!folded) return null;
-  if (
-    folded.includes('USD')
-    || folded.includes('DOLAR')
-    || folded.includes('DOLLAR')
-    || folded === 'US'
-    || folded === 'USS'
-  ) {
+  if (value == null || typeof value === 'object' || typeof value === 'boolean') return null;
+  if (typeof value === 'number') return null;
+  const tokens = cafciLabelTokens(String(value));
+  if (tokens.length === 0) return null;
+  if (tokens.length === 1 && (tokens[0] === '$' || tokens[0] === 'LOCAL')) return null;
+  if (tokens.every((token) => /^\d+$/.test(token))) return null;
+  if (tokens.every((token) => CAFCI_USD_WORDS.has(token)) && hasUsdCore(tokens)) {
     return 'USD';
   }
-  if (folded.includes('ARS') || folded.includes('PESO')) return 'ARS';
+  if (tokens.every((token) => CAFCI_ARS_WORDS.has(token)) && tokens.some((token) => CAFCI_ARS_CORE.has(token))) {
+    return 'ARS';
+  }
   return 'unsupported';
 }
 
-function firstCurrencyLabel(...candidates: unknown[]): CafciCurrencyLabel {
+/**
+ * Every present field at one CAFCI level. Missing, numeric ids, and
+ * non-currency words (Local, $) are ignored. A recognizable currency name that
+ * is not ARS/USD (EUR, Canadian Dollar, Mexican Peso, …), or ARS vs USD, makes
+ * the whole level a skip.
+ */
+export function firstCurrencyLabel(...candidates: unknown[]): CafciCurrencyLabel {
+  const present: Array<'ARS' | 'USD' | 'unsupported'> = [];
   for (const c of candidates) {
     const parsed = parseCafciCurrencyLabel(c);
-    if (parsed != null) return parsed;
+    if (parsed === 'ARS' || parsed === 'USD' || parsed === 'unsupported') {
+      present.push(parsed);
+    }
   }
-  return null;
+  if (present.length === 0) return null;
+  const unique = new Set(present);
+  if (unique.has('unsupported')) {
+    return unique.size === 1 ? 'unsupported' : 'conflict';
+  }
+  if (unique.size > 1) return 'conflict';
+  return present[0];
 }
 
 function asArsUsd(label: CafciCurrencyLabel): 'ARS' | 'USD' | null {
@@ -178,6 +225,7 @@ export function resolveCafciCurrencySources(opts: {
   for (const label of ordered) {
     if (label == null) continue;
     if (label === 'unsupported') return { currency: null, reason: 'unsupported' };
+    if (label === 'conflict') return { currency: null, reason: 'conflict' };
     if (seen && seen !== label) return { currency: null, reason: 'conflict' };
     seen = label;
   }

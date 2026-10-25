@@ -104,22 +104,92 @@ function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | n
   return null;
 }
 
+/** Inclusive band: peso vs USD cuotapartes differ by ~1000×, live USD FCIs stay near 1. */
+const FCI_UNKNOWN_USD_RATIO_MIN = 0.5;
+const FCI_UNKNOWN_USD_RATIO_MAX = 2;
+
+function asFiniteNumber(value: unknown): number | null {
+  if (value == null || value === '') return null;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function isPresentPrice(value: unknown): boolean {
+  if (value == null || value === '') return false;
+  return !(typeof value === 'string' && !value.trim());
+}
+
 /**
- * FCI cuotaparte currency: never assume ARS. Prefer the CAFCI class/ficha
- * moneda; fall back to the position's stored currency. Disagree or unknown → skip.
+ * Unknown-USD plausibility anchor: a valid current_price (>0, finite, including
+ * numeric strings like '1.09'). If current_price is absent (null/empty), fall
+ * back to purchase_price only when purchase_currency equals market_currency and
+ * that currency is USD. A present-but-invalid current_price (0/NaN/negative)
+ * does not fall back.
+ */
+export function fciUsdPlausibilityAnchor(opts: {
+  currentPrice?: unknown;
+  purchasePrice?: unknown;
+  marketCurrency?: string | null;
+  purchaseCurrency?: string | null;
+}): number | null {
+  const current = asFiniteNumber(opts.currentPrice);
+  if (current != null && current > 0) return current;
+  if (isPresentPrice(opts.currentPrice)) return null;
+  const market = (opts.marketCurrency || '').trim().toUpperCase();
+  const purchaseCcy = (opts.purchaseCurrency || '').trim().toUpperCase();
+  if (market !== 'USD' || purchaseCcy !== 'USD') return null;
+  const purchase = asFiniteNumber(opts.purchasePrice);
+  return purchase != null && purchase > 0 ? purchase : null;
+}
+
+/**
+ * Unknown CAFCI + stored USD: accept the cuotaparte as USD only when a positive
+ * stored last price exists and new/stored is in [0.5, 2]. CONIOLA ~179.598 vs
+ * stored ~0.138 skips; IOLDOLD 1.098 vs stored ~1.09 accepts. 0/null/NaN skip.
+ */
+export function fciUnknownUsdPricePlausible(
+  sourcePrice: number | null | undefined,
+  storedPrice: number | null | undefined,
+): boolean {
+  const next = asFiniteNumber(sourcePrice);
+  const prev = asFiniteNumber(storedPrice);
+  if (next == null || prev == null || !(next > 0) || !(prev > 0)) return false;
+  const ratio = next / prev;
+  return ratio >= FCI_UNKNOWN_USD_RATIO_MIN && ratio <= FCI_UNKNOWN_USD_RATIO_MAX;
+}
+
+/**
+ * FCI cuotaparte currency: never assume ARS from the ticker.
+ *
+ * Known CAFCI ARS/USD is the source currency of the cuotaparte. Callers convert
+ * ARS↔USD with the same MEP helper stocks/CEDEARs use (`adaptQuoteToMarketCurrency`).
+ * A CAFCI/stored mismatch is not a skip at this layer.
+ *
+ * Unknown CAFCI + stored USD: accept as USD only when the new cuotaparte is
+ * plausible vs the last stored USD price (`fciUnknownUsdPricePlausible`).
+ * Otherwise skip — a peso fund booked in USD must not be written as ~180 USD.
+ *
+ * Unknown CAFCI + stored ARS: keep main — accept stored ARS. A peso fund whose
+ * ficha omitted moneda is still a peso cuotaparte; writing ARS as ARS is safe.
  */
 export function resolveFciQuoteCurrency(opts: {
   sourceCurrency: string | null | undefined;
   storedCurrency: string | null | undefined;
+  sourcePrice?: number | null;
+  storedPrice?: number | null;
 }): { currency: QuoteCurrency } | { currency: null; reason: 'disagree' | 'unknown' } {
   const source = knownQuoteCurrency(opts.sourceCurrency);
   const stored = knownQuoteCurrency(opts.storedCurrency);
-  if (source && stored && source !== stored) {
-    return { currency: null, reason: 'disagree' };
+  if (source) return { currency: source };
+  if (stored === 'ARS') return { currency: 'ARS' };
+  if (stored === 'USD' && fciUnknownUsdPricePlausible(opts.sourcePrice, opts.storedPrice)) {
+    return { currency: 'USD' };
   }
-  const currency = source ?? stored;
-  if (!currency) return { currency: null, reason: 'unknown' };
-  return { currency };
+  return { currency: null, reason: 'unknown' };
 }
 
 /** Yahoo/Stooq metadata is confirmation. A blank field is not inferred from the ticker. */

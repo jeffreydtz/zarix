@@ -20,16 +20,27 @@ export async function GET(req: NextRequest) {
     const symbol = req.nextUrl.searchParams.get('symbol')?.trim() || '';
     const type = req.nextUrl.searchParams.get('type') as InvestmentType | null;
     const marketCurrency = req.nextUrl.searchParams.get('currency')?.trim().toUpperCase() || null;
+    const purchasePrice = req.nextUrl.searchParams.get('purchasePrice')
+      ?? req.nextUrl.searchParams.get('purchase_price');
+    const purchaseCurrency = (
+      req.nextUrl.searchParams.get('purchaseCurrency')
+      ?? req.nextUrl.searchParams.get('purchase_currency')
+    )?.trim().toUpperCase() || null;
 
     if (!symbol || !type || !investmentNeedsTicker(type)) {
       return NextResponse.json({ error: 'Símbolo o tipo inválido' }, { status: 400 });
     }
 
+    // Unlabeled CAFCI + USD book stays ok:false unless the request carries a
+    // purchase price+currency to use as the plausibility anchor (same rule as
+    // cron/dashboard). The add-investment UI does not send those params.
     const position = {
       type,
       ticker: symbol,
       market_currency: marketCurrency,
-      purchase_currency: marketCurrency,
+      purchase_currency: purchaseCurrency || marketCurrency,
+      purchase_price: purchasePrice,
+      current_price: null,
     };
     const quotes = await refreshQuotesForInvestments([position]);
     const cacheKey = quoteCacheKeyForPosition(position);

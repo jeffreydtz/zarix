@@ -40,7 +40,7 @@ import {
   parseCafciCurrency,
   cafciClassesFromCatalogForTest,
 } from '@/lib/market-data/cafci-client';
-import { resolveFciQuoteCurrency } from '@/lib/market-data/quote-currency';
+import { fciUsdPlausibilityAnchor, resolveFciQuoteCurrency } from '@/lib/market-data/quote-currency';
 
 describe('USD quote adaptation for D tickers', () => {
   it('prefers the D board when the position is marked USD', () => {
@@ -258,11 +258,31 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     expect(classes).toEqual([
       expect.objectContaining({ fondoId: '10', claseId: '20', currency: 'USD' }),
     ]);
-    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'USD' })).toEqual({ currency: 'USD' });
-    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
-    expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({
-      currency: null, reason: 'disagree',
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'USD' })).toEqual({
+      currency: null, reason: 'unknown',
     });
+    expect(resolveFciQuoteCurrency({
+      sourceCurrency: null, storedCurrency: 'USD', sourcePrice: 1.098, storedPrice: 1.09,
+    })).toEqual({ currency: 'USD' });
+    expect(resolveFciQuoteCurrency({
+      sourceCurrency: null, storedCurrency: 'USD', sourcePrice: 179.598, storedPrice: 0.138,
+    })).toEqual({ currency: null, reason: 'unknown' });
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: null, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBe(1);
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: 0, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBeNull();
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: '1.09', purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBeCloseTo(1.09);
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: null, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'ARS',
+    })).toBeNull();
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'USD' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({ currency: 'USD' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
     expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: null })).toEqual({
       currency: null, reason: 'unknown',
     });
@@ -495,6 +515,10 @@ describe('quote cache keys include currency', () => {
     expect(quoteCacheKeyForPosition({
       type: 'bond', ticker: 'AL30', market_currency: null, purchase_currency: 'USD',
     })).toBe('bond:AL30:NATIVE');
+    expect(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+      id: 'fixture-ioldold',
+    })).toBe('fci:IOLDOLD:USD:fixture-ioldold');
   });
 
   it('dedupes FCI jobs by cache key before fetching', () => {
