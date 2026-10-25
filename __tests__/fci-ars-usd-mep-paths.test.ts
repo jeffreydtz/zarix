@@ -3,8 +3,8 @@ import { NextRequest } from 'next/server';
 
 /**
  * Cron (`app/api/cron/update-prices`) and interactive (`app/api/investments/quote`)
- * both call `refreshQuotesForInvestments` with no extra MEP option — they share
- * `cotizacionesService.getDolarQuotes()` / `adaptQuoteToMarketCurrency`.
+ * share `refreshQuotesForInvestments` / `adaptQuoteToMarketCurrency`.
+ * Only display previews permit stale MEP, retaining its FX metadata.
  */
 
 const mocks = vi.hoisted(() => ({

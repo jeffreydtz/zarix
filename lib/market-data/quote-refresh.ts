@@ -328,10 +328,10 @@ export async function refreshQuotesForInvestments(
 
   const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'] }).catch(() => null);
   const mep = dolar?.mep;
-  const mepExecutable = isExecutableDolarQuote(mep, 'mep');
+  const mepExecutable = isExecutableDolarQuote(mep, 'mep') && !mep.stale;
   const mepArsPerUsd = mepExecutable || options?.allowStaleFx ? mepRate(dolar) : null;
   // Display estimates may use stale FX; plausibility anchors for writes may not.
-  const anchorMepArsPerUsd = mepExecutable && !mep?.stale ? mepRate(dolar) : null;
+  const anchorMepArsPerUsd = mepExecutable ? mepRate(dolar) : null;
   const mepObserved = mep?.asOf ?? mep?.timestamp;
   const mepAsOf = mepObserved && Number.isFinite(new Date(mepObserved).getTime())
     ? new Date(mepObserved).toISOString() : null;
@@ -345,7 +345,7 @@ export async function refreshQuotesForInvestments(
       return null;
     }
     if (needsMep) {
-      adapted.fxStale = !mepExecutable || Boolean(mep?.stale);
+      adapted.fxStale = !mepExecutable;
       adapted.fxAsOf = mepAsOf;
     }
     return adapted;

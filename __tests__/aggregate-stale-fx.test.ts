@@ -96,6 +96,111 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+/** Prove completion while Yahoo is unresolved, then release it even on a regression. */
+async function withoutYahoo<T>(operation: () => Promise<T>): Promise<T> {
+  let release!: (response: Response) => void;
+  const pendingYahoo = new Promise<Response>(resolve => { release = resolve; });
+  const yahooFetch = vi.fn(() => pendingYahoo);
+  vi.stubGlobal('fetch', yahooFetch);
+  let settled = false;
+  const pending = operation();
+  void pending.then(() => { settled = true; }, () => { settled = true; });
+  await new Promise(resolve => setTimeout(resolve, 0));
+  const settledBeforeYahoo = settled;
+  release(new Response('', { status: 503 }));
+  const result = await pending;
+  expect(settledBeforeYahoo).toBe(true);
+  expect(yahooFetch).not.toHaveBeenCalled();
+  return result;
+}
+
+describe('required currencies isolate aggregates from the EUR provider', () => {
+  beforeEach(async () => {
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    vi.spyOn(cotizacionesService, 'getDolarQuotes').mockResolvedValue({
+      status: 'available', missing: [],
+      blue: { type: 'blue', buy: 1290, sell: 1300, stale: false, timestamp: new Date() },
+    });
+  });
+
+  it('returns available USD rates without starting or awaiting Yahoo', async () => {
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    const rates = await withoutYahoo(() => cotizacionesService.getTransactionsFxRates(['USD']));
+    expect(rates).toMatchObject({ usdArs: 1300, eurArs: null, fxUnavailable: false, stale: false });
+    expect(cotizacionesService.getDolarQuotes).toHaveBeenCalledWith({ require: ['blue'] });
+  });
+
+  it('requests no providers for ARS-only rates', async () => {
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    expect(await withoutYahoo(() => cotizacionesService.getTransactionsFxRates(['ARS'])))
+      .toMatchObject({ usdArs: null, eurArs: null, fxUnavailable: false });
+    expect(cotizacionesService.getDolarQuotes).not.toHaveBeenCalled();
+  });
+
+  it('converts normalized USD and ARS movements while Yahoo is unresolved', async () => {
+    const { buildToArsConverter } = await import('@/lib/services/transactions');
+    const converter = await withoutYahoo(() => buildToArsConverter([{ currency: ' usd ' }, { currency: 'ARS' }]));
+    expect(converter.toArs({ currency: 'USD', amount: 100 })).toBe(130000);
+    expect(converter.toArs({ currency: 'ARS', amount: 50 })).toBe(50);
+    expect(converter.excludedCurrencies).toEqual([]);
+  });
+
+  it('still fetches EUR/USD when EUR is needed', async () => {
+    const { buildToArsConverter } = await import('@/lib/services/transactions');
+    const converter = await buildToArsConverter([{ currency: 'USD' }, { currency: ' eur ' }]);
+    expect(converter.toArs({ currency: 'USD', amount: 100 })).toBe(130000);
+    expect(converter.toArs({ currency: 'EUR', amount: 100 })).toBeCloseTo(143000);
+    expect(converter.excludedCurrencies).toEqual([]);
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(String(vi.mocked(fetch).mock.calls[0][0])).toContain('EURUSD=X');
+  });
+
+  it('excludes only EUR when its provider fails and blue is fresh', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Fixture EUR outage')));
+    const { buildToArsConverter } = await import('@/lib/services/transactions');
+    const converter = await buildToArsConverter([{ currency: 'USD' }, { currency: 'EUR' }]);
+    expect(converter.toArs({ currency: 'USD', amount: 100 })).toBe(130000);
+    expect(converter.toArs({ currency: 'EUR', amount: 100 })).toBeNull();
+    expect(converter.excludedCurrencies).toEqual(['EUR']);
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('completes a USD monthly aggregate without Yahoo', async () => {
+    const { transactionsService } = await import('@/lib/services/transactions');
+    expect(await withoutYahoo(() => transactionsService.getMonthSummary('synthetic-user', new Date())))
+      .toMatchObject({ totalExpenses: 130050, totalIncome: 200, excludedCurrencies: [] });
+  });
+
+  it.each(['getCategoryBreakdown', 'getMonthlyTrend', 'getDailyTrend', 'getAccountBreakdown'] as const)(
+    'completes USD %s analytics without Yahoo', async method => {
+      const { analyticsService } = await import('@/lib/services/analytics');
+      const result = await withoutYahoo<unknown[]>(() => analyticsService[method]('synthetic-user', '2026-10-01', '2026-10-26'));
+      expect(result.length).toBeGreaterThan(0);
+    }
+  );
+
+  it('completes USD month-flow and recurring totals without Yahoo', async () => {
+    fixture.rules = [{ id: 'usd-rule', user_id: 'synthetic-user', type: 'expense', is_active: true,
+      amount: 100, currency: 'USD', frequency: 'monthly', start_date: '2026-10-01' }];
+    const { getMonthFlow } = await import('@/lib/services/month-flow');
+    expect(await withoutYahoo(() => getMonthFlow('synthetic-user')))
+      .toMatchObject({ spentARS: 130050, incomeARS: 200, excludedCurrencies: [] });
+  });
+
+  it.each(['weekly', 'monthly'] as const)('completes USD %s summaries without Yahoo', async period => {
+    if (period === 'monthly') fixture.transactions = transactions('2026-09-20T12:00:00.000Z');
+    const { GET } = period === 'weekly'
+      ? await import('@/app/api/cron/weekly-summary/route')
+      : await import('@/app/api/cron/monthly-summary/route');
+    const response = await withoutYahoo(() => GET(new NextRequest(`http://localhost/api/cron/${period}-summary`, {
+      headers: { authorization: 'Bearer synthetic-cron-secret' },
+    })));
+    expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(fixture.notify).toHaveBeenCalledOnce();
+    expect(fixture.notify.mock.calls[0][3]).toContain('Gastos: $130.050');
+  });
+});
+
 describe('finding 6: aggregates consistently exclude stale display FX', () => {
   it('keeps the 24-day-old quote for display but excludes USD and its EUR cross from aggregates', async () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');

@@ -547,23 +547,26 @@ class CotizacionesService {
     return price;
   }
 
-  /** Cotizaciones mínimas para movimientos (ARS / USD / EUR), sin crypto ni otros mercados. */
-  async getTransactionsFxRates(): Promise<{
+  /** Only request the fiat rates needed by the caller; previews request both by default. */
+  async getTransactionsFxRates(currencies: readonly string[] = ['USD', 'EUR']): Promise<{
     usdArs: number | null;
     eurArs: number | null;
     fxUnavailable: boolean;
     stale: boolean;
     asOf: Date | null;
   }> {
+    const required = new Set(currencies.map(currency => currency.trim().toUpperCase()));
+    const needsEur = required.has('EUR');
+    const needsBlue = required.has('USD') || needsEur;
     const [dolar, eurUsd] = await Promise.all([
-      this.getDolarQuotes({ require: ['blue'] }).catch(() => null),
-      this.getEurUsdRate().catch(() => null),
+      needsBlue ? this.getDolarQuotes({ require: ['blue'] }).catch(() => null) : null,
+      needsEur ? this.getEurUsdRate().catch(() => null) : null,
     ]);
     const blue = dolar?.blue;
     const usdArs = blue && Number.isFinite(blue.sell) && blue.sell > 0 ? blue.sell : null;
     const eurArs = eurUsd && usdArs ? eurUsd * usdArs : null;
     return {
-      usdArs, eurArs, fxUnavailable: usdArs === null || eurArs === null,
+      usdArs, eurArs, fxUnavailable: (needsBlue && usdArs === null) || (needsEur && eurArs === null),
       stale: Boolean(blue?.stale), asOf: blue?.asOf ?? blue?.timestamp ?? null,
     };
   }

@@ -32,7 +32,7 @@ vi.mock('@/lib/market-data/quote-refresh', () => {
     refreshQuotesForInvestments: async (investments: Array<{
       type: string; ticker: string | null; market_currency?: string | null;
     }>) => {
-      const map = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null }>();
+      const map = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null; fxStale?: boolean }>();
       for (const inv of investments) {
         const key = quoteCacheKeyForPosition(inv);
         if (!key) continue;
@@ -41,13 +41,13 @@ vi.mock('@/lib/market-data/quote-refresh', () => {
           const quote = await mocks.crypto(ticker);
           const price = Number(quote?.priceUSD);
           if (Number.isFinite(price) && price > 0) {
-            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null });
+            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null, fxStale: quote.fxStale });
           }
         } else {
           const quote = await mocks.stock(ticker);
           const price = Number(quote?.price);
           if (Number.isFinite(price) && price > 0) {
-            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null });
+            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null, fxStale: quote.fxStale });
           }
         }
       }
@@ -101,6 +101,16 @@ describe('quote cron provider failure reporting', () => {
     const response = await GET(request());
     expect(await response.json()).toMatchObject({ total: 1, processed: 1, errors: 1 });
     expect(mocks.alert).toHaveBeenCalledOnce();
+  });
+
+  it.each(['crypto', 'stock_us'])('rejects a %s quote flagged fxStale at the write boundary', async (type) => {
+    mocks.investments[0].type = type;
+    mocks.crypto.mockResolvedValue({ priceUSD: 100, fxStale: true });
+    mocks.stock.mockResolvedValue({ price: 100, fxStale: true });
+    const response = await GET(request());
+    expect(await response.json()).toMatchObject({ total: 1, processed: 0, errors: 1 });
+    expect(mocks.update).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
   });
 
   it.each([0, -1, NaN, Infinity])('counts invalid crypto price %s without overwriting the investment', async (priceUSD) => {

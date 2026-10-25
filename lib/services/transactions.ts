@@ -84,7 +84,7 @@ export async function buildToArsConverter(
   const rateToArs = new Map<string, number>();
   const excludedCurrencies: string[] = [];
   const fiatRates = currencies.some(c => c === 'USD' || c === 'EUR')
-    ? await cotizacionesService.getTransactionsFxRates().catch(() => null)
+    ? await cotizacionesService.getTransactionsFxRates(currencies).catch(() => null)
     : null;
   for (const c of currencies) {
     if (c === 'ARS') {

@@ -438,7 +438,7 @@ class InvestmentsService {
           positionFxStale ||= Boolean(fresh.fxStale);
           if (fresh.fxAsOf && (!positionFxAsOf || fresh.fxAsOf < positionFxAsOf)) positionFxAsOf = fresh.fxAsOf;
           priceUpdatedAt = fresh.timestamp;
-          if (!fresh.fxStale) updates.push({ id: inv.id, ...fresh });
+          updates.push({ id: inv.id, ...fresh });
         }
       }
 
@@ -506,6 +506,8 @@ class InvestmentsService {
     if (updates.length > 0) {
       await Promise.all(
         updates.map(async (u) => {
+          // Display estimates must not lose their FX provenance in stored prices.
+          if (u.fxStale) return;
           const { error: updateError } = await supabase
             .from('investments')
             .update({

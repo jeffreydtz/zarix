@@ -38,7 +38,10 @@ export async function GET(req: NextRequest) {
       current_price: currentPrice,
     };
     // This endpoint only previews discovery quotes; persistence paths require an anchor.
-    const quotes = await refreshQuotesForInvestments([position], { allowUnanchoredFciPreview: true });
+    const quotes = await refreshQuotesForInvestments([position], {
+      allowUnanchoredFciPreview: true,
+      allowStaleFx: true,
+    });
     const cacheKey = quoteCacheKeyForPosition(position);
     const hit = cacheKey ? quotes.get(cacheKey) : undefined;
     if (!hit || hit.price <= 0) {
@@ -51,6 +54,8 @@ export async function GET(req: NextRequest) {
       price: hit.price,
       currency: hit.currency,
       changePct: hit.changePct,
+      fxStale: Boolean(hit.fxStale),
+      fxAsOf: hit.fxAsOf ?? null,
       source: 'refresh',
     });
   } catch (error: unknown) {

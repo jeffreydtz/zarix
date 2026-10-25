@@ -314,30 +314,38 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
   );
 });
 
-it.each(['cron', 'interactive', 'portfolio'] as const)('keeps 72-hour MEP out of persisted prices and snapshots through %s', async (path) => {
-  const asOf = new Date(Date.now() - 72 * 60 * 60 * 1000);
-  mocks.dolar.mockResolvedValue({
-    blue: { sell: 1300, buy: 1280, timestamp: new Date(), stale: false },
-    mep: { sell: 1300, buy: 1280, timestamp: asOf, asOf, stale: true },
+describe.each([2, 72])('explicitly stale MEP aged %s hours', (hours) => {
+  it.each(['cron', 'interactive', 'list', 'portfolio'] as const)('keeps estimates out of persisted prices and snapshots through %s', async (path) => {
+    const asOf = new Date(Date.now() - hours * 60 * 60 * 1000);
+    mocks.dolar.mockResolvedValue({
+      blue: { sell: 1300, buy: 1280, timestamp: new Date(), stale: false },
+      mep: { sell: 1300, buy: 1280, timestamp: asOf, asOf, stale: true },
+    });
+    mocks.positions = [position('CONIOLA', 'USD', 0.135)];
+    mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    if (path === 'cron') {
+      const response = await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
+        headers: { authorization: 'Bearer fixture-cron-secret' },
+      }));
+      expect((await response.json()).processed).toBe(0);
+    } else if (path === 'interactive') {
+      const response = await quoteGet(new NextRequest('http://localhost/api/investments/quote?symbol=CONIOLA&type=fci&currency=USD&currentPrice=0.135'));
+      const body = await response.json();
+      expect(body).toMatchObject({ ok: true, fxStale: true, fxAsOf: asOf.toISOString() });
+      expect(body.price).toBeCloseTo(179.598 / 1300);
+    } else if (path === 'list') {
+      const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+      expect(rows[0]).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString(), valuation_price_source: 'estimate' });
+      expect(rows[0].current_price).toBeCloseTo(179.598 / 1300);
+    } else {
+      const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
+      expect(summary).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString() });
+      expect(summary.investments[0]).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString(), valuation_price_source: 'estimate' });
+      expect(summary.investments[0].current_price).toBeCloseTo(179.598 / 1300);
+    }
+    expect(mocks.updates).toEqual([]);
+    expect(mocks.snapshots).not.toHaveBeenCalled();
   });
-  mocks.positions = [position('CONIOLA', 'USD', 0.135)];
-  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
-  if (path === 'cron') {
-    const response = await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
-      headers: { authorization: 'Bearer fixture-cron-secret' },
-    }));
-    expect((await response.json()).processed).toBe(0);
-  } else if (path === 'interactive') {
-    const response = await quoteGet(new NextRequest('http://localhost/api/investments/quote?symbol=CONIOLA&type=fci&currency=USD&currentPrice=0.135'));
-    expect((await response.json()).ok).toBe(false);
-  } else {
-    const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
-    expect(summary).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString() });
-    expect(summary.investments[0]).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString(), valuation_price_source: 'estimate' });
-    expect(summary.investments[0].current_price).toBeCloseTo(179.598 / 1300);
-  }
-  expect(mocks.updates).toEqual([]);
-  expect(mocks.snapshots).not.toHaveBeenCalled();
 });
 
 it('skips snapshots when required MEP is missing even if blue and the cached asset price exist', async () => {
@@ -368,9 +376,13 @@ it.each([[24, true], [24 + 1 / 3600, false]] as const)('requires MEP at most 24 
       blue: { sell: 1300, buy: 1280, timestamp: new Date() },
       mep: { sell: 1300, buy: 1280, timestamp: new Date(Date.now() - hours * 3600_000), stale: false },
     });
+    mocks.positions = [position('CONIOLA', 'USD', 0.135)];
     mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
-    const response = await quoteGet(new NextRequest('http://localhost/api/investments/quote?symbol=CONIOLA&type=fci&currency=USD&currentPrice=0.135'));
-    expect((await response.json()).ok).toBe(accepted);
+    const response = await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
+      headers: { authorization: 'Bearer fixture-cron-secret' },
+    }));
+    expect((await response.json()).processed).toBe(accepted ? 1 : 0);
+    expect(mocks.updates).toHaveLength(accepted ? 1 : 0);
   } finally {
     vi.useRealTimers();
   }

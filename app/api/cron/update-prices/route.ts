@@ -5,6 +5,7 @@ import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
+  type QuoteResult,
 } from '@/lib/market-data/quote-refresh';
 import type { InvestmentType } from '@/types/database';
 
@@ -25,7 +26,7 @@ interface PriceRow {
 class UpdatePricesJob extends IterativeCronJob<PriceRow> {
   readonly name = 'update-prices';
 
-  private quotes = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null }>();
+  private quotes = new Map<string, QuoteResult>();
   private integrationErrors = 0;
 
   protected async execute(supabase: ServiceClient): Promise<Record<string, unknown>> {
@@ -59,7 +60,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
         const key = this.cacheKey(inv);
         if (!key) continue;
         const quote = this.quotes.get(key);
-        if (!quote || !(quote.price > 0)) this.integrationErrors++;
+        if (!quote || !(quote.price > 0) || quote.fxStale) this.integrationErrors++;
       }
     } catch (e) {
       this.integrationErrors++;
@@ -76,14 +77,14 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     const key = this.cacheKey(inv);
     if (!key) return false;
     const q = this.quotes.get(key);
-    return Boolean(q && q.price > 0);
+    return Boolean(q && q.price > 0 && !q.fxStale);
   }
 
   protected async processItem(supabase: ServiceClient, inv: PriceRow): Promise<void> {
     const key = this.cacheKey(inv);
     if (!key) return;
     const q = this.quotes.get(key);
-    if (!q || q.price <= 0) return;
+    if (!q || q.price <= 0 || q.fxStale) return;
     const { error } = await supabase
       .from('investments')
       .update({
@@ -101,7 +102,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     try {
       for (const [key, quote] of this.quotes.entries()) {
         if (!key.startsWith('crypto:')) continue;
-        if (!(quote.price > 0)) continue;
+        if (!(quote.price > 0) || quote.fxStale) continue;
         const ticker = key.split(':')[1];
         if (!ticker) continue;
         const { error } = await supabase.from('exchange_rates').upsert({
