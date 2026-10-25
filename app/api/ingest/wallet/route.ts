@@ -89,6 +89,7 @@ export async function POST(req: NextRequest) {
       userId: auth.userId,
       json,
       text,
+      rawJson: json ? raw : null,
       idempotencyKey,
       req,
     });

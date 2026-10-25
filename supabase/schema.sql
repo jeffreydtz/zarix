@@ -5339,7 +5339,7 @@ GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authent
 -- END supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
 
 -- BEGIN supabase/migrations/20261024200000_inbox_dedupe_uncertain_rate_limit.sql
--- SHA256 9306aa271cb87167e617b68ff472ac8f091b80b4bfb71ab2c2602ff3b8b1fb86
+-- SHA256 e026780517297f2c5510fb6a28084bc11a7bb19647763a2838f3a2bd77648542
 -- Inbox event identity survives confirmation, uncertain confirm state,
 -- shared rate-limit counters, installment write-channel, vault assert.
 -- Idempotent. Additive. NEVER `supabase db push`.
@@ -5396,7 +5396,7 @@ CREATE OR REPLACE FUNCTION public.claim_pending_inbox_item(
 ) RETURNS SETOF public.pending_inbox_items
 LANGUAGE plpgsql
 SECURITY INVOKER
-SET search_path = public
+SET search_path = pg_catalog, pg_temp
 AS $$
 BEGIN
   IF p_user_id IS NULL OR p_item_id IS NULL THEN
@@ -5405,12 +5405,13 @@ BEGIN
   IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
     RAISE EXCEPTION 'No autorizado';
   END IF;
-  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
   RETURN QUERY
   UPDATE public.pending_inbox_items
      SET status = 'confirming',
-         claim_id = gen_random_uuid(),
-         updated_at = now()
+         claim_id = pg_catalog.gen_random_uuid(),
+         updated_at = pg_catalog.now()
    WHERE id = p_item_id
      AND user_id = p_user_id
      AND status IN ('pending', 'uncertain')
@@ -6080,7 +6081,7 @@ GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BO
 -- END supabase/migrations/20261024210000_inbox_possible_duplicate.sql
 
 -- BEGIN supabase/migrations/20261024220000_inbox_request_canonical.sql
--- SHA256 5140225ba1ebe4f342b24b92601f5cf050e2e90890dd905406376d0de02b290a
+-- SHA256 9ea65a81977fdafe77087ec0877929f75edf22c8a683b8d565d2b2c645b1cbf7
 -- Immutable request identity for keyed Wallet/REST/MCP replay.
 -- Compute the canonical string in JS (`v1:{json}`); SQL stores it once and compares it.
 -- Prod currently has none of 180000–240000 (latest applied 20261024182923), so this
@@ -6102,9 +6103,17 @@ END $$;
 ALTER TABLE public.pending_inbox_items
   ADD COLUMN IF NOT EXISTS request_canonical TEXT;
 
+-- Drop the freeze trigger before backfill so a re-run can fill empty canonicals
+-- (and empty fingerprints) that were inserted between applies.
+DROP TRIGGER IF EXISTS pending_inbox_freeze_request_canonical ON public.pending_inbox_items;
+
 UPDATE public.pending_inbox_items
    SET request_canonical = 'legacy:' || id::text
  WHERE request_canonical IS NULL OR request_canonical = '';
+
+UPDATE public.pending_inbox_items
+   SET fingerprint = 'legacy-fp:' || id::text
+ WHERE fingerprint IS NULL OR fingerprint = '';
 
 ALTER TABLE public.pending_inbox_items
   ALTER COLUMN request_canonical SET DEFAULT '',
@@ -6121,7 +6130,7 @@ CREATE OR REPLACE FUNCTION public.reserve_pending_inbox_item(
 ) RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY INVOKER
-SET search_path = public
+SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE
   rec public.pending_inbox_items%ROWTYPE;
@@ -6135,15 +6144,15 @@ DECLARE
   incoming_source TEXT;
   incoming_canonical TEXT;
 BEGIN
-  IF p_user_id IS NULL OR p_lock_key IS NULL OR length(p_lock_key) < 8
+  IF p_user_id IS NULL OR p_lock_key IS NULL OR pg_catalog.length(p_lock_key) < 8
      OR p_ingest_key IS NULL OR p_row IS NULL THEN
     RAISE EXCEPTION 'No autorizado';
   END IF;
   IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
     RAISE EXCEPTION 'No autorizado';
   END IF;
-  PERFORM pg_advisory_xact_lock(
-    hashtextextended(p_user_id::text || ':inbox-dedupe:' || p_lock_key, 0));
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox-dedupe:' || p_lock_key, 0));
 
   incoming_amount := NULLIF(p_row->>'amount', '')::numeric;
   incoming_currency := COALESCE(NULLIF(p_row->>'currency', ''), 'ARS');
@@ -6171,7 +6180,7 @@ BEGIN
          OR rec.request_canonical IS DISTINCT FROM incoming_canonical THEN
         RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
       END IF;
-      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+      RETURN pg_catalog.jsonb_build_object('item', pg_catalog.to_jsonb(rec), 'duplicate', true);
     END IF;
   END IF;
 
@@ -6190,7 +6199,7 @@ BEGIN
       incoming_account,
       NULLIF(p_row->>'category_id', '')::uuid,
       NULLIF(p_row->>'occurred_at', '')::timestamptz,
-      CASE WHEN p_row ? 'raw_payload' AND jsonb_typeof(p_row->'raw_payload') <> 'null'
+      CASE WHEN p_row ? 'raw_payload' AND pg_catalog.jsonb_typeof(p_row->'raw_payload') <> 'null'
            THEN p_row->'raw_payload' ELSE NULL END,
       NULLIF(p_row->>'raw_text', ''),
       COALESCE(NULLIF(p_row->>'status', ''), 'pending'),
@@ -6201,7 +6210,7 @@ BEGIN
       COALESCE((p_row->>'amount_ambiguous')::boolean, false),
       incoming_source,
       COALESCE(NULLIF(p_row->>'fingerprint', ''), p_ingest_key),
-      CASE WHEN p_row ? 'tool_payload' AND jsonb_typeof(p_row->'tool_payload') <> 'null'
+      CASE WHEN p_row ? 'tool_payload' AND pg_catalog.jsonb_typeof(p_row->'tool_payload') <> 'null'
            THEN p_row->'tool_payload' ELSE NULL END,
       incoming_canonical
     )
@@ -6221,14 +6230,14 @@ BEGIN
            OR rec.request_canonical IS DISTINCT FROM incoming_canonical THEN
           RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
         END IF;
-        RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+        RETURN pg_catalog.jsonb_build_object('item', pg_catalog.to_jsonb(rec), 'duplicate', true);
       END IF;
     END IF;
     RAISE;
   END;
 
   IF NOT COALESCE(p_client_keyed, false) THEN
-    lookback := make_interval(secs => GREATEST(COALESCE(p_lookback_ms, 900000), 0) / 1000.0);
+    lookback := pg_catalog.make_interval(secs => pg_catalog.GREATEST(COALESCE(p_lookback_ms, 900000), 0) / 1000.0);
     SELECT id INTO match_id
       FROM public.pending_inbox_items
      WHERE user_id = p_user_id
@@ -6238,23 +6247,23 @@ BEGIN
        AND direction = incoming_direction
        AND (
          (incoming_account IS NOT NULL AND account_id IS NOT DISTINCT FROM incoming_account)
-         OR (incoming_merchant <> '' AND lower(coalesce(merchant, '')) = lower(incoming_merchant))
+         OR (incoming_merchant <> '' AND pg_catalog.lower(coalesce(merchant, '')) = pg_catalog.lower(incoming_merchant))
        )
        AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
-       AND created_at >= now() - lookback
+       AND created_at >= pg_catalog.now() - lookback
      ORDER BY created_at ASC, id ASC
      LIMIT 1;
     IF match_id IS NOT NULL THEN
       UPDATE public.pending_inbox_items
          SET possible_duplicate_of = match_id,
-             updated_at = now()
+             updated_at = pg_catalog.now()
        WHERE id = rec.id
          AND user_id = p_user_id
       RETURNING * INTO rec;
     END IF;
   END IF;
 
-  RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', false);
+  RETURN pg_catalog.jsonb_build_object('item', pg_catalog.to_jsonb(rec), 'duplicate', false);
 END;
 $$;
 

@@ -118,12 +118,51 @@ describe('wallet amount parser (table)', () => {
     expect(sterling.currency).toBe('GBP');
   });
 
+  it('does not round JSON amounts with more than two decimals', () => {
+    const raw = '{"amount":40.129,"currency":"ARS","merchant":"Café"}';
+    const excess = parseWalletPayload({
+      json: JSON.parse(raw) as Record<string, unknown>,
+      rawJson: raw,
+    });
+    expect(excess.amount).toBeNull();
+    expect(excess.amountAmbiguous).toBe(true);
+    expect(excess.amount).not.toBe(40.13);
+    const millRaw = '{"amount":1.005,"currency":"ARS","merchant":"Café"}';
+    const mill = parseWalletPayload({
+      json: JSON.parse(millRaw) as Record<string, unknown>,
+      rawJson: millRaw,
+    });
+    expect(mill.amount).toBeNull();
+    expect(mill.amount).not.toBe(1);
+    const asString = parseWalletPayload({
+      json: { amount: '40.129', currency: 'ARS', merchant: 'Café' },
+      rawJson: '{"amount":"40.129","currency":"ARS","merchant":"Café"}',
+    });
+    expect(asString.amount).toBeNull();
+    expect(asString.amountAmbiguous).toBe(true);
+  });
+
+  it('keeps large ARS amounts with cents from the raw JSON token', () => {
+    const raw = '{"amount":1048576.37,"currency":"ARS","merchant":"Alquiler"}';
+    const parsed = parseWalletPayload({
+      json: JSON.parse(raw) as Record<string, unknown>,
+      rawJson: raw,
+    });
+    expect(parsed.amount).toBe(1048576.37);
+    expect(parsed.amountAmbiguous).toBe(false);
+    const million = parseWalletPayload({
+      json: { amount: 1234567.89, currency: 'ARS', merchant: 'Alquiler' },
+      rawJson: '{"amount":1234567.89,"currency":"ARS","merchant":"Alquiler"}',
+    });
+    expect(million.amount).toBe(1234567.89);
+  });
+
   it('invalid JSON amount falls back to text and is ambiguous (no auto-confirm)', () => {
     const foo = parseWalletPayload({
       json: { amount: 'foo', rawText: 'USD 1.234' },
     });
-    expect(foo.amount).not.toBeNull();
     expect(foo.amountAmbiguous).toBe(true);
+    expect(foo.amount).not.toBe(1.23);
 
     const zero = parseWalletPayload({
       json: { amount: 0, rawText: '1.250' },

@@ -4,6 +4,7 @@ import {
   calendarDateToUtcNoonIso,
   isoToLocalDateInputValue,
   parseBotTransactionDateInput,
+  parseCivilMonthQuery,
   isCivilYmd,
   transactionCivilYmd,
   ymdToQueryEndIso,
@@ -91,6 +92,21 @@ describe('parseBotTransactionDateInput', () => {
       expect(parseBotTransactionDateInput(input)).toBeUndefined();
     }
   );
+});
+
+describe('parseCivilMonthQuery', () => {
+  it('treats YYYY-MM as Córdoba noon on day 1, not UTC midnight', () => {
+    const month = parseCivilMonthQuery('2026-10');
+    expect(month.toISOString()).toBe('2026-10-01T15:00:00.000Z');
+    expect(new Date('2026-10').toISOString()).toBe('2026-10-01T00:00:00.000Z');
+    expect(month.getTime()).not.toBe(new Date('2026-10').getTime());
+  });
+
+  it('falls back to now for an unparseable month', () => {
+    const now = new Date('2026-09-15T12:00:00.000Z');
+    expect(parseCivilMonthQuery('nope', now)).toBe(now);
+    expect(parseCivilMonthQuery(null, now)).toBe(now);
+  });
 });
 
 describe('Córdoba civil grouping and month bounds', () => {

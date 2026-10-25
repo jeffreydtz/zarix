@@ -105,7 +105,19 @@ async function runOverlap({ query, parallelSql, lockKey, first, second }) {
 }
 
 const payload = { amount: 77, currency: 'ARS', direction: 'expense' };
-const lockKey = inboxDedupeLockKey(ids.a, payload, '');
+const accountLockA = inboxDedupeLockKey(ids.a, { ...payload, merchant: 'Merchant Alpha' }, '');
+const accountLockB = inboxDedupeLockKey(ids.a, { ...payload, merchant: 'Merchant Beta' }, '');
+assert.equal(accountLockA, accountLockB, 'lock key ignores merchant; both account-only payloads share one lock');
+const merchantLockA = inboxDedupeLockKey(ids.a, { ...payload, merchant: 'Shared Café', cardName: 'Visa A' }, '');
+const merchantLockB = inboxDedupeLockKey(ids.a, { ...payload, merchant: 'Shared Café', cardName: 'Visa B' }, '');
+assert.equal(merchantLockA, merchantLockB, 'lock key ignores card; both merchant-only payloads share one lock');
+assert.equal(accountLockA, merchantLockA);
+const lockKey = accountLockA;
+assert.notEqual(
+  inboxDedupeLockKey(ids.a, { ...payload, amount: 78 }, ''),
+  lockKey,
+  'distinct amounts must use distinct lock keys'
+);
 
 const result = await withTwoSessionPostgres(async ({ query, parallelSql }) => {
   const accountOnly = await runOverlap({
@@ -149,14 +161,14 @@ const result = await withTwoSessionPostgres(async ({ query, parallelSql }) => {
   );
   assert.match(definition, /pg_advisory_xact_lock/);
   const unlocked = definition
-    .replace(/PERFORM\s+pg_advisory_xact_lock\s*\([\s\S]*?\);/, '-- lock removed')
+    .replace(/PERFORM\s+(?:pg_catalog\.)?pg_advisory_xact_lock\s*\([\s\S]*?\);/, '-- lock removed')
     .replace(
       /IF NOT COALESCE\(p_client_keyed, false\) THEN\s+lookback/,
       'PERFORM pg_advisory_lock_shared(8675309);\n  IF NOT COALESCE(p_client_keyed, false) THEN\n    lookback'
     )
     .replace(
-      /RETURN jsonb_build_object\('item', to_jsonb\(rec\), 'duplicate', false\);/,
-      "PERFORM pg_advisory_lock_shared(8675310);\n  RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', false);"
+      /RETURN (?:pg_catalog\.)?jsonb_build_object\('item', (?:pg_catalog\.)?to_jsonb\(rec\), 'duplicate', false\);/,
+      "PERFORM pg_advisory_lock_shared(8675310);\n  RETURN pg_catalog.jsonb_build_object('item', pg_catalog.to_jsonb(rec), 'duplicate', false);"
     );
   assert.doesNotMatch(unlocked, /pg_advisory_xact_lock/);
   assert.match(unlocked, /pg_advisory_lock_shared\(8675309\)/);

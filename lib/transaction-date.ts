@@ -66,6 +66,20 @@ export function startOfMonthYmd(ymd: string): string {
   return isCivilYmd(ymd) ? `${ymd.slice(0, 7)}-01` : ymd;
 }
 
+/**
+ * `?month=YYYY-MM` or `YYYY-MM-DD` as a Córdoba civil month.
+ * Date-only / month-only strings must not go through `new Date()` (UTC midnight
+ * of Oct 1 is September in Córdoba).
+ */
+export function parseCivilMonthQuery(raw: string | null | undefined, now: Date = new Date()): Date {
+  const s = String(raw ?? '').trim();
+  const ym = s.match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/);
+  if (ym && isCivilYmd(`${ym[1]}-${ym[2]}-01`)) {
+    return new Date(`${ym[1]}-${ym[2]}-01T12:00:00-03:00`);
+  }
+  return now;
+}
+
 export function endOfMonthYmd(ymd: string): string {
   const m = ymd.trim().match(CIVIL_YMD);
   if (!m) return ymd;

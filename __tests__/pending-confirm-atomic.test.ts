@@ -1334,6 +1334,18 @@ describe('pending inbox confirm idempotency', () => {
     expect(inboxRequestCanonical({ source: 'api', amount: 1, type: 'expense' })).toContain('"amount":"1.00"');
   });
 
+  it('accepts large ARS amounts with cents using an exact decimal check', () => {
+    expect(inboxRequestCanonical({ source: 'api', amount: 1048576.37, type: 'expense' })).toContain(
+      '"amount":"1048576.37"'
+    );
+    expect(inboxRequestCanonical({ source: 'api', amount: 1234567.89, type: 'expense' })).toContain(
+      '"amount":"1234567.89"'
+    );
+    expect(inboxRequestCanonical({ source: 'api', amount: 10000000.37, type: 'expense' })).toContain(
+      '"amount":"10000000.37"'
+    );
+  });
+
   it('returns 409 and writes nothing when a confirmed expense is resent as a transfer with the same key', async () => {
     const canonical = inboxRequestCanonical({
       source: 'api',
@@ -1449,5 +1461,107 @@ describe('pending inbox confirm idempotency', () => {
     ).rejects.toMatchObject({ status: 400 });
     expect(mocks.rpc).not.toHaveBeenCalled();
     expect(updates).toEqual([]);
+  });
+
+  it('does not write item 1 when item 2 is already confirming', async () => {
+    const pending = itemRow('pending');
+    const confirmingId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const confirming = itemRow('confirming', {
+      id: confirmingId,
+      updated_at: new Date().toISOString(),
+    });
+    expect(isStaleConfirming(confirming)).toBe(false);
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [pending, confirming], error: null });
+      return q;
+    });
+    await expect(
+      confirmPendingItems({
+        userId: FIXTURE_USER,
+        itemIds: [FIXTURE_ITEM, confirmingId],
+      })
+    ).rejects.toMatchObject({ status: 409 });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.execute).not.toHaveBeenCalled();
+    expect(updates).toEqual([]);
+  });
+
+  it('does not write item 1 when item 2 has no account', async () => {
+    const pending = itemRow('pending');
+    const missingAccountId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const missingAccount = itemRow('pending', {
+      id: missingAccountId,
+      account_id: null,
+      tool_payload: { type: 'expense', amount: 13 },
+    });
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [pending, missingAccount], error: null });
+      return q;
+    });
+    await expect(
+      confirmPendingItems({
+        userId: FIXTURE_USER,
+        itemIds: [FIXTURE_ITEM, missingAccountId],
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.execute).not.toHaveBeenCalled();
+    expect(updates).toEqual([]);
+  });
+
+  it('parks a JSON amount with more than two decimals and never auto-confirms the rounded value', async () => {
+    const captured: { row: Record<string, unknown> | null } = { row: null };
+    mocks.suggest.mockResolvedValue({
+      categoryId: CATEGORY_ID,
+      categoryName: 'Café',
+      source: 'history',
+    });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.maybeSingle = async () => {
+        if (table === 'wallet_card_account_maps') return { data: { account_id: ACCOUNT_ID }, error: null };
+        if (table === 'users') return { data: { wallet_auto_confirm: true }, error: null };
+        return { data: null, error: null };
+      };
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    mocks.rpc.mockImplementation(async (fn: string, args: { p_row?: Record<string, unknown> }) => {
+      if (fn === 'reserve_pending_inbox_item') {
+        captured.row = args.p_row ?? null;
+        return {
+          data: { item: { ...args.p_row, id: FIXTURE_ITEM, status: 'pending' }, duplicate: false },
+          error: null,
+        };
+      }
+      return { data: null, error: null };
+    });
+    const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+    const rawJson =
+      '{"amount":40.129,"currency":"ARS","merchant":"Café","cardName":"Visa Ejemplo","timestamp":"2026-10-25T12:00:00.000Z"}';
+    const result = await ingestWalletItem({
+      userId: FIXTURE_USER,
+      json: JSON.parse(rawJson) as Record<string, unknown>,
+      rawJson,
+      idempotencyKey: 'wallet-excess-decimals',
+    });
+    expect(result.autoConfirmed).toBe(false);
+    expect(captured.row?.amount).not.toBe(40.13);
+    expect(captured.row?.amount).toBeNull();
+    expect(captured.row?.amount_ambiguous).toBe(true);
+    expect(mocks.execute).not.toHaveBeenCalled();
   });
 });
