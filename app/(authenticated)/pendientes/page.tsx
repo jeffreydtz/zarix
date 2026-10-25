@@ -140,6 +140,18 @@ export default function PendientesPage() {
                   {item.status === 'confirming' ? ' · reintento (quedó a medias)' : ''}
                   {item.status === 'uncertain' ? ' · resultado incierto (hay que reconciliar)' : ''}
                 </p>
+                {item.possible_duplicate_of ? (
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                    Posible duplicado
+                    <button
+                      type="button"
+                      className="ml-2 text-destructive underline"
+                      onClick={() => discard(item.id)}
+                    >
+                      Descartar
+                    </button>
+                  </p>
+                ) : null}
                 <div className="flex gap-2">
                   <button type="button" className="btn-primary" onClick={() => confirm(item)}>
                     Confirmar

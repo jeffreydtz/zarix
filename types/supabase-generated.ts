@@ -665,14 +665,14 @@ isOneToOne: false
                   Relationships: []
                 },"pending_inbox_items": {
                   Row: {
-                    "account_id": string | null,"amount": number | null,"amount_ambiguous": boolean,"card_name": string | null,"category_id": string | null,"confirmed_transaction_id": string | null,"created_at": string,"currency": string,"direction": string,"discarded_at": string | null,"fingerprint": string,"id": string,"idempotency_key": string | null,"ingest_key": string,"merchant": string | null,"occurred_at": string | null,"raw_payload": Json | null,"raw_text": string | null,"source": string,"status": string,"suggestion_source": string | null,"tool_payload": Json | null,"updated_at": string,"user_id": string
+                    "account_id": string | null,"amount": number | null,"amount_ambiguous": boolean,"card_name": string | null,"category_id": string | null,"confirmed_transaction_id": string | null,"created_at": string,"currency": string,"direction": string,"discarded_at": string | null,"fingerprint": string,"id": string,"idempotency_key": string | null,"ingest_key": string,"merchant": string | null,"occurred_at": string | null,"possible_duplicate_of": string | null,"raw_payload": Json | null,"raw_text": string | null,"source": string,"status": string,"suggestion_source": string | null,"tool_payload": Json | null,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "account_id"?: string | null,"amount"?: number | null,"amount_ambiguous"?: boolean,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"direction"?: string,"discarded_at"?: string | null,"fingerprint": string,"id"?: string,"idempotency_key"?: string | null,"ingest_key"?: string,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"tool_payload"?: Json | null,"updated_at"?: string,"user_id": string
+                    "account_id"?: string | null,"amount"?: number | null,"amount_ambiguous"?: boolean,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"direction"?: string,"discarded_at"?: string | null,"fingerprint": string,"id"?: string,"idempotency_key"?: string | null,"ingest_key"?: string,"merchant"?: string | null,"occurred_at"?: string | null,"possible_duplicate_of"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"tool_payload"?: Json | null,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "account_id"?: string | null,"amount"?: number | null,"amount_ambiguous"?: boolean,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"direction"?: string,"discarded_at"?: string | null,"fingerprint"?: string,"id"?: string,"idempotency_key"?: string | null,"ingest_key"?: string,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"tool_payload"?: Json | null,"updated_at"?: string,"user_id"?: string
+                    "account_id"?: string | null,"amount"?: number | null,"amount_ambiguous"?: boolean,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"direction"?: string,"discarded_at"?: string | null,"fingerprint"?: string,"id"?: string,"idempotency_key"?: string | null,"ingest_key"?: string,"merchant"?: string | null,"occurred_at"?: string | null,"possible_duplicate_of"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"tool_payload"?: Json | null,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: []
                 },"personal_access_tokens": {
@@ -839,8 +839,11 @@ isOneToOne: false
 "discard_pending_inbox_item":
 { Args: { "p_item_id": string,"p_user_id": string }; Returns: unknown
                            },
+"inbox_canonical_tool_payload":
+{ Args: { "p": Json }; Returns: Json
+                           },
 "reserve_pending_inbox_item":
-{ Args: { "p_client_keyed": boolean,"p_fingerprint": string,"p_fingerprints": string[],"p_ingest_key": string,"p_lock_key": string,"p_lookback_ms": number,"p_row": Json,"p_user_id": string }; Returns: Json
+{ Args: { "p_client_keyed": boolean,"p_ingest_key": string,"p_lock_key": string,"p_lookback_ms": number,"p_row": Json,"p_user_id": string }; Returns: Json
                            },
 "purge_rate_limit_counters":
 { Args: { "p_older_than"?: string }; Returns: number

@@ -48,6 +48,11 @@ describe('pending inbox preview matches the confirm request', () => {
     expect(confirmPreviewFromDraft(draft, ACCOUNTS).directionLabel).toBe('Ingreso');
   });
 
+  it('keeps possible_duplicate_of on the draft so /pendientes can show posible duplicado', () => {
+    const draft = effectiveInboxItem({ ...ITEM, possible_duplicate_of: ITEM.id });
+    expect(draft.possible_duplicate_of).toBe(ITEM.id);
+  });
+
   it('cleared amount stays null in preview and POST instead of restoring parked amount', () => {
     const draft = effectiveInboxItem(ITEM, { amount: null });
     const preview = confirmPreviewFromDraft(draft, ACCOUNTS);

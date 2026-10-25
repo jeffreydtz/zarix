@@ -104,10 +104,10 @@ try {
   await test('reserve_pending_inbox_item is service-only', async () => {
     const row = JSON.stringify({ amount: 1, currency: 'ARS', merchant: 'x', source: 'wallet', status: 'pending' });
     await rejects(() => owner(db,
-      "SELECT reserve_pending_inbox_item($1,'lock-key-fixture',ARRAY['fp']::text[],900000,'ingest-key',false,'fp',$2::jsonb)",
+      "SELECT reserve_pending_inbox_item($1,'lock-key-fixture','ingest-key',false,900000,$2::jsonb)",
       [ids.a, row]));
     await rejects(() => queryAs(db, 'anon', null,
-      "SELECT reserve_pending_inbox_item($1,'lock-key-fixture',ARRAY['fp']::text[],900000,'ingest-key',false,'fp',$2::jsonb)",
+      "SELECT reserve_pending_inbox_item($1,'lock-key-fixture','ingest-key',false,900000,$2::jsonb)",
       [ids.a, row]));
   });
 

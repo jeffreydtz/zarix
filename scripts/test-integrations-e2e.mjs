@@ -155,14 +155,14 @@ try {
     assert.ok(!emails.some(e => /hotmail/i.test(e) || e.startsWith('jef_dietz')));
   });
 
-  await test('fingerprint unique still blocks a second ingest after confirm', async () => {
+  await test('confirmed fingerprint does not block a later purchase', async () => {
     const fp = 'fp-reserved-after-confirm';
     await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
       VALUES($1,40,'ARS','Dedupe','confirmed',$2,'wallet','expense')`, [ids.a, fp]);
-    await assert.rejects(() => service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
-      VALUES($1,40,'ARS','Dedupe','pending',$2,'wallet','expense')`, [ids.a, fp]));
+    await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
+      VALUES($1,40,'ARS','Dedupe','pending',$2,'wallet','expense')`, [ids.a, fp]);
     const n = (await service(db, 'SELECT count(*)::int AS n FROM pending_inbox_items WHERE fingerprint=$1 AND user_id=$2', [fp, ids.a])).rows[0].n;
-    assert.equal(n, 1);
+    assert.equal(n, 2);
   });
 
   await test('late ledger write after discard is refused', async () => {
@@ -249,20 +249,21 @@ try {
     assert.equal(discarded.status, 'discarded');
   });
 
-  await test('fingerprint window buckets allow the same coffee a day later', async () => {
-    const material = (bucket) => [ids.a, '+', 'expense', '40', 'ARS', '', 'café', bucket, ''].join('|');
-    const fp0 = digest(material('win:0'));
-    const fpLater = digest(material(`win:${Math.floor((24 * 60 * 60 * 1000) / (15 * 60 * 1000))}`));
-    assert.notEqual(fp0, fpLater);
+  await test('anonymous fingerprint is not unique; same coffee can insert twice', async () => {
+    const fp = digest([ids.a, '+', 'expense', '40', 'ARS', '', 'café', ''].join('|'));
     await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
-      VALUES($1,40,'ARS','Café','confirmed',$2,'wallet','expense')`, [ids.a, fp0]);
+      VALUES($1,40,'ARS','Café','confirmed',$2,'wallet','expense')`, [ids.a, fp]);
     await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
-      VALUES($1,40,'ARS','Café','pending',$2,'wallet','expense')`, [ids.a, fpLater]);
-    await assert.rejects(() => service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction)
-      VALUES($1,40,'ARS','Café','pending',$2,'wallet','expense')`, [ids.a, fp0]));
-    const n = (await service(db, "SELECT count(*)::int AS n FROM pending_inbox_items WHERE merchant='Café' AND user_id=$1 AND fingerprint IN ($2,$3)",
-      [ids.a, fp0, fpLater])).rows[0].n;
+      VALUES($1,40,'ARS','Café','pending',$2,'wallet','expense')`, [ids.a, fp]);
+    const n = (await service(db, "SELECT count(*)::int AS n FROM pending_inbox_items WHERE merchant='Café' AND user_id=$1 AND fingerprint=$2",
+      [ids.a, fp])).rows[0].n;
     assert.equal(n, 2);
+    const unique = (await db.query(`SELECT indexname FROM pg_indexes
+      WHERE schemaname='public' AND indexname IN ('pending_inbox_fingerprint_reserved_unique','pending_inbox_fingerprint_pending_unique')`)).rows;
+    assert.equal(unique.length, 0);
+    const keyed = (await db.query(`SELECT indexname FROM pg_indexes
+      WHERE schemaname='public' AND indexname='pending_inbox_idempotency_unique'`)).rows;
+    assert.equal(keyed.length, 1);
   });
 
   await test('MCP owner confirm writes one ledger row and cross-user confirm is denied', async () => {
@@ -323,6 +324,7 @@ try {
     assert.equal(rows.length, 2);
     assert.match(rows[0].fingerprint, /^legacy-collision:/);
     assert.equal(rows[1].fingerprint, fp);
+    await db.query('DROP INDEX IF EXISTS pending_inbox_fingerprint_reserved_unique');
   });
 
   await test('purge_rate_limit_counters deletes old windows and keeps the current one', async () => {
@@ -394,33 +396,74 @@ try {
     assert.equal((await service(db, "SELECT count(*)::int AS n FROM transactions WHERE description='Dashless discard' AND user_id=$1", [ids.a])).rows[0].n, 0);
   });
 
-  await test('anonymous reserve lookback is 15 minutes and serializes across buckets', async () => {
+  await test('anonymous reserve always inserts; 15-minute match is possible_duplicate_of', async () => {
     const lockKey = 'lock-lookback-fixture-aaaa';
-    const fpOld = 'fp-lookback-old';
-    const fpNew = 'fp-lookback-new';
-    const row = JSON.stringify({
-      amount: 40, currency: 'ARS', merchant: 'Lookback café', direction: 'expense', source: 'wallet', status: 'pending',
+    const row = (fingerprint, merchant = 'Lookback café') => JSON.stringify({
+      amount: 40, currency: 'ARS', merchant, direction: 'expense', source: 'wallet', status: 'pending', fingerprint,
     });
     await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,created_at)
-      VALUES($1,40,'ARS','Lookback café','pending',$2,'wallet','expense', now() - interval '16 minutes')`,
-      [ids.a, fpOld]);
-    const missed = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3::text[],$4,$5,false,$6,$7::jsonb) AS r`,
-      [ids.a, lockKey, [fpNew, fpOld], 900000, randomUUID(), fpNew, row])).rows[0].r;
+      VALUES($1,40,'ARS','Lookback café','pending','fp-lookback-old','wallet','expense', now() - interval '16 minutes')`,
+      [ids.a]);
+    const missed = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,false,900000,$4::jsonb) AS r`,
+      [ids.a, lockKey, randomUUID(), row('fp-lookback-new')])).rows[0].r;
     assert.equal(missed.duplicate, false);
-    const again = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3::text[],$4,$5,false,$6,$7::jsonb) AS r`,
-      [ids.a, lockKey, [fpNew, fpOld], 900000, randomUUID(), fpNew, row])).rows[0].r;
-    assert.equal(again.duplicate, true);
-    assert.equal(again.item.id, missed.item.id);
+    assert.equal(missed.item.possible_duplicate_of, null);
 
-    const fpRecent = 'fp-lookback-recent';
-    const fpRetry = 'fp-lookback-retry';
+    const again = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,false,900000,$4::jsonb) AS r`,
+      [ids.a, lockKey, randomUUID(), row('fp-lookback-retry')])).rows[0].r;
+    assert.equal(again.duplicate, false);
+    assert.notEqual(again.item.id, missed.item.id);
+    assert.equal(again.item.possible_duplicate_of, missed.item.id);
+
     const recent = (await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,created_at)
-      VALUES($1,40,'ARS','Lookback recent','pending',$2,'wallet','expense', now() - interval '20 seconds') RETURNING id`,
-      [ids.a, fpRecent])).rows[0];
-    const hit = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3::text[],$4,$5,false,$6,$7::jsonb) AS r`,
-      [ids.a, 'lock-lookback-fixture-bbbb', [fpRetry, fpRecent], 900000, randomUUID(), fpRetry, row])).rows[0].r;
-    assert.equal(hit.duplicate, true);
-    assert.equal(hit.item.id, recent.id);
+      VALUES($1,40,'ARS','Lookback recent','pending','fp-lookback-recent','wallet','expense', now() - interval '20 seconds') RETURNING id`,
+      [ids.a])).rows[0];
+    const flagged = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,false,900000,$4::jsonb) AS r`,
+      [ids.a, 'lock-lookback-fixture-bbbb', randomUUID(), row('fp-lookback-flag', 'Lookback recent')])).rows[0].r;
+    assert.equal(flagged.duplicate, false);
+    assert.notEqual(flagged.item.id, recent.id);
+    assert.equal(flagged.item.possible_duplicate_of, recent.id);
+  });
+
+  await test('keyed reserve replays the same payload and 409s a different body or source', async () => {
+    const key = 'wallet-idem-e2e-replay';
+    const lock = `idemp:${key}`;
+    const body = (amount, source, extra = {}) => JSON.stringify({
+      amount, currency: 'ARS', merchant: 'Keyed café', direction: 'expense', source,
+      status: 'pending', fingerprint: `fp-${source}-${amount}`, idempotency_key: key, ingest_key: key,
+      account_id: ids.accountA, ...extra,
+    });
+    const first = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb) AS r`,
+      [ids.a, lock, key, body(18, 'wallet')])).rows[0].r;
+    assert.equal(first.duplicate, false);
+    const replay = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb) AS r`,
+      [ids.a, lock, key, body(18, 'wallet')])).rows[0].r;
+    assert.equal(replay.duplicate, true);
+    assert.equal(replay.item.id, first.item.id);
+    await assert.rejects(
+      () => service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,true,900000,$4::jsonb)`,
+        [ids.a, lock, key, body(900, 'api', { tool_payload: { type: 'expense', amount: 900 } })]),
+      /Idempotency-Key ya se usó/i
+    );
+    const count = (await service(db, 'SELECT count(*)::int AS n FROM pending_inbox_items WHERE ingest_key=$1 AND user_id=$2',
+      [key, ids.a])).rows[0].n;
+    assert.equal(count, 1);
+  });
+
+  await test('date-only purchases two hours apart insert two pending rows', async () => {
+    await service(db, `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,occurred_at,created_at)
+      VALUES($1,18,'ARS','Date-only café','pending','fp-date-only','wallet','expense','2026-10-24T12:00:00-03:00', now() - interval '2 hours')`,
+      [ids.a]);
+    const second = (await service(db, `SELECT reserve_pending_inbox_item($1,$2,$3,false,900000,$4::jsonb) AS r`,
+      [ids.a, 'lock-date-only-fixture', randomUUID(), JSON.stringify({
+        amount: 18, currency: 'ARS', merchant: 'Date-only café', direction: 'expense', source: 'wallet',
+        status: 'pending', fingerprint: 'fp-date-only', occurred_at: '2026-10-24T12:00:00-03:00',
+      })])).rows[0].r;
+    assert.equal(second.duplicate, false);
+    assert.equal(second.item.possible_duplicate_of, null);
+    const n = (await service(db, "SELECT count(*)::int AS n FROM pending_inbox_items WHERE merchant='Date-only café' AND user_id=$1",
+      [ids.a])).rows[0].n;
+    assert.equal(n, 2);
   });
 
   await test('status CHECK can be re-applied after uncertain rows exist', async () => {
@@ -466,19 +509,21 @@ const report = {
     'cross-user denial',
     'read vs write scopes',
     'fixture-only identities',
-    'fingerprint unique after confirm',
+    'anonymous fingerprint not unique',
     'late ledger write after discard refused',
     'authenticated discard requires uid',
     'uncertain cannot be discarded with receipt',
     'discard confirming refused',
-    'fingerprint window expires',
+    'possible duplicate 15min window',
     'MCP owner confirm and cross-user denial',
     'fingerprint collision preflight',
     'rate-limit counter purge',
     'shared rate-limit counters',
     'wallet uuid request id canonicalize',
     'dashless wallet request refuses discarded',
-    'anonymous reserve 15min lookback',
+    'anonymous reserve possible duplicate',
+    'keyed reserve replay and 409',
+    'date-only two hours apart two rows',
     'status CHECK re-apply with uncertain',
     'installment source mcp',
   ],

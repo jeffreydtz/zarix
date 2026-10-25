@@ -16,6 +16,17 @@ vi.mock('@/lib/services/pending-inbox', () => ({
   confirmPendingItem: (input: Record<string, unknown>) => mocks.confirm(input),
   confirmPendingItems: (input: Record<string, unknown>) => mocks.confirmMany(input),
   parkRegistryWrite: (input: Record<string, unknown>) => mocks.park(input),
+  canonicalPendingInboxIds: (raw: string[]) => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const id of raw) {
+      const canonical = String(id).trim().toLowerCase();
+      if (!canonical || seen.has(canonical)) continue;
+      seen.add(canonical);
+      out.push(canonical);
+    }
+    return out;
+  },
 }));
 
 vi.mock('@/lib/telegram/executeBotTransaction', () => ({
@@ -30,6 +41,34 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
     mocks.confirm.mockResolvedValue({ id: PENDING_ID, merchant: 'Café', status: 'confirmed' });
     mocks.park.mockResolvedValue({ id: PENDING_ID });
     mocks.executeBot.mockResolvedValue({ kind: 'success', reply: 'ok', executed: [{ id: 'tx-1' }] });
+  });
+
+  it('builds the MCP park preview from the stored row, not the incoming args', async () => {
+    mocks.park.mockResolvedValue({
+      id: PENDING_ID,
+      amount: 18,
+      currency: 'ARS',
+      merchant: 'Café parked',
+      direction: 'expense',
+      tool_payload: { type: 'expense', amount: 18, description: 'Café parked' },
+    });
+    const result = await executeRegistryTool(
+      'create_transaction',
+      { type: 'expense', amount: 900, currency: 'USD', description: 'nuevo' },
+      {
+        userId: FIXTURE_A,
+        financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+        source: 'mcp',
+      }
+    );
+    expect(result.response.needs_confirm).toBe(true);
+    expect(result.response.pendingId).toBe(PENDING_ID);
+    expect(result.response.preview).toMatchObject({
+      type: 'expense',
+      amount: 18,
+      currency: 'ARS',
+    });
+    expect(result.response.preview).not.toMatchObject({ amount: 900, currency: 'USD' });
   });
 
   it('parses confirm-only payloads that the write schema would reject', () => {
@@ -61,6 +100,25 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
     expect(mocks.confirm).toHaveBeenCalledWith(expect.objectContaining({ userId: FIXTURE_A, itemId: PENDING_ID }));
     expect(mocks.executeBot).not.toHaveBeenCalled();
     expect(JSON.stringify(result)).not.toContain(FIXTURE_B);
+  });
+
+  it('canonicalizes mixed-case duplicate pendingIds before counting', async () => {
+    mocks.confirmMany.mockResolvedValue([{ id: PENDING_ID }]);
+    const result = await executeRegistryTool(
+      'create_transactions',
+      { confirm: true, pendingIds: [PENDING_ID, PENDING_ID.toUpperCase()] },
+      {
+        userId: FIXTURE_A,
+        financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+        source: 'mcp',
+      }
+    );
+    expect(mocks.confirmMany).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: FIXTURE_A, itemIds: [PENDING_ID] })
+    );
+    expect(result.response.executedCount).toBe(1);
+    expect(result.response.total).toBe(1);
+    expect(result.response.pendingIds).toEqual([PENDING_ID]);
   });
 
   it('isolates confirm to the PAT user', async () => {

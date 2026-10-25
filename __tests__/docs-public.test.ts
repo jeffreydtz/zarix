@@ -16,6 +16,8 @@ describe('public docs', () => {
     expect(findDocsPage('nope')).toBeUndefined();
     expect(blob).toMatch(/Idempotency-Key/);
     expect(blob).toMatch(/autoConfirmed/);
+    expect(blob).toMatch(/posible duplicado/);
+    expect(blob).toMatch(/409/);
   });
 
   it('is public without login while private app pages still require a session', () => {
@@ -32,6 +34,8 @@ describe('public docs', () => {
     const panel = readFileSync('components/settings/IntegrationsPanel.tsx', 'utf8');
     expect(panel).toMatch(/Idempotency-Key/);
     expect(panel).toMatch(/autoConfirmed/);
+    expect(panel).toMatch(/posible duplicado/);
+    expect(panel).toMatch(/409/);
     const readme = readFileSync('supabase/manual/README.md', 'utf8');
     expect(readme).toMatch(/HTTP 503/);
     expect(readme).not.toMatch(/fail-closed with HTTP 429/);
