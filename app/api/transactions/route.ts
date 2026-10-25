@@ -3,19 +3,12 @@ import { createClient } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService } from '@/lib/services/transactions';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
-import { errorResponse } from '@/lib/api-handler';
+import { errorResponse, requireUser } from '@/lib/api-handler';
 import { observedRequest } from '@/lib/observability/correlation';
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user } = await requireUser();
 
     const { searchParams } = new URL(req.url);
     const minAmountParam = searchParams.get('minAmount');

@@ -133,7 +133,7 @@ beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
-  mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP }, mep: { sell: MEP, buy: MEP } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: MEP, buy: MEP  }, mep: { timestamp: new Date(), sell: MEP, buy: MEP  } });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
   mocks.crypto.mockResolvedValue({ priceUSD: 0 });

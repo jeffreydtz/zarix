@@ -233,6 +233,9 @@ export interface ConvertibleQuote {
   timestamp: string | null;
   /** data912 served this row from a failed-fetch fallback, not a live GET. */
   stale?: boolean;
+  /** FX provenance for display estimates; stale FX is never persisted. */
+  fxStale?: boolean;
+  fxAsOf?: string | null;
 }
 
 /**

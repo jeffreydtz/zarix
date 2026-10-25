@@ -38,7 +38,7 @@ beforeEach(() => {
     if (!reply) throw new Error(`Unexpected query ${table}`);
     return query(table, reply);
   });
-  mocks.dolar.mockResolvedValue({ blue: { sell: 1200, buy: 1150 } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: 1200, buy: 1150  } });
   mocks.fx.mockResolvedValue(1200);
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);

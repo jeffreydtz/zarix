@@ -57,7 +57,7 @@ beforeEach(() => {
   mocks.updates = [];
   mocks.positions = [position()];
   mocks.dolar.mockResolvedValue({
-    blue: { sell: 1300, buy: 1280 }, mep: { sell: 1300, buy: 1280 },
+    blue: { timestamp: new Date(), sell: 1300, buy: 1280  }, mep: { timestamp: new Date(), sell: 1300, buy: 1280  },
   });
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
   mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: '2026-10-23T12:00:00Z' });
@@ -168,4 +168,137 @@ it('uses a valid current anchor, otherwise a matching purchase price, with inclu
   expect(fciPricePlausible(2, 1)).toBe(true);
   expect(fciPricePlausible(0.499, 1)).toBe(false);
   expect(fciPricePlausible(2.001, 1)).toBe(false);
+});
+
+it.each(['cron', 'interactive', 'list'] as const)('rejects an ARS scale error on a normally created FCI through %s', async (path) => {
+  mocks.positions = [{ ...position('PRTAVAB', 'ARS', 1240), market_currency: null, current_price: null }];
+  mocks.fci.mockResolvedValue({ price: 1_240_000, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  if (path === 'cron') {
+    await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
+      headers: { authorization: 'Bearer fixture-cron-secret' },
+    }));
+  } else if (path === 'interactive') {
+    const response = await quoteGet(new NextRequest('http://localhost/api/investments/quote?symbol=PRTAVAB&type=fci&purchaseCurrency=ARS&purchasePrice=1240'));
+    expect((await response.json()).ok).toBe(false);
+  } else {
+    const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+    expect(rows[0]).toMatchObject({ current_price: 1240, valuation_price_source: 'purchase_reference' });
+  }
+  expect(mocks.updates).toEqual([]);
+  expect(console.warn).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+    ticker: 'PRTAVAB', reason: 'fci_implausible', anchor: 1240,
+  }));
+});
+
+it('preserves first pricing when no valid current or matching-currency purchase anchor exists', async () => {
+  // Without a market override the existing write uses the confirmed source ARS.
+  // The purchase in USD is not a comparable anchor and must not block discovery.
+  mocks.positions = [{ ...position('PRTAVAB', 'USD', 1), market_currency: null, current_price: null }];
+  mocks.fci.mockResolvedValue({ price: 1241.954, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(mocks.updates).toEqual([expect.objectContaining({ current_price: 1241.954, market_currency: 'ARS' })]);
+});
+
+it.each(['cron', 'interactive', 'portfolio'] as const)('keeps 72-hour MEP out of persisted prices and snapshots through %s', async (path) => {
+  const asOf = new Date(Date.now() - 72 * 60 * 60 * 1000);
+  mocks.dolar.mockResolvedValue({
+    blue: { sell: 1300, buy: 1280, timestamp: new Date(), stale: false },
+    mep: { sell: 1300, buy: 1280, timestamp: asOf, asOf, stale: true },
+  });
+  mocks.positions = [position('CONIOLA', 'USD', 0.135)];
+  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  if (path === 'cron') {
+    const response = await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
+      headers: { authorization: 'Bearer fixture-cron-secret' },
+    }));
+    expect((await response.json()).processed).toBe(0);
+  } else if (path === 'interactive') {
+    const response = await quoteGet(new NextRequest('http://localhost/api/investments/quote?symbol=CONIOLA&type=fci&currency=USD&currentPrice=0.135'));
+    expect((await response.json()).ok).toBe(false);
+  } else {
+    const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
+    expect(summary).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString() });
+    expect(summary.investments[0]).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString(), valuation_price_source: 'estimate' });
+    expect(summary.investments[0].current_price).toBeCloseTo(179.598 / 1300);
+  }
+  expect(mocks.updates).toEqual([]);
+  expect(mocks.snapshots).not.toHaveBeenCalled();
+});
+
+it('skips snapshots when required MEP is missing even if blue and the cached asset price exist', async () => {
+  mocks.dolar.mockResolvedValue({ blue: { sell: 1300, buy: 1280, timestamp: new Date() } });
+  mocks.positions = [position('CONIOLA', 'USD', 0.135)];
+  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
+  expect(summary.fxUnavailable).toBe(true);
+  expect(summary.investments[0]).toMatchObject({ current_price: 0.135, valuation_price_source: 'cache', fxUnavailable: true });
+  expect(mocks.updates).toEqual([]);
+  expect(mocks.snapshots).not.toHaveBeenCalled();
+});
+
+it('persists a converted FCI price and snapshot with fresh required MEP', async () => {
+  mocks.positions = [position('CONIOLA', 'USD', 0.135)];
+  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
+  expect(summary.fxStale).toBe(false);
+  expect(mocks.updates).toHaveLength(1);
+  expect(mocks.snapshots).toHaveBeenCalledOnce();
+});
+
+it.each([[24, true], [24 + 1 / 3600, false]] as const)('requires MEP at most 24 hours old for a price write (age=%s)', async (hours, accepted) => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  try {
+    vi.setSystemTime(new Date('2026-10-25T12:00:00Z'));
+    mocks.dolar.mockResolvedValue({
+      blue: { sell: 1300, buy: 1280, timestamp: new Date() },
+      mep: { sell: 1300, buy: 1280, timestamp: new Date(Date.now() - hours * 3600_000), stale: false },
+    });
+    mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    const response = await quoteGet(new NextRequest('http://localhost/api/investments/quote?symbol=CONIOLA&type=fci&currency=USD&currentPrice=0.135'));
+    expect((await response.json()).ok).toBe(accepted);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it('surfaces quote API auth service failures separately from unavailable market quotes', async () => {
+  mocks.getUser.mockResolvedValue({ data: { user: null }, error: { status: 503, message: 'fixture auth outage' } });
+  const response = await quoteGet(new NextRequest('http://localhost/api/investments/quote?symbol=CONIOLA&type=fci&currency=USD'));
+  expect(response.status).toBe(503);
+  expect(await response.json()).toEqual({ error: 'No pudimos verificar tu sesión. Volvé a intentar en unos minutos.' });
+  expect(mocks.fci).not.toHaveBeenCalled();
+});
+
+it('surfaces snapshot history DB errors instead of treating them as an empty history', async () => {
+  const implementation = mocks.from.getMockImplementation()!;
+  const failure = { code: '42501', message: 'fixture snapshot permission denied' };
+  mocks.from.mockImplementation((table: string) => {
+    if (table !== 'portfolio_performance_snapshots') return implementation(table);
+    const query = {
+      select: () => query, eq: () => query, gte: () => query, order: () => query,
+      then: (resolve: (value: unknown) => unknown) => Promise.resolve(resolve({ data: null, error: failure })),
+    };
+    return query;
+  });
+  mocks.positions = [{ ...position(), is_manual_price: true }];
+  await expect(investmentsService.getPortfolioSummary('fixture-user')).rejects.toEqual(failure);
+  expect(mocks.snapshots).not.toHaveBeenCalled();
+});
+
+it('does not persist a cross-currency stock estimate using stale MEP', async () => {
+  const asOf = new Date(Date.now() - 72 * 3600_000);
+  mocks.dolar.mockResolvedValue({
+    blue: { sell: 1300, buy: 1280, timestamp: new Date() },
+    mep: { sell: 1300, buy: 1280, timestamp: asOf, stale: true },
+  });
+  mocks.positions = [{ ...position('GGAL', 'USD', 70), type: 'stock_arg' }];
+  mocks.arg.mockResolvedValue({
+    byStock: new Map([['GGAL', { symbol: 'GGAL', price: 91000, changePct: 0, currency: 'ARS', timestamp: new Date().toISOString() }]]),
+    byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
+  });
+  const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
+  expect(summary).toMatchObject({ fxStale: true, fxAsOf: asOf.toISOString() });
+  expect(summary.investments[0]).toMatchObject({ current_price: 70, valuation_price_source: 'estimate' });
+  expect(mocks.updates).toEqual([]);
+  expect(mocks.snapshots).not.toHaveBeenCalled();
 });

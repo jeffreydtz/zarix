@@ -19,6 +19,8 @@ const fixture = vi.hoisted(() => ({
     account: { name: 'Caja de prueba', currency: 'ARS' }, category: null,
   },
   accountError: false,
+  transactionError: false,
+  categoriesError: false,
   fetch: vi.fn(),
   from: vi.fn(),
   budget: vi.fn(),
@@ -78,6 +80,8 @@ import type { InvestmentWithPnL } from '@/lib/services/investments';
 beforeEach(() => {
   vi.clearAllMocks();
   fixture.accountError = false;
+  fixture.transactionError = false;
+  fixture.categoriesError = false;
   fixture.budget.mockResolvedValue([]);
   vi.spyOn(console, 'error').mockImplementation(() => {});
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -96,7 +100,10 @@ beforeEach(() => {
     const result = () => ({
       data: table === 'accounts' ? (active ? [fixture.account] : []) : table === 'transactions'
         ? [fixture.transaction] : single ? null : [],
-      error: table === 'accounts' && fixture.accountError ? new Error('Fixture DB failure') : null,
+      error: (table === 'accounts' && fixture.accountError)
+        || (table === 'transactions' && fixture.transactionError)
+        || (table === 'categories' && fixture.categoriesError)
+        ? Object.assign(new Error('Fixture DB failure'), { code: '42501' }) : null,
     });
     const query: Record<string, unknown> = {};
     for (const method of ['select', 'eq', 'neq', 'order', 'limit', 'filter', 'or', 'in', 'range', 'gte', 'lte']) {
@@ -162,6 +169,26 @@ describe('FX outages preserve financial server renders', () => {
     const text = readable(renderToStaticMarkup(await DashboardPage()));
     expect(text).toContain('No pudimos cargar tus datos financieros');
   });
+
+  it('finding 5: accounts DB failures remain errors in the page and API during an FX outage', async () => {
+    fixture.accountError = true;
+    const text = readable(renderToStaticMarkup(await AccountsPage()));
+    expect(text).toContain('No pudimos cargar tus datos financieros');
+    expect(text).not.toContain('Cotizaciones no disponibles');
+    const response = await GET(new NextRequest('http://localhost/api/accounts'));
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ error: 'Ocurrió un error procesando la solicitud.' });
+  });
+
+  it.each(['accountError', 'transactionError', 'categoriesError'] as const)(
+    'finding 5: expenses show an error instead of empty data when %s occurs', async source => {
+      fixture[source] = true;
+      const text = readable(renderToStaticMarkup(await ExpensesPage({ searchParams: Promise.resolve({}) })));
+      expect(text).toContain('No pudimos cargar tus datos financieros');
+      expect(text).not.toContain('Cotizaciones no disponibles');
+      expect(text).not.toContain('Traídos: 0');
+    },
+  );
 
   it('does not render a current numeric net worth when FX is unavailable', () => {
     const html = renderToStaticMarkup(createElement(NetWorthHero, {

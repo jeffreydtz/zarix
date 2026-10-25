@@ -18,6 +18,7 @@ interface SimulationScenario extends InvestmentSimulationResult {
 
 const SOURCE_LABELS: Record<InvestmentWithPnL['valuation_price_source'], string> = {
   live: 'Cotización de mercado',
+  estimate: 'Estimación con cotización vencida',
   manual: 'Precio ingresado manualmente',
   cache: 'Última cotización guardada',
   purchase_reference: 'Referencia de compra · sin cotización',

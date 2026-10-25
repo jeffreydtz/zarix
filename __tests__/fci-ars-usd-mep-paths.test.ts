@@ -66,7 +66,7 @@ beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
-  mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP }, mep: { sell: MEP, buy: MEP } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: MEP, buy: MEP  }, mep: { timestamp: new Date(), sell: MEP, buy: MEP  } });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
   mocks.fci.mockResolvedValue(null);
@@ -174,7 +174,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
   });
 
   it('keeps the stored quote when MEP is unavailable for an ARS FCI booked in USD', async () => {
-    mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP } });
+    mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: MEP, buy: MEP  } });
     mocks.fci.mockResolvedValue({
       ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
     });
@@ -336,7 +336,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
   });
 
   it('does not overwrite CONIOLA when MEP is unavailable', async () => {
-    mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP } });
+    mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: MEP, buy: MEP  } });
     mocks.fci.mockResolvedValue({
       ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
     });

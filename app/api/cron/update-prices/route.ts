@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
+import { requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
   quoteCacheKeyForPosition,
@@ -30,10 +31,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
   protected async execute(supabase: ServiceClient): Promise<Record<string, unknown>> {
     try {
       const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'] });
-      const sell = Number(dolar?.mep?.sell);
-      if (!(Number.isFinite(sell) && sell > 0)) {
-        throw new Error('Cotización MEP no disponible; se omiten sólo las conversiones MEP');
-      }
+      requireExecutableDolarQuote(dolar.mep, 'MEP', 'mep');
     } catch (e) {
       this.integrationErrors++;
       console.error('Error fetching USD rate:', e);

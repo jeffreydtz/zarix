@@ -30,7 +30,7 @@ const emptyArg = () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP }, mep: { sell: MEP, buy: MEP } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: MEP, buy: MEP  }, mep: { timestamp: new Date(), sell: MEP, buy: MEP  } });
   mocks.arg.mockResolvedValue(emptyArg());
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue({

@@ -55,7 +55,7 @@ beforeEach(() => {
     const rows = () => {
       if (table === 'accounts') return mocks.accounts;
       if (table === 'investments') return mocks.investments;
-      if (table === 'investment_sales') return [];
+      if (table === 'investment_sales' || table === 'portfolio_performance_snapshots') return [];
       throw new Error(`Unexpected synthetic table ${table}`);
     };
     const query = {
@@ -66,6 +66,7 @@ beforeEach(() => {
         return query;
       },
       in: () => query,
+      gte: () => query,
       order: () => query,
       limit: () => query,
       neq: () => query,

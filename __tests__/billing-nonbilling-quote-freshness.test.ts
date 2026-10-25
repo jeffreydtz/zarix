@@ -166,8 +166,9 @@ describe('truthful persisted bid/ask fallback', () => {
   it('stores both sides together with the same source timestamp', async () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     await cotizacionesService.getDolarQuotes();
-    const rows = mocks.insert.mock.calls[0][0];
+    const rows = mocks.insert.mock.calls.flatMap(call => call[0]);
     expect(rows).toHaveLength(8);
+    expect(mocks.insert.mock.calls.every(call => call[0].length === 2)).toBe(true);
     expect(rows).toContainEqual(expect.objectContaining({ source: 'blue', rate: 1500 }));
     expect(rows).toContainEqual(expect.objectContaining({ source: 'blue_buy', rate: 1400 }));
     expect(new Set(rows.map((row: any) => row.timestamp)).size).toBe(1);
@@ -188,8 +189,9 @@ describe('provider source timestamps', () => {
     vi.mocked(fetch).mockResolvedValueOnce(json(data)).mockRejectedValueOnce(new Error('fallback unavailable'));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     expect((await cotizacionesService.getDolarQuotes()).blue!.sell).toBe(1200);
-    expect(mocks.insert.mock.calls[0][0]).toHaveLength(6);
-    expect(mocks.insert.mock.calls[0][0]).not.toContainEqual(expect.objectContaining({ source: 'blue' }));
+    const rows = mocks.insert.mock.calls.flatMap(call => call[0]);
+    expect(rows).toHaveLength(6);
+    expect(rows).not.toContainEqual(expect.objectContaining({ source: 'blue' }));
   });
   it('preserves DolarApi fechaActualizacion rather than observation time', async () => {
     mocks.rates = {};
@@ -222,5 +224,5 @@ it('derived FX cannot extend an expiring source quote by the memory cache TTL', 
   expect(await cotizacionesService.getExchangeRate('EUR','USD')).toBe(1.1);
   vi.setSystemTime(new Date('2026-10-09T12:00:02Z'));
   vi.mocked(fetch).mockRejectedValue(new Error('synthetic outage'));
-  await expect(cotizacionesService.getExchangeRate('EUR','USD')).rejects.toThrow('synthetic outage');
+  await expect(cotizacionesService.getExchangeRate('EUR','USD')).rejects.toThrow('Cotización EUR→USD no disponible, inválida o vencida');
 });

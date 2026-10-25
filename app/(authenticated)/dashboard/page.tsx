@@ -77,10 +77,7 @@ export default async function DashboardPage() {
       accountsService.list(user.id, { allowPartialValuation: true }),
       transactionsService.list(user.id, { limit: 5 }),
       investmentsService
-        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }).catch(error => {
-          unstable_rethrow(error);
-          return null;
-        }),
+        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }),
       cotizacionesService.getAllQuotes().catch(error => {
         unstable_rethrow(error);
         return null;
@@ -91,7 +88,7 @@ export default async function DashboardPage() {
       getMonthFlow(user.id).catch(unavailableSection(null)),
       getUpcoming(user.id).catch(unavailableSection(null)),
       getTopBudgets(user.id).catch(unavailableSection(null)),
-      getPresentationPreferences(user.id).catch(unavailableSection({ default_currency: 'ARS' as const, net_worth_widget_visible: true })),
+      getPresentationPreferences(user.id).catch(unavailableSection({ default_currency: 'ARS' as const, net_worth_widget_visible: false })),
     ]);
 
     // Patrimonio HOY: misma composición que computeNetWorth pero reutilizando

@@ -4,6 +4,7 @@ import { transactionRequestHash, validTransactionRequestId } from '@/lib/transac
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
+import { isExecutableDolarQuote, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { blueFxReference, type BlueFxReference } from '@/lib/blue-fx-reference';
 import type { Account, Investment, InvestmentSale, InvestmentType } from '@/types/database';
 import {
@@ -12,6 +13,7 @@ import {
   priceFactorForType,
 } from '@/lib/investments/type-meta';
 import {
+  InvestmentQuoteMap,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
   type QuoteResult,
@@ -68,7 +70,7 @@ export type PatchInvestmentInput = {
 
 export interface InvestmentWithPnL extends Investment {
   /** Diferencia precio confirmado/caché de la referencia inicial de compra. */
-  valuation_price_source: 'live' | 'manual' | 'cache' | 'purchase_reference';
+  valuation_price_source: 'live' | 'estimate' | 'manual' | 'cache' | 'purchase_reference';
   current_value_native: number;
   fxUnavailable?: boolean;
   fxStale?: boolean;
@@ -329,8 +331,8 @@ class InvestmentsService {
    */
   private async refreshQuotesForInvestments(
     investments: Investment[]
-  ): Promise<Map<string, QuoteResult>> {
-    return refreshQuotesForInvestments(investments);
+  ): Promise<InvestmentQuoteMap> {
+    return refreshQuotesForInvestments(investments, { allowStaleFx: true });
   }
 
   private async loadInvestmentsNormalized(
@@ -344,7 +346,7 @@ class InvestmentsService {
     const blueArsPerUsd = availableValue(() => arsPerUsdFromDolar(blue));
     const reference = blue && blueArsPerUsd != null
       ? blueFxReference(blue, blue.sell > 0 && Number.isFinite(blue.sell) ? 'sell' : 'buy') : undefined;
-    const fxStale = Boolean(blue?.stale);
+    const fxStale = Boolean(blue?.stale) || (blue != null && !isExecutableDolarQuote(blue, 'blue'));
     const observedAt = blue?.asOf ?? blue?.timestamp;
     const fxAsOf = observedAt && Number.isFinite(new Date(observedAt).getTime())
       ? new Date(observedAt).toISOString() : null;
@@ -409,7 +411,7 @@ class InvestmentsService {
 
     const quoteMap = candidatesForRefresh.length
       ? await this.refreshQuotesForInvestments(candidatesForRefresh)
-      : new Map<string, QuoteResult>();
+      : new InvestmentQuoteMap();
 
     const updates: Array<QuoteResult & { id: string }> = [];
 
@@ -421,17 +423,22 @@ class InvestmentsService {
       let dailyChangePct: number | null =
         inv.current_price_change_pct == null ? null : Number(inv.current_price_change_pct);
       let liveCurrency: string | null = null;
+      let positionFxStale = fxStale;
+      let positionFxAsOf = fxAsOf;
+      const cacheKey = quoteCacheKeyForPosition(inv);
+      const requiredFxUnavailable = cacheKey != null && quoteMap.unavailableFxKeys.has(cacheKey);
 
       if (inv.ticker && !inv.is_manual_price) {
-        const cacheKey = quoteCacheKeyForPosition(inv);
         const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
         if (fresh && fresh.price > 0) {
           currentPrice = fresh.price;
           dailyChangePct = fresh.changePct;
           liveCurrency = fresh.currency;
-          priceSource = 'live';
+          priceSource = fresh.fxStale ? 'estimate' : 'live';
+          positionFxStale ||= Boolean(fresh.fxStale);
+          if (fresh.fxAsOf && (!positionFxAsOf || fresh.fxAsOf < positionFxAsOf)) positionFxAsOf = fresh.fxAsOf;
           priceUpdatedAt = fresh.timestamp;
-          updates.push({ id: inv.id, ...fresh });
+          if (!fresh.fxStale) updates.push({ id: inv.id, ...fresh });
         }
       }
 
@@ -483,9 +490,9 @@ class InvestmentsService {
         market_value_ars_blue: marketCur === 'ARS' ? marketNative
           : marketUsd != null && blueArsPerUsd != null ? usdToArsBlue(marketUsd, blueArsPerUsd) : null,
         current_value_native: marketNative,
-        fxUnavailable: blueArsPerUsd == null || costUsd == null || marketUsd == null,
-        fxStale,
-        fxAsOf,
+        fxUnavailable: blueArsPerUsd == null || costUsd == null || marketUsd == null || requiredFxUnavailable,
+        fxStale: positionFxStale,
+        fxAsOf: positionFxAsOf,
         current_value: marketUsd,
         profit_loss: pnlUsd,
         profit_loss_percent: pnlPctUsd,
@@ -498,8 +505,8 @@ class InvestmentsService {
 
     if (updates.length > 0) {
       await Promise.all(
-        updates.map((u) =>
-          supabase
+        updates.map(async (u) => {
+          const { error: updateError } = await supabase
             .from('investments')
             .update({
               current_price: u.price,
@@ -507,12 +514,16 @@ class InvestmentsService {
               current_price_change_pct: u.changePct,
               market_currency: u.currency.trim().toUpperCase(),
             })
-            .eq('id', u.id)
-        )
+            .eq('id', u.id);
+          if (updateError) throw updateError;
+        })
       );
     }
 
-    return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference, fxStale, fxAsOf };
+    const usedAsOf = investmentsWithPnL.map(inv => inv.fxAsOf).filter((asOf): asOf is string => Boolean(asOf));
+    return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference,
+      fxStale: fxStale || investmentsWithPnL.some(inv => inv.fxStale),
+      fxAsOf: usedAsOf.sort()[0] ?? fxAsOf };
   }
 
   async list(userId: string, options?: { forceRefreshQuotes?: boolean }): Promise<InvestmentWithPnL[]> {
@@ -642,7 +653,7 @@ class InvestmentsService {
     }
 
     const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] });
-    const arsPerUsd = arsPerUsdFromDolar(dolar.blue);
+    const arsPerUsd = arsPerUsdFromDolar(requireExecutableDolarQuote(dolar.blue, 'blue ARS/USD', 'blue'));
 
     const saleCurrency = (input.currency || invRow.purchase_currency || 'USD').toUpperCase();
     const basisCurrency = (invRow.purchase_currency || saleCurrency).toUpperCase();
@@ -804,7 +815,7 @@ class InvestmentsService {
     const byTypeSlices = composeComposition(investments, 'type');
     const byCurrencySlices = composeComposition(investments, 'currency');
     const ranked = rankGainersLosers(investments, 3);
-    const snapshots = await this.listPerformanceSnapshots(userId, 40).catch(() => []);
+    const snapshots = await this.listPerformanceSnapshots(userId, 40);
     const weeklyChange = totalCurrentValue == null ? null : periodChangeFromSnapshots(snapshots, totalCurrentValue, 7);
     const monthlyChange = totalCurrentValue == null ? null : periodChangeFromSnapshots(snapshots, totalCurrentValue, 30);
 

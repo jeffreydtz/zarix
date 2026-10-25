@@ -161,7 +161,8 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                         {priceFactorForType(inv.type) === 100 ? <span className="opacity-70"> / VN 100</span> : null}
                       </span>
                       <span className="text-muted-foreground">
-                        {inv.valuation_price_source === 'purchase_reference' ? 'Referencia de compra · sin cotización' :
+                        {inv.valuation_price_source === 'estimate' ? 'Estimación con cotización vencida' :
+                          inv.valuation_price_source === 'purchase_reference' ? 'Referencia de compra · sin cotización' :
                           inv.valuation_price_source === 'cache' ? 'Última cotización guardada' :
                             inv.valuation_price_source === 'manual' ? 'Precio ingresado' : 'Cotización de mercado'}
                       </span>

@@ -129,6 +129,7 @@ async function analyzeWeek(
 Analizá estos datos financieros de la SEMANA (7 días) y dame insights breves en español rioplatense.
 
 DATOS DE LA SEMANA:
+${excludedCurrenciesNote(excludedCurrencies) ?? ''}
 - Gastos: $${totalGastos.toLocaleString('es-AR')}
 - Ingresos: $${totalIngresos.toLocaleString('es-AR')}
 - Balance: $${(totalIngresos - totalGastos).toLocaleString('es-AR')}

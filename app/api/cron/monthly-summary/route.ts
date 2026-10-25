@@ -115,6 +115,7 @@ Analizá estos datos financieros del mes y dame insights útiles en español rio
 Sé directo, práctico y enfocate en lo accionable.
 
 DATOS DEL MES:
+${excludedCurrenciesNote(excludedCurrencies) ?? ''}
 - Gastos totales: $${totalGastos.toLocaleString('es-AR')}
 - Ingresos totales: $${totalIngresos.toLocaleString('es-AR')}
 - Balance: $${(totalIngresos - totalGastos).toLocaleString('es-AR')}

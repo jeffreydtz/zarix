@@ -46,7 +46,9 @@ export default function ProjectionsWidget() {
     );
   }
 
-  if (!data || !data.hasData) return null;
+  if (!data || !data.hasData) {
+    return data?.message ? <p role="status" className="card text-sm text-warning">{data.message}</p> : null;
+  }
 
   const isPositive = data.trend === 'positive';
   const trendColor = isPositive ? 'text-success' : 'text-destructive';

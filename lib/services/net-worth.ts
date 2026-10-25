@@ -8,6 +8,7 @@ import { investmentsService } from '@/lib/services/investments';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
 import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
+import { isExecutableDolarQuote } from '@/lib/executable-fx';
 
 export interface NetWorthPoint {
   snapshot_date: string;
@@ -88,7 +89,8 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
   if (blueRate == null) {
     const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(() => null);
     blueRate = dolar?.blue?.sell ?? null;
-    fallbackFx = { fxStale: dolar?.blue?.stale, fxAsOf: dolar?.blue?.asOf?.toISOString() ?? null };
+    fallbackFx = { fxStale: dolar?.blue?.stale,
+      fxAsOf: (dolar?.blue?.asOf ?? dolar?.blue?.timestamp)?.toISOString() ?? null };
   }
 
   return composeLiquidNetWorth({
@@ -114,6 +116,18 @@ export async function recordNetWorthSnapshot(userId: string): Promise<boolean> {
     // hueco en la serie sea diagnosticable.
     if (now.blueRate == null || !(now.blueRate > 0)) {
       console.warn('[net-worth] snapshot salteado: sin cotización blue');
+      return false;
+    }
+
+    // Validate the source times again at the write boundary, including every
+    // component sample. Display flags alone cannot authorize a persisted total.
+    const references = now.blueReferences?.length ? now.blueReferences.map(({ reference }) => reference)
+      : [{ rate: now.blueRate, observedAt: now.fxAsOf }];
+    if (references.some(reference => !isExecutableDolarQuote({
+      type: 'blue', buy: reference.rate, sell: reference.rate,
+      timestamp: new Date(reference.observedAt ?? Number.NaN),
+    }))) {
+      console.warn('[net-worth] snapshot salteado: cotización blue vencida o sin fecha');
       return false;
     }
 

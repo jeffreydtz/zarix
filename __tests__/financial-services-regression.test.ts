@@ -2,12 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   client: { from: vi.fn(), rpc: vi.fn() },
-  fx: vi.fn(), dolar: vi.fn(), crypto: vi.fn(), yahoo: vi.fn(), stooq: vi.fn(), arg: vi.fn(),
+  fx: vi.fn(), fiatFx: vi.fn(), dolar: vi.fn(), crypto: vi.fn(), yahoo: vi.fn(), stooq: vi.fn(), arg: vi.fn(),
 }));
 vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => mocks.client }));
 vi.mock('@/lib/services/accounts', () => ({ accountsService: {}, normalizeDebtBalanceForStorage: vi.fn() }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
   getExchangeRate: mocks.fx, getDolarQuotes: mocks.dolar, getCryptoQuote: mocks.crypto,
+  getTransactionsFxRates: mocks.fiatFx,
 } }));
 vi.mock('@/lib/yahoo-finance-quotes', () => ({ fetchYahooStockQuotesMap: mocks.yahoo }));
 vi.mock('@/lib/stooq-us-quote', () => ({ fetchStooqUsQuote: mocks.stooq }));
@@ -38,8 +39,9 @@ beforeEach(() => {
     if (!reply) throw new Error(`Unexpected query ${table}`);
     return query(table, reply);
   });
-  mocks.dolar.mockResolvedValue({ blue: { sell: 1200, buy: 1150 } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: 1200, buy: 1150  } });
   mocks.fx.mockResolvedValue(1200);
+  mocks.fiatFx.mockResolvedValue({ usdArs: 1200, eurArs: 1320, stale: false, asOf: new Date(), fxUnavailable: false });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
   mocks.arg.mockResolvedValue({ byStock: new Map(), byCedear: new Map(), byBond: new Map() });
@@ -99,7 +101,7 @@ describe('CU-001 financial regressions', () => {
     expect(writes).toEqual([]);
   });
   it('normalizes spaces in converter currencies and excludes non-positive quotes', async () => {
-    mocks.fx.mockResolvedValue(0);
+    mocks.fiatFx.mockResolvedValue({ usdArs: 0, eurArs: null, stale: false, asOf: new Date(), fxUnavailable: true });
     const result = await buildToArsConverter([{ currency:' ars ' }, { currency:' usd ' }]);
     expect(result.toArs({ amount:25, currency:' ars ' })).toBe(25);
     expect(result.toArs({ amount:100, currency:'USD' })).toBeNull();
@@ -149,7 +151,7 @@ describe('CU-004 financial regressions', () => {
   it('converts an ARS data912 quote to USD when the position is booked in USD', async () => {
     replies = [{ data:[{ ...inv, type:'bond', ticker:'AL30', quantity:1000, market_currency:'USD',
       current_price:null, current_price_updated_at:null, is_manual_price:false }] }, { data:[] }, { data:null }];
-    mocks.dolar.mockResolvedValue({ blue:{ sell:1200, buy:1150 }, mep:{ sell:1200, buy:1150 } });
+    mocks.dolar.mockResolvedValue({ blue:{ timestamp: new Date(), sell:1200, buy:1150  }, mep:{ timestamp: new Date(), sell:1200, buy:1150  } });
     mocks.arg.mockResolvedValue({ byStock:new Map(),byCedear:new Map(),
       byBond:new Map([['AL30',{ price:60000,changePct:2,currency:'ARS' }]]) });
     const [position] = await investmentsService.list('U1');
@@ -158,7 +160,7 @@ describe('CU-004 financial regressions', () => {
   });
   it('does not value ARS holdings with a fake rate of 1', async () => {
     replies = [{ data:[{ ...inv, purchase_currency:'ARS', market_currency:'ARS' }] }, { data:[] }];
-    mocks.dolar.mockResolvedValue({ blue:{ sell:0,buy:0 } });
+    mocks.dolar.mockResolvedValue({ blue:{ timestamp: new Date(), sell:0,buy:0  } });
     const [position] = await investmentsService.list('U1');
     expect(position).toMatchObject({ current_value_native:660, market_value_usd:null, cost_basis_usd:null, fxUnavailable:true });
     expect(writes).toHaveLength(0);

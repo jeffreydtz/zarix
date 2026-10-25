@@ -31,7 +31,7 @@ beforeEach(() => {
     availableUSD: 100, availableARSBlue: 120000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
   });
   mocks.portfolio.mockResolvedValue({ totalCurrentValue: 50, totalCurrentValueArsBlue: 60000, investments: [] });
-  mocks.quotes.mockResolvedValue({ blue: { buy: 1200, sell: 1200 } });
+  mocks.quotes.mockResolvedValue({ blue: { buy: 1200, sell: 1200, timestamp: new Date() } });
   mocks.upsert.mockResolvedValue({ error: null });
   mocks.budgetRows = [{ id: 'budget-A', category_id: 'category-A', amount: 100, currency: 'ARS', category: { name: 'Food', icon: 'F' } }];
   mocks.from.mockImplementation((table: string) => {
@@ -64,7 +64,7 @@ describe('Financial read failures keep unavailable data distinct from zero', () 
   });
   it('still writes a zero snapshot when no accounts remain if blue is available', async () => {
     mocks.accounts.mockResolvedValue([]);
-    mocks.quotes.mockResolvedValue({ blue: { buy: 1280, sell: 1300 } });
+    mocks.quotes.mockResolvedValue({ blue: { buy: 1280, sell: 1300, timestamp: new Date() } });
     await expect(computeNetWorth('user-A')).resolves.toMatchObject({
       totalUSD: 0, totalARSBlue: 0, liquidUSD: 0, blueRate: 1300, investmentsUSD: 50,
     });
@@ -112,6 +112,31 @@ describe('Financial read failures keep unavailable data distinct from zero', () 
       totalCurrentValue: null, totalCurrentValueArsBlue: null, investments: [{ id: 'position-A' }], fxUnavailable: true,
     });
     await expect(computeNetWorth('user-A')).resolves.toMatchObject({ investmentsUSD: null, positionsUSD: null });
+    await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it.each([null, new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString()])(
+    'finding 1: skips snapshot when a component FX source time is missing or expired (%s)', async observedAt => {
+      mocks.aggregateAccounts.mockReturnValue({
+        liquidUSD: 100, liquidARSBlue: 130000, investmentsUSD: 0, creditCards: [],
+        fxStale: false, blueReferences: [{ type: 'blue', side: 'sell', rate: 1300, observedAt }],
+      });
+      await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
+      expect(mocks.upsert).not.toHaveBeenCalled();
+    },
+  );
+
+  it('finding 3: preserves stale portfolio MEP date and skips the net-worth snapshot with fresh account blue', async () => {
+    const mepAsOf = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString();
+    mocks.aggregateAccounts.mockReturnValue({
+      liquidUSD: 100, liquidARSBlue: 130000, investmentsUSD: 0, creditCards: [],
+      fxStale: false, fxAsOf: new Date().toISOString(),
+      blueReferences: [{ type: 'blue', side: 'sell', rate: 1300, observedAt: new Date().toISOString() }],
+    });
+    mocks.portfolio.mockResolvedValue({ totalCurrentValue: 50, investments: [{ id: 'position-A' }],
+      fxStale: true, fxAsOf: mepAsOf });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ fxStale: true, fxAsOf: mepAsOf });
     await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
     expect(mocks.upsert).not.toHaveBeenCalled();
   });

@@ -28,7 +28,7 @@ vi.mock('@/components/dashboard/MarketStrip', () => ({ default: ({ quotes }: { q
 vi.mock('@/components/dashboard/MonthFlowCard', () => ({ default: () => null }));
 vi.mock('@/components/dashboard/UpcomingRail', () => ({ default: () => null }));
 vi.mock('@/components/dashboard/BudgetCluster', () => ({ default: () => null }));
-vi.mock('@/components/dashboard/StickyNetWorthBar', () => ({ default: () => null }));
+vi.mock('@/components/dashboard/StickyNetWorthBar', () => ({ default: () => createElement('div', { 'data-testid': 'sticky-net-worth' }) }));
 vi.mock('@/components/dashboard/DashboardSpendingAnalyzerSection', () => ({ default: () => null }));
 vi.mock('@/components/dashboard/DashboardMore', () => ({ default: ({ children }: { children: ReactNode }) => children }));
 vi.mock('@/components/ui/MotionSection', () => ({ default: ({ children }: { children: ReactNode }) => children }));
@@ -89,7 +89,7 @@ describe('dashboard read failures preserve financial truth', () => {
     expect(mocks.accounts).toHaveBeenCalledWith('synthetic-user', { allowPartialValuation: true });
     expect(mocks.snapshot).not.toHaveBeenCalled();
   });
-  it.each(['accounts', 'transactions'] as const)(
+  it.each(['accounts', 'transactions', 'portfolio'] as const)(
     'shows unavailable and retry instead of partial financial values when %s fails', async source => {
       mocks[source].mockRejectedValueOnce(new Error('synthetic database timeout'));
       const html = renderToStaticMarkup(await DashboardPage());
@@ -102,7 +102,6 @@ describe('dashboard read failures preserve financial truth', () => {
   );
 
   it.each([
-    ['portfolio', 'Resumen de inversiones no disponible.'],
     ['history', 'Historial de patrimonio no disponible.'],
     ['monthFlow', 'Resumen mensual no disponible.'],
     ['upcoming', 'Próximos movimientos no disponibles.'],
@@ -116,10 +115,15 @@ describe('dashboard read failures preserve financial truth', () => {
     expect(mocks.snapshot).not.toHaveBeenCalled();
   });
 
-  it('uses presentation defaults when preferences cannot be read', async () => {
-    mocks.preferences.mockRejectedValueOnce(new Error('synthetic preferences timeout'));
+  it('finding 8: keeps both net-worth widgets hidden when saved preferences cannot be read', async () => {
+    mocks.preferences.mockResolvedValueOnce({ default_currency: 'USD', net_worth_widget_visible: false });
+    expect(renderToStaticMarkup(await DashboardPage())).not.toContain('data-testid="net-worth"');
+    mocks.preferences.mockRejectedValueOnce(Object.assign(new Error('synthetic preferences permission error'), { code: '42501' }));
     const html = renderToStaticMarkup(await DashboardPage());
-    expect(html).toContain('data-base-currency="ARS"');
+    expect(html).not.toContain('data-testid="net-worth"');
+    expect(html).not.toContain('data-testid="sticky-net-worth"');
+    expect(html).not.toContain('networth-sentinel');
+    expect(html).toContain('data-testid="quotes"');
     expect(html).not.toContain('No pudimos cargar tus datos financieros');
   });
 

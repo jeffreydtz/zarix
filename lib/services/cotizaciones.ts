@@ -1,5 +1,8 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { YAHOO_FINANCE_HEADERS } from '@/lib/yahoo-finance-headers';
+import { unstable_rethrow } from 'next/navigation';
+import { FxUnavailableError, isExecutableDolarQuote, requireExecutableDolarQuote } from '@/lib/executable-fx';
+export { FxUnavailableError } from '@/lib/executable-fx';
 
 export type DolarRateType = 'blue' | 'oficial' | 'mep' | 'ccl';
 
@@ -19,15 +22,6 @@ export type DolarQuotes = DolarRates & {
   status: 'available' | 'partial' | 'unavailable';
   missing: DolarRateType[];
 };
-
-export class FxUnavailableError extends Error {
-  readonly code = 'FX_UNAVAILABLE';
-
-  constructor(pair: string) {
-    super(`Cotización ${pair} no disponible`);
-    this.name = 'FxUnavailableError';
-  }
-}
 
 interface CryptoQuote {
   symbol: string;
@@ -310,18 +304,22 @@ class CotizacionesService {
   }
 
   private async saveLatestDolarQuotes(quotes: DolarRates): Promise<void> {
-    try {
-      const rows = Object.values(quotes)
-        .filter(q => q.origin === 'provider' && acceptedDolarQuote(q))
-        .flatMap(q => [
+    const writableQuotes = Object.values(quotes)
+      .filter(q => q.origin === 'provider' && isExecutableDolarQuote(q));
+    if (writableQuotes.length === 0) return;
+    for (const q of writableQuotes) {
+      try {
+        // One atomic buy/sell pair per insert: an unchanged market sample cannot
+        // roll back another rate's fresh sample under unique_rate_per_timestamp.
+        const rows = [
           { source: q.type, from_currency: 'USD', to_currency: 'ARS', rate: q.sell, timestamp: q.timestamp.toISOString() },
           { source: `${q.type}_buy`, from_currency: 'USD', to_currency: 'ARS', rate: q.buy, timestamp: q.timestamp.toISOString() },
-        ]);
-      if (rows.length === 0) return;
-      const { error } = await createServiceClientSync().from('exchange_rates').insert(rows);
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error saving dollar quotes:', error);
+        ];
+        const { error } = await createServiceClientSync().from('exchange_rates').insert(rows);
+        if (error && error.code !== '23505') throw error;
+      } catch (error) {
+        console.error(`Error saving dollar quote ${q.type}:`, error);
+      }
     }
   }
 
@@ -344,9 +342,11 @@ class CotizacionesService {
     const dbProvider = this.dolarProviders.find(provider => provider.name === 'db')!;
     if (opts?.preferCache) {
       try {
-        persisted = this.getFromCache<DolarRates>(dbCacheKey) ??
-          this.withProviderMetadata(await dbProvider.fetch(), 'db');
-        this.setCache(dbCacheKey, persisted);
+        persisted = this.getFromCache<DolarRates>(dbCacheKey) ?? undefined;
+        if (!persisted) {
+          persisted = this.withProviderMetadata(await dbProvider.fetch(), 'db');
+          this.setCache(dbCacheKey, persisted);
+        }
         const current = currentDolarRates(persisted);
         if (required.every(type => current[type])) return dolarResult(current, required);
       } catch {
@@ -360,7 +360,10 @@ class CotizacionesService {
       try {
         const quotes = provider.name === 'db' && persisted ? persisted :
           this.withProviderMetadata(await provider.fetch(), provider.name);
-        if (provider.name === 'db') persisted = quotes;
+        if (provider.name === 'db' && !persisted) {
+          persisted = quotes;
+          this.setCache(dbCacheKey, persisted);
+        }
         for (const type of DOLAR_SOURCES) {
           const quote = quotes[type];
           if (!acceptedDolarQuote(quote)) continue;
@@ -391,7 +394,6 @@ class CotizacionesService {
     }
     // A DB fallback must not suppress the next live refresh attempt.
     if (hasLive) this.setCache(cacheKey, merged);
-    if (persisted) this.setCache(dbCacheKey, persisted);
     return dolarResult(merged, required);
   }
 
@@ -566,34 +568,35 @@ class CotizacionesService {
     };
   }
 
+  /** Executable rate for monetary writes; display callers use getDolarQuotes. */
   async getExchangeRate(
     from: string,
     to: string = 'ARS'
   ): Promise<number> {
     const fromU = from.trim().toUpperCase();
     const toU = to.trim().toUpperCase();
+    try {
+      return await this.fetchExecutableExchangeRate(fromU, toU);
+    } catch (error) {
+      unstable_rethrow(error);
+      if (error instanceof FxUnavailableError) throw error;
+      throw new FxUnavailableError(`${fromU}→${toU}`);
+    }
+  }
+
+  private async fetchExecutableExchangeRate(fromU: string, toU: string): Promise<number> {
     if (fromU === toU) return 1;
 
     // Source caches retain quote time; a derived numeric cache would extend freshness.
 
     if (fromU === 'USD' && toU === 'ARS') {
       const dolar = await this.getDolarQuotes({ require: ['blue'] });
-      const rate = dolar.blue?.sell;
-      // Lanzar en vez de devolver 0: un 0 silencioso se multiplica aguas arriba
-      // y guarda movimientos con amount_in_account_currency = 0.
-      if (!rate || !Number.isFinite(rate) || rate <= 0) {
-        throw new FxUnavailableError('USD→ARS');
-      }
-      return rate;
+      return requireExecutableDolarQuote(dolar.blue, 'USD→ARS', 'blue').sell;
     }
 
     if (fromU === 'ARS' && toU === 'USD') {
       const dolar = await this.getDolarQuotes({ require: ['blue'] });
-      const buy = dolar.blue?.buy;
-      // Evitar Infinity/NaN si el blue viene en 0.
-      if (!buy || !Number.isFinite(buy) || buy <= 0) {
-        throw new FxUnavailableError('ARS→USD');
-      }
+      const buy = requireExecutableDolarQuote(dolar.blue, 'ARS→USD', 'blue').buy;
       const rate = 1 / buy;
       return rate;
     }
@@ -601,10 +604,7 @@ class CotizacionesService {
     if (fromU === 'EUR' && toU === 'ARS') {
       const eurUsd = await this.getEurUsdRate();
       const dolar = await this.getDolarQuotes({ require: ['blue'] });
-      const sell = dolar.blue?.sell;
-      if (!sell || !Number.isFinite(sell) || sell <= 0) {
-        throw new FxUnavailableError('EUR→ARS');
-      }
+      const sell = requireExecutableDolarQuote(dolar.blue, 'EUR→ARS', 'blue').sell;
       const rate = eurUsd * sell;
       return rate;
     }
@@ -637,7 +637,7 @@ class CotizacionesService {
       return crypto.priceARS;
     }
 
-    throw new Error(`Exchange rate ${from}→${to} not supported`);
+    throw new FxUnavailableError(`${fromU}→${toU}`);
   }
 
   async getAllQuotes() {

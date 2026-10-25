@@ -54,7 +54,7 @@ export function composeLiquidNetWorth(input: LiquidNetWorthInput): NetWorthNow {
     ...(balances.valuation ? { valuation: balances.valuation } : {}),
     fxUnavailable: Boolean(balances.fxUnavailable || blueRate == null),
     fxStale: Boolean(balances.fxStale || portfolio?.fxStale),
-    fxAsOf: balances.fxAsOf ?? portfolio?.fxAsOf ?? null,
+    fxAsOf: [balances.fxAsOf, portfolio?.fxAsOf].filter((date): date is string => Boolean(date)).sort()[0] ?? null,
     liquidUSD: balances.liquidUSD,
     investmentsUSD: balances.fxUnavailable || positionsUSD == null ? null : (balances.investmentsUSD ?? 0) + positionsUSD,
     totalUSD: balances.liquidUSD,

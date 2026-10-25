@@ -26,7 +26,7 @@ import {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mocks.dolar.mockResolvedValue({ blue: { sell: 1300, buy: 1280 }, mep: { sell: 1300, buy: 1280 } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: 1300, buy: 1280  }, mep: { timestamp: new Date(), sell: 1300, buy: 1280  } });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
   mocks.fci.mockResolvedValue(null);
@@ -481,7 +481,7 @@ describe('refreshQuotesForInvestments currency keys', () => {
 
   it('skips CONIOLA when CAFCI is ARS, the book is USD, and MEP is unavailable', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    mocks.dolar.mockResolvedValue({ blue: { sell: 1300, buy: 1280 } });
+    mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: 1300, buy: 1280  } });
     mocks.fci.mockResolvedValue({
       ticker: 'CONIOLA', price: 179.598, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
     });

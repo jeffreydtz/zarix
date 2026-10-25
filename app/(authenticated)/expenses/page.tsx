@@ -1,5 +1,7 @@
 import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
+import { getCachedUser } from '@/lib/auth/session';
+import FinancialDataError from '@/components/ui/FinancialDataError';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
@@ -17,16 +19,14 @@ export default async function ExpensesPage(
   const searchParams = await props.searchParams;
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       redirect('/login');
     }
 
     const [accounts, categoriesRes, transactions, fx] = await Promise.all([
-      accountsService.list(user.id).catch(() => []),
+      accountsService.list(user.id),
       supabase
         .from('categories')
         .select('*')
@@ -42,10 +42,10 @@ export default async function ExpensesPage(
           minAmount: searchParams.minAmount ? parseFloat(searchParams.minAmount) : undefined,
           maxAmount: searchParams.maxAmount ? parseFloat(searchParams.maxAmount) : undefined,
           limit: 2000,
-        })
-        .catch(() => []),
-      cotizacionesService.getTransactionsFxRates().catch(() => null),
+        }),
+      cotizacionesService.getTransactionsFxRates(),
     ]);
+    if (categoriesRes.error) throw categoriesRes.error;
     const categories = categoriesRes.data;
 
 
@@ -72,7 +72,8 @@ export default async function ExpensesPage(
       </PageScaffold>
     );
   } catch (error) {
-    console.error('Expenses page error:', error);
-    redirect('/login');
+    unstable_rethrow(error);
+    console.error('[expenses] Financial data unavailable');
+    return <FinancialDataError retryHref="/expenses" />;
   }
 }

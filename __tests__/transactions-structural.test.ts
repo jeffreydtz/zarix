@@ -8,6 +8,7 @@ import {
 vi.mock('@/lib/services/cotizaciones', () => ({
   cotizacionesService: {
     getExchangeRate: vi.fn(),
+    getTransactionsFxRates: vi.fn(),
   },
 }));
 
@@ -59,6 +60,7 @@ describe('CU-001 applyArchivedAccountsTransactionFilter', () => {
 describe('CU-001 buildToArsConverter', () => {
   beforeEach(() => {
     vi.mocked(cotizacionesService.getExchangeRate).mockReset();
+    vi.mocked(cotizacionesService.getTransactionsFxRates).mockReset();
   });
 
   it('uses rate 1 for ARS without calling cotizaciones (branch B1)', async () => {
@@ -68,20 +70,23 @@ describe('CU-001 buildToArsConverter', () => {
     expect(toArs({ amount: 100, currency: 'ARS' })).toBe(100);
     expect(excludedCurrencies).toEqual([]);
     expect(cotizacionesService.getExchangeRate).not.toHaveBeenCalled();
+    expect(cotizacionesService.getTransactionsFxRates).not.toHaveBeenCalled();
   });
 
   it('converts foreign currency using live rate (branch B2 success)', async () => {
-    vi.mocked(cotizacionesService.getExchangeRate).mockResolvedValue(1200);
+    vi.mocked(cotizacionesService.getTransactionsFxRates).mockResolvedValue({
+      usdArs: 1200, eurArs: null, fxUnavailable: true, stale: false, asOf: new Date(),
+    });
     const { toArs, excludedCurrencies } = await buildToArsConverter([
       { currency: 'USD' },
     ]);
     expect(toArs({ amount: 10, currency: 'USD' })).toBe(12000);
     expect(excludedCurrencies).toEqual([]);
-    expect(cotizacionesService.getExchangeRate).toHaveBeenCalledWith('USD', 'ARS');
+    expect(cotizacionesService.getTransactionsFxRates).toHaveBeenCalledTimes(1);
   });
 
   it('excludes currencies when rate lookup fails (branch B3 catch)', async () => {
-    vi.mocked(cotizacionesService.getExchangeRate).mockRejectedValue(new Error('offline'));
+    vi.mocked(cotizacionesService.getTransactionsFxRates).mockRejectedValue(new Error('offline'));
     const { toArs, excludedCurrencies } = await buildToArsConverter([
       { currency: 'EUR' },
     ]);

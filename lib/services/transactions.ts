@@ -70,8 +70,10 @@ async function observedExchangeRate(from: string, to: string, unavailable: strin
  * Conversor a ARS por movimiento (monto original × cotización actual). Sumar
  * amount_in_account_currency mezcla ARS, USD, EUR, etc. en un total sin sentido
  * para usuarios multi-moneda; usar esto en resúmenes (dashboard y crons).
- * Si una cotización falla, esa moneda se excluye de los totales y queda
- * listada en `excludedCurrencies` para que el consumidor lo aclare.
+ * Los agregados no incluyen estimaciones con FX vencido ni marcado stale,
+ * aunque ese último valor siga disponible para mostrar saldos individuales.
+ * Si una cotización falla o está stale, esa moneda se excluye de los totales
+ * y queda listada en `excludedCurrencies` para que el consumidor lo aclare.
  */
 export async function buildToArsConverter(
   transactions: Array<{ currency: string | null }>
@@ -81,13 +83,22 @@ export async function buildToArsConverter(
   );
   const rateToArs = new Map<string, number>();
   const excludedCurrencies: string[] = [];
+  const fiatRates = currencies.some(c => c === 'USD' || c === 'EUR')
+    ? await cotizacionesService.getTransactionsFxRates().catch(() => null)
+    : null;
   for (const c of currencies) {
     if (c === 'ARS') {
       rateToArs.set(c, 1);
       continue;
     }
     try {
-      const rate = await observedExchangeRate(c, 'ARS', 'Cotización inválida');
+      const fiat = c === 'USD' || c === 'EUR';
+      const rate = fiat
+        ? fiatRates && !fiatRates.stale ? (c === 'USD' ? fiatRates.usdArs : fiatRates.eurArs) : null
+        : await observedExchangeRate(c, 'ARS', 'Cotización inválida');
+      if (rate == null || !Number.isFinite(rate) || rate <= 0) {
+        throw new Error('Cotización no disponible, inválida o vencida');
+      }
       rateToArs.set(c, rate);
     } catch {
       excludedCurrencies.push(c);

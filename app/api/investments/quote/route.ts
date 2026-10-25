@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { errorResponse, requireUser } from '@/lib/api-handler';
 import type { InvestmentType } from '@/types/database';
 import { quoteCacheKeyForPosition, refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
 import { investmentNeedsTicker } from '@/lib/investments/type-meta';
@@ -8,14 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireUser();
 
     const symbol = req.nextUrl.searchParams.get('symbol')?.trim() || '';
     const type = req.nextUrl.searchParams.get('type') as InvestmentType | null;
@@ -60,7 +53,6 @@ export async function GET(req: NextRequest) {
       source: 'refresh',
     });
   } catch (error: unknown) {
-    console.error('investments quote error:', error);
-    return NextResponse.json({ ok: false, error: 'No se pudo obtener la cotización' }, { status: 200 });
+    return errorResponse(error);
   }
 }
