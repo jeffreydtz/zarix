@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import {
   applyArchivedAccountsTransactionFilter,
   buildToArsConverter,
@@ -86,7 +87,7 @@ describe('CU-001 buildToArsConverter', () => {
   });
 
   it('excludes currencies when rate lookup fails (branch B3 catch)', async () => {
-    vi.mocked(cotizacionesService.getTransactionsFxRates).mockRejectedValue(new Error('offline'));
+    vi.mocked(cotizacionesService.getTransactionsFxRates).mockRejectedValue(new FxUnavailableError('USD/ARS'));
     const { toArs, excludedCurrencies } = await buildToArsConverter([
       { currency: 'EUR' },
     ]);

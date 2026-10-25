@@ -21,6 +21,8 @@ vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({ from
 
 import { computeNetWorth, recordNetWorthSnapshot } from '@/lib/services/net-worth';
 import { getTopBudgets } from '@/lib/services/budget-summary';
+import { getMarketSparklines } from '@/lib/services/market-history';
+import { FxUnavailableError } from '@/lib/executable-fx';
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -49,6 +51,26 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('Financial read failures keep unavailable data distinct from zero', () => {
+  it('M4: propagates FX cache DB/RLS errors from net worth', async () => {
+    const failure = Object.assign(new Error('Fixture permission failure'), { code: '42501' });
+    mocks.quotes.mockRejectedValueOnce(failure);
+    await expect(computeNetWorth('user-A')).rejects.toBe(failure);
+  });
+
+  it('M4: still degrades a typed FX outage in net worth', async () => {
+    mocks.quotes.mockRejectedValueOnce(new FxUnavailableError('blue'));
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ fxUnavailable: true, blueRate: null });
+  });
+
+  it('M4: propagates market history DB/RLS failures instead of empty sparklines', async () => {
+    const failure = Object.assign(new Error('Fixture permission failure'), { code: '42501' });
+    mocks.from.mockImplementation(() => {
+      const query = { select: () => query, eq: () => query, gte: () => query,
+        order: async () => ({ data: null, error: failure }) };
+      return query;
+    });
+    await expect(getMarketSparklines()).rejects.toBe(failure);
+  });
   it('does not overwrite a complete snapshot with an explicitly partial known subtotal', async () => {
     const valuation = { status: 'partial', excludedAccounts: [{ accountId: 'legacy', name: 'Legacy', currency: 'ZZZ', balance: 10, currencies: ['ZZZ'], reason: 'unsupported_currency' }] };
     mocks.aggregateAccounts.mockReturnValue({

@@ -4,7 +4,7 @@ import { transactionRequestHash, validTransactionRequestId } from '@/lib/transac
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
-import { isExecutableDolarQuote, requireExecutableDolarQuote } from '@/lib/executable-fx';
+import { FxUnavailableError, isExecutableDolarQuote, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { blueFxReference, type BlueFxReference } from '@/lib/blue-fx-reference';
 import type { Account, Investment, InvestmentSale, InvestmentType } from '@/types/database';
 import {
@@ -169,10 +169,10 @@ const STABLE_AS_USD = new Set(['USD', 'USDT', 'USDC', 'DAI', 'BUSD']);
 const QUOTE_REFRESH_MS = 15 * 60 * 1000;
 
 function arsPerUsdFromDolar(blue: { sell: number; buy: number } | undefined): number {
-  if (!blue) throw new Error('No hay una cotización blue válida para valorar el portafolio.');
+  if (!blue) throw new FxUnavailableError('blue ARS/USD');
   if (Number.isFinite(blue.sell) && blue.sell > 0) return blue.sell;
   if (Number.isFinite(blue.buy) && blue.buy > 0) return blue.buy;
-  throw new Error('No hay una cotización blue válida para valorar el portafolio.');
+  throw new FxUnavailableError('blue ARS/USD');
 }
 
 function amountToUsd(
@@ -184,18 +184,18 @@ function amountToUsd(
   const c = (currency || 'USD').toUpperCase();
   if (STABLE_AS_USD.has(c)) return amount;
   if (c === 'ARS') {
-    if (arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+    if (arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new FxUnavailableError('ARS/USD');
     return amount / arsPerUsd;
   }
   if (extraUsdPerUnit) {
     const extra = extraUsdPerUnit.get(c);
     if (extra != null && Number.isFinite(extra) && extra > 0) return amount * extra;
   }
-  throw new Error(`No hay cotización a USD para ${c}`);
+  throw new FxUnavailableError(`${c}/USD`);
 }
 
 function usdToArsBlue(usd: number, arsPerUsd: number): number {
-  if (arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+  if (arsPerUsd == null || !Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new FxUnavailableError('ARS/USD');
   return usd * arsPerUsd;
 }
 
@@ -203,7 +203,8 @@ function availableValue(calculate: () => number): number | null {
   try {
     const value = calculate();
     return Number.isFinite(value) ? value : null;
-  } catch {
+  } catch (error) {
+    if (!(error instanceof FxUnavailableError)) throw error;
     return null;
   }
 }
@@ -341,7 +342,10 @@ class InvestmentsService {
   ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number | null; blueReference?: BlueFxReference; fxStale: boolean; fxAsOf: string | null }> {
     const supabase = createServiceClientSync();
 
-    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(() => null);
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(error => {
+      if (!(error instanceof FxUnavailableError)) throw error;
+      return null;
+    });
     const blue = dolar?.blue;
     const blueArsPerUsd = availableValue(() => arsPerUsdFromDolar(blue));
     const reference = blue && blueArsPerUsd != null
@@ -373,7 +377,8 @@ class InvestmentsService {
       if (STABLE_AS_USD.has(c) || c === 'ARS' || extraUsd.has(c)) continue;
       try {
         extraUsd.set(c, await cotizacionesService.getExchangeRate(c, 'USD'));
-      } catch {
+      } catch (error) {
+        if (!(error instanceof FxUnavailableError)) throw error;
         /* amountToUsd rechazará la valoración; no inventar un valor cero. */
       }
     }
@@ -654,7 +659,7 @@ class InvestmentsService {
       throw new ApiError(`No podés vender más de lo que tenés (${currentQty}).`);
     }
 
-    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] });
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'], executable: true });
     const arsPerUsd = arsPerUsdFromDolar(requireExecutableDolarQuote(dolar.blue, 'blue ARS/USD', 'blue'));
 
     const saleCurrency = (input.currency || invRow.purchase_currency || 'USD').toUpperCase();

@@ -8,7 +8,7 @@ import { investmentsService } from '@/lib/services/investments';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
 import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
-import { isExecutableDolarQuote } from '@/lib/executable-fx';
+import { FxUnavailableError, isExecutableDolarQuote } from '@/lib/executable-fx';
 
 export interface NetWorthPoint {
   snapshot_date: string;
@@ -87,7 +87,10 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
   let blueRate = blueRateFromConvertedAccounts(balances, accounts);
   let fallbackFx: { fxStale?: boolean; fxAsOf?: string | null } = {};
   if (blueRate == null) {
-    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(() => null);
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(error => {
+      if (!(error instanceof FxUnavailableError)) throw error;
+      return null;
+    });
     blueRate = dolar?.blue?.sell ?? null;
     fallbackFx = { fxStale: dolar?.blue?.stale,
       fxAsOf: (dolar?.blue?.asOf ?? dolar?.blue?.timestamp)?.toISOString() ?? null };

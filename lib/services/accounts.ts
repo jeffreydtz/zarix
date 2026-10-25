@@ -3,6 +3,7 @@ import { transactionRequestHash, validTransactionRequestId } from '@/lib/transac
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { cotizacionesService } from './cotizaciones';
 import { blueFxReference, uniqueBlueFxReferences, type BlueFxReference } from '@/lib/blue-fx-reference';
 import type { Account } from '@/types/database';
@@ -212,9 +213,10 @@ class AccountsService {
       dynamicCurrencies.map(async (currency) => {
         try {
           const rate = await cotizacionesService.getExchangeRate(currency, 'USD');
-          if (!Number.isFinite(rate) || rate <= 0) throw new Error('Invalid exchange rate');
+          if (!Number.isFinite(rate) || rate <= 0) throw new FxUnavailableError(`${currency}/USD`);
           return [currency, rate] as const;
-        } catch {
+        } catch (error) {
+          if (!(error instanceof FxUnavailableError)) throw error;
           if (STABLECOIN_USD.has(currency)) return [currency, 1] as const;
           if (!ACCOUNT_CURRENCIES.has(currency)) throw new Error(`Cotización ${currency}/USD no disponible`);
           return [currency, null] as const;
@@ -317,7 +319,10 @@ class AccountsService {
     if (error) throw error;
 
     // FX is optional for reads: failures must never hide native account data.
-    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(() => null);
+    const dolar = await cotizacionesService.getDolarQuotes({ require: ['blue'] }).catch(error => {
+      if (!(error instanceof FxUnavailableError)) throw error;
+      return null;
+    });
     const blue = dolar?.blue;
     const blueRate = blue && Number.isFinite(blue.sell) && blue.sell > 0 ? blue.sell : null;
     const reference = blue && blueRate != null ? blueFxReference(blue) : undefined;

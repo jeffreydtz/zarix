@@ -9,24 +9,19 @@ export class FxUnavailableError extends Error {
   }
 }
 
-function configuredAge(value: string | undefined, fallbackSeconds: number): number {
-  const seconds = Number(value);
-  return (Number.isFinite(seconds) && seconds > 0 ? seconds : fallbackSeconds) * 1000;
-}
+/** Monetary writes never inherit the more permissive display/market-close settings. */
+export const EXECUTABLE_FX_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 /** Display fallbacks may be older; monetary writes must validate the source time. */
 export function isExecutableDolarQuote(
   quote: DolarQuote | undefined,
   type: DolarRateType | undefined = quote?.type
 ): quote is DolarQuote {
-  if (!quote || !type) return false;
+  if (!quote || !type || quote.stale || quote.origin === 'persisted') return false;
   const timestamp = quote.timestamp?.getTime();
-  const maxAge = type === 'mep' ? 24 * 60 * 60 * 1000 : type === 'blue'
-    ? configuredAge(process.env.EXCHANGE_RATE_MAX_AGE_SECONDS, 86400)
-    : configuredAge(process.env.EXCHANGE_RATE_MARKET_MAX_AGE_SECONDS, 345600);
   return Number.isFinite(quote.buy) && quote.buy > 0 &&
     Number.isFinite(quote.sell) && quote.sell > 0 && Number.isFinite(timestamp) &&
-    timestamp <= Date.now() + 5 * 60 * 1000 && Date.now() - timestamp <= maxAge;
+    timestamp <= Date.now() + 5 * 60 * 1000 && Date.now() - timestamp <= EXECUTABLE_FX_MAX_AGE_MS;
 }
 
 export function requireExecutableDolarQuote(

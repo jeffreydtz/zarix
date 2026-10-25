@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import { redirect, unstable_rethrow } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getCachedUser } from '@/lib/auth/session';
+import { FxUnavailableError } from '@/lib/executable-fx';
+import FinancialDataError from '@/components/ui/FinancialDataError';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
@@ -29,6 +31,7 @@ import MotionSection from '@/components/ui/MotionSection';
 function unavailableSection<T>(fallback: T) {
   return (error: unknown): T => {
     unstable_rethrow(error);
+    if (!(error instanceof FxUnavailableError)) throw error;
     return fallback;
   };
 }
@@ -59,7 +62,7 @@ export default async function DashboardPage() {
     await Promise.race([
       cotizacionesService.getDolarQuotes({ preferCache: true, require: ['blue'] }),
       new Promise((resolve) => setTimeout(resolve, 1500)),
-    ]).catch(() => {});
+    ]).catch(unavailableSection(undefined));
 
     const [
       accounts,
@@ -78,13 +81,10 @@ export default async function DashboardPage() {
       transactionsService.list(user.id, { limit: 5 }),
       investmentsService
         .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }),
-      cotizacionesService.getAllQuotes().catch(error => {
-        unstable_rethrow(error);
-        return null;
-      }),
+      cotizacionesService.getAllQuotes().catch(unavailableSection(null)),
       getNetWorthHistory(user.id).catch(unavailableSection(null)),
-      getInflacionSeries().catch(() => []),
-      getMarketSparklines().catch(() => ({ blue: [], btc: [], eth: [] })),
+      getInflacionSeries(),
+      getMarketSparklines(),
       getMonthFlow(user.id).catch(unavailableSection(null)),
       getUpcoming(user.id).catch(unavailableSection(null)),
       getTopBudgets(user.id).catch(unavailableSection(null)),
@@ -223,11 +223,7 @@ export default async function DashboardPage() {
     console.error('[dashboard] Financial data unavailable');
     return (
       <PageScaffold>
-        <section role="alert" className="card p-6 space-y-3">
-          <h1 className="text-xl font-semibold">No pudimos cargar tus datos financieros</h1>
-          <p>Volvé a intentar en unos minutos para consultar tu resumen completo.</p>
-          <a href="/dashboard" className="btn-primary inline-flex">Reintentar</a>
-        </section>
+        <FinancialDataError retryHref="/dashboard" />
       </PageScaffold>
     );
   }

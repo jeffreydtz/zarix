@@ -1,3 +1,4 @@
+import { FxUnavailableError } from '@/lib/executable-fx';
 // Synthetic PostgREST double enforces the isolated environment's 1000-row cap.
 // It applies filters and order before range; no database or financial write occurs.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -177,7 +178,7 @@ describe('financial summaries explicitly exclude unavailable conversions', () =>
       { ...ars, id: 'usd-expense', currency: 'USD', amount: 1000, category: { name: 'Dólares', icon: 'D' } },
       { ...ars, id: 'eur-income', type: 'income', currency: 'EUR', amount: 1000 },
     ];
-    vi.mocked(cotizacionesService.getTransactionsFxRates).mockRejectedValue(new Error('Fixture FX unavailable'));
+    vi.mocked(cotizacionesService.getTransactionsFxRates).mockRejectedValue(new FxUnavailableError('blue'));
     const summary = await transactionsService.getMonthSummary('U1', new Date('2026-10-14T12:00:00Z'));
     expect(summary).toMatchObject({ totalExpenses: 2, totalIncome: 0, transactionCount: 3 });
     expect(summary.excludedCurrencies).toEqual(expect.arrayContaining(['USD', 'EUR']));
@@ -191,7 +192,7 @@ describe('financial summaries explicitly exclude unavailable conversions', () =>
     const rule = { id: 'ars-rule', user_id: 'U1', is_active: true, type: 'expense', frequency: 'monthly',
       amount: 3, currency: 'ARS', start_date: '2026-10-01', end_date: null, last_executed_date: null };
     mocks.rules = [rule, { ...rule, id: 'usd-rule', currency: 'USD', amount: 1000 }];
-    vi.mocked(cotizacionesService.getTransactionsFxRates).mockRejectedValue(new Error('Fixture FX unavailable'));
+    vi.mocked(cotizacionesService.getTransactionsFxRates).mockRejectedValue(new FxUnavailableError('blue'));
     const flow = await getMonthFlow('U1');
     expect(flow).toMatchObject({ spentARS: 2, incomeARS: 0, daysLeft: 17, excludedCurrencies: ['USD'] });
     expect(flow.projectedSpendARS).toBeCloseTo(2 + 2 / 14 * 17 + 3, 8);

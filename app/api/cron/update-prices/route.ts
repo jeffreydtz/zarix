@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
-import { requireExecutableDolarQuote } from '@/lib/executable-fx';
+import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
   quoteCacheKeyForPosition,
@@ -31,9 +31,10 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
 
   protected async execute(supabase: ServiceClient): Promise<Record<string, unknown>> {
     try {
-      const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'] });
+      const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'], executable: true });
       requireExecutableDolarQuote(dolar.mep, 'MEP', 'mep');
     } catch (e) {
+      if (!(e instanceof FxUnavailableError)) throw e;
       this.integrationErrors++;
       console.error('Error fetching USD rate:', e);
     }
@@ -63,6 +64,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
         if (!quote || !(quote.price > 0) || quote.fxStale) this.integrationErrors++;
       }
     } catch (e) {
+      if (!(e instanceof FxUnavailableError)) throw e;
       this.integrationErrors++;
       console.error('Error refreshing investment quotes:', e);
       this.quotes = new Map();

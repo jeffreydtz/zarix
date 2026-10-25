@@ -1,3 +1,4 @@
+import { FxUnavailableError } from '@/lib/executable-fx';
 // Server renders and API use the real FX/account/transaction services; all IO is fixtures.
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -123,7 +124,7 @@ function readable(html: string) { return html.replace(/<[^>]*>/g, ' ').replace(/
 
 describe('FX outages preserve financial server renders', () => {
   it('renders dashboard accounts, native balances and recent transactions while every FX provider fails', async () => {
-    fixture.budget.mockRejectedValueOnce(new Error('Fixture independent section failure'));
+    fixture.budget.mockRejectedValueOnce(new FxUnavailableError('blue'));
     const html = renderToStaticMarkup(await DashboardPage());
     const text = readable(html);
     expect(text).toContain('Caja de prueba');

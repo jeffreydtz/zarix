@@ -1,5 +1,6 @@
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { ApiError } from '@/lib/api-handler';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
@@ -61,7 +62,9 @@ export interface ToArsConverter {
 async function observedExchangeRate(from: string, to: string, unavailable: string): Promise<number> {
   return observedStep({ component: 'provider', action: 'lookup', failureClass: 'provider' }, async () => {
     const rate = await cotizacionesService.getExchangeRate(from, to);
-    if (!Number.isFinite(rate) || rate <= 0) throw new Error(unavailable);
+    if (!Number.isFinite(rate) || rate <= 0) {
+      throw Object.assign(new FxUnavailableError(`${from}/${to}`), { message: unavailable });
+    }
     return rate;
   });
 }
@@ -84,7 +87,10 @@ export async function buildToArsConverter(
   const rateToArs = new Map<string, number>();
   const excludedCurrencies: string[] = [];
   const fiatRates = currencies.some(c => c === 'USD' || c === 'EUR')
-    ? await cotizacionesService.getTransactionsFxRates(currencies).catch(() => null)
+    ? await cotizacionesService.getTransactionsFxRates(currencies).catch(error => {
+      if (!(error instanceof FxUnavailableError)) throw error;
+      return null;
+    })
     : null;
   for (const c of currencies) {
     if (c === 'ARS') {
@@ -97,10 +103,11 @@ export async function buildToArsConverter(
         ? fiatRates && !fiatRates.stale ? (c === 'USD' ? fiatRates.usdArs : fiatRates.eurArs) : null
         : await observedExchangeRate(c, 'ARS', 'Cotización inválida');
       if (rate == null || !Number.isFinite(rate) || rate <= 0) {
-        throw new Error('Cotización no disponible, inválida o vencida');
+        throw new FxUnavailableError(`${c}/ARS`);
       }
       rateToArs.set(c, rate);
-    } catch {
+    } catch (error) {
+      if (!(error instanceof FxUnavailableError)) throw error;
       excludedCurrencies.push(c);
     }
   }

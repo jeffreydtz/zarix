@@ -219,8 +219,8 @@ describe('finding 6: aggregates consistently exclude stale display FX', () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     const { buildToArsConverter } = await import('@/lib/services/transactions');
     expect((await cotizacionesService.getDolarQuotes()).blue).toMatchObject({ stale: true });
-    // A source timestamp within the executable limit is valid for a monetary write.
-    expect(await cotizacionesService.getExchangeRate('USD', 'ARS')).toBe(1300);
+    // Age alone cannot make an unconfirmed DB fallback executable.
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toThrow('vencida');
     const converter = await buildToArsConverter([{ currency: 'USD' }]);
     expect(converter.toArs({ currency: 'USD', amount: 100 })).toBeNull();
     expect(converter.excludedCurrencies).toEqual(['USD']);

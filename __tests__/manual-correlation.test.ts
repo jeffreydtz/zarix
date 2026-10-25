@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import { FxUnavailableError } from '@/lib/executable-fx';
 
 const owner = '00000000-0000-4000-8000-000000000001';
 const accountId = '00000000-0000-4000-8000-000000000002';
@@ -70,10 +71,10 @@ describe('manual route/service correlation with explicit database doubles', () =
   });
 
   it.each(['unavailable', 'invalid-rate'])('classifies FX %s without inventing a database failure', async mode => {
-    if (mode === 'unavailable') mocks.fx.mockRejectedValue(Object.assign(new Error('SECRETO_CNF13'), { status: 429 }));
+    if (mode === 'unavailable') mocks.fx.mockRejectedValue(Object.assign(new FxUnavailableError('USD/ARS'), { message: 'SECRETO_CNF13', status: 429 }));
     else mocks.fx.mockResolvedValue(0);
     const response = await POST(request('corr-cnf13-fx', 1, 'USD'));
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(503);
     expect(mocks.rpc).not.toHaveBeenCalled();
     const rows = vi.mocked(console.info).mock.calls.map(([raw]) => JSON.parse(raw));
     expect(rows.filter(row => row.outcome === 'error').every(row => row.failureClass === 'provider')).toBe(true);

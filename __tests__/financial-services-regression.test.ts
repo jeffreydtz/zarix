@@ -1,3 +1,4 @@
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -50,6 +51,19 @@ const tx = { userId:'U1', type:'expense' as const, accountId:'A', amount:1500, c
 const account = (id='A', currency='ARS') => ({ id, user_id:'U1', currency, is_active:true });
 
 describe('CU-001 financial regressions', () => {
+  it.each(['fiatFx', 'fx'] as const)('M4: does not exclude currencies to hide an unexpected %s error', async source => {
+    const failure = Object.assign(new Error('Fixture permission failure'), { code: '42501' });
+    mocks[source].mockRejectedValueOnce(failure);
+    await expect(buildToArsConverter([{ currency: source === 'fiatFx' ? 'USD' : 'BTC' }])).rejects.toBe(failure);
+  });
+
+  it('M4: excludes only a typed FX outage from aggregate conversions', async () => {
+    mocks.fx.mockRejectedValueOnce(new FxUnavailableError('BTC/ARS'));
+    const converter = await buildToArsConverter([{ currency: 'ARS' }, { currency: 'BTC' }]);
+    expect(converter.excludedCurrencies).toEqual(['BTC']);
+    expect(converter.toArs({ amount: 100, currency: 'ARS' })).toBe(100);
+    expect(converter.toArs({ amount: 1, currency: 'BTC' })).toBeNull();
+  });
   it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY, 0.001])('rejects invalid amount %s before writing', async amount => {
     await expect(transactionsService.create({ ...tx, amount })).rejects.toThrow();
     expect(mocks.client.from).not.toHaveBeenCalled();
@@ -114,6 +128,19 @@ const inv = { id:'I1', user_id:'U1', account_id:'A', type:'stock_us', ticker:'AA
   current_price:110, current_price_updated_at:'2026-10-06T12:00:00Z', is_manual_price:true, market_currency:'USD' };
 
 describe('CU-004 financial regressions', () => {
+  it.each(['dolar', 'fx'] as const)('M4: propagates unexpected investment %s errors', async source => {
+    replies = [{ data: [{ ...inv, purchase_currency: 'EUR' }] }];
+    const failure = Object.assign(new Error('Fixture permission failure'), { code: '42501' });
+    mocks[source].mockRejectedValueOnce(failure);
+    await expect(investmentsService.list('U1')).rejects.toBe(failure);
+    expect(writes).toHaveLength(0);
+  });
+
+  it('M4: preserves investment framework control flow from an FX dependency', async () => {
+    const redirect = Object.assign(new Error('Fixture redirect'), { digest: 'NEXT_REDIRECT;replace;/login;307;' });
+    mocks.dolar.mockRejectedValueOnce(redirect);
+    await expect(investmentsService.list('U1')).rejects.toBe(redirect);
+  });
   it('preserves remaining lot cost and separates realized/non-realized profit', async () => {
     replies = [{ data:[inv] }, { data:[{ investment_id:'I1', realized_pnl_usd:80 }] }];
     const [position] = await investmentsService.list('U1');
@@ -167,7 +194,7 @@ describe('CU-004 financial regressions', () => {
   });
   it('does not replace missing EUR FX with zero cost/value', async () => {
     replies = [{ data:[{ ...inv, purchase_currency:'EUR' }] }, { data:[] }];
-    mocks.fx.mockRejectedValue(new Error('offline'));
+    mocks.fx.mockRejectedValue(new FxUnavailableError('EUR/USD'));
     const [position] = await investmentsService.list('U1');
     expect(position).toMatchObject({ cost_basis_usd:null, profit_loss_usd:null, market_value_usd:660, fxUnavailable:true });
     expect(writes).toHaveLength(0);

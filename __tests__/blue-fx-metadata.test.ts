@@ -99,7 +99,8 @@ describe('blue FX reference helper', () => {
       include_in_total: true, include_in_liquid: true }];
     mocks.rpc.mockResolvedValue({ data: [{ account_id: 'EUR-fixture', primary_balance: -10000, secondary_balance: -100 }], error: null });
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    vi.spyOn(cotizacionesService, 'getExchangeRate').mockRejectedValue(new Error('synthetic EUR provider outage'));
+    const { FxUnavailableError } = await import('@/lib/executable-fx');
+    vi.spyOn(cotizacionesService, 'getExchangeRate').mockRejectedValue(new FxUnavailableError('EUR/USD'));
     const { accountsService } = await import('@/lib/services/accounts');
     const accounts = await accountsService.list('U1', { allowPartialValuation });
     expect(accounts[0]).toMatchObject({
@@ -159,7 +160,8 @@ describe('blue FX reference helper', () => {
   it('preserves native balances when blue fails in partial read mode', async () => {
     mocks.accounts = [{ id: 'known', user_id: 'U1', type: 'bank', currency: 'ARS', balance: 120000 }];
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    const unavailable = new Error('Synthetic blue provider outage');
+    const { FxUnavailableError } = await import('@/lib/executable-fx');
+    const unavailable = new FxUnavailableError('blue');
     vi.spyOn(cotizacionesService, 'getDolarQuotes').mockRejectedValue(unavailable);
     const { accountsService } = await import('@/lib/services/accounts');
     const accounts = await accountsService.list('U1', { allowPartialValuation: true });

@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import { FxUnavailableError } from '@/lib/executable-fx';
+import { refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
 
 const mocks = vi.hoisted(() => ({
   dolar: vi.fn(), fci: vi.fn(), arg: vi.fn(), yahoo: vi.fn(), stooq: vi.fn(),
@@ -83,6 +85,37 @@ beforeEach(() => {
 
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 
+it('M4: propagates FX DB/RLS failures through quote refresh instead of skipping a conversion', async () => {
+  const failure = Object.assign(new Error('Fixture permission failure'), { code: '42501' });
+  mocks.dolar.mockRejectedValue(failure);
+  await expect(refreshQuotesForInvestments([])).rejects.toBe(failure);
+  expect(mocks.updates).toEqual([]);
+});
+
+it('M4: preserves framework control flow through quote refresh', async () => {
+  const redirect = Object.assign(new Error('Fixture redirect'), { digest: 'NEXT_REDIRECT;replace;/login;307;' });
+  mocks.dolar.mockRejectedValue(redirect);
+  await expect(refreshQuotesForInvestments([])).rejects.toBe(redirect);
+});
+
+it.each([
+  Object.assign(new Error('Fixture permission failure'), { code: '42501' }),
+  Object.assign(new Error('Fixture redirect'), { digest: 'NEXT_REDIRECT;replace;/login;307;' }),
+])('M4: rethrows non-FX crypto failures (%s)', async failure => {
+  mocks.crypto.mockRejectedValueOnce(failure);
+  await expect(refreshQuotesForInvestments([{
+    type: 'crypto', ticker: 'BTC', market_currency: 'USD', purchase_currency: 'USD',
+  }])).rejects.toBe(failure);
+});
+
+it('M4: skips a typed crypto FX outage without inventing a quote', async () => {
+  mocks.crypto.mockRejectedValueOnce(new FxUnavailableError('BTC/USD'));
+  const quotes = await refreshQuotesForInvestments([{
+    type: 'crypto', ticker: 'BTC', market_currency: 'USD', purchase_currency: 'USD',
+  }]);
+  expect(quotes.size).toBe(0);
+});
+
 describe.each(['cron', 'interactive', 'list'] as const)('FCI band on %s', (path) => {
   it.each(cases)('%s %s→%s price %s anchor %s accepted=%s', async (ticker, source, target, price, anchor, accepted) => {
     mocks.positions = [position(ticker, target, anchor)];
@@ -142,7 +175,7 @@ it('refreshes same-currency funds when MEP is missing and skips only conversions
 });
 
 it.each(['unavailable', 'exception'] as const)('keeps native investment values with FX %s and never snapshots incomplete totals', async (mode) => {
-  if (mode === 'exception') mocks.dolar.mockRejectedValue(new Error('fixture FX failure'));
+  if (mode === 'exception') mocks.dolar.mockRejectedValue(new FxUnavailableError('blue'));
   else mocks.dolar.mockResolvedValue({ status: 'unavailable' });
   mocks.positions = [{ ...position('PRTAVAB', 'ARS', 1240), is_manual_price: true }];
   const summary = await investmentsService.getPortfolioSummary('fixture-user');
@@ -274,7 +307,7 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
     'skips a purchase conversion when MEP is %s', async (mode) => {
       const now = new Date();
       if (mode === 'exception') {
-        mocks.dolar.mockRejectedValue(new Error('fixture MEP unavailable'));
+        mocks.dolar.mockRejectedValue(new FxUnavailableError('MEP'));
       } else {
         mocks.dolar.mockResolvedValue({
           blue: { sell: 1300, buy: 1280, timestamp: now },

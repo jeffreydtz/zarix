@@ -47,7 +47,7 @@ beforeEach(() => {
       },
       order: () => query,
       limit: () => query,
-      single: async () => ({ data: mocks.rates[source] ?? null, error: mocks.failedSources.has(source) ? { message: 'fixture failure' } : null }),
+      single: async () => ({ data: mocks.rates[source] ?? null, error: mocks.failedSources.has(source) ? { code: 'PGRST116', message: 'No fixture row' } : null }),
       maybeSingle: async () => ({ data: mocks.rates[source]?.timestamp === timestamp ? mocks.rates[source] : null, error: null }),
       insert: mocks.insert,
     };
@@ -109,9 +109,9 @@ describe('weekend FX resilience', () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     await cotizacionesService.getDolarQuotes();
     const rows = insertedRows();
-    expect(rows).toHaveLength(6);
+    expect(rows).toHaveLength(8);
     expect(rows).toContainEqual(expect.objectContaining({ source: 'blue', rate: 1300, timestamp: time(1).toISOString() }));
-    expect(rows).not.toContainEqual(expect.objectContaining({ source: 'mep' }));
+    expect(rows).toContainEqual(expect.objectContaining({ source: 'mep', rate: 1300, timestamp: time(30).toISOString() }));
     expect(rows).toContainEqual(expect.objectContaining({ source: 'ccl', rate: 1320, timestamp: time(30).toISOString() }));
     expect(mocks.insert.mock.calls.every(call => call[0].length === 2)).toBe(true);
     expect(rows.every((row: { timestamp: string }) => row.timestamp !== new Date().toISOString())).toBe(true);
@@ -153,7 +153,7 @@ describe('weekend FX resilience', () => {
     expect(all.timestamp).toBeNull();
   });
 
-  it('does not lose a DB rate when another per-rate DB query fails', async () => {
+  it('does not lose a DB rate when another per-rate DB query has no row', async () => {
     persisted('blue', 1);
     mocks.failedSources.add('mep');
     vi.mocked(fetch).mockRejectedValue(new Error('fixture outage'));
@@ -245,6 +245,123 @@ describe('weekend FX resilience', () => {
     expect((await read()).blue?.sell).toBe(1400);
     expect(mocks.from.mock.calls.length).toBeGreaterThan(dbReads);
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false])('keeps 10h DB MEP stale with live blue=%s, including cached resolutions', async hasLiveBlue => {
+    persisted('mep', 10);
+    vi.mocked(fetch).mockImplementation(async url => {
+      if (hasLiveBlue && String(url).includes('criptoya')) return json({ blue: live().blue });
+      throw new Error('fixture outage');
+    });
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    const { isExecutableDolarQuote } = await import('@/lib/executable-fx');
+    for (let read = 0; read < 2; read++) {
+      const quotes = await cotizacionesService.getDolarQuotes({ require: ['mep'] });
+      expect(quotes.mep).toMatchObject({ origin: 'persisted', stale: true, asOf: time(10) });
+      expect(isExecutableDolarQuote(quotes.mep, 'mep')).toBe(false);
+    }
+    expect(fetch).toHaveBeenCalledTimes(hasLiveBlue ? 2 : 4);
+    expect(insertedRows()).not.toContainEqual(expect.objectContaining({ source: 'mep' }));
+  });
+
+  it('marks preferCache DB quotes stale and refreshes providers for an executable request', async () => {
+    persisted('blue', 10);
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    expect((await cotizacionesService.getDolarQuotes({ preferCache: true, require: ['blue'] })).blue)
+      .toMatchObject({ stale: true, origin: 'persisted' });
+    expect(fetch).not.toHaveBeenCalled();
+    expect((await cotizacionesService.getDolarQuotes({ preferCache: true, require: ['blue'], executable: true })).blue)
+      .toMatchObject({ stale: false, origin: 'provider' });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('refetches a missing required rate instead of returning a partial provider cache', async () => {
+    const payload: Partial<ReturnType<typeof live>> = { mep: live(1).mep };
+    vi.mocked(fetch).mockImplementation(async url => String(url).includes('criptoya') ? json(payload) : json([]));
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    expect((await cotizacionesService.getDolarQuotes({ require: ['mep'] })).blue).toBeUndefined();
+    payload.blue = live().blue;
+    expect((await cotizacionesService.getDolarQuotes({ require: ['blue'] })).blue?.sell).toBe(1300);
+    expect(fetch).toHaveBeenCalledTimes(4);
+  });
+
+  it('refetches a stale required cache rate for execution and can recover before the TTL', async () => {
+    persisted('mep', 10);
+    const payload: Partial<ReturnType<typeof live>> = { blue: live().blue };
+    vi.mocked(fetch).mockImplementation(async url => String(url).includes('criptoya') ? json(payload) : json([]));
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    expect((await cotizacionesService.getDolarQuotes({ require: ['blue'] })).mep?.stale).toBe(true);
+    payload.mep = live(1).mep;
+    expect((await cotizacionesService.getDolarQuotes({ require: ['mep'], executable: true })).mep)
+      .toMatchObject({ stale: false, origin: 'provider' });
+    expect(fetch).toHaveBeenCalledTimes(4);
+  });
+
+  it('keeps a 30h live blue displayable but stale and nonexecutable under the 96h display override', async () => {
+    vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS', '345600');
+    const payload = { blue: { bid: 1290, ask: 1300, timestamp: time(30).getTime() / 1000 } };
+    vi.mocked(fetch).mockImplementation(async url => String(url).includes('criptoya') ? json(payload) : json([]));
+    const { cotizacionesService, FxUnavailableError } = await import('@/lib/services/cotizaciones');
+    const { isExecutableDolarQuote, EXECUTABLE_FX_MAX_AGE_MS } = await import('@/lib/executable-fx');
+    const { blue } = await cotizacionesService.getDolarQuotes({ require: ['blue'] });
+    expect(blue).toMatchObject({ sell: 1300, stale: true, asOf: time(30) });
+    expect(EXECUTABLE_FX_MAX_AGE_MS).toBe(24 * hour);
+    expect(isExecutableDolarQuote(blue)).toBe(false);
+    expect(isExecutableDolarQuote({ ...blue!, stale: false })).toBe(false);
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toBeInstanceOf(FxUnavailableError);
+    await expect(cotizacionesService.getExchangeRate('ARS', 'USD')).rejects.toBeInstanceOf(FxUnavailableError);
+  });
+
+  it('rechecks the executable hard age while the display cache remains within 96h', async () => {
+    vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS', '345600');
+    const payload = { blue: { bid: 1290, ask: 1300, timestamp: (Date.now() - 24 * hour + 1000) / 1000 } };
+    vi.mocked(fetch).mockImplementation(async url => String(url).includes('criptoya') ? json(payload) : json([]));
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    expect(await cotizacionesService.getExchangeRate('USD', 'ARS')).toBe(1300);
+    vi.setSystemTime(new Date(Date.now() + 2000));
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toThrow('vencida');
+    expect(fetch).toHaveBeenCalledTimes(4);
+  });
+
+  it.each(['USD', 'ARS', 'EUR'])('rejects recent forced-stale blue for %s cross-currency writes', async currency => {
+    persisted('blue', 10);
+    vi.mocked(fetch).mockImplementation(async url => {
+      if (String(url).includes('EURUSD')) return json({ chart: { result: [{ meta: {
+        regularMarketPrice: 1.1, regularMarketTime: Date.now() / 1000,
+      } }] } });
+      throw new Error('fixture outage');
+    });
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    await expect(cotizacionesService.getExchangeRate(currency, currency === 'ARS' ? 'USD' : 'ARS'))
+      .rejects.toThrow('vencida');
+    expect(mocks.insert).not.toHaveBeenCalled();
+  });
+
+  it('propagates DB/RLS failures through quote, display-rate and executable-rate callers', async () => {
+    const error = { code: '42501', message: 'fixture permission denied' };
+    mocks.from.mockImplementation(() => { throw error; });
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    await expect(cotizacionesService.getDolarQuotes({ require: ['blue'] })).rejects.toBe(error);
+    await expect(cotizacionesService.getTransactionsFxRates(['USD'])).rejects.toBe(error);
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toBe(error);
+  });
+
+  it('propagates unexpected quote-history write failures instead of reporting an FX outage', async () => {
+    const error = { code: '42501', message: 'fixture permission denied' };
+    mocks.insert.mockResolvedValue({ error });
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toBe(error);
+  });
+
+  it('only degrades typed FX failures from display-rate callers', async () => {
+    const { cotizacionesService, FxUnavailableError } = await import('@/lib/services/cotizaciones');
+    const getDolarQuotes = vi.spyOn(cotizacionesService, 'getDolarQuotes');
+    getDolarQuotes.mockRejectedValueOnce(new FxUnavailableError('USD/ARS'));
+    expect(await cotizacionesService.getTransactionsFxRates(['USD'])).toMatchObject({ fxUnavailable: true });
+    const error = new TypeError('fixture programming error');
+    getDolarQuotes.mockRejectedValue(error);
+    await expect(cotizacionesService.getTransactionsFxRates(['USD'])).rejects.toBe(error);
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toBe(error);
   });
 
   it('persists each atomic rate pair idempotently under the actual schema uniqueness constraint', async () => {

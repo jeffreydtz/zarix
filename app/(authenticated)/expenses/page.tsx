@@ -25,7 +25,7 @@ export default async function ExpensesPage(
       redirect('/login');
     }
 
-    const [accounts, categoriesRes, transactions, fx] = await Promise.all([
+    const [accounts, categoriesRes, transactions] = await Promise.all([
       accountsService.list(user.id),
       supabase
         .from('categories')
@@ -43,11 +43,15 @@ export default async function ExpensesPage(
           maxAmount: searchParams.maxAmount ? parseFloat(searchParams.maxAmount) : undefined,
           limit: 2000,
         }),
-      cotizacionesService.getTransactionsFxRates(),
     ]);
     if (categoriesRes.error) throw categoriesRes.error;
     const categories = categoriesRes.data;
-
+    const currencies = [...new Set([
+      ...transactions.map(transaction => transaction.currency),
+      ...accounts.flatMap(account => account.is_multicurrency && account.secondary_currency
+        ? [account.currency, account.secondary_currency] : [account.currency]),
+    ])];
+    const fx = await cotizacionesService.getTransactionsFxRates(currencies);
 
     return (
       <PageScaffold

@@ -1,4 +1,4 @@
-import { isExecutableDolarQuote } from '@/lib/executable-fx';
+import { FxUnavailableError, isExecutableDolarQuote } from '@/lib/executable-fx';
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
@@ -326,9 +326,12 @@ export async function refreshQuotesForInvestments(
     }
   }
 
-  const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'] }).catch(() => null);
+  const dolar = await cotizacionesService.getDolarQuotes({ require: ['mep'], executable: !options?.allowStaleFx }).catch(error => {
+    if (!(error instanceof FxUnavailableError)) throw error;
+    return null;
+  });
   const mep = dolar?.mep;
-  const mepExecutable = isExecutableDolarQuote(mep, 'mep') && !mep.stale;
+  const mepExecutable = isExecutableDolarQuote(mep, 'mep');
   const mepArsPerUsd = mepExecutable || options?.allowStaleFx ? mepRate(dolar) : null;
   // Display estimates may use stale FX; plausibility anchors for writes may not.
   const anchorMepArsPerUsd = mepExecutable ? mepRate(dolar) : null;
@@ -570,7 +573,8 @@ export async function refreshQuotesForInvestments(
         });
         if (stamped) out.set(quoteCacheKey('crypto', sym, 'USD'), stamped);
       }
-    } catch {
+    } catch (error) {
+      if (!(error instanceof FxUnavailableError)) throw error;
       /* último precio guardado */
     }
   }
