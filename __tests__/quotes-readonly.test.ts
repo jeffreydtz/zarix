@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FxUnavailableError } from '@/lib/executable-fx';
 
 const mocks = vi.hoisted(() => ({ from: vi.fn(), insert: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({ from: mocks.from }) }));
@@ -47,6 +46,9 @@ describe('display quotes vs executable FX writes', () => {
   it('getExchangeRate rejects when live FX is down and nothing executable is stored', async () => {
     vi.mocked(fetch).mockRejectedValue(new Error('fixture outage'));
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toBeInstanceOf(FxUnavailableError);
+    await expect(cotizacionesService.getExchangeRate('USD', 'ARS')).rejects.toMatchObject({
+      name: 'FxUnavailableError',
+      code: 'FX_UNAVAILABLE',
+    });
   });
 });

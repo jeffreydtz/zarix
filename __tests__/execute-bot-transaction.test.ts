@@ -9,7 +9,7 @@ const SYSTEM_CATEGORY_ID = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
 
 const mocks = vi.hoisted(() => ({
   create: vi.fn(),
-  getExchangeRate: vi.fn(async () => 1),
+  getExchangeRate: vi.fn(async (_from?: string, _to?: string) => 1),
 }));
 
 vi.mock('@/lib/services/transactions', () => ({
@@ -24,7 +24,9 @@ vi.mock('@/lib/services/accounts', () => ({
 }));
 
 vi.mock('@/lib/services/cotizaciones', () => ({
-  cotizacionesService: { getExchangeRate: (...args: unknown[]) => mocks.getExchangeRate(...args) },
+  cotizacionesService: {
+    getExchangeRate: (from: string, to?: string) => mocks.getExchangeRate(from, to),
+  },
 }));
 
 const financialContext = {
