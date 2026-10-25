@@ -63,6 +63,25 @@ function sawAdvisoryWait(query) {
   return /Lock\|advisory|advisory/i.test(text);
 }
 
+function advisoryWaiters(query, objid) {
+  return Number(
+    query(
+      `SELECT count(*) FROM pg_locks WHERE locktype='advisory' AND objid=${Number(objid)} AND NOT granted`
+    ) || 0
+  );
+}
+
+async function waitForAdvisoryWaiters(query, objid, needed, ms = 8000) {
+  const deadline = Date.now() + ms;
+  let count = 0;
+  while (Date.now() < deadline) {
+    count = advisoryWaiters(query, objid);
+    if (count >= needed) return count;
+    await sleep(50);
+  }
+  return count;
+}
+
 async function runOverlap({ query, parallelSql, lockKey, first, second }) {
   const holder = parallelSql(
     `${servicePreamble()} BEGIN; ${lockSql(lockKey)} ${reserveCall(lockKey, first.ingest, first.row)} SELECT pg_sleep(2); COMMIT;`
@@ -134,30 +153,59 @@ const result = await withTwoSessionPostgres(async ({ query, parallelSql }) => {
     .replace(
       /IF NOT COALESCE\(p_client_keyed, false\) THEN\s+lookback/,
       'PERFORM pg_advisory_lock_shared(8675309);\n  IF NOT COALESCE(p_client_keyed, false) THEN\n    lookback'
+    )
+    .replace(
+      /RETURN jsonb_build_object\('item', to_jsonb\(rec\), 'duplicate', false\);/,
+      "PERFORM pg_advisory_lock_shared(8675310);\n  RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', false);"
     );
   assert.doesNotMatch(unlocked, /pg_advisory_xact_lock/);
-  assert.match(unlocked, /pg_advisory_lock_shared/);
+  assert.match(unlocked, /pg_advisory_lock_shared\(8675309\)/);
+  assert.match(unlocked, /pg_advisory_lock_shared\(8675310\)/);
   query(`CREATE OR REPLACE ${unlocked.replace(/^CREATE(?:\s+OR\s+REPLACE)?\s+/i, '')}`);
 
-  const barrier = parallelSql('SELECT pg_advisory_lock(8675309); SELECT pg_sleep(4); SELECT pg_advisory_unlock(8675309);');
-  await sleep(200);
+  query(`CREATE TABLE IF NOT EXISTS zarix_two_session_barrier (step int NOT NULL)`);
+  query(`TRUNCATE zarix_two_session_barrier`);
+  query(`INSERT INTO zarix_two_session_barrier VALUES (0)`);
+  const barrier = parallelSql(`
+    DO $barrier$
+    BEGIN
+      PERFORM pg_advisory_lock(8675309);
+      PERFORM pg_advisory_lock(8675310);
+      WHILE (SELECT step FROM zarix_two_session_barrier) < 1 LOOP
+        PERFORM pg_sleep(0.05);
+      END LOOP;
+      PERFORM pg_advisory_unlock(8675309);
+      WHILE (SELECT step FROM zarix_two_session_barrier) < 2 LOOP
+        PERFORM pg_sleep(0.05);
+      END LOOP;
+      PERFORM pg_advisory_unlock(8675310);
+    END
+    $barrier$;
+  `);
+  const exclusiveDeadline = Date.now() + 4000;
+  let exclusiveHeld = 0;
+  while (Date.now() < exclusiveDeadline) {
+    exclusiveHeld = Number(
+      query(
+        `SELECT count(DISTINCT objid) FROM pg_locks WHERE locktype='advisory' AND objid IN (8675309, 8675310) AND granted`
+      ) || 0
+    );
+    if (exclusiveHeld >= 2) break;
+    await sleep(50);
+  }
+  assert.ok(exclusiveHeld >= 2, `barrier must hold both exclusive locks, got ${exclusiveHeld}`);
   const sleepReserve = (merchant, ingest) =>
     `${servicePreamble()} ${reserveCall(lockKey, ingest, rowJson({ merchant, accountId: ids.accountA, fingerprint: `fp-mutant-${merchant}` }))}`;
   const waiting = Promise.all([
     parallelSql(sleepReserve('Mutant Alpha', randomUUID())),
     parallelSql(sleepReserve('Mutant Beta', randomUUID())),
   ]);
-  const waitDeadline = Date.now() + 3000;
-  let sharedWaiters = 0;
-  while (Date.now() < waitDeadline) {
-    const locks = query(
-      `SELECT count(*) FROM pg_locks WHERE locktype='advisory' AND objid=8675309 AND granted=false`
-    );
-    sharedWaiters = Number(locks || 0);
-    if (sharedWaiters >= 2) break;
-    await sleep(50);
-  }
-  assert.ok(sharedWaiters >= 2, `mutant sessions should queue on the shared barrier, got ${sharedWaiters}`);
+  const insertWaiters = await waitForAdvisoryWaiters(query, 8675309, 2);
+  assert.ok(insertWaiters >= 2, `mutant sessions should queue after INSERT, got ${insertWaiters}`);
+  query(`UPDATE zarix_two_session_barrier SET step=1`);
+  const lookbackWaiters = await waitForAdvisoryWaiters(query, 8675310, 2);
+  assert.ok(lookbackWaiters >= 2, `mutant sessions should queue after lookback, got ${lookbackWaiters}`);
+  query(`UPDATE zarix_two_session_barrier SET step=2`);
   const [mutA, mutB] = await waiting;
   const barrierResult = await barrier;
   assert.equal(mutA.status, 0, mutA.stderr || mutA.stdout);
@@ -165,6 +213,7 @@ const result = await withTwoSessionPostgres(async ({ query, parallelSql }) => {
   assert.equal(barrierResult.status, 0, barrierResult.stderr || barrierResult.stdout);
   const mutantRows = parseFlagged(query);
   assert.equal(mutantRows.length, 2);
+  const mutantUnflagged = mutantRows.filter((row) => !row.flagged).length;
   assert.equal(
     mutantRows.filter((row) => row.flagged).length,
     0,
@@ -176,7 +225,7 @@ const result = await withTwoSessionPostgres(async ({ query, parallelSql }) => {
     merchantWaited: merchantOnly.waited,
     accountFlagged: accountOnly.rows.find((row) => row.flagged)?.merchant,
     merchantFlagged: merchantOnly.rows.find((row) => row.flagged)?.merchant,
-    mutantUnflagged: mutantRows.length,
+    mutantUnflagged,
   };
 });
 
