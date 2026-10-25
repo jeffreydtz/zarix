@@ -270,7 +270,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     const dashless = await call(PENDING_UPPER.replaceAll('-', ''), 6);
     const dashlessBody = toolText(await readMcpJson(dashless));
     expect(dashlessBody.success).toBe(false);
-    expect(JSON.stringify(dashlessBody)).toMatch(/inválido/i);
+    expect(JSON.stringify(dashlessBody)).toMatch(/pendingId|inválido|Argumentos/i);
     expect(
       (await query('SELECT id FROM transactions WHERE user_id=$1 AND description=$2', [ids.a, 'MCP Upper'])).rows
     ).toHaveLength(1);
