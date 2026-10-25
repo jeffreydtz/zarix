@@ -780,4 +780,179 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       'pending'
     );
   });
+
+  it('Wallet HTTP 40.129 parks and never writes the ledger', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const raw =
+      '{"amount":40.129,"currency":"ARS","merchant":"Excess café","cardName":"Visa Ejemplo","timestamp":"2026-10-25T12:00:00.000Z"}';
+    const res = await walletPost(
+      new NextRequest('http://localhost/api/ingest/wallet', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'wallet-http-40-129',
+        },
+        body: raw,
+      })
+    );
+    expect(res.status).toBe(201);
+    const json = (await res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
+    expect(json.autoConfirmed).toBe(false);
+    expect(json.item.amount).toBeNull();
+    const row = await query('SELECT amount, amount_ambiguous, status FROM pending_inbox_items WHERE id=$1', [
+      json.item.id,
+    ]);
+    expect(row.rows[0].amount).toBeNull();
+    expect(row.rows[0].amount_ambiguous).toBe(true);
+    expect(row.rows[0].status).toBe('pending');
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+  });
+
+  it('REST accepts 1048576.37 into the inbox and rejects 40.129 without a ledger write', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const large = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-large-ars-cents',
+        },
+        body: '{"type":"expense","amount":1048576.37,"currency":"ARS","accountId":"' + ids.accountA + '","description":"Alquiler grande"}',
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(large.status).toBe(200);
+    const largeJson = (await large.json()) as { needs_confirm?: boolean; pendingId?: string };
+    expect(largeJson.needs_confirm).toBe(true);
+    expect(
+      (await query('SELECT amount::text AS amount FROM pending_inbox_items WHERE id=$1', [largeJson.pendingId])).rows[0]
+        .amount
+    ).toMatch(/^1048576\.37/);
+
+    const excess = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-excess-40-129',
+        },
+        body: '{"type":"expense","amount":40.129,"currency":"ARS","accountId":"' + ids.accountA + '","description":"No redondear"}',
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(excess.status).toBe(400);
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+  });
+
+  it('mixed confirm of a valid item plus a fresh confirming item writes nothing', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const validId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1';
+    const confirmingId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee2';
+    const payload = JSON.stringify({
+      type: 'expense',
+      amount: 18,
+      currency: 'ARS',
+      accountId: ids.accountA,
+      description: 'Mixed confirming',
+      _tool: 'create_transaction',
+    });
+    await query(
+      `INSERT INTO pending_inbox_items(
+         id, user_id, amount, currency, merchant, account_id, status, fingerprint, source, direction, tool_payload, request_canonical, updated_at
+       ) VALUES
+         ($1,$2,18,'ARS','Valid mix',$3,'pending','fp-mix-valid','mcp','expense',$4::jsonb,'', now()),
+         ($5,$2,18,'ARS','Fresh confirming',$3,'confirming','fp-mix-confirming','mcp','expense',$4::jsonb,'', now())`,
+      [validId, ids.a, ids.accountA, payload, confirmingId]
+    );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const res = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transactions', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ confirm: true, pendingIds: [validId, confirmingId] }),
+      }),
+      { params: Promise.resolve({ name: 'create_transactions' }) }
+    );
+    expect(res.status).toBe(409);
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+    expect((await query('SELECT status FROM pending_inbox_items WHERE id=$1', [validId])).rows[0].status).toBe(
+      'pending'
+    );
+    expect((await query('SELECT status FROM pending_inbox_items WHERE id=$1', [confirmingId])).rows[0].status).toBe(
+      'confirming'
+    );
+  });
+
+  it('mixed confirm of a valid item plus an item without account writes nothing', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const validId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee3';
+    const missingId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee4';
+    await query(
+      `INSERT INTO pending_inbox_items(
+         id, user_id, amount, currency, merchant, account_id, status, fingerprint, source, direction, tool_payload, request_canonical
+       ) VALUES
+         ($1,$2,18,'ARS','Valid account',$3,'pending','fp-mix-acc-valid','mcp','expense',$4::jsonb,''),
+         ($5,$2,13,'ARS','No account',NULL,'pending','fp-mix-acc-missing','mcp','expense',$6::jsonb,'')`,
+      [
+        validId,
+        ids.a,
+        ids.accountA,
+        JSON.stringify({
+          type: 'expense',
+          amount: 18,
+          currency: 'ARS',
+          accountId: ids.accountA,
+          description: 'Valid account',
+          _tool: 'create_transaction',
+        }),
+        missingId,
+        JSON.stringify({ type: 'expense', amount: 13, description: 'No account', _tool: 'create_transaction' }),
+      ]
+    );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const res = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transactions', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ confirm: true, pendingIds: [validId, missingId] }),
+      }),
+      { params: Promise.resolve({ name: 'create_transactions' }) }
+    );
+    expect(res.status).toBe(400);
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+    expect((await query('SELECT status FROM pending_inbox_items WHERE id=$1', [validId])).rows[0].status).toBe(
+      'pending'
+    );
+  });
 });
