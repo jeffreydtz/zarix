@@ -111,6 +111,7 @@ export const CEDEAR_CATALOG: CatalogEntry[] = [
   { symbol: 'PLTR', name: 'Palantir', type: 'cedear' },
   { symbol: 'SPY', name: 'S&P 500 ETF', type: 'cedear' },
   { symbol: 'QQQ', name: 'Nasdaq 100 ETF', type: 'cedear' },
+  { symbol: 'GLD', name: 'SPDR Gold Shares', type: 'cedear' },
   { symbol: 'EWZ', name: 'iShares Brazil ETF', type: 'cedear' },
   { symbol: 'TSM', name: 'Taiwan Semiconductor', type: 'cedear' },
   { symbol: 'AVGO', name: 'Broadcom', type: 'cedear' },

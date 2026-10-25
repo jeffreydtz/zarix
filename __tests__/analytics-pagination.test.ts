@@ -226,3 +226,20 @@ describe('analytics full reads with a 1000-row server cap', () => {
     ]);
   });
 });
+
+
+describe('analytics FX outage does not present unknown aggregates as zero', () => {
+  it.each(['category', 'monthly', 'daily', 'account'] as const)('rejects incomplete %s aggregates with a clear FX reason', async method => {
+    mocks.converter.mockResolvedValue({
+      toArs: (transaction: { amount: number; currency: string }) => transaction.currency === 'USD' ? null : transaction.amount,
+      excludedCurrencies: ['USD'],
+    });
+    const read = {
+      category: () => analyticsService.getCategoryBreakdown(OWNER, START, END),
+      monthly: () => analyticsService.getMonthlyTrend(OWNER, START, END),
+      daily: () => analyticsService.getDailyTrend(OWNER, START, END),
+      account: () => analyticsService.getAccountBreakdown(OWNER, START, END),
+    }[method];
+    await expect(read()).rejects.toThrow('Cotizaciones no disponibles para USD');
+  });
+});

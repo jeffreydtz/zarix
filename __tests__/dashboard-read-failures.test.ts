@@ -28,12 +28,13 @@ vi.mock('@/components/dashboard/MarketStrip', () => ({ default: ({ quotes }: { q
 vi.mock('@/components/dashboard/MonthFlowCard', () => ({ default: () => null }));
 vi.mock('@/components/dashboard/UpcomingRail', () => ({ default: () => null }));
 vi.mock('@/components/dashboard/BudgetCluster', () => ({ default: () => null }));
-vi.mock('@/components/dashboard/StickyNetWorthBar', () => ({ default: () => null }));
+vi.mock('@/components/dashboard/StickyNetWorthBar', () => ({ default: () => createElement('div', { 'data-testid': 'sticky-net-worth' }) }));
 vi.mock('@/components/dashboard/DashboardSpendingAnalyzerSection', () => ({ default: () => null }));
 vi.mock('@/components/dashboard/DashboardMore', () => ({ default: ({ children }: { children: ReactNode }) => children }));
 vi.mock('@/components/ui/MotionSection', () => ({ default: ({ children }: { children: ReactNode }) => children }));
 
 import DashboardPage from '@/app/(authenticated)/dashboard/page';
+import { FxUnavailableError } from '@/lib/executable-fx';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -61,6 +62,26 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('dashboard read failures preserve financial truth', () => {
+  it.each(['dolar', 'quotes', 'history', 'monthFlow', 'upcoming', 'budgets', 'preferences', 'sparklines'] as const)(
+    'M4: surfaces %s DB/RLS errors distinctly from FX outages', async source => {
+      const failure = Object.assign(new Error('Fixture permission failure'), { code: '42501' });
+      mocks[source].mockRejectedValueOnce(failure);
+      const html = renderToStaticMarkup(await DashboardPage());
+      expect(html).toContain('role="alert"');
+      expect(html).toContain('No pudimos cargar tus datos financieros');
+      expect(html).not.toContain('Cotizaciones no disponibles');
+      expect(html).not.toContain('data-testid="net-worth"');
+      expect(mocks.snapshot).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(['dolar', 'quotes', 'history', 'monthFlow', 'upcoming', 'budgets', 'preferences', 'sparklines'] as const)(
+    'M4: preserves framework redirects from %s', async source => {
+      const redirect = Object.assign(new Error('Fixture redirect'), { digest: 'NEXT_REDIRECT;replace;/login;307;' });
+      mocks[source].mockRejectedValueOnce(redirect);
+      await expect(DashboardPage()).rejects.toBe(redirect);
+    },
+  );
   it('CP3-17: uses the current owner saved base and never writes financial history on render', async () => {
     mocks.preferences.mockResolvedValue({ default_currency: 'USD', net_worth_widget_visible: true });
     const html = renderToStaticMarkup(await DashboardPage());
@@ -89,7 +110,7 @@ describe('dashboard read failures preserve financial truth', () => {
     expect(mocks.accounts).toHaveBeenCalledWith('synthetic-user', { allowPartialValuation: true });
     expect(mocks.snapshot).not.toHaveBeenCalled();
   });
-  it.each(['accounts', 'transactions', 'portfolio', 'history', 'monthFlow', 'upcoming', 'budgets', 'preferences'] as const)(
+  it.each(['accounts', 'transactions', 'portfolio'] as const)(
     'shows unavailable and retry instead of partial financial values when %s fails', async source => {
       mocks[source].mockRejectedValueOnce(new Error('synthetic database timeout'));
       const html = renderToStaticMarkup(await DashboardPage());
@@ -101,6 +122,32 @@ describe('dashboard read failures preserve financial truth', () => {
     },
   );
 
+  it.each([
+    ['history', 'Historial de patrimonio no disponible.'],
+    ['monthFlow', 'Resumen mensual no disponible.'],
+    ['upcoming', 'Próximos movimientos no disponibles.'],
+    ['budgets', 'Presupuestos no disponibles.'],
+  ] as const)('isolates the %s section failure while preserving available accounts', async (source, fallback) => {
+    mocks[source].mockRejectedValueOnce(new FxUnavailableError('blue'));
+    const html = renderToStaticMarkup(await DashboardPage());
+    expect(html).toContain(fallback);
+    expect(html).toContain('data-testid="net-worth"');
+    expect(html).not.toContain('No pudimos cargar tus datos financieros');
+    expect(mocks.snapshot).not.toHaveBeenCalled();
+  });
+
+  it('finding 8: keeps both net-worth widgets hidden when saved preferences cannot be read', async () => {
+    mocks.preferences.mockResolvedValueOnce({ default_currency: 'USD', net_worth_widget_visible: false });
+    expect(renderToStaticMarkup(await DashboardPage())).not.toContain('data-testid="net-worth"');
+    mocks.preferences.mockRejectedValueOnce(Object.assign(new Error('synthetic preferences permission error'), { code: '42501' }));
+    const html = renderToStaticMarkup(await DashboardPage());
+    expect(html).not.toContain('data-testid="net-worth"');
+    expect(html).not.toContain('data-testid="sticky-net-worth"');
+    expect(html).not.toContain('networth-sentinel');
+    expect(html).not.toContain('data-testid="quotes"');
+    expect(html).toContain('No pudimos cargar tus datos financieros');
+  });
+
   it('adds complete account and portfolio values when every financial read succeeds', async () => {
     const html = renderToStaticMarkup(await DashboardPage());
     expect(html).toContain('&quot;totalUSD&quot;:100');
@@ -110,7 +157,7 @@ describe('dashboard read failures preserve financial truth', () => {
   });
 
   it('labels unavailable market quotes without fabricating current zero rates', async () => {
-    mocks.quotes.mockRejectedValueOnce(new Error('synthetic provider outage'));
+    mocks.quotes.mockRejectedValueOnce(new FxUnavailableError('blue'));
     const html = renderToStaticMarkup(await DashboardPage());
     expect(html).toContain('&quot;totalUSD&quot;:100');
     expect(html).toContain('Cotizaciones no disponibles');

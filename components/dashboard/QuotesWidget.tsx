@@ -2,25 +2,12 @@
 
 import { memo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import type { cotizacionesService } from '@/lib/services/cotizaciones';
+import FxStatusBanner from '@/components/ui/FxStatusBanner';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
 interface QuotesWidgetProps {
-  quotes: {
-    dolar: Record<
-      string,
-      {
-        type: string;
-        buy: number;
-        sell: number;
-      }
-    >;
-    crypto: {
-      btc: { priceUSD: number; change24h: number };
-      eth: { priceUSD: number; change24h: number };
-      usdt: { priceUSD: number };
-    };
-    timestamp?: string;
-  };
+  quotes: Awaited<ReturnType<typeof cotizacionesService.getAllQuotes>>;
 }
 
 const container = {
@@ -66,13 +53,14 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
           </h3>
           {lastUpdated && (
             <p className="text-sm text-muted-foreground mt-0.5">
-              Dolar actualizado: <span className="font-medium text-muted-foreground">{lastUpdated}</span>
+              Consulta realizada: <span className="font-medium text-muted-foreground">{lastUpdated}</span>
             </p>
           )}
         </div>
-        <span className="zx-pill-live">En vivo</span>
+
       </div>
       
+      {!quotes.dolar.blue && !quotes.dolar.mep && <FxStatusBanner fxUnavailable />}
       <motion.div 
         variants={container}
         initial="hidden"
@@ -88,7 +76,11 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <span className="text-xs font-medium text-muted-foreground">Blue</span>
           </div>
           <div className="text-xl font-bold text-foreground">
-            <AnimatedNumber value={quotes.dolar.blue.sell} prefix="$" decimals={0} />
+            {quotes.dolar.blue
+              ? <AnimatedNumber value={quotes.dolar.blue.sell} prefix="$" decimals={0} />
+              : <span className="text-sm text-muted-foreground">No disponible</span>}
+            <FxStatusBanner fxStale={quotes.dolar.blue?.stale}
+              fxAsOf={quotes.dolar.blue?.asOf ? new Date(String(quotes.dolar.blue.asOf)).toISOString() : null} />
           </div>
         </motion.div>
 
@@ -101,7 +93,11 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <span className="text-xs font-medium text-muted-foreground">MEP</span>
           </div>
           <div className="text-xl font-bold text-foreground">
-            <AnimatedNumber value={quotes.dolar.mep.sell} prefix="$" decimals={0} />
+            {quotes.dolar.mep
+              ? <AnimatedNumber value={quotes.dolar.mep.sell} prefix="$" decimals={0} />
+              : <span className="text-sm text-muted-foreground">No disponible</span>}
+            <FxStatusBanner fxStale={quotes.dolar.mep?.stale}
+              fxAsOf={quotes.dolar.mep?.asOf ? new Date(String(quotes.dolar.mep.asOf)).toISOString() : null} />
           </div>
         </motion.div>
 
@@ -114,9 +110,11 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <span className="text-xs font-medium text-muted-foreground">Bitcoin</span>
           </div>
           <div className="text-xl font-bold text-foreground">
-            <AnimatedNumber value={quotes.crypto.btc.priceUSD} prefix="$" decimals={0} />
+            {quotes.crypto.btc
+              ? <AnimatedNumber value={quotes.crypto.btc.priceUSD} prefix="$" decimals={0} />
+              : <span className="text-sm text-muted-foreground">No disponible</span>}
           </div>
-          <motion.div
+          {quotes.crypto.btc && <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -128,7 +126,7 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
           >
             <span>{quotes.crypto.btc.change24h >= 0 ? '↑' : '↓'}</span>
             <span>{Math.abs(quotes.crypto.btc.change24h).toFixed(2)}%</span>
-          </motion.div>
+          </motion.div>}
         </motion.div>
 
         <motion.div 
@@ -140,9 +138,11 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <span className="text-xs font-medium text-muted-foreground">Ethereum</span>
           </div>
           <div className="text-xl font-bold text-foreground">
-            <AnimatedNumber value={quotes.crypto.eth.priceUSD} prefix="$" decimals={0} />
+            {quotes.crypto.eth
+              ? <AnimatedNumber value={quotes.crypto.eth.priceUSD} prefix="$" decimals={0} />
+              : <span className="text-sm text-muted-foreground">No disponible</span>}
           </div>
-          <motion.div
+          {quotes.crypto.eth && <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -154,7 +154,7 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
           >
             <span>{quotes.crypto.eth.change24h >= 0 ? '↑' : '↓'}</span>
             <span>{Math.abs(quotes.crypto.eth.change24h).toFixed(2)}%</span>
-          </motion.div>
+          </motion.div>}
         </motion.div>
       </motion.div>
     </motion.div>

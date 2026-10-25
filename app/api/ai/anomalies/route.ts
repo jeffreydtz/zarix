@@ -34,13 +34,14 @@ export async function GET(req: NextRequest) {
     }
 
     const { toArs, excludedCurrencies } = await buildToArsConverter(transactions || []);
-    const anomalies = calculateFinancialAnomalies((transactions || []).map(t => ({
-      type: t.type,
-      amountArs: toArs(t),
-      category_id: t.category_id,
-      category: Array.isArray(t.category) ? t.category[0] ?? null : t.category,
-      transaction_date: t.transaction_date,
-    })), now);
+    const anomalies = calculateFinancialAnomalies((transactions || []).flatMap(t => {
+      const amountArs = toArs(t);
+      return amountArs == null ? [] : [{
+        type: t.type, amountArs, category_id: t.category_id,
+        category: Array.isArray(t.category) ? t.category[0] ?? null : t.category,
+        transaction_date: t.transaction_date,
+      }];
+    }), now);
     return NextResponse.json({
       anomalies,
       partial: excludedCurrencies.length > 0,

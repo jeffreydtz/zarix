@@ -51,11 +51,29 @@ function deadlineController(deadlineAt?: number): { signal?: AbortSignal; cancel
   };
 }
 
-function resolveCurrency(symbol: string, metaCurrency: string | undefined): string {
+/**
+ * Main Yahoo currency: explicit field wins; otherwise `.BA` → ARS, else USD.
+ * Quote-refresh still requires an explicit field on the GLD/ETF path.
+ */
+export function resolveYahooQuoteCurrency(symbol: string, metaCurrency: string | undefined): string {
   if (metaCurrency && metaCurrency.length > 0) return metaCurrency;
   if (symbol === '^MERV') return 'PTS';
   if (symbol.endsWith('.BA')) return 'ARS';
   return 'USD';
+}
+
+/** Display fallback for the home market widget. Does not feed quote-refresh. */
+export function inferYahooDisplayCurrency(symbol: string, metaCurrency?: string): string {
+  const tagged = (metaCurrency || '').trim().toUpperCase();
+  if (tagged) return tagged;
+  if (symbol === '^MERV') return 'PTS';
+  if (symbol.endsWith('.BA')) return 'ARS';
+  return 'USD';
+}
+
+export function withYahooDisplayCurrency(quote: StockQuote): StockQuote {
+  if ((quote.currency || '').trim()) return quote;
+  return { ...quote, currency: inferYahooDisplayCurrency(quote.ticker) };
 }
 
 function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuote | null {
@@ -102,7 +120,7 @@ function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuot
     price,
     change,
     changePct,
-    currency: resolveCurrency(symbol, typeof q.currency === 'string' ? q.currency : undefined),
+    currency: resolveYahooQuoteCurrency(symbol, typeof q.currency === 'string' ? q.currency : undefined),
     instrumentType,
     ...(logoUrl ? { logoUrl } : {}),
   };

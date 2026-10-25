@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import FxStatusBanner, { combinedFxStatus } from '@/components/ui/FxStatusBanner';
+import { redirect, unstable_rethrow } from 'next/navigation';
+import { getCachedUser } from '@/lib/auth/session';
+import FinancialDataError from '@/components/ui/FinancialDataError';
 import { accountsService } from '@/lib/services/accounts';
 import AccountsList from '@/components/accounts/AccountsList';
 import ArchivedAccountsPanel from '@/components/accounts/ArchivedAccountsPanel';
@@ -8,18 +10,15 @@ import CreateTransactionButton from '@/components/expenses/CreateTransactionButt
 
 export default async function AccountsPage() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       redirect('/login');
     }
 
     const [accounts, archivedAccounts] = await Promise.all([
-      accountsService.list(user.id, { allowPartialValuation: true }).catch(() => []),
-      accountsService.listArchived(user.id).catch(() => []),
+      accountsService.list(user.id, { allowPartialValuation: true }),
+      accountsService.listArchived(user.id),
     ]);
     const aggregates =
       accounts.length > 0 ? accountsService.aggregateAccountTotals(accounts) : null;
@@ -40,13 +39,15 @@ export default async function AccountsPage() {
             </div>
           </div>
 
+          <FxStatusBanner {...combinedFxStatus(accounts)} />
           <AccountsList accounts={accounts} aggregates={aggregates} />
           <ArchivedAccountsPanel accounts={archivedAccounts} />
         </div>
       </div>
     );
   } catch (error) {
-    console.error('Accounts page error:', error);
-    redirect('/login');
+    unstable_rethrow(error);
+    console.error('[accounts] Financial data unavailable');
+    return <FinancialDataError retryHref="/accounts" />;
   }
 }

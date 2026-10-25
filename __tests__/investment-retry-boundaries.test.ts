@@ -26,7 +26,7 @@ beforeEach(() => {
     q.single = q.maybeSingle = vi.fn(async () => result);
     return q;
   });
-  mocks.dolar.mockResolvedValue({ blue: { sell: 1200, buy: 1150 } });
+  mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: 1200, buy: 1150  } });
   mocks.rpc.mockResolvedValue({ data: { sale: { id: 'sale-id' }, remaining_quantity: 600, position_closed: false } });
 });
 
@@ -123,4 +123,15 @@ describe('investment creation durable receipts', () => {
     expect(await withFinancialRequestContext('event:investment', () => investmentsService.create(input))).toEqual(response);
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
+});
+
+it.each(['missing', 'expired'] as const)('rejects a sale with %s blue before persisting realized P&L', async (state) => {
+  replies = [{ data: null }, { data: { ...position, purchase_currency: 'ARS', purchase_price: 120000 } }];
+  const timestamp = new Date(Date.now() - 25 * 24 * 60 * 60 * 1000);
+  mocks.dolar.mockResolvedValue(state === 'missing' ? {} : {
+    blue: { buy: 1280, sell: 1300, timestamp, asOf: timestamp, stale: true },
+  });
+  await expect(investmentsService.sell(sale)).rejects.toThrow('Cotización blue ARS/USD no disponible, inválida o vencida');
+  expect(mocks.rpc).not.toHaveBeenCalled();
+  expect(inserts).not.toHaveBeenCalled();
 });

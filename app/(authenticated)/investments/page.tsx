@@ -1,11 +1,12 @@
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
+import FinancialDataError from '@/components/ui/FinancialDataError';
 import { MarketDataWidget, InvestmentAccountsList } from '@/components/investments/PortfolioWidgets';
 import { createClient } from '@/lib/supabase/server';
 import { getCachedUser } from '@/lib/auth/session';
-import { investmentsService, type PortfolioSummaryPayload } from '@/lib/services/investments';
+import { investmentsService } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
 import InvestmentsWorkspace from '@/components/investments/InvestmentsWorkspace';
-import type { Account, Investment, InvestmentType } from '@/types/database';
+import type { Investment, InvestmentType } from '@/types/database';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 import { subscriptionsService } from '@/lib/services/subscriptions';
@@ -17,29 +18,6 @@ const INVESTMENT_LABELS: Partial<Record<InvestmentType, string>> = {
   caucion: 'Caución',
   bond: 'Bono',
   on: 'ON',
-};
-
-const EMPTY_PORTFOLIO: PortfolioSummaryPayload = {
-  investments: [],
-  totalCurrentValue: 0,
-  totalPurchaseValue: 0,
-  totalPnL: 0,
-  totalPnLPercent: 0,
-  blueArsPerUsd: 1,
-  totalCurrentValueArsBlue: 0,
-  totalPurchaseValueArsBlue: 0,
-  totalPnLArsBlue: 0,
-  totalDailyPnLUsd: 0,
-  totalDailyPnLPercent: 0,
-  totalDailyPnLArsBlue: 0,
-  totalRealizedPnLUsd: 0,
-  totalRealizedPnLArsBlue: 0,
-  byType: [],
-  byCurrency: [],
-  weeklyChange: null,
-  monthlyChange: null,
-  topGainers: [],
-  topLosers: [],
 };
 
 export default async function InvestmentsPage() {
@@ -59,10 +37,10 @@ export default async function InvestmentsPage() {
       investmentsService.getPortfolioSummary(user.id, {
         skipDailySnapshot: true,
         skipQuoteRefresh: true,
-      }).catch((): PortfolioSummaryPayload => EMPTY_PORTFOLIO),
-      accountsService.listInvestmentAccounts(user.id).catch((): Account[] => []),
+      }),
+      accountsService.listInvestmentAccounts(user.id),
       (async (): Promise<Investment[]> => {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('investments')
           .select('*')
           .eq('user_id', user.id)
@@ -71,9 +49,10 @@ export default async function InvestmentsPage() {
           .gte('maturity_date', now.toISOString().split('T')[0])
           .lte('maturity_date', in30Days.toISOString().split('T')[0])
           .order('maturity_date', { ascending: true });
+        if (error) throw error;
         return (data ?? []) as Investment[];
-      })().catch((): Investment[] => []),
-      subscriptionsService.getUserState(user.id).catch(() => null),
+      })(),
+      subscriptionsService.getUserState(user.id),
     ]);
 
     return (
@@ -170,8 +149,9 @@ export default async function InvestmentsPage() {
       </PageScaffold>
     );
   } catch (error) {
-    console.error('Investments page error:', error);
-    redirect('/login');
+    unstable_rethrow(error);
+    console.error('[investments] Financial data unavailable');
+    return <FinancialDataError retryHref="/investments" />;
   }
 }
 

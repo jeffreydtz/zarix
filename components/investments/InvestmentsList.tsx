@@ -25,6 +25,7 @@ import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import AssetLogo from '@/components/investments/AssetLogo';
 import { priceFactorForType } from '@/lib/investments/type-meta';
+import { formatQuoteUpdatedAtLabel } from '@/lib/investments/quote-updated-at';
 
 interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
@@ -48,22 +49,6 @@ const TYPE_ICON: Record<InvestmentType, typeof CandlestickChart> = {
   other: Wallet,
 };
 
-function relativeFromNow(iso: string | null | undefined): string | null {
-  if (!iso) return null;
-  const ts = new Date(iso).getTime();
-  if (!Number.isFinite(ts)) return null;
-  const diffMs = Date.now() - ts;
-  if (diffMs < 0) return 'recién';
-  const min = Math.floor(diffMs / 60000);
-  if (min < 1) return 'recién';
-  if (min < 60) return `hace ${min} min`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `hace ${hr} h`;
-  const day = Math.floor(hr / 24);
-  if (day < 7) return `hace ${day} d`;
-  return new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
-}
-
 function formatPrice(value: number, currency: string): string {
   if (currency === 'ARS') {
     return `ARS ${value.toLocaleString('es-AR', { maximumFractionDigits: 2 })}`;
@@ -71,7 +56,8 @@ function formatPrice(value: number, currency: string): string {
   return `${currency} ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-function pnlColor(value: number): string {
+function pnlColor(value: number | null): string {
+  if (value == null) return 'text-muted-foreground';
   if (value > 0) return 'text-success';
   if (value < 0) return 'text-destructive';
   return 'text-muted-foreground';
@@ -128,7 +114,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
         const dayKnown = dayPct != null && Number.isFinite(dayPct);
         const dayPositive = dayKnown && dayPct >= 0;
         const dayClass = dayKnown ? pnlColor(dayPct) : 'text-muted-foreground';
-        const totalPositive = inv.profit_loss_usd >= 0;
+        const totalPositive = inv.profit_loss_usd != null && inv.profit_loss_usd >= 0;
 
         return (
           <motion.div
@@ -175,7 +161,8 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                         {priceFactorForType(inv.type) === 100 ? <span className="opacity-70"> / VN 100</span> : null}
                       </span>
                       <span className="text-muted-foreground">
-                        {inv.valuation_price_source === 'purchase_reference' ? 'Referencia de compra · sin cotización' :
+                        {inv.valuation_price_source === 'estimate' ? 'Estimación con cotización vencida' :
+                          inv.valuation_price_source === 'purchase_reference' ? 'Referencia de compra · sin cotización' :
                           inv.valuation_price_source === 'cache' ? 'Última cotización guardada' :
                             inv.valuation_price_source === 'manual' ? 'Precio ingresado' : 'Cotización de mercado'}
                       </span>
@@ -199,16 +186,14 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                               <span className="opacity-75">variación N/D</span>
                             )}
                           </span>
-                          {inv.current_price_updated_at ? (
-                            <span className="text-muted-foreground/80">
-                              · {relativeFromNow(inv.current_price_updated_at)}
-                            </span>
-                          ) : null}
+                          <span className="text-muted-foreground/80">
+                            · {formatQuoteUpdatedAtLabel(inv.current_price_updated_at)}
+                          </span>
                         </>
                       )}
                     </div>
                   ) : null}
-                  {inv.sales_count > 0 ? (
+                  {inv.sales_count > 0 && inv.realized_pnl_usd != null ? (
                     <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-2 py-0.5 text-[11px]">
                       <HandCoins size={11} aria-hidden className="opacity-70" />
                       <span className="text-muted-foreground">Realizado:</span>
@@ -225,22 +210,29 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
 
               <div className="flex flex-row sm:flex-col items-end sm:items-end justify-between gap-2 sm:min-w-[180px] sm:text-right">
                 <div className="flex flex-col items-end gap-0.5">
-                  <div className="text-base sm:text-lg font-bold text-foreground tabular-nums">
+                  {inv.fxUnavailable && <div className="text-sm font-semibold tabular-nums">
+                    {inv.current_value_native == null ? 'Valor no disponible' : hidden
+                      ? `${inv.market_price_currency} ${PRIVACY_MASK}`
+                      : formatPrice(inv.current_value_native, inv.market_price_currency)}
+                    <p className="text-xs text-warning">Cotizaciones no disponibles</p>
+                  </div>}
+                  {inv.market_value_usd != null && <><div className="text-base sm:text-lg font-bold text-foreground tabular-nums">
                     {hidden
                       ? `USD ${PRIVACY_MASK}`
                       : `USD ${inv.market_value_usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   </div>
                   <div className="text-xs text-muted-foreground tabular-nums">
-                    {hidden
+                    {inv.market_value_ars_blue == null ? 'Conversión ARS no disponible' : hidden
                       ? `≈ ARS ${PRIVACY_MASK}`
                       : `≈ ARS ${inv.market_value_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
                   </div>
-                  <div className={`text-sm font-semibold tabular-nums ${pnlColor(inv.profit_loss_usd)}`}>
+                  </>}
+                  {inv.profit_loss_usd != null && inv.profit_loss_percent_usd != null && <div className={`text-sm font-semibold tabular-nums ${pnlColor(inv.profit_loss_usd)}`}>
                     {totalPositive ? '+' : ''}USD {inv.profit_loss_usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     <span className="ml-1 text-xs opacity-80">
                       ({totalPositive ? '+' : ''}{inv.profit_loss_percent_usd.toFixed(2)}%)
                     </span>
-                  </div>
+                  </div>}
                 </div>
 
                 <div className="flex items-center gap-1">

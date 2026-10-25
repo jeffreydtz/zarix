@@ -10,6 +10,8 @@ interface StickyNetWorthBarProps {
   /** id del sentinel colocado al final del hero; la barra aparece cuando sale de vista. */
   sentinelId: string;
   baseCurrency?: PresentationCurrency;
+  fxStale?: boolean;
+  fxAsOf?: string | null;
 }
 
 /**
@@ -22,6 +24,8 @@ export default function StickyNetWorthBar({
   totalUSD,
   sentinelId,
   baseCurrency = 'ARS',
+  fxStale,
+  fxAsOf,
 }: StickyNetWorthBarProps) {
   const [visible, setVisible] = useState(false);
 
@@ -43,6 +47,9 @@ export default function StickyNetWorthBar({
       <div className="mx-auto flex max-w-shell items-baseline justify-between gap-4 px-4 py-2">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Patrimonio
+          {fxStale && <span className="block normal-case text-warning">
+            {fxAsOf ? `Cotización del ${new Date(fxAsOf).toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}` : 'Última cotización disponible'}
+          </span>}
         </span>
         <div className="flex items-baseline gap-3">
           <Amount value={baseCurrency === 'USD' ? totalUSD : totalARSBlue} currency={baseCurrency}

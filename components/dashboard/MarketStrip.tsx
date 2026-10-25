@@ -2,23 +2,8 @@ import Link from 'next/link';
 import Sparkline from '@/components/ui/Sparkline';
 import type { MarketSparklines } from '@/lib/services/market-history';
 
-/** Mismo shape que usa components/dashboard/QuotesWidget.tsx. */
-interface MarketStripQuotes {
-  dolar: Record<
-    string,
-    {
-      type: string;
-      buy: number;
-      sell: number;
-    }
-  >;
-  crypto: {
-    btc: { priceUSD: number; change24h: number };
-    eth: { priceUSD: number; change24h: number };
-    usdt: { priceUSD: number };
-  };
-  timestamp?: string;
-}
+import type { cotizacionesService } from '@/lib/services/cotizaciones';
+type MarketStripQuotes = Awaited<ReturnType<typeof cotizacionesService.getAllQuotes>>;
 
 export interface MarketStripHolding {
   ticker: string;
@@ -86,8 +71,8 @@ function TickerCard({
  * component: todos los datos llegan por props, sin fetch propio.
  */
 export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketStripProps) {
-  const blue = quotes.dolar.blue ?? { type: 'blue', buy: 0, sell: 0 };
-  const mep = quotes.dolar.mep ?? { type: 'mep', buy: 0, sell: 0 };
+  const blue = quotes.dolar.blue;
+  const mep = quotes.dolar.mep;
   const { btc, eth } = quotes.crypto;
   const holdings = topHoldings.slice(0, 2);
 
@@ -107,8 +92,8 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
             <span className="text-xs font-medium text-muted-foreground">Blue</span>
           </div>
           <div className="text-sm text-foreground tabular-nums leading-tight">
-            <div className="text-muted-foreground">C: ${formatARS(blue.buy)}</div>
-            <div className="font-semibold">V: ${formatARS(blue.sell)}</div>
+            <div className="text-muted-foreground">{blue ? `C: $${formatARS(blue.buy)}` : 'No disponible'}</div>
+            {blue && <div className="font-semibold">V: ${formatARS(blue.sell)}</div>}
           </div>
           {sparklines.blue.length >= 2 && (
             <div className="mt-2">
@@ -128,12 +113,12 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
             <span className="text-xs font-medium text-muted-foreground">MEP</span>
           </div>
           <div className="text-sm text-foreground tabular-nums leading-tight">
-            <div className="text-muted-foreground">C: ${formatARS(mep.buy)}</div>
-            <div className="font-semibold">V: ${formatARS(mep.sell)}</div>
+            <div className="text-muted-foreground">{mep ? `C: $${formatARS(mep.buy)}` : 'No disponible'}</div>
+            {mep && <div className="font-semibold">V: ${formatARS(mep.sell)}</div>}
           </div>
         </TickerCard>
 
-        <TickerCard ariaLabel={`Bitcoin, US$${formatUSD(btc.priceUSD)}. Ver inversiones`}>
+        {btc && <TickerCard ariaLabel={`Bitcoin, US$${formatUSD(btc.priceUSD)}. Ver inversiones`}>
           <div className="flex items-center gap-1.5 mb-2">
             <span className="text-base">₿</span>
             <span className="text-xs font-medium text-muted-foreground">BTC</span>
@@ -154,9 +139,9 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
               />
             </div>
           )}
-        </TickerCard>
+        </TickerCard>}
 
-        <TickerCard ariaLabel={`Ethereum, US$${formatUSD(eth.priceUSD)}. Ver inversiones`}>
+        {eth && <TickerCard ariaLabel={`Ethereum, US$${formatUSD(eth.priceUSD)}. Ver inversiones`}>
           <div className="flex items-center gap-1.5 mb-2">
             <span className="text-base">💎</span>
             <span className="text-xs font-medium text-muted-foreground">ETH</span>
@@ -177,7 +162,7 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
               />
             </div>
           )}
-        </TickerCard>
+        </TickerCard>}
 
         {holdings.map((holding) => (
           <TickerCard

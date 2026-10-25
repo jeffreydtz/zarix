@@ -7,11 +7,11 @@ export interface PositionAnalyticsInput {
   ticker: string | null;
   type: InvestmentType;
   market_price_currency: string;
-  market_value_usd: number;
-  profit_loss_usd: number;
-  profit_loss_percent_usd: number;
+  market_value_usd: number | null;
+  profit_loss_usd: number | null;
+  profit_loss_percent_usd: number | null;
   daily_change_pct: number | null;
-  daily_pnl_usd: number;
+  daily_pnl_usd: number | null;
 }
 
 export interface CompositionSlice {
@@ -50,14 +50,15 @@ export function composeComposition(
   positions: readonly PositionAnalyticsInput[],
   by: 'type' | 'currency'
 ): CompositionSlice[] {
-  const total = positions.reduce((sum, p) => sum + p.market_value_usd, 0);
+  if (positions.some(p => p.market_value_usd == null || p.profit_loss_usd == null)) return [];
+  const total = positions.reduce((sum, p) => sum + (p.market_value_usd ?? 0), 0);
   const acc = new Map<string, { count: number; value: number; pnl: number }>();
   for (const p of positions) {
     const key = by === 'type' ? p.type : (p.market_price_currency || 'USD').toUpperCase();
     const cur = acc.get(key) || { count: 0, value: 0, pnl: 0 };
     cur.count += 1;
-    cur.value += p.market_value_usd;
-    cur.pnl += p.profit_loss_usd;
+    cur.value += p.market_value_usd ?? 0;
+    cur.pnl += p.profit_loss_usd ?? 0;
     acc.set(key, cur);
   }
   return Array.from(acc.entries())
@@ -77,7 +78,10 @@ export function rankGainersLosers(
   limit = 3
 ): { gainers: RankedPosition[]; losers: RankedPosition[] } {
   const ranked = positions
-    .filter((p) => Number.isFinite(p.profit_loss_percent_usd))
+    .filter((p): p is PositionAnalyticsInput & {
+      market_value_usd: number; profit_loss_usd: number; profit_loss_percent_usd: number;
+    } => p.market_value_usd != null && p.profit_loss_usd != null
+      && p.profit_loss_percent_usd != null && Number.isFinite(p.profit_loss_percent_usd))
     .map((p) => ({
       id: p.id,
       name: p.name,

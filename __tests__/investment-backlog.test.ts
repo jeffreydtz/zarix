@@ -34,7 +34,13 @@ import {
   rankGainersLosers,
 } from '@/lib/investments/portfolio-analytics';
 import { initialsForAsset, logoCandidateUrls } from '@/lib/investments/asset-logo';
-import { parseCafciFichaForTest, matchCafciClassForTest } from '@/lib/market-data/cafci-client';
+import {
+  parseCafciFichaForTest,
+  matchCafciClassForTest,
+  parseCafciCurrency,
+  cafciClassesFromCatalogForTest,
+} from '@/lib/market-data/cafci-client';
+import { fciUsdPlausibilityAnchor, resolveFciQuoteCurrency } from '@/lib/market-data/quote-currency';
 
 describe('USD quote adaptation for D tickers', () => {
   it('prefers the D board when the position is marked USD', () => {
@@ -54,8 +60,22 @@ describe('USD quote adaptation for D tickers', () => {
     expect(isDollarBoardSymbol('YPFD', new Set(['YPFD']))).toBe(false);
     expect(isDollarBoardSymbol('IBMD', new Set(['IBMD']))).toBe(false);
     expect(resolveQuoteCurrency({ matchedSymbol: 'IBMD', listed: new Set(['IBMD']) })).toBeNull();
+    expect(resolveQuoteCurrency({
+      matchedSymbol: 'IBMD', listed: new Set(['IBMD']), sourceCurrency: 'ARS',
+    })).toBeNull();
+    expect(isDollarBoardSymbol('GLD', new Set(['GLD']))).toBe(false);
+    expect(resolveQuoteCurrency({ matchedSymbol: 'GLD', listed: new Set(['GLD']) })).toBe('ARS');
+    expect(resolveQuoteCurrency({
+      matchedSymbol: 'YMCJO',
+      listed: new Set(['YMCJO', 'YMCJD']),
+      sourceCurrency: 'ARS',
+    })).toBe('ARS');
+    for (const ticker of ['TX26', 'DICP', 'S31O6', 'T15D6']) {
+      expect(resolveQuoteCurrency({ matchedSymbol: ticker, listed: new Set([ticker]) })).toBe('ARS');
+    }
     for (const ticker of ['AMD', 'MCD', 'HD', 'C', 'BAC', 'CARC']) {
       expect(isDollarBoardSymbol(ticker, new Set([ticker]))).toBe(false);
+      expect(resolveQuoteCurrency({ matchedSymbol: ticker, listed: new Set([ticker]) })).toBe('ARS');
       expect(inferListedCurrency(ticker, new Set([ticker]))).toBe('ARS');
     }
   });
@@ -121,6 +141,7 @@ describe('liquid net worth excludes positions and broker cash', () => {
     expect(now.totalARSBlue).toBe(80000);
     expect(now.positionsUSD).toBe(500);
     expect(now.investmentsUSD).toBe(500);
+    if (now.investmentsUSD == null) throw new Error('Fixture portfolio must be valued');
     expect(now.totalUSD).toBeLessThan(now.investmentsUSD);
   });
 
@@ -200,15 +221,72 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     expect(parseCafciFichaForTest({ valorCuotaparte: 12.5, moneda: 'Pesos', fecha: '2026-10-20' })).toMatchObject({
       price: 12.5, currency: 'ARS',
     });
-    expect(matchCafciClassForTest('ALPHA', [{ fondoId: '1', claseId: '2', keys: ['ALPHA'] }])).toEqual({
-      fondoId: '1', claseId: '2', keys: ['ALPHA'],
+    expect(matchCafciClassForTest('ALPHA', [{ fondoId: '1', claseId: '2', keys: ['ALPHA'], currency: null }])).toEqual({
+      fondoId: '1', claseId: '2', keys: ['ALPHA'], currency: null,
     });
     const classes = [
-      { fondoId: '1', claseId: 'A', keys: ['ALPHA', 'ALPHAA'] },
-      { fondoId: '1', claseId: 'B', keys: ['ALPHA', 'ALPHAB'] },
+      { fondoId: '1', claseId: 'A', keys: ['ALPHA', 'ALPHAA'], currency: 'ARS' as const },
+      { fondoId: '1', claseId: 'B', keys: ['ALPHA', 'ALPHAB'], currency: 'ARS' as const },
     ];
     expect(matchCafciClassForTest('ALPHAB', classes)).toEqual(classes[1]);
     expect(matchCafciClassForTest('ALPHA', classes)).toBeNull();
+  });
+
+  it('reads USD from the class moneda and never assumes ARS when currency is missing', () => {
+    expect(parseCafciCurrency('Dólares')).toBe('USD');
+    expect(parseCafciCurrency('Pesos')).toBe('ARS');
+    expect(parseCafciCurrency(undefined)).toBeNull();
+    expect(parseCafciFichaForTest({
+      valorCuotaparte: 1.098,
+      clase: { moneda: 'Dolares' },
+      fecha: '2026-10-23',
+    })).toMatchObject({ price: 1.098, currency: 'USD' });
+    expect(parseCafciFichaForTest({
+      valorCuotaparte: 1.098,
+      moneda: 'Pesos',
+      clase: { moneda: 'Dolares' },
+    })).toMatchObject({ price: 1.098, currency: 'USD' });
+    expect(parseCafciFichaForTest({ valorCuotaparte: 12.5 })).toMatchObject({
+      price: 12.5, currency: null,
+    });
+    const classes = cafciClassesFromCatalogForTest({
+      data: [{
+        id: 10,
+        nombre: 'IOL Dolar',
+        clases: [{ id: 20, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+      }],
+    });
+    expect(classes).toEqual([
+      expect.objectContaining({ fondoId: '10', claseId: '20', currency: 'USD' }),
+    ]);
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'USD' })).toEqual({
+      currency: null, reason: 'unknown',
+    });
+    expect(resolveFciQuoteCurrency({
+      sourceCurrency: null, storedCurrency: 'USD', sourcePrice: 1.098, storedPrice: 1.09,
+    })).toEqual({ currency: 'USD' });
+    expect(resolveFciQuoteCurrency({
+      sourceCurrency: null, storedCurrency: 'USD', sourcePrice: 179.598, storedPrice: 0.138,
+    })).toEqual({ currency: null, reason: 'unknown' });
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: null, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBe(1);
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: 0, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBe(1);
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: '1.09', purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'USD',
+    })).toBeCloseTo(1.09);
+    expect(fciUsdPlausibilityAnchor({
+      currentPrice: null, purchasePrice: 1, marketCurrency: 'USD', purchaseCurrency: 'ARS',
+    })).toBeNull();
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'USD' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({ currency: 'USD' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: null })).toEqual({
+      currency: null, reason: 'unknown',
+    });
   });
 });
 
@@ -237,6 +315,17 @@ describe('IOL Mi Portafolio CSV', () => {
     const parsed = parseIolPortfolioCsv(csv);
     expect(parsed.holdings[0]).toMatchObject({
       ticker: 'YPFD', marketCurrency: 'ARS', purchaseCurrency: 'ARS', quantity: 10, purchasePrice: 42000,
+    });
+  });
+
+  it('imports IOL CEDEAR ETF rows as cedear, not US ETF', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'GLD,SPDR GOLD SHARES,2,380,390,USD,CEDEAR ETF',
+    ].join('\n');
+    const parsed = parseIolPortfolioCsv(csv);
+    expect(parsed.holdings[0]).toMatchObject({
+      ticker: 'GLD', type: 'cedear', marketCurrency: 'USD',
     });
   });
 
@@ -427,6 +516,10 @@ describe('quote cache keys include currency', () => {
     expect(quoteCacheKeyForPosition({
       type: 'bond', ticker: 'AL30', market_currency: null, purchase_currency: 'USD',
     })).toBe('bond:AL30:NATIVE');
+    expect(quoteCacheKeyForPosition({
+      type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+      id: 'fixture-ioldold',
+    })).toBe('fci:IOLDOLD:USD:fixture-ioldold');
   });
 
   it('dedupes FCI jobs by cache key before fetching', () => {

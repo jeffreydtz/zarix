@@ -2,19 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService, computeTransferAmounts } from '@/lib/services/transactions';
-import { ApiError, errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse, requireUser } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user } = await requireUser();
 
     const transaction = await transactionsService.getById(params.id, user.id);
     return NextResponse.json(transaction);

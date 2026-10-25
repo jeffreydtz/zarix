@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import type { StockQuote } from '@/lib/market-data-types';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
-import { fetchYahooStockQuotesMap, orderedStockQuotesFromMap } from '@/lib/yahoo-finance-quotes';
+import {
+  fetchYahooStockQuotesMap,
+  orderedStockQuotesFromMap,
+  withYahooDisplayCurrency,
+} from '@/lib/yahoo-finance-quotes';
 
 export const dynamic = 'force-dynamic';
 // Cache for 5 minutes on Vercel edge
@@ -33,7 +37,7 @@ async function fetchStockQuotesSequential(
   opts: { stooqFallback: boolean }
 ): Promise<StockQuote[]> {
   const yahooMap = await fetchYahooStockQuotesMap(tickers);
-  let ordered = orderedStockQuotesFromMap(tickers, yahooMap);
+  let ordered = orderedStockQuotesFromMap(tickers, yahooMap).map(withYahooDisplayCurrency);
 
   if (!opts.stooqFallback) return ordered;
 

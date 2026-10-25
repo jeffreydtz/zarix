@@ -71,7 +71,9 @@ export function isDollarBoardSymbol(
  * update instead of guessing from the ticker suffix.
  *
  * Explicit non-ARS source metadata wins. data912's dummy ARS tag is ignored
- * when a sibling-confirmed D/C listing exists.
+ * when a sibling-confirmed D/C listing exists. A trailing D/C with no peso
+ * sibling (IBMD, GLD before the catalog entry) is skipped, not treated as ARS.
+ * Everything else — ONs, letras, peso-only bonds, non-catalog stocks — stays ARS.
  */
 export function resolveQuoteCurrency(opts: {
   matchedSymbol: string;
@@ -94,6 +96,107 @@ export function inferListedCurrency(
   listed: ReadonlySet<string> | Map<string, unknown>
 ): QuoteCurrency {
   return resolveQuoteCurrency({ matchedSymbol, listed }) ?? 'ARS';
+}
+
+function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | null {
+  const tagged = (value || '').trim().toUpperCase();
+  if (tagged === 'USD' || tagged === 'ARS') return tagged;
+  return null;
+}
+
+/** Inclusive band applied after adapting the cuotaparte to the position currency. */
+const FCI_PRICE_RATIO_MIN = 0.5;
+const FCI_PRICE_RATIO_MAX = 2;
+
+function asFiniteNumber(value: unknown): number | null {
+  if (value == null || value === '') return null;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+/** A position's anchor must be expressed in its effective write currency. */
+export function fciPlausibilityAnchor(opts: {
+  currentPrice?: unknown;
+  purchasePrice?: unknown;
+  marketCurrency?: string | null;
+  purchaseCurrency?: string | null;
+  /** Only supply a fresh, executable MEP rate (<=24h and not flagged stale). */
+  mepArsPerUsd?: number | null;
+}): number | null {
+  const market = knownQuoteCurrency(opts.marketCurrency);
+  if (!market) return null;
+  const current = asFiniteNumber(opts.currentPrice);
+  if (current != null && current > 0) return current;
+  const purchase = asFiniteNumber(opts.purchasePrice);
+  if (purchase == null || purchase <= 0) return null;
+  const purchaseCurrency = knownQuoteCurrency(opts.purchaseCurrency);
+  if (purchaseCurrency === market) return purchase;
+  if (!purchaseCurrency) return null;
+  return adaptQuoteToMarketCurrency({
+    price: purchase,
+    currency: purchaseCurrency,
+    changePct: null,
+    timestamp: null,
+  }, market, opts.mepArsPerUsd ?? null)?.price ?? null;
+}
+
+/** Kept for callers that used the original USD-only guard. */
+export const fciUsdPlausibilityAnchor = fciPlausibilityAnchor;
+
+/** Both prices must use the position's market currency; endpoints are inclusive. */
+export function fciPricePlausible(
+  candidate: number | null | undefined,
+  anchor: number | null | undefined,
+): boolean {
+  const next = asFiniteNumber(candidate);
+  const prev = asFiniteNumber(anchor);
+  if (next == null || prev == null || !(next > 0) || !(prev > 0)) return false;
+  const ratio = next / prev;
+  return ratio >= FCI_PRICE_RATIO_MIN && ratio <= FCI_PRICE_RATIO_MAX;
+}
+
+/** Backward-compatible name for the unknown-currency inference guard. */
+export const fciUnknownUsdPricePlausible = fciPricePlausible;
+
+/**
+ * FCI cuotaparte currency: never assume ARS from the ticker.
+ *
+ * Known CAFCI ARS/USD is the source currency of the cuotaparte. Callers convert
+ * ARS↔USD with the same MEP helper stocks/CEDEARs use (`adaptQuoteToMarketCurrency`).
+ * A CAFCI/stored mismatch is not a skip at this layer.
+ *
+ * Unknown CAFCI + stored USD: accept as USD only when the new cuotaparte is
+ * plausible vs the last stored USD price (`fciUnknownUsdPricePlausible`).
+ * Otherwise skip — a peso fund booked in USD must not be written as ~180 USD.
+ *
+ * Unknown CAFCI + stored ARS: keep main — accept stored ARS. A peso fund whose
+ * ficha omitted moneda is still a peso cuotaparte; writing ARS as ARS is safe.
+ */
+export function resolveFciQuoteCurrency(opts: {
+  sourceCurrency: string | null | undefined;
+  storedCurrency: string | null | undefined;
+  sourcePrice?: number | null;
+  storedPrice?: number | null;
+}): { currency: QuoteCurrency } | { currency: null; reason: 'disagree' | 'unknown' } {
+  const source = knownQuoteCurrency(opts.sourceCurrency);
+  const stored = knownQuoteCurrency(opts.storedCurrency);
+  if (source) return { currency: source };
+  if (stored === 'ARS') return { currency: 'ARS' };
+  if (stored === 'USD' && fciPricePlausible(opts.sourcePrice, opts.storedPrice)) {
+    return { currency: 'USD' };
+  }
+  return { currency: null, reason: 'unknown' };
+}
+
+/** Yahoo/Stooq metadata is confirmation. A blank field is not inferred from the ticker. */
+export function confirmedSourceCurrency(
+  sourceCurrency: string | null | undefined
+): QuoteCurrency | null {
+  return knownQuoteCurrency(sourceCurrency);
 }
 
 export interface ListingCandidates {
@@ -138,6 +241,11 @@ export interface ConvertibleQuote {
   changePct: number | null;
   currency: string;
   timestamp: string | null;
+  /** data912 served this row from a failed-fetch fallback, not a live GET. */
+  stale?: boolean;
+  /** FX provenance for display estimates; stale FX is never persisted. */
+  fxStale?: boolean;
+  fxAsOf?: string | null;
 }
 
 /**
