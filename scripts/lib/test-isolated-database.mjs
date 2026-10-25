@@ -13,6 +13,7 @@ export const baselineCommit = 'ed894431968775dba1d9ba01df99d9a442407865';
 // This reconstructed prehistory supplies core objects absent from migration
 // history. Every historical and new migration then executes unchanged in order.
 export const baselineSource = 'supabase/baselines/pre_20260401_fresh_install.sql';
+// Dedicated synthetic fixtures (test-a@zarix.invalid / test-b@zarix.invalid). Never a real account.
 export const ids = {
   a: '11111111-1111-4111-8111-111111111111', b: '22222222-2222-4222-8222-222222222222',
   accountA: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', accountB: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1',
@@ -43,6 +44,37 @@ CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$
 $$;
 GRANT USAGE ON SCHEMA public, auth, extensions TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION auth.uid(), auth.role() TO anon, authenticated, service_role;
+CREATE SCHEMA vault;
+CREATE TABLE vault.secrets (
+  id uuid PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
+  name text UNIQUE,
+  secret text,
+  description text
+);
+CREATE VIEW vault.decrypted_secrets AS
+  SELECT id, name, secret AS decrypted_secret, description FROM vault.secrets;
+CREATE FUNCTION vault.create_secret(p_secret text, p_name text, p_description text)
+RETURNS uuid LANGUAGE plpgsql AS $$
+DECLARE sid uuid;
+BEGIN
+  INSERT INTO vault.secrets(name, secret, description) VALUES (p_name, p_secret, p_description)
+  RETURNING id INTO sid;
+  RETURN sid;
+END $$;
+CREATE FUNCTION vault.update_secret(p_id uuid, p_secret text, p_name text, p_description text)
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  UPDATE vault.secrets
+     SET secret = p_secret,
+         name = COALESCE(p_name, name),
+         description = COALESCE(p_description, description)
+   WHERE id = p_id;
+END $$;
+GRANT USAGE ON SCHEMA vault TO service_role;
+GRANT ALL ON TABLE vault.secrets TO service_role;
+GRANT SELECT ON vault.decrypted_secrets TO service_role;
+GRANT EXECUTE ON FUNCTION vault.create_secret(text, text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION vault.update_secret(uuid, text, text, text) TO service_role;
 `;
 export async function emptyDatabase({ legacyGrants = false } = {}) {
   const db = await PGlite.create({ extensions: { uuid_ossp, pg_trgm } });

@@ -1,0 +1,148 @@
+import { describe, expect, it } from 'vitest';
+import { decodeJwtPayload, mintUserAccessToken } from '@/lib/auth/user-jwt';
+import {
+  getPatRequestScope,
+  isServiceScopedTable,
+  userScopeColumn,
+  withPatUserScope,
+  wrapWithUserIdFilter,
+} from '@/lib/supabase/request-scope';
+
+const FIXTURE_A = '11111111-1111-4111-8111-111111111111';
+const FIXTURE_B = '22222222-2222-4222-8222-222222222222';
+
+describe('PAT user-scoped JWT', () => {
+  it('mints a short-lived authenticated token for a fixture user', () => {
+    const previous = process.env.SUPABASE_JWT_SECRET;
+    process.env.SUPABASE_JWT_SECRET = 'synthetic-jwt-secret-for-tests-only';
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.invalid';
+    const token = mintUserAccessToken(FIXTURE_A, 90);
+    expect(token).toBeTruthy();
+    const payload = decodeJwtPayload(token!);
+    expect(payload?.sub).toBe(FIXTURE_A);
+    expect(payload?.role).toBe('authenticated');
+    expect(payload?.aud).toBe('authenticated');
+    expect(payload?.sub).not.toBe(FIXTURE_B);
+    expect(JSON.stringify(payload)).not.toMatch(/hotmail/i);
+    if (previous === undefined) delete process.env.SUPABASE_JWT_SECRET;
+    else process.env.SUPABASE_JWT_SECRET = previous;
+  });
+
+  it('does not mint without a JWT secret', () => {
+    const previous = process.env.SUPABASE_JWT_SECRET;
+    delete process.env.SUPABASE_JWT_SECRET;
+    expect(mintUserAccessToken(FIXTURE_A)).toBeNull();
+    if (previous !== undefined) process.env.SUPABASE_JWT_SECRET = previous;
+  });
+
+  it('keeps privileged tables on the service role', () => {
+    expect(isServiceScopedTable('personal_access_tokens')).toBe(true);
+    expect(isServiceScopedTable('integration_audit_log')).toBe(true);
+    expect(isServiceScopedTable('transactions')).toBe(false);
+    expect(isServiceScopedTable('accounts')).toBe(false);
+    expect(isServiceScopedTable('pending_inbox_items')).toBe(false);
+  });
+
+  it('scopes PAT queries by user_id (users.id) even without a JWT secret', async () => {
+    const previous = process.env.SUPABASE_JWT_SECRET;
+    delete process.env.SUPABASE_JWT_SECRET;
+    try {
+      expect(userScopeColumn('transactions')).toBe('user_id');
+      expect(userScopeColumn('users')).toBe('id');
+      expect(userScopeColumn('exchange_rates')).toBeNull();
+
+      const eqs: Array<[string, unknown]> = [];
+      const fake = {
+        select(..._args: unknown[]) {
+          return this;
+        },
+        eq(column: string, value: unknown) {
+          eqs.push([column, value]);
+          return this;
+        },
+        maybeSingle: async (..._args: unknown[]) => ({ data: null, error: null }),
+      };
+      const scoped = wrapWithUserIdFilter(fake, 'transactions', FIXTURE_A);
+      await scoped.select('*').maybeSingle();
+      expect(eqs).toContainEqual(['user_id', FIXTURE_A]);
+      expect(eqs.some((pair) => pair[1] === FIXTURE_B)).toBe(false);
+
+      const userEqs: Array<[string, unknown]> = [];
+      const usersFake = {
+        select(..._args: unknown[]) {
+          return this;
+        },
+        eq(column: string, value: unknown) {
+          userEqs.push([column, value]);
+          return this;
+        },
+        maybeSingle: async (..._args: unknown[]) => ({ data: null, error: null }),
+      };
+      await wrapWithUserIdFilter(usersFake, 'users', FIXTURE_A).select('id').maybeSingle();
+      expect(userEqs).toContainEqual(['id', FIXTURE_A]);
+
+      await withPatUserScope(FIXTURE_A, async () => {
+        const scope = getPatRequestScope();
+        expect(scope?.userId).toBe(FIXTURE_A);
+        expect(scope?.jwt).toBe(false);
+      });
+
+      expect(() =>
+        wrapWithUserIdFilter(
+          {
+            insert(row: Record<string, unknown>) {
+              return row;
+            },
+          },
+          'transactions',
+          FIXTURE_A
+        ).insert({ user_id: FIXTURE_B, amount: 1 })
+      ).toThrow(/No autorizado/);
+    } finally {
+      if (previous !== undefined) process.env.SUPABASE_JWT_SECRET = previous;
+    }
+  });
+
+  it('SELECT on categories includes NULL-owner system rows; writes stay owner-only', async () => {
+    const ors: string[] = [];
+    const eqs: Array<[string, unknown]> = [];
+    const fake = {
+      select(..._args: unknown[]) {
+        return this;
+      },
+      or(filter: string) {
+        ors.push(filter);
+        return this;
+      },
+      eq(column: string, value: unknown) {
+        eqs.push([column, value]);
+        return this;
+      },
+      maybeSingle: async () => ({ data: null, error: null }),
+    };
+    await wrapWithUserIdFilter(fake, 'categories', FIXTURE_A).select('*').maybeSingle();
+    expect(ors).toEqual([`user_id.eq.${FIXTURE_A},user_id.is.null`]);
+    expect(eqs.some((pair) => pair[0] === 'user_id' && pair[1] === FIXTURE_A)).toBe(false);
+
+    const writeEqs: Array<[string, unknown]> = [];
+    const writeFake = {
+      update(value: unknown) {
+        return this;
+      },
+      delete() {
+        return this;
+      },
+      eq(column: string, value: unknown) {
+        writeEqs.push([column, value]);
+        return this;
+      },
+    };
+    wrapWithUserIdFilter(writeFake, 'categories', FIXTURE_A).update({ name: 'x' });
+    wrapWithUserIdFilter(writeFake, 'categories', FIXTURE_A).delete();
+    expect(writeEqs).toEqual([
+      ['user_id', FIXTURE_A],
+      ['user_id', FIXTURE_A],
+    ]);
+    expect(ors).toHaveLength(1);
+  });
+});

@@ -91,6 +91,7 @@ export async function processInternalAiChatMessage(input: {
   financialContext: FinancialContext;
   history?: InternalAiChatHistoryItem[];
   allowLegacyWriteFallback?: boolean;
+  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
 }): Promise<InternalAiChatSuccessResponse> {
   const requestKey = input.requestKey || randomUUID();
   const financialKey = `ai:${input.userId}:${createHash('sha256').update(requestKey).digest('hex')}`;
@@ -133,6 +134,7 @@ export async function processInternalAiChatMessage(input: {
           const out = await executeBotTool(name, args, {
             userId: input.userId,
             financialContext: input.financialContext,
+            source: input.source ?? 'web',
           });
           if (out.response?.needs_confirm) {
             const raw = out.response.preview;
@@ -175,6 +177,7 @@ export async function processInternalAiChatMessage(input: {
             const out = await executeBotTool(legacy.tool, legacy.args, {
               userId: input.userId,
               financialContext: input.financialContext,
+              source: input.source ?? 'web',
             });
             if (out.executed?.length) executed.push(...out.executed);
             if (out.response?.success === true || out.executed?.length) successfulWrites.add(legacy.tool);

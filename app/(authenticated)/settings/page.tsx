@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
 import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
 import BugReportWidget from '@/components/BugReportWidget';
 import SettingsForm from '@/components/settings/SettingsForm';
@@ -31,12 +32,12 @@ export default async function SettingsPage() {
   // Los secretos (gemini_api_key, telegram_bot_token) están revocados para el rol
   // authenticated. Solo necesitamos saber si están configurados, no su valor:
   // lo resolvemos server-side con el service client.
-  const serviceClient = await createServiceClient();
-  const { data: secretsState } = await serviceClient
-    .from('users')
-    .select('gemini_api_key, telegram_bot_token')
-    .eq('id', authUser.id)
-    .single();
+  const { getUserGeminiApiKey, getUserTelegramBotToken } = await import('@/lib/secrets/user-secrets');
+  const [geminiKey, telegramToken] = await Promise.all([
+    getUserGeminiApiKey(authUser.id),
+    getUserTelegramBotToken(authUser.id),
+  ]);
+  const secretsState = { gemini_api_key: geminiKey, telegram_bot_token: telegramToken };
 
   const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || '';
 
@@ -47,6 +48,19 @@ export default async function SettingsPage() {
           <h1 className="text-3xl font-bold text-foreground">Configuracion</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Personaliza tu experiencia en Zarix
+          </p>
+          <p className="mt-2 text-sm">
+            <Link href="/settings/integraciones" className="text-primary">
+              Integraciones
+            </Link>
+            {' · '}
+            <Link href="/pendientes" className="text-primary">
+              Bandeja de pendientes
+            </Link>
+            {' · '}
+            <Link href="/docs" className="text-primary">
+              Documentación
+            </Link>
           </p>
         </div>
 

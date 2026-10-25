@@ -15,6 +15,7 @@ vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
 import { transactionsService } from '@/lib/services/transactions';
 import { getMonthFlow } from '@/lib/services/month-flow';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
+import { parseCivilMonthQuery } from '@/lib/transaction-date';
 
 const accountId = '00000000-0000-0000-0000-000000000001';
 const destinationId = '00000000-0000-0000-0000-000000000002';
@@ -25,7 +26,7 @@ function query(table: string) {
   const state: Record<string, any> = { table, filters: [], orders: [], from: 0, to: 999, ranged: false };
   mocks.queries.push(state);
   const builder: Record<string, any> = {};
-  for (const key of ['select', 'eq', 'gte', 'lte', 'in', 'filter', 'or']) {
+  for (const key of ['select', 'eq', 'gte', 'gt', 'lt', 'lte', 'in', 'filter', 'or']) {
     builder[key] = (...args: unknown[]) => { state.filters.push([key, ...args]); return builder; };
   }
   builder.order = (key: string, options: { ascending: boolean }) => { state.orders.push([key, options.ascending]); return builder; };
@@ -38,6 +39,8 @@ function query(table: string) {
     for (const [op, key, value, extra] of state.filters) {
       if (op === 'eq') rows = rows.filter(row => row[key] === value);
       if (op === 'gte') rows = rows.filter(row => row[key] >= value);
+      if (op === 'gt') rows = rows.filter(row => row[key] > value);
+      if (op === 'lt') rows = rows.filter(row => row[key] < value);
       if (op === 'lte') rows = rows.filter(row => row[key] <= value);
       if (op === 'in') rows = rows.filter(row => value.includes(row[key]));
       if (op === 'filter' && value === 'in') rows = rows.filter(row => quotedIds(extra).includes(row[key]));
@@ -197,5 +200,34 @@ describe('financial summaries explicitly exclude unavailable conversions', () =>
     expect(flow).toMatchObject({ spentARS: 2, incomeARS: 0, daysLeft: 17, excludedCurrencies: ['USD'] });
     expect(flow.projectedSpendARS).toBeCloseTo(2 + 2 / 14 * 17 + 3, 8);
     expect(mocks.writes).toEqual([]);
+  });
+
+  it('treats ?month=2026-10 as the Córdoba October month, not UTC September', async () => {
+    const sep = {
+      id: 'sep-10', user_id: 'U1', account_id: accountId, destination_account_id: null,
+      type: 'expense', amount: 10, currency: 'ARS', amount_in_account_currency: 10,
+      transaction_date: '2026-09-15T12:00:00-03:00', category: { name: 'Sintética', icon: 'X' },
+    };
+    const oct = {
+      ...sep, id: 'oct-18', amount: 18, amount_in_account_currency: 18,
+      transaction_date: '2026-10-15T12:00:00-03:00',
+    };
+    mocks.rows = [sep, oct];
+    const utcParsed = await transactionsService.getMonthSummary('U1', new Date('2026-10'));
+    expect(utcParsed.totalExpenses).toBe(10);
+    const summary = await transactionsService.getMonthSummary('U1', parseCivilMonthQuery('2026-10'));
+    expect(summary.totalExpenses).toBe(18);
+    expect(summary.transactionCount).toBe(1);
+  });
+
+  it('counts 31 Oct 23:30 Córdoba in the October summary', async () => {
+    mocks.rows = [{
+      id: 'oct-31', user_id: 'U1', account_id: accountId, destination_account_id: null,
+      type: 'expense', amount: 18, currency: 'ARS', amount_in_account_currency: 18,
+      transaction_date: '2026-10-31T23:30:00-03:00', category: { name: 'Sintética', icon: 'X' },
+    }];
+    const summary = await transactionsService.getMonthSummary('U1', new Date('2026-10-14T12:00:00.000Z'));
+    expect(summary.totalExpenses).toBe(18);
+    expect(summary.transactionCount).toBe(1);
   });
 });

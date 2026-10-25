@@ -52,8 +52,8 @@ describe('civil calendar helpers', () => {
   });
 
   it('builds query ISO bounds from civil days', () => {
-    expect(ymdToQueryStartIso('2026-08-01')).toBe('2026-08-01T00:00:00.000Z');
-    expect(ymdToQueryEndIso('2026-08-31')).toBe('2026-08-31T23:59:59.999Z');
+    expect(ymdToQueryStartIso('2026-08-01')).toBe('2026-08-01T03:00:00.000Z');
+    expect(ymdToQueryEndIso('2026-08-31')).toBe('2026-09-01T02:59:59.999Z');
   });
 
   it('civilTodayYmd uses Argentina even if the clock is already the next UTC day', () => {

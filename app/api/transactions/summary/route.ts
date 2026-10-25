@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
+import { parseCivilMonthQuery } from '@/lib/transaction-date';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,8 +17,7 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const monthParam = searchParams.get('month');
-    const month = monthParam ? new Date(monthParam) : new Date();
+    const month = parseCivilMonthQuery(searchParams.get('month'));
 
     const summary = await transactionsService.getMonthSummary(user.id, month);
 

@@ -1,4 +1,5 @@
 import type { User, Account, Category } from '@/types/database';
+import { asUntrustedData } from '@/lib/ai/registry/mask';
 
 /** Referencia para que el modelo calcule "ayer", "el lunes", etc. en Argentina. */
 function argentinaNowContext(): string {
@@ -48,20 +49,20 @@ export function buildBotSystemPrompt(context: FinancialContext): string {
 
   const accountsList = accounts
     .filter((a) => a.is_active)
-    .map((a) => `- ${sanitizeForPrompt(a.name)} (${sanitizeForPrompt(a.currency)})`)
+    .map((a) => `- ${asUntrustedData(a.name)} (${sanitizeForPrompt(a.currency)})`)
     .join('\n');
 
   const expenseCategories = categories
     .filter((c) => c.type === 'expense')
-    .map((c) => `${sanitizeForPrompt(c.icon)} ${sanitizeForPrompt(c.name)}`)
+    .map((c) => `${sanitizeForPrompt(c.icon)} ${asUntrustedData(c.name)}`)
     .join(', ');
 
   const incomeCategories = categories
     .filter((c) => c.type === 'income')
-    .map((c) => `${sanitizeForPrompt(c.icon)} ${sanitizeForPrompt(c.name)}`)
+    .map((c) => `${sanitizeForPrompt(c.icon)} ${asUntrustedData(c.name)}`)
     .join(', ');
 
-  return `Sos el asistente financiero de Zarix, una app de finanzas personales argentina. Tu usuario es ${user.telegram_username ? sanitizeForPrompt(user.telegram_username) : 'el usuario'}.
+  return `Sos el asistente financiero de Zarix, una app de finanzas personales argentina. Tu usuario es ${user.telegram_username ? asUntrustedData(user.telegram_username) : 'el usuario'}.
 
 FECHA/HORA DE REFERENCIA (Argentina — usala para interpretar "hoy", "ayer", "anteayer", "el viernes", "15/3"):
 ${argentinaNowContext()}

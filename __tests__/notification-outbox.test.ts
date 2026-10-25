@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ send: vi.fn() }));
+const mocks = vi.hoisted(() => ({ send: vi.fn(), getToken: vi.fn() }));
 vi.mock('@/lib/telegram/send', () => ({ sendTelegramDm: mocks.send }));
+vi.mock('@/lib/secrets/user-secrets', () => ({
+  getUserTelegramBotToken: (...args: unknown[]) => mocks.getToken(...args),
+}));
 import { deliverNotificationOutbox, enqueueNotification } from '@/lib/services/notification-outbox';
 
 const item = { id:'event-id', user_id:'user-a', lease_token:'lease-a', attempts:1,
@@ -19,7 +22,7 @@ function client(replies: any[], events: any[] = [item]) {
   }) };
   return { instance, writes };
 }
-beforeEach(()=> { vi.clearAllMocks(); mocks.send.mockResolvedValue(undefined); });
+beforeEach(()=> { vi.clearAllMocks(); mocks.send.mockResolvedValue(undefined); mocks.getToken.mockResolvedValue(undefined); });
 describe('durable notification delivery independent of financial execution',()=>{
   it('acknowledges only the leased event after provider confirmation',async()=>{
     const { instance,writes }=client([{ data:{ telegram_chat_id:123 } },{ data:{ id:item.id } }]);
@@ -54,6 +57,18 @@ describe('durable notification delivery independent of financial execution',()=>
     expect(await deliverNotificationOutbox(instance)).toEqual({ delivered:0,failed:1 });
     expect(mocks.send).not.toHaveBeenCalled();expect(writes[0].value.delivered_at).toBeUndefined();
   });
+  it('delivers with the user bot after plaintext is nulled', async () => {
+    mocks.getToken.mockResolvedValue('cnf-outbox-user-bot-token');
+    const { instance } = client([{ data: { telegram_chat_id: 123, telegram_bot_token: null } }, { data: { id: item.id } }]);
+    expect(await deliverNotificationOutbox(instance)).toEqual({ delivered: 1, failed: 0 });
+    expect(mocks.getToken).toHaveBeenCalledWith('user-a');
+    expect(mocks.send).toHaveBeenCalledWith(
+      123,
+      expect.any(String),
+      expect.objectContaining({ botToken: 'cnf-outbox-user-bot-token' })
+    );
+  });
+
   it('event dedupe cannot overwrite an already delivered outbox row',async()=>{
     const { instance,writes }=client([{ data:null }],[]);
     await enqueueNotification(instance,'user-a','budget:one:100','Aviso');

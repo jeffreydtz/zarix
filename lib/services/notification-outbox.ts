@@ -46,14 +46,16 @@ export async function deliverNotificationOutbox(supabase: ServiceClient): Promis
     let failureClass: FailureClass = 'consistency';
     try {
       const { data: user, error: userError } = await supabase.from('users')
-        .select('telegram_chat_id, telegram_bot_token').eq('id', item.user_id).single();
+        .select('telegram_chat_id').eq('id', item.user_id).single();
       if (userError) throw userError;
       failureClass = 'provider';
       if (!user?.telegram_chat_id) throw new Error('Telegram no vinculado');
+      const { getUserTelegramBotToken } = await import('@/lib/secrets/user-secrets');
+      const botToken = await getUserTelegramBotToken(item.user_id);
       await observedStep({ component: 'provider', action: 'deliver', failureClass: 'provider',
         referenceType: 'outbox' }, async () => {
       await sendTelegramDm(user.telegram_chat_id, notificationText(item.payload), {
-        parse_mode: 'Markdown', botToken: user.telegram_bot_token,
+        parse_mode: 'Markdown', botToken,
       });
       }, () => item.id);
       failureClass = 'consistency';

@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({ from: mocks.from, rpc: mocks.rpc }) }));
 vi.mock('@/lib/services/transactions', () => ({ buildToArsConverter: mocks.converter }));
 import { analyticsService } from '@/lib/services/analytics';
+import { ymdToQueryExclusiveEndIso, ymdToQueryStartIso } from '@/lib/transaction-date';
 
 const OWNER = 'synthetic-owner';
 const START = '2026-10-01';
@@ -79,6 +80,8 @@ beforeEach(() => {
       eq: (field: string, value: unknown) => { call.filters.push(['eq', field, value]); return query; },
       in: (field: string, value: unknown) => { call.filters.push(['in', field, value]); return query; },
       gte: (field: string, value: unknown) => { call.filters.push(['gte', field, value]); return query; },
+      gt: (field: string, value: unknown) => { call.filters.push(['gt', field, value]); return query; },
+      lt: (field: string, value: unknown) => { call.filters.push(['lt', field, value]); return query; },
       lte: (field: string, value: unknown) => { call.filters.push(['lte', field, value]); return query; },
       order: (field: string, options?: { ascending?: boolean }) => {
         call.orders.push([field, options?.ascending !== false]); return query;
@@ -95,6 +98,8 @@ beforeEach(() => {
           if (operator === 'eq') return actual === value;
           if (operator === 'in') return (value as unknown[]).includes(actual);
           if (operator === 'gte') return String(actual) >= String(value);
+          if (operator === 'gt') return String(actual) > String(value);
+          if (operator === 'lt') return String(actual) < String(value);
           if (operator === 'lte') return String(actual) <= String(value);
           throw new Error(`Unsupported synthetic filter ${operator}`);
         }));
@@ -139,8 +144,8 @@ function expectPagedFilters(types: string[], start = START) {
   for (const call of mocks.calls) {
     expect(call.orders).toEqual([['transaction_date', true], ['id', true]]);
     expect(call.filters).toContainEqual(['eq', 'user_id', OWNER]);
-    expect(call.filters).toContainEqual(['gte', 'transaction_date', `${start}T00:00:00.000Z`]);
-    expect(call.filters).toContainEqual(['lte', 'transaction_date', `${END}T23:59:59.999Z`]);
+    expect(call.filters).toContainEqual(['gte', 'transaction_date', ymdToQueryStartIso(start)]);
+    expect(call.filters).toContainEqual(['lt', 'transaction_date', ymdToQueryExclusiveEndIso(END)]);
     expect(call.filters).toContainEqual(types.length === 1
       ? ['eq', 'type', types[0]] : ['in', 'type', types]);
   }

@@ -7,8 +7,16 @@ import { normalizeCurrency } from '@/lib/transaction-exchange';
 import { accountsService, normalizeDebtBalanceForStorage } from './accounts';
 import { cotizacionesService } from './cotizaciones';
 import { readAllPages } from '@/lib/supabase-paginated-read';
+import {
+  endOfMonthYmd,
+  startOfMonthYmd,
+  transactionCivilYmd,
+  ymdToQueryExclusiveEndIso,
+  ymdToQueryStartIso,
+} from '@/lib/transaction-date';
 import { observe, observedStep } from '@/lib/observability/correlation';
 import type { Transaction, Account } from '@/types/database';
+import { integerCentsFromToken, numberToDecimalString } from '@/lib/money-amount';
 
 /**
  * PostgREST interpreta guiones en UUID como operadores si van sin comillas en `in.(...)`.
@@ -153,7 +161,14 @@ export async function computeTransferAmounts(
   const inputCurrency = normalizeCurrency(currency);
   const source = normalizeCurrency(sourceCurrency);
   const destination = normalizeCurrency(destinationCurrency);
-  if (!Number.isFinite(amount) || amount <= 0 || Math.abs(roundFiat(amount,inputCurrency)-amount)>1e-8) {
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error('Monto inválido o con demasiados decimales.');
+  }
+  const transferFiat = ['ARS', 'USD', 'EUR'].includes(inputCurrency);
+  if (transferFiat && integerCentsFromToken(numberToDecimalString(amount)) == null) {
+    throw new Error('Monto inválido o con demasiados decimales.');
+  }
+  if (!transferFiat && Math.abs(roundFiat(amount, inputCurrency) - amount) > 1e-8) {
     throw new Error('Monto inválido o con demasiados decimales.');
   }
   if (inputCurrency !== source && inputCurrency !== destination) {
@@ -203,6 +218,10 @@ export interface CreateTransactionInput {
   exchangeRateOverride?: number | null;
   isRecurring?: boolean;
   recurringRuleId?: string | null;
+  /** Channel that created the row: web, telegram, wallet, api, mcp. */
+  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
+  /** Canonical caller intent for replay hashing (original amount/currency before FX). */
+  idempotencyIntent?: Record<string, unknown>;
 }
 
 export interface TransactionWithCategory extends Transaction {
@@ -221,6 +240,23 @@ export interface TransactionWithCategory extends Transaction {
 }
 
 class TransactionsService {
+  async peekDurableRequest(
+    userId: string,
+    requestId: string
+  ): Promise<{ request_hash: string; response: Transaction } | null> {
+    if (!validTransactionRequestId(requestId)) return null;
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase
+      .from('transaction_requests')
+      .select('request_hash, response')
+      .eq('user_id', userId)
+      .eq('request_id', requestId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data?.response) return null;
+    return { request_hash: data.request_hash as string, response: data.response as Transaction };
+  }
+
   async create(input: CreateTransactionInput): Promise<Transaction> {
     return observedStep({ component: 'service', action: 'execute', failureClass: 'consistency',
       referenceType: 'transaction' }, async () => {
@@ -228,14 +264,19 @@ class TransactionsService {
     // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
     // los mismatches por comparación de strings aguas abajo.
     input = { ...input, requestId: input.requestId ?? nextFinancialRequestId(), currency: (input.currency || 'ARS').trim().toUpperCase() };
+    const channel = input.source ?? 'web';
     if (!['expense', 'income', 'transfer', 'adjustment'].includes(input.type)) {
       throw new Error('Tipo de movimiento inválido.');
     }
     if (!Number.isFinite(input.amount) || input.amount <= 0) {
       throw new Error('El monto debe ser finito y mayor a cero.');
     }
+    const fiat = ['ARS', 'USD', 'EUR'].includes(input.currency);
+    if (fiat && integerCentsFromToken(numberToDecimalString(input.amount)) == null) {
+      throw new ApiError('El monto en ARS, USD o EUR admite hasta dos decimales.');
+    }
     const amount = roundFiat(input.amount, input.currency);
-    if (amount <= 0 || Math.abs(amount - input.amount) > 1e-8) {
+    if (amount <= 0 || (!fiat && Math.abs(amount - input.amount) > 1e-8)) {
       throw new ApiError('El monto en ARS, USD o EUR admite hasta dos decimales.');
     }
     input = { ...input, amount };
@@ -254,7 +295,9 @@ class TransactionsService {
       throw new Error('La cotización manual debe ser finita y mayor a cero.');
     }
     const supabase = createServiceClientSync();
-    const requestHash = input.requestId ? transactionRequestHash(input as unknown as Record<string, unknown>) : null;
+    const requestHash = input.requestId
+      ? transactionRequestHash((input.idempotencyIntent ?? input) as Record<string, unknown>)
+      : null;
     if (input.requestId) {
       if (!validTransactionRequestId(input.requestId)) throw new ApiError('Identificador de solicitud inválido.');
       // A committed reply survives response loss, account archival, and changed FX rates.
@@ -340,6 +383,7 @@ class TransactionsService {
           amount: input.amount, currency: input.currency, category_id: input.categoryId || null,
           description: input.description || 'Compra en cuotas',
           transaction_date: input.transactionDate || new Date().toISOString(),
+          source: channel,
         }, input.installments);
       }
       const { data, error } = await supabase.rpc('create_installment_transactions', {
@@ -351,6 +395,7 @@ class TransactionsService {
         p_category_id: input.categoryId || null,
         p_description: input.description || 'Compra en cuotas',
         p_start_date: input.transactionDate || new Date().toISOString(),
+        p_source: channel,
       });
 
       if (error) throw error;
@@ -399,6 +444,7 @@ class TransactionsService {
           exchange_rate: transfer.exchangeRate !== 1 ? transfer.exchangeRate : null,
           description: input.description || 'Transferencia entre cuentas',
           transaction_date: input.transactionDate || new Date().toISOString(),
+          source: channel,
         });
     }
 
@@ -423,6 +469,7 @@ class TransactionsService {
         transaction_date: input.transactionDate || new Date().toISOString(),
         is_recurring: input.isRecurring === true,
         recurring_rule_id: input.recurringRuleId || null,
+        source: channel,
       });
     }, result => result.id);
   }
@@ -617,8 +664,9 @@ class TransactionsService {
   async getMonthSummary(userId: string, month: Date) {
     const supabase = createServiceClientSync();
 
-    const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59);
+    const civil = transactionCivilYmd(month.toISOString());
+    const startYmd = startOfMonthYmd(civil);
+    const endYmd = endOfMonthYmd(startYmd);
 
     const activeIds = await accountsService.getActiveAccountIds(userId);
     const transactions = await readAllPages<TransactionWithCategory>((from, to) => {
@@ -626,8 +674,8 @@ class TransactionsService {
         .from('transactions')
         .select('*, category:categories(name, icon)')
         .eq('user_id', userId)
-        .gte('transaction_date', startOfMonth.toISOString())
-        .lte('transaction_date', endOfMonth.toISOString());
+        .gte('transaction_date', ymdToQueryStartIso(startYmd))
+        .lt('transaction_date', ymdToQueryExclusiveEndIso(endYmd));
       monthQuery = applyArchivedAccountsTransactionFilter(monthQuery, activeIds);
       return monthQuery.order('transaction_date', { ascending: true })
         .order('id', { ascending: true }).range(from, to);
@@ -686,7 +734,14 @@ class TransactionsService {
     currency: string,
     accountCurrency: string
   ): Promise<{ amount_in_account_currency: number; exchange_rate: number | null }> {
-    if (!Number.isFinite(amount) || amount <= 0 || Math.abs(roundFiat(amount,currency)-amount)>1e-8) {
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new Error('Monto inválido o con demasiados decimales.');
+    }
+    const editFiat = ['ARS', 'USD', 'EUR'].includes((currency || '').toUpperCase());
+    if (editFiat && integerCentsFromToken(numberToDecimalString(amount)) == null) {
+      throw new Error('Monto inválido o con demasiados decimales.');
+    }
+    if (!editFiat && Math.abs(roundFiat(amount, currency) - amount) > 1e-8) {
       throw new Error('Monto inválido o con demasiados decimales.');
     }
     const { amountInAccountCurrency, exchangeRate } = await computeAmountInAccountCurrencyForAccount(

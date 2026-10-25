@@ -1,20 +1,28 @@
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
+import { ApiError } from '@/lib/api-handler';
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
-import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { parseTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { FxUnavailableError } from '@/lib/executable-fx';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
+import { transactionRequestHash } from '@/lib/transaction-idempotency';
 import type { ExecutedTransactionSummary } from '@/types/internal-ai-chat';
+import type { Transaction } from '@/types/database';
 
 export type BotTxPayload = {
   type?: string;
   amount?: number;
   currency?: string;
   account?: string | null;
+  accountId?: string;
   category?: string;
+  categoryId?: string | null;
   description?: string;
   destinationAccount?: string;
+  destinationAccountId?: string;
+  installments?: number;
   /** ISO o YYYY-MM-DD; el modelo también puede mandar `date` (alias). */
   transactionDate?: string;
   date?: string;
@@ -38,9 +46,15 @@ export async function executeBotTransaction(
   userId: string,
   financialContext: FinancialContext,
   txData: BotTxPayload,
-  options?: { summaryResponse?: string }
+  options?: {
+    summaryResponse?: string;
+    source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
+    requestId?: string;
+  }
 ): Promise<ExecuteBotTxResult> {
   const summaryResponse = options?.summaryResponse ?? '';
+  const source = options?.source ?? 'telegram';
+  const requestId = options?.requestId;
 
   if (!txData.amount || txData.amount <= 0) {
     return {
@@ -50,13 +64,31 @@ export async function executeBotTransaction(
   }
 
   const txType = normalizeTxType(txData.type);
-  const txCurrency = coerceTransactionCurrency(txData.currency);
+  const explicitCurrency = txData.currency != null && String(txData.currency).trim() !== '';
+  const txCurrency = explicitCurrency ? parseTransactionCurrency(String(txData.currency)) : 'ARS';
+  if (!txCurrency) {
+    return {
+      kind: 'abort',
+      reply: 'Moneda no admitida. Usá ARS, USD o EUR.',
+    };
+  }
 
   let accountId = '';
   let accountName = '';
   let selectedAccount: (typeof financialContext.accounts)[0] | null = null;
 
-  if (txData.account) {
+  if (txData.accountId) {
+    selectedAccount = financialContext.accounts.find((a) => a.id === txData.accountId) ?? null;
+    if (!selectedAccount) {
+      const listed = await accountsService.list(userId);
+      selectedAccount = listed.find((a) => a.id === txData.accountId) ?? null;
+    }
+    if (!selectedAccount) {
+      return { kind: 'abort', reply: 'La cuenta no existe.' };
+    }
+    accountId = selectedAccount.id;
+    accountName = selectedAccount.name;
+  } else if (txData.account) {
     const fuzzyResult = await accountsService.findByNameFuzzy(userId, txData.account, {
       currency: txCurrency,
     });
@@ -110,32 +142,11 @@ export async function executeBotTransaction(
     selectedAccount = defaultAccount;
   }
 
-  let finalCurrency: string = txCurrency;
-  let finalAmount = txData.amount;
-  let conversionNote = '';
-
-  if (selectedAccount && txCurrency !== selectedAccount.currency) {
-    const isMulticurrency =
-      selectedAccount.is_multicurrency &&
-      (selectedAccount.secondary_currency === txCurrency ||
-        selectedAccount.currency === txCurrency);
-
-    if (!isMulticurrency && selectedAccount.type === 'credit_card') {
-      try {
-        const rate = await cotizacionesService.getExchangeRate(txCurrency, selectedAccount.currency);
-        if (rate > 0) {
-          finalAmount = txData.amount * rate;
-          finalCurrency = selectedAccount.currency;
-          conversionNote = ` (${txData.amount} ${txCurrency} × $${rate.toFixed(2)} = $${finalAmount.toFixed(2)} ${finalCurrency})`;
-        }
-      } catch {
-        console.log('Could not get exchange rate, using original currency');
-      }
-    }
-  }
-
   let categoryId: string | undefined;
-  if (txData.category) {
+  if (txData.categoryId) {
+    const byId = financialContext.categories.find((c) => c.id === txData.categoryId);
+    if (byId) categoryId = byId.id;
+  } else if (txData.category) {
     const category = financialContext.categories.find(
       (c) => c.name.toLowerCase() === txData.category!.toLowerCase()
     );
@@ -144,8 +155,8 @@ export async function executeBotTransaction(
     }
   }
 
-  let destinationAccountId: string | undefined;
-  if (txData.destinationAccount) {
+  let destinationAccountId: string | undefined = txData.destinationAccountId;
+  if (!destinationAccountId && txData.destinationAccount) {
     const destResult = await accountsService.findByNameFuzzy(userId, txData.destinationAccount);
     if (destResult.account) {
       destinationAccountId = destResult.account.id;
@@ -177,6 +188,83 @@ export async function executeBotTransaction(
     parseBotTransactionDateInput(txData.transactionDate) ??
     parseBotTransactionDateInput(txData.date);
 
+  const idempotencyIntent = {
+    type: txType,
+    amount: txData.amount,
+    currency: txCurrency,
+    accountId,
+    destinationAccountId: destinationAccountId ?? null,
+    categoryId: categoryId ?? null,
+    description: txData.description ?? null,
+    transactionDate: resolvedDate ?? null,
+    installments: txData.installments && txData.installments > 1 ? txData.installments : null,
+    source,
+  };
+
+  const successFromPersisted = (tx: Transaction, conversionNote = ''): ExecuteBotTxResult => {
+    const persistedAmount = Number(tx.amount);
+    const persistedCurrency = String(tx.currency || txCurrency);
+    let responseWithAccount: string;
+    if (summaryResponse.trim()) {
+      responseWithAccount = summaryResponse.includes(accountName)
+        ? summaryResponse
+        : `${summaryResponse} (desde ${accountName})`;
+    } else {
+      const desc = txData.description || txType;
+      responseWithAccount = `✓ ${desc} — ${accountName}`;
+    }
+    if (conversionNote) {
+      responseWithAccount += conversionNote;
+    } else if (
+      Number.isFinite(persistedAmount) &&
+      (persistedAmount !== txData.amount || persistedCurrency !== txCurrency)
+    ) {
+      responseWithAccount += ` (${txData.amount} ${txCurrency} → ${persistedAmount.toFixed(2)} ${persistedCurrency})`;
+    }
+    return {
+      kind: 'success',
+      reply: responseWithAccount,
+      executed: {
+        id: tx.id,
+        summary: responseWithAccount,
+        amount: persistedAmount,
+        currency: persistedCurrency,
+        accountName,
+        categoryName: txData.category,
+      },
+    };
+  };
+
+  if (requestId) {
+    const prior = await transactionsService.peekDurableRequest(userId, requestId);
+    if (prior) {
+      if (prior.request_hash !== transactionRequestHash(idempotencyIntent as Record<string, unknown>)) {
+        throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+      }
+      return successFromPersisted(prior.response);
+    }
+  }
+
+  let finalCurrency: string = txCurrency;
+  let finalAmount = txData.amount;
+  let conversionNote = '';
+
+  if (selectedAccount && txCurrency !== selectedAccount.currency) {
+    const isMulticurrency =
+      selectedAccount.is_multicurrency &&
+      (selectedAccount.secondary_currency === txCurrency ||
+        selectedAccount.currency === txCurrency);
+
+    if (!isMulticurrency && selectedAccount.type === 'credit_card') {
+      const rate = await cotizacionesService.getExchangeRate(txCurrency, selectedAccount.currency);
+      if (rate > 0) {
+        finalAmount = txData.amount * rate;
+        finalCurrency = selectedAccount.currency;
+        conversionNote = ` (${txData.amount} ${txCurrency} × $${rate.toFixed(2)} = $${finalAmount.toFixed(2)} ${finalCurrency})`;
+      }
+    }
+  }
+
   try {
     const createdTransaction = await transactionsService.create({
       userId,
@@ -187,36 +275,23 @@ export async function executeBotTransaction(
       currency: finalCurrency,
       categoryId,
       description: txData.description,
+      source,
+      ...(requestId ? { requestId } : {}),
       ...(resolvedDate ? { transactionDate: resolvedDate } : {}),
+      ...(txData.installments && txData.installments > 1 ? { installments: txData.installments } : {}),
+      idempotencyIntent,
     });
-
-    let responseWithAccount: string;
-    if (summaryResponse.trim()) {
-      responseWithAccount = summaryResponse.includes(accountName)
-        ? summaryResponse
-        : `${summaryResponse} (desde ${accountName})`;
-    } else {
-      const desc = txData.description || txType;
-      responseWithAccount = `✓ ${desc} — ${accountName}`;
-    }
-
-    if (conversionNote) {
-      responseWithAccount += conversionNote;
-    }
-
-    return {
-      kind: 'success',
-      reply: responseWithAccount,
-      executed: {
-        id: createdTransaction.id,
-        summary: responseWithAccount,
-        amount: finalAmount,
-        currency: finalCurrency,
-        accountName,
-        categoryName: txData.category,
-      },
-    };
+    const persistedMatchesAttempt =
+      Number(createdTransaction.amount) === finalAmount &&
+      String(createdTransaction.currency || txCurrency) === finalCurrency;
+    return successFromPersisted(
+      createdTransaction,
+      persistedMatchesAttempt ? conversionNote : ''
+    );
   } catch (txError: unknown) {
+    if (txError instanceof FxUnavailableError) {
+      throw txError;
+    }
     console.error('Transaction error:', txError);
     // A transport error can happen after the ledger commit. Returning abort here
     // invites the model to issue a second write with a fresh operation key.

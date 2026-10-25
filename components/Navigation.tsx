@@ -25,6 +25,8 @@ import {
   Settings,
   Plus,
   ChevronDown,
+  Inbox,
+  BookOpen,
 } from 'lucide-react';
 
 const PRIMARY_LINKS: Array<{ href: string; label: string; icon: LucideIcon }> = [
@@ -47,6 +49,8 @@ const MORE_LINKS: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: '/shared', label: 'Compartidos', icon: Users },
   { href: '/recurring', label: 'Planes', icon: Repeat },
   { href: '/categories', label: 'Categorías', icon: Tags },
+  { href: '/pendientes', label: 'Pendientes', icon: Inbox },
+  { href: '/docs', label: 'Docs', icon: BookOpen },
   { href: '/settings', label: 'Config', icon: Settings },
 ];
 

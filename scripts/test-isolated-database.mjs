@@ -100,14 +100,14 @@ for(const legacyGrants of [false,true]) {
       assert.equal(await balance(db,ids.accountB),5000);
     });
     await test(profile,'owner cannot reassign account ownership',()=>rejects(()=>owner(db,'UPDATE accounts SET user_id=$1 WHERE id=$2',[ids.b,ids.accountA]),['42501','P0001']));
-    for(const table of ['accounts','transactions','investments','shared_groups','users']) {
+    for(const table of ['accounts','transactions','investments','shared_groups','users','personal_access_tokens','pending_inbox_items','wallet_card_account_maps','integration_audit_log']) {
       await test(profile,`anon cannot read ${table}`,()=>rejects(()=>queryAs(db,'anon',null,`SELECT * FROM ${table}`)));
     }
     await test(profile,'own profile safe read and settings update work',async()=>{
       assert.deepEqual((await owner(db,'SELECT id,timezone FROM users')).rows.map(r=>r.id),[ids.a]);
       assert.equal((await owner(db,"UPDATE users SET timezone='Etc/UTC' WHERE id=$1 RETURNING timezone",[ids.a])).rows[0].timezone,'Etc/UTC');
     });
-    for(const column of ['gemini_api_key','telegram_bot_token','telegram_link_code']) {
+    for(const column of ['gemini_api_key','telegram_bot_token','telegram_link_code','gemini_api_key_enc','telegram_bot_token_enc']) {
       await test(profile,`credential column ${column} is not readable`,()=>rejects(()=>owner(db,`SELECT ${column} FROM users`)));
     }
     for(const [column,value] of [['status',"'CANCELED'"],['telegram_chat_id','1234567'],['current_period_end',"now()+interval '1 year'"]]) {
@@ -139,6 +139,12 @@ for(const legacyGrants of [false,true]) {
       const amounts=(await db.query('SELECT amount::text FROM transactions WHERE installment_group_id=$1 ORDER BY installment_number',[group])).rows.map(r=>Number(r.amount));
       assert.deepEqual(amounts,[33.33,33.33,33.34]);assert.equal(await balance(db),initial-100);
       await service(db,'DELETE FROM transactions WHERE installment_group_id=$1',[group]);assert.equal(await balance(db),initial);
+    });
+    await test(profile,'installment RPC persists the originating write channel',async()=>{
+      const group=(await service(db,"SELECT create_installment_transactions($1,$2,90,'ARS',3,NULL,'Cuotas MCP','2026-10-08','mcp') AS id",[ids.a,ids.accountA])).rows[0].id;
+      const sources=(await db.query('SELECT DISTINCT source FROM transactions WHERE installment_group_id=$1',[group])).rows.map(r=>r.source);
+      assert.deepEqual(sources,['mcp']);
+      await service(db,'DELETE FROM transactions WHERE installment_group_id=$1',[group]);
     });
     await test(profile,'adjustment and bulk RPC lock order is user before account',async()=>{
       for(const signature of ['create_balance_adjustment(uuid,uuid,numeric)','create_secondary_balance_adjustment(uuid,uuid,numeric)','bulk_move_transactions(uuid,uuid,jsonb)']) {
@@ -272,6 +278,11 @@ for(const legacyGrants of [false,true]) {
       const recoveryAccount=(await service(db,"SELECT create_account_with_opening_balance($1,'recovery-account-001',$2,$3::jsonb,123.45) AS result",[ids.b,digest('recovery-account'),JSON.stringify({name:'Cuenta con recibo sintético',type:'investment',currency:'ARS'})])).rows[0].result;
       await service(db,"SELECT create_investment_once($1,'recovery-investment-001',$2,$3::jsonb)",[ids.b,digest('recovery-investment'),JSON.stringify({user_id:ids.b,account_id:recoveryAccount.id,type:'stock_us',name:'Posición con recibo sintético',quantity:2,purchase_price:20,purchase_currency:'USD',purchase_date:'2026-10-08'})]);
       await service(db,"SELECT begin_import_batch($1,$2,$3,$4::jsonb)",[ids.b,ids.categoryB,digest('synthetic-import-batch'),JSON.stringify({synthetic:true,account_id:ids.accountB})]);
+      await service(db,"INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'Token sintético','zrxp_synth','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',ARRAY['read'])",[ids.a]);
+      await service(db,"INSERT INTO wallet_card_account_maps(user_id,card_name_normalized,account_id) VALUES($1,'visa ejemplo',$2)",[ids.a,ids.accountA]);
+      await service(db,"INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,card_name,account_id,status,fingerprint,source) VALUES($1,12.5,'ARS','Comercio sintético','Visa Ejemplo',$2,'pending',$3,'wallet')",[ids.a,ids.accountA,digest('synthetic-pending')]);
+      await service(db,"INSERT INTO integration_audit_log(user_id,action,source,ip_hash,metadata) VALUES($1,'token.create','web',$2,'{\"synthetic\":true}'::jsonb)",[ids.a,digest('synthetic-ip')]);
+      await service(db,"INSERT INTO rate_limit_counters(key,count,window_start) VALUES('synthetic-recovery',1,'2026-10-24T12:00:00Z')");
       const data=await snapshot(db);
       assert.ok(Object.values(data).every(value=>JSON.parse(value).length>0),'Each application table must contain recovery fixtures');
       return {rowCounts:Object.fromEntries(Object.entries(data).map(([name,value])=>[name,JSON.parse(value).length]))};

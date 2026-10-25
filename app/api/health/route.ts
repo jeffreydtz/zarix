@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createBareServiceClient, createServiceClient } from '@/lib/supabase/server';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +25,39 @@ export async function GET(req: NextRequest) {
     if (error) {
       return NextResponse.json(
         { status: 'degraded', db: 'error', latencyMs: Date.now() - startedAt },
+        { status: 503 }
+      );
+    }
+
+    const bare = createBareServiceClient();
+    const rateLimit = await bare.rpc('rate_limit_hit', {
+      p_key: 'health:probe',
+      p_max: 1_000_000,
+      p_window_ms: 60_000,
+    });
+    if (rateLimit.error) {
+      const msg = rateLimit.error.message || '';
+      const code = 'code' in rateLimit.error ? String(rateLimit.error.code || '') : '';
+      const missing =
+        /PGRST202|42883/.test(code) ||
+        /does not exist|Could not find the function/i.test(msg);
+      const denied = /42501/.test(code) || /permission denied/i.test(msg);
+      if (missing) {
+        console.error(
+          '[health] rate_limit_hit missing_rpc; apply_migration 20261024200000 before deploying this build'
+        );
+      } else if (denied) {
+        console.error('[health] rate_limit_hit permission-denied');
+      } else {
+        console.error('[health] rate_limit_hit error');
+      }
+      return NextResponse.json(
+        {
+          status: 'degraded',
+          db: 'ok',
+          rateLimit: missing ? 'missing_rpc' : 'error',
+          latencyMs: Date.now() - startedAt,
+        },
         { status: 503 }
       );
     }

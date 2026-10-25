@@ -655,6 +655,7 @@ bot.on(message('voice'), async (ctx) => {
         allowLegacyWriteFallback: true,
         history,
         financialContext,
+        source: 'telegram',
       });
       rawResponse = result.raw_response || '';
       return ctx.reply(result.assistant_message);
@@ -745,6 +746,7 @@ bot.on(message('text'), async (ctx) => {
         history,
         financialContext,
         allowLegacyWriteFallback: true,
+        source: 'telegram',
       });
       rawResponse = result.raw_response || '';
       return ctx.reply(result.assistant_message);

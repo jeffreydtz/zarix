@@ -4783,3 +4783,1669 @@ $$;
 REVOKE ALL ON FUNCTION public.create_investment_once(UUID,TEXT,TEXT,JSONB) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.create_investment_once(UUID,TEXT,TEXT,JSONB) TO service_role;
 -- END supabase/migrations/20261024170100_investment_backlog.sql
+
+-- BEGIN supabase/migrations/20261024180000_ai_integrations_foundation.sql
+-- SHA256 dd4ea53f26b11a9d76db601fad25ae05ea469edd6cd55b8a0d8568c762d07890
+-- AI-first public integrations: write channel, PATs, encrypted secrets,
+-- pending inbox, card maps, audit log. Idempotent. Additive for secrets:
+-- plaintext columns are NOT copied or nulled here (staged rollout).
+--
+-- Prod apply order (do not skip). NEVER `supabase db push`.
+-- Prod migration history recorded #15 as 20261024182913 (investment_type_on)
+-- and 20261024182923 (investment_backlog), not the filenames 20261024170000 /
+-- 170100. `db push` would try to re-apply those files. Apply #16 one file at
+-- a time with `apply_migration` (version = the filename timestamp).
+--
+--   1. PITR marker
+--   2. apply_migration 20261024180000_ai_integrations_foundation.sql
+--   3. apply_migration 20261024190000_pat_rls_confirm_quotes.sql
+--   4. apply_migration 20261024200000_inbox_dedupe_uncertain_rate_limit.sql
+--   5. Deploy #16 code (encrypt-only writes; Vault-aware Telegram readers)
+--   6. Pause key edits, run supabase/manual/backfill-user-secrets.sql
+--   7. Run supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql
+--      (not a timestamped migration — db push cannot apply it early)
+--   8. Later follow-up: supabase/manual/null-plaintext-user-secrets.sql
+--
+-- Rollback to main (dpl_9Dq25… / 7651817): keys saved after step 5 have
+-- plaintext NULLed. Before rolling the app back, run
+-- supabase/manual/restore-plaintext-from-vault.sql so main can still read
+-- Gemini/Telegram secrets. Do not roll back until that restore verifies.
+-- PAT hashes are SHA-256 (hash_version=1). v2 is reserved and not enabled.
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 1. Write channel on transactions
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ALTER TABLE public.transactions
+  ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'web';
+
+ALTER TABLE public.transactions DROP CONSTRAINT IF EXISTS transactions_source_check;
+ALTER TABLE public.transactions ADD CONSTRAINT transactions_source_check
+  CHECK (source IN ('web', 'telegram', 'wallet', 'api', 'mcp'));
+
+CREATE INDEX IF NOT EXISTS idx_transactions_user_source
+  ON public.transactions (user_id, source, created_at DESC);
+
+CREATE OR REPLACE FUNCTION public.create_transaction_once(
+  p_user_id UUID, p_request_id TEXT, p_request_hash TEXT, p_transaction JSONB,
+  p_installments INTEGER DEFAULT 1
+) RETURNS JSONB LANGUAGE plpgsql SECURITY INVOKER SET search_path = public AS $$
+DECLARE
+  prior public.transaction_requests%ROWTYPE;
+  t public.transactions%ROWTYPE;
+  result JSONB;
+  installment_group UUID;
+BEGIN
+  IF p_request_id IS NULL OR p_request_id !~ '^[A-Za-z0-9][A-Za-z0-9:._-]{7,199}$'
+     OR p_request_hash IS NULL OR p_request_hash !~ '^[0-9a-f]{64}$' THEN
+    RAISE EXCEPTION 'Invalid request identifier or fingerprint';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':' || p_request_id, 0));
+  SELECT * INTO prior FROM public.transaction_requests
+    WHERE user_id = p_user_id AND request_id = p_request_id;
+  IF FOUND THEN
+    IF prior.request_hash <> p_request_hash THEN
+      RAISE EXCEPTION USING ERRCODE = 'Z0001', MESSAGE = 'Request payload conflict';
+    END IF;
+    RETURN prior.response;
+  END IF;
+
+  t := jsonb_populate_record(NULL::public.transactions, p_transaction);
+  IF t.user_id IS DISTINCT FROM p_user_id THEN RAISE EXCEPTION 'No autorizado'; END IF;
+  IF p_installments IS NULL OR p_installments < 1 OR p_installments > 36 THEN
+    RAISE EXCEPTION 'Invalid installments';
+  END IF;
+  IF p_installments > 1 THEN
+    IF t.type <> 'expense' THEN RAISE EXCEPTION 'Installments require expense'; END IF;
+    installment_group := public.create_installment_transactions(p_user_id, t.account_id,
+      t.amount, t.currency, p_installments, t.category_id, t.description, t.transaction_date);
+    SELECT to_jsonb(tx) INTO STRICT result FROM public.transactions tx
+      WHERE tx.user_id = p_user_id AND tx.installment_group_id = installment_group
+        AND tx.installment_number = 1;
+  ELSE
+    INSERT INTO public.transactions (user_id, type, account_id, destination_account_id,
+      amount, currency, amount_in_account_currency, destination_amount_in_account_currency,
+      exchange_rate, category_id, description, notes, tags, transaction_date, is_recurring,
+      recurring_rule_id, source)
+    VALUES (p_user_id, t.type, t.account_id, t.destination_account_id, t.amount, t.currency,
+      t.amount_in_account_currency, t.destination_amount_in_account_currency, t.exchange_rate,
+      t.category_id, t.description, t.notes, t.tags, COALESCE(t.transaction_date, now()),
+      COALESCE(t.is_recurring, false), t.recurring_rule_id, COALESCE(t.source, 'web'))
+    RETURNING to_jsonb(transactions.*) INTO result;
+  END IF;
+  INSERT INTO public.transaction_requests (user_id, request_id, request_hash, response)
+    VALUES (p_user_id, p_request_id, p_request_hash, result);
+  RETURN result;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.create_transaction_once(UUID, TEXT, TEXT, JSONB, INTEGER) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.create_transaction_once(UUID, TEXT, TEXT, JSONB, INTEGER) TO service_role;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 2. Personal access tokens (hash only)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE IF NOT EXISTS public.personal_access_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL CHECK (char_length(name) BETWEEN 2 AND 60),
+  token_prefix TEXT NOT NULL CHECK (char_length(token_prefix) BETWEEN 8 AND 16),
+  token_hash TEXT NOT NULL CHECK (token_hash ~ '^[0-9a-f]{64}$'),
+  hash_version SMALLINT NOT NULL DEFAULT 1 CHECK (hash_version IN (1, 2)),
+  scopes TEXT[] NOT NULL DEFAULT ARRAY['read']::TEXT[],
+  expires_at TIMESTAMPTZ,
+  last_used_at TIMESTAMPTZ,
+  revoked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT personal_access_tokens_scopes_check CHECK (
+    scopes <@ ARRAY['read','write','ingest','write:confirm']::TEXT[]
+    AND array_length(scopes, 1) >= 1
+  )
+);
+
+ALTER TABLE public.personal_access_tokens
+  ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
+ALTER TABLE public.personal_access_tokens
+  ADD COLUMN IF NOT EXISTS hash_version SMALLINT;
+UPDATE public.personal_access_tokens SET hash_version = 1 WHERE hash_version IS NULL;
+ALTER TABLE public.personal_access_tokens ALTER COLUMN hash_version SET DEFAULT 1;
+ALTER TABLE public.personal_access_tokens ALTER COLUMN hash_version SET NOT NULL;
+ALTER TABLE public.personal_access_tokens DROP CONSTRAINT IF EXISTS personal_access_tokens_hash_version_check;
+ALTER TABLE public.personal_access_tokens ADD CONSTRAINT personal_access_tokens_hash_version_check
+  CHECK (hash_version IN (1, 2));
+ALTER TABLE public.personal_access_tokens DROP CONSTRAINT IF EXISTS personal_access_tokens_scopes_check;
+ALTER TABLE public.personal_access_tokens ADD CONSTRAINT personal_access_tokens_scopes_check CHECK (
+  scopes <@ ARRAY['read','write','ingest','write:confirm']::TEXT[]
+  AND array_length(scopes, 1) >= 1
+);
+UPDATE public.personal_access_tokens
+  SET expires_at = created_at + interval '365 days'
+  WHERE expires_at IS NULL;
+ALTER TABLE public.personal_access_tokens
+  ALTER COLUMN expires_at SET DEFAULT (now() + interval '365 days');
+ALTER TABLE public.personal_access_tokens ALTER COLUMN expires_at SET NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS personal_access_tokens_hash_unique
+  ON public.personal_access_tokens (token_hash);
+CREATE INDEX IF NOT EXISTS personal_access_tokens_user_idx
+  ON public.personal_access_tokens (user_id, created_at DESC);
+
+ALTER TABLE public.personal_access_tokens ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.personal_access_tokens FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS pat_select_own ON public.personal_access_tokens;
+CREATE POLICY pat_select_own ON public.personal_access_tokens
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS pat_no_client_write ON public.personal_access_tokens;
+-- Inserts/updates/deletes go through the service role API so token_hash never
+-- crosses PostgREST as a client write.
+REVOKE ALL ON public.personal_access_tokens FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, user_id, name, token_prefix, scopes, expires_at, last_used_at, revoked_at, created_at, updated_at)
+  ON public.personal_access_tokens TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.personal_access_tokens TO service_role;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 3. Encrypted user secrets (Supabase Vault; fail closed)
+-- Additive only. Plaintext columns stay until later manual migrations:
+--   supabase/manual/backfill-user-secrets.sql  (copy+verify, never nulls)
+--   supabase/manual/null-plaintext-user-secrets.sql (null only after verify)
+-- Those must run AFTER encrypted writes are live. They are not applied here.
+-- Recovery if a preview DB applied old commit 925b46c (user_secret_backup +
+-- public.decrypt_user_secret / envelope:v0): this migration DROPs that backup
+-- table and the public decrypt function. Prod never ran 925b46c. Do not copy
+-- leftover envelope ciphertext forward; re-save secrets so _enc is vault/AES.
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ALTER TABLE public.users
+  ADD COLUMN IF NOT EXISTS gemini_api_key_enc TEXT,
+  ADD COLUMN IF NOT EXISTS telegram_bot_token_enc TEXT,
+  ADD COLUMN IF NOT EXISTS wallet_auto_confirm BOOLEAN NOT NULL DEFAULT FALSE;
+
+GRANT SELECT (wallet_auto_confirm), UPDATE (wallet_auto_confirm)
+  ON public.users TO authenticated;
+-- Do NOT REVOKE UPDATE on plaintext secret columns here. Old code (main)
+-- still writes gemini_api_key / telegram_bot_token as authenticated.
+-- Apply supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql
+-- AFTER the #16 code deploy. It is not a timestamped migration so db push
+-- cannot apply it early. See that file for the numbered runbook.
+
+CREATE SCHEMA IF NOT EXISTS zarix_vault;
+REVOKE ALL ON SCHEMA zarix_vault FROM PUBLIC, anon, authenticated;
+GRANT USAGE ON SCHEMA zarix_vault TO service_role;
+
+DROP TABLE IF EXISTS zarix_vault.user_secret_backup;
+DROP FUNCTION IF EXISTS public.decrypt_user_secret(TEXT);
+DROP FUNCTION IF EXISTS zarix_vault.encrypt_secret(TEXT);
+DROP FUNCTION IF EXISTS zarix_vault.decrypt_secret(TEXT);
+DROP FUNCTION IF EXISTS zarix_vault.copy_user_secrets();
+DROP FUNCTION IF EXISTS zarix_vault.finalize_plaintext_null();
+DROP FUNCTION IF EXISTS zarix_vault.rollback_plaintext();
+
+CREATE OR REPLACE FUNCTION zarix_vault.assert_kind(p_kind TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+IMMUTABLE
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  IF p_kind IS NULL OR p_kind NOT IN ('gemini_api_key', 'telegram_bot_token') THEN
+    RAISE EXCEPTION 'zarix_vault_invalid_kind';
+  END IF;
+  RETURN p_kind;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION zarix_vault.secret_name(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE sql
+IMMUTABLE
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT 'zarix.user.' || zarix_vault.assert_kind(p_kind) || '.' || p_user_id::text;
+$$;
+
+CREATE OR REPLACE FUNCTION zarix_vault.vault_available()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'vault') THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'Supabase Vault (schema vault) is required. pgcrypto/envelope is not a fallback.';
+  END IF;
+  RETURN TRUE;
+END;
+$$;
+
+-- Fail closed: never envelope, never a repo-hardcoded key, never pgcrypto
+-- with a published passphrase. Production uses supabase_vault.
+CREATE OR REPLACE FUNCTION zarix_vault.store_user_secret(p_user_id UUID, p_kind TEXT, p_plain TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  secret_name TEXT;
+  secret_id TEXT;
+BEGIN
+  IF p_user_id IS NULL THEN RAISE EXCEPTION 'zarix_vault_invalid_user'; END IF;
+  IF p_plain IS NULL OR p_plain = '' THEN
+    RETURN zarix_vault.delete_user_secret(p_user_id, p_kind);
+  END IF;
+  IF NOT zarix_vault.vault_available() THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'Supabase Vault (schema vault) is required in production. Tests may use app AES-GCM with ZARIX_SECRETS_MASTER_KEY.';
+  END IF;
+  secret_name := zarix_vault.secret_name(p_user_id, p_kind);
+  BEGIN
+    EXECUTE 'SELECT id::text FROM vault.secrets WHERE name = $1' INTO secret_id USING secret_name;
+  EXCEPTION WHEN undefined_table OR invalid_schema_name THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable';
+  END;
+  IF secret_id IS NOT NULL THEN
+    EXECUTE 'SELECT vault.update_secret($1::uuid, $2, $3, $4)' USING secret_id::uuid, p_plain, secret_name, 'zarix user secret';
+    RETURN 'vault:v1:' || secret_id;
+  END IF;
+  EXECUTE 'SELECT vault.create_secret($1, $2, $3)::text' INTO secret_id USING p_plain, secret_name, 'zarix user secret';
+  IF secret_id IS NULL OR secret_id = '' THEN
+    RAISE EXCEPTION 'zarix_vault_store_failed';
+  END IF;
+  RETURN 'vault:v1:' || secret_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION zarix_vault.read_user_secret(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  secret_name TEXT;
+  val TEXT;
+BEGIN
+  IF p_user_id IS NULL THEN RAISE EXCEPTION 'zarix_vault_invalid_user'; END IF;
+  IF NOT zarix_vault.vault_available() THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable';
+  END IF;
+  secret_name := zarix_vault.secret_name(p_user_id, p_kind);
+  BEGIN
+    EXECUTE 'SELECT decrypted_secret FROM vault.decrypted_secrets WHERE name = $1' INTO val USING secret_name;
+  EXCEPTION WHEN undefined_table OR invalid_schema_name THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable';
+  END;
+  RETURN val;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION zarix_vault.delete_user_secret(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  secret_name TEXT;
+  secret_id UUID;
+BEGIN
+  IF p_user_id IS NULL THEN RAISE EXCEPTION 'zarix_vault_invalid_user'; END IF;
+  PERFORM zarix_vault.vault_available();
+  secret_name := zarix_vault.secret_name(p_user_id, p_kind);
+  BEGIN
+    EXECUTE 'SELECT id FROM vault.secrets WHERE name = $1' INTO secret_id USING secret_name;
+    IF secret_id IS NOT NULL THEN
+      EXECUTE 'DELETE FROM vault.secrets WHERE id = $1' USING secret_id;
+    END IF;
+  EXCEPTION WHEN undefined_table OR invalid_schema_name THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable';
+  END;
+  RETURN NULL;
+END;
+$$;
+
+-- PostgREST trampolines: implementation lives in zarix_vault. EXECUTE is
+-- revoked from anon/authenticated. There is no public.decrypt_user_secret.
+CREATE OR REPLACE FUNCTION public.zarix_vault_store(p_user_id UUID, p_kind TEXT, p_plain TEXT)
+RETURNS TEXT
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = pg_catalog, zarix_vault, pg_temp
+AS $$
+  SELECT zarix_vault.store_user_secret(p_user_id, p_kind, p_plain);
+$$;
+
+CREATE OR REPLACE FUNCTION public.zarix_vault_read(p_user_id UUID, p_kind TEXT)
+RETURNS TEXT
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = pg_catalog, zarix_vault, pg_temp
+AS $$
+  SELECT zarix_vault.read_user_secret(p_user_id, p_kind);
+$$;
+
+REVOKE ALL ON FUNCTION zarix_vault.assert_kind(TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.secret_name(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.vault_available() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.store_user_secret(UUID, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.read_user_secret(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION zarix_vault.delete_user_secret(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.zarix_vault_store(UUID, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.zarix_vault_read(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION zarix_vault.vault_available() TO service_role;
+GRANT EXECUTE ON FUNCTION zarix_vault.store_user_secret(UUID, TEXT, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION zarix_vault.read_user_secret(UUID, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION zarix_vault.delete_user_secret(UUID, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.zarix_vault_store(UUID, TEXT, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.zarix_vault_read(UUID, TEXT) TO service_role;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 4. Pending inbox + remembered card maps
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE IF NOT EXISTS public.wallet_card_account_maps (
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  card_name_normalized TEXT NOT NULL CHECK (char_length(card_name_normalized) BETWEEN 1 AND 80),
+  account_id UUID NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, card_name_normalized),
+  FOREIGN KEY (account_id, user_id) REFERENCES public.accounts(id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.pending_inbox_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  amount NUMERIC(20, 8),
+  currency TEXT NOT NULL DEFAULT 'ARS',
+  merchant TEXT,
+  card_name TEXT,
+  account_id UUID,
+  category_id UUID,
+  occurred_at TIMESTAMPTZ,
+  raw_payload JSONB,
+  tool_payload JSONB,
+  raw_text TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'discarded')),
+  suggestion_source TEXT CHECK (suggestion_source IS NULL OR suggestion_source IN ('history', 'heuristic', 'none', 'gemini')),
+  idempotency_key TEXT,
+  ingest_key TEXT NOT NULL DEFAULT gen_random_uuid()::text,
+  direction TEXT NOT NULL DEFAULT 'expense' CHECK (direction IN ('expense', 'income')),
+  amount_ambiguous BOOLEAN NOT NULL DEFAULT FALSE,
+  source TEXT NOT NULL DEFAULT 'wallet' CHECK (source IN ('web', 'telegram', 'wallet', 'api', 'mcp')),
+  fingerprint TEXT NOT NULL,
+  confirmed_transaction_id UUID,
+  discarded_at TIMESTAMPTZ,
+  claim_id UUID,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT pending_inbox_amount_nonneg CHECK (amount IS NULL OR amount > 0),
+  FOREIGN KEY (account_id, user_id) REFERENCES public.accounts(id, user_id)
+);
+
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS ingest_key TEXT;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS direction TEXT;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS amount_ambiguous BOOLEAN;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS tool_payload JSONB;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS claim_id UUID;
+UPDATE public.pending_inbox_items
+   SET ingest_key = COALESCE(NULLIF(ingest_key, ''), idempotency_key, id::text)
+ WHERE ingest_key IS NULL OR ingest_key = '';
+UPDATE public.pending_inbox_items SET direction = 'expense' WHERE direction IS NULL;
+UPDATE public.pending_inbox_items SET amount_ambiguous = FALSE WHERE amount_ambiguous IS NULL;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN ingest_key SET DEFAULT gen_random_uuid()::text;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN ingest_key SET NOT NULL;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN direction SET DEFAULT 'expense';
+ALTER TABLE public.pending_inbox_items ALTER COLUMN direction SET NOT NULL;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN amount_ambiguous SET DEFAULT FALSE;
+ALTER TABLE public.pending_inbox_items ALTER COLUMN amount_ambiguous SET NOT NULL;
+ALTER TABLE public.pending_inbox_items DROP CONSTRAINT IF EXISTS pending_inbox_direction_check;
+ALTER TABLE public.pending_inbox_items ADD CONSTRAINT pending_inbox_direction_check
+  CHECK (direction IN ('expense', 'income'));
+
+CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_idempotency_unique
+  ON public.pending_inbox_items (user_id, idempotency_key)
+  WHERE idempotency_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_ingest_key_unique
+  ON public.pending_inbox_items (user_id, ingest_key);
+CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_fingerprint_pending_unique
+  ON public.pending_inbox_items (user_id, fingerprint)
+  WHERE status IN ('pending', 'confirming');
+CREATE INDEX IF NOT EXISTS pending_inbox_user_status_idx
+  ON public.pending_inbox_items (user_id, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS pending_inbox_fingerprint_idx
+  ON public.pending_inbox_items (user_id, fingerprint, created_at DESC);
+
+ALTER TABLE public.wallet_card_account_maps ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wallet_card_account_maps FORCE ROW LEVEL SECURITY;
+ALTER TABLE public.pending_inbox_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.pending_inbox_items FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS wallet_maps_all_own ON public.wallet_card_account_maps;
+DROP POLICY IF EXISTS wallet_maps_select_own ON public.wallet_card_account_maps;
+DROP POLICY IF EXISTS wallet_maps_insert_own ON public.wallet_card_account_maps;
+DROP POLICY IF EXISTS wallet_maps_update_own ON public.wallet_card_account_maps;
+DROP POLICY IF EXISTS wallet_maps_delete_own ON public.wallet_card_account_maps;
+CREATE POLICY wallet_maps_select_own ON public.wallet_card_account_maps
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY wallet_maps_insert_own ON public.wallet_card_account_maps
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY wallet_maps_update_own ON public.wallet_card_account_maps
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY wallet_maps_delete_own ON public.wallet_card_account_maps
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS pending_inbox_all_own ON public.pending_inbox_items;
+DROP POLICY IF EXISTS pending_inbox_select_own ON public.pending_inbox_items;
+DROP POLICY IF EXISTS pending_inbox_insert_own ON public.pending_inbox_items;
+DROP POLICY IF EXISTS pending_inbox_update_own ON public.pending_inbox_items;
+DROP POLICY IF EXISTS pending_inbox_delete_own ON public.pending_inbox_items;
+CREATE POLICY pending_inbox_select_own ON public.pending_inbox_items
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY pending_inbox_insert_own ON public.pending_inbox_items
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY pending_inbox_update_own ON public.pending_inbox_items
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY pending_inbox_delete_own ON public.pending_inbox_items
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+REVOKE ALL ON public.wallet_card_account_maps, public.pending_inbox_items FROM PUBLIC, anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.wallet_card_account_maps, public.pending_inbox_items TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.wallet_card_account_maps, public.pending_inbox_items TO service_role;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 5. Integration audit log
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE IF NOT EXISTS public.integration_audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  action TEXT NOT NULL CHECK (char_length(action) BETWEEN 3 AND 40),
+  source TEXT NOT NULL CHECK (source IN ('web', 'telegram', 'wallet', 'api', 'mcp')),
+  ip_hash TEXT,
+  user_agent TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  outcome TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT integration_audit_outcome_check CHECK (
+    outcome IS NULL OR outcome IN ('ok', 'error', 'thrown', 'denied')
+  )
+);
+ALTER TABLE public.integration_audit_log ADD COLUMN IF NOT EXISTS outcome TEXT;
+ALTER TABLE public.integration_audit_log DROP CONSTRAINT IF EXISTS integration_audit_outcome_check;
+ALTER TABLE public.integration_audit_log ADD CONSTRAINT integration_audit_outcome_check CHECK (
+  outcome IS NULL OR outcome IN ('ok', 'error', 'thrown', 'denied')
+);
+
+CREATE INDEX IF NOT EXISTS integration_audit_user_idx
+  ON public.integration_audit_log (user_id, created_at DESC);
+
+ALTER TABLE public.integration_audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.integration_audit_log FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS integration_audit_select_own ON public.integration_audit_log;
+CREATE POLICY integration_audit_select_own ON public.integration_audit_log
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+REVOKE ALL ON public.integration_audit_log FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.integration_audit_log TO authenticated;
+GRANT SELECT, INSERT ON public.integration_audit_log TO service_role;
+-- END supabase/migrations/20261024180000_ai_integrations_foundation.sql
+
+-- BEGIN supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
+-- SHA256 f880267d0ad3e707b92852842cb01b624e7715889209196b633e0c52ce26f0e2
+-- Atomic pending-inbox confirm + authenticated claim helper.
+-- Idempotent. Does not rewrite financial amounts.
+
+ALTER TABLE public.pending_inbox_items
+  DROP CONSTRAINT IF EXISTS pending_inbox_items_status_check;
+ALTER TABLE public.pending_inbox_items
+  ADD CONSTRAINT pending_inbox_items_status_check
+  CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded', 'uncertain'));
+
+CREATE OR REPLACE FUNCTION public.claim_pending_inbox_item(
+  p_user_id UUID,
+  p_item_id UUID
+) RETURNS SETOF public.pending_inbox_items
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+BEGIN
+  IF p_user_id IS NULL OR p_item_id IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  RETURN QUERY
+  UPDATE public.pending_inbox_items
+     SET status = 'confirming',
+         claim_id = gen_random_uuid(),
+         updated_at = now()
+   WHERE id = p_item_id
+     AND user_id = p_user_id
+     AND status = 'pending'
+  RETURNING *;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
+-- END supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
+
+-- BEGIN supabase/migrations/20261024200000_inbox_dedupe_uncertain_rate_limit.sql
+-- SHA256 e026780517297f2c5510fb6a28084bc11a7bb19647763a2838f3a2bd77648542
+-- Inbox event identity survives confirmation, uncertain confirm state,
+-- shared rate-limit counters, installment write-channel, vault assert.
+-- Idempotent. Additive. NEVER `supabase db push`.
+
+-- Fail closed if Vault is missing at apply time. PGlite tests stub schema vault.
+DO $$
+BEGIN
+  PERFORM zarix_vault.vault_available();
+EXCEPTION
+  WHEN undefined_function THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'zarix_vault.vault_available() must exist before this migration.';
+END $$;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 1. Uncertain inbox status + fingerprint reserved after confirm
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ALTER TABLE public.pending_inbox_items
+  DROP CONSTRAINT IF EXISTS pending_inbox_items_status_check;
+ALTER TABLE public.pending_inbox_items
+  ADD CONSTRAINT pending_inbox_items_status_check
+  CHECK (status IN ('pending', 'confirming', 'confirmed', 'discarded', 'uncertain'));
+
+DROP INDEX IF EXISTS pending_inbox_fingerprint_pending_unique;
+
+-- Preflight: historical confirmed duplicates would make the reserved unique
+-- index fail with 23505. Keep the newest row's fingerprint; rewrite older
+-- collisions to a unique legacy value so legitimate later purchases survive.
+UPDATE public.pending_inbox_items AS p
+   SET fingerprint = 'legacy-collision:' || p.id::text
+ WHERE p.fingerprint IS NOT NULL
+   AND p.status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+   AND p.id IN (
+     SELECT id FROM (
+       SELECT id,
+              row_number() OVER (
+                PARTITION BY user_id, fingerprint
+                ORDER BY created_at DESC, id DESC
+              ) AS rn
+         FROM public.pending_inbox_items
+        WHERE fingerprint IS NOT NULL
+          AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+     ) ranked
+     WHERE rn > 1
+   );
+
+CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_fingerprint_reserved_unique
+  ON public.pending_inbox_items (user_id, fingerprint)
+  WHERE status IN ('pending', 'confirming', 'confirmed', 'uncertain');
+
+CREATE OR REPLACE FUNCTION public.claim_pending_inbox_item(
+  p_user_id UUID,
+  p_item_id UUID
+) RETURNS SETOF public.pending_inbox_items
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  IF p_user_id IS NULL OR p_item_id IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  RETURN QUERY
+  UPDATE public.pending_inbox_items
+     SET status = 'confirming',
+         claim_id = pg_catalog.gen_random_uuid(),
+         updated_at = pg_catalog.now()
+   WHERE id = p_item_id
+     AND user_id = p_user_id
+     AND status IN ('pending', 'uncertain')
+  RETURNING *;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
+
+-- Atomic discard: never confirming. Shared lock order with create_transaction_once
+-- (inbox key, then wallet:{item} request key) so a late ledger write cannot land
+-- after discard. DEFINER so the receipt lookup can read transaction_requests.
+-- Authenticated callers need a non-null auth.uid() matching p_user_id;
+-- service_role may call with a null uid. Lookup errors abort (no silent "no tx").
+CREATE OR REPLACE FUNCTION public.discard_pending_inbox_item(
+  p_user_id UUID,
+  p_item_id UUID
+) RETURNS SETOF public.pending_inbox_items
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  rec public.pending_inbox_items%ROWTYPE;
+  prior_id TEXT;
+  caller_role TEXT := coalesce(auth.role(), '');
+BEGIN
+  IF p_user_id IS NULL OR p_item_id IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF caller_role IS DISTINCT FROM 'service_role'
+     AND (auth.uid() IS NULL OR auth.uid() <> p_user_id) THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  -- Shared with create_transaction_once: inbox then request (deadlock-safe).
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':wallet:' || p_item_id::text, 0));
+  SELECT * INTO rec
+    FROM public.pending_inbox_items
+   WHERE id = p_item_id AND user_id = p_user_id
+   FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pendiente no encontrado.';
+  END IF;
+  IF rec.status = 'confirmed' THEN
+    RAISE EXCEPTION 'Este pendiente ya fue confirmado.';
+  END IF;
+  IF rec.status = 'discarded' THEN
+    RAISE EXCEPTION 'Este pendiente ya fue descartado.';
+  END IF;
+  IF rec.status = 'confirming' THEN
+    RAISE EXCEPTION 'Este pendiente se está confirmando.';
+  END IF;
+  IF rec.status NOT IN ('pending', 'uncertain') THEN
+    RAISE EXCEPTION 'Este pendiente se está confirmando.';
+  END IF;
+  SELECT response->>'id' INTO prior_id
+    FROM public.transaction_requests
+   WHERE user_id = p_user_id
+     AND request_id = 'wallet:' || p_item_id::text;
+  IF prior_id IS NOT NULL THEN
+    RAISE EXCEPTION 'Este pendiente ya tiene un movimiento. No se puede descartar.';
+  END IF;
+  UPDATE public.pending_inbox_items
+     SET status = 'discarded',
+         discarded_at = pg_catalog.now(),
+         claim_id = NULL,
+         updated_at = pg_catalog.now()
+   WHERE id = p_item_id
+     AND user_id = p_user_id
+     AND status = rec.status
+  RETURNING * INTO rec;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Este pendiente se está confirmando.';
+  END IF;
+  RETURN NEXT rec;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.discard_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.discard_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
+
+-- Lookup + insert under one advisory lock so a retry that crosses the 15-minute
+-- fingerprint bucket cannot insert a second pending item. Lookback is rolling
+-- created_at >= now()-p_lookback_ms so genuine purchases more than 15 minutes
+-- apart still land as separate rows.
+CREATE OR REPLACE FUNCTION public.reserve_pending_inbox_item(
+  p_user_id UUID,
+  p_lock_key TEXT,
+  p_fingerprints TEXT[],
+  p_lookback_ms INTEGER,
+  p_ingest_key TEXT,
+  p_client_keyed BOOLEAN,
+  p_fingerprint TEXT,
+  p_row JSONB
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+DECLARE
+  rec public.pending_inbox_items%ROWTYPE;
+  lookback INTERVAL;
+BEGIN
+  IF p_user_id IS NULL OR p_lock_key IS NULL OR length(p_lock_key) < 8
+     OR p_fingerprint IS NULL OR p_ingest_key IS NULL OR p_row IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_advisory_xact_lock(
+    hashtextextended(p_user_id::text || ':inbox-dedupe:' || p_lock_key, 0));
+
+  IF COALESCE(p_client_keyed, false) THEN
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+    IF FOUND THEN
+      IF rec.fingerprint IS NOT NULL AND rec.fingerprint IS DISTINCT FROM p_fingerprint THEN
+        RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+      END IF;
+      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+    END IF;
+  ELSE
+    lookback := make_interval(secs => GREATEST(COALESCE(p_lookback_ms, 900000), 0) / 1000.0);
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id
+       AND fingerprint = ANY(COALESCE(p_fingerprints, ARRAY[]::text[]))
+       AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+       AND created_at >= now() - lookback
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1;
+    IF FOUND THEN
+      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+    END IF;
+  END IF;
+
+  BEGIN
+    INSERT INTO public.pending_inbox_items (
+      user_id, amount, currency, merchant, card_name, account_id, category_id,
+      occurred_at, raw_payload, raw_text, status, suggestion_source,
+      idempotency_key, ingest_key, direction, amount_ambiguous, source, fingerprint
+    ) VALUES (
+      p_user_id,
+      NULLIF(p_row->>'amount', '')::numeric,
+      COALESCE(NULLIF(p_row->>'currency', ''), 'ARS'),
+      NULLIF(p_row->>'merchant', ''),
+      NULLIF(p_row->>'card_name', ''),
+      NULLIF(p_row->>'account_id', '')::uuid,
+      NULLIF(p_row->>'category_id', '')::uuid,
+      NULLIF(p_row->>'occurred_at', '')::timestamptz,
+      CASE WHEN p_row ? 'raw_payload' AND jsonb_typeof(p_row->'raw_payload') <> 'null'
+           THEN p_row->'raw_payload' ELSE NULL END,
+      NULLIF(p_row->>'raw_text', ''),
+      COALESCE(NULLIF(p_row->>'status', ''), 'pending'),
+      NULLIF(p_row->>'suggestion_source', ''),
+      NULLIF(p_row->>'idempotency_key', ''),
+      COALESCE(NULLIF(p_row->>'ingest_key', ''), p_ingest_key),
+      COALESCE(NULLIF(p_row->>'direction', ''), 'expense'),
+      COALESCE((p_row->>'amount_ambiguous')::boolean, false),
+      COALESCE(NULLIF(p_row->>'source', ''), 'wallet'),
+      p_fingerprint
+    )
+    RETURNING * INTO rec;
+    RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', false);
+  EXCEPTION WHEN unique_violation THEN
+    IF COALESCE(p_client_keyed, false) THEN
+      SELECT * INTO rec
+        FROM public.pending_inbox_items
+       WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+      IF FOUND THEN
+        IF rec.fingerprint IS NOT NULL AND rec.fingerprint IS DISTINCT FROM p_fingerprint THEN
+          RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+        END IF;
+        RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+      END IF;
+    END IF;
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id
+       AND (
+         fingerprint = p_fingerprint
+         OR fingerprint = ANY(COALESCE(p_fingerprints, ARRAY[]::text[]))
+       )
+       AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1;
+    IF FOUND THEN
+      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+    END IF;
+    RAISE;
+  END;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT[], INTEGER, TEXT, BOOLEAN, TEXT, JSONB)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT[], INTEGER, TEXT, BOOLEAN, TEXT, JSONB)
+  TO service_role;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 2. Shared atomic rate-limit counters (token + user)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE IF NOT EXISTS public.rate_limit_counters (
+  key TEXT PRIMARY KEY CHECK (char_length(key) BETWEEN 1 AND 200),
+  count INTEGER NOT NULL DEFAULT 0 CHECK (count >= 0),
+  window_start TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.rate_limit_counters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.rate_limit_counters FORCE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.rate_limit_counters FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.rate_limit_counters TO service_role;
+
+CREATE OR REPLACE FUNCTION public.rate_limit_hit(
+  p_key TEXT,
+  p_max INTEGER,
+  p_window_ms INTEGER
+) RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+DECLARE
+  rec public.rate_limit_counters%ROWTYPE;
+  now_ts TIMESTAMPTZ := clock_timestamp();
+BEGIN
+  IF p_key IS NULL OR char_length(p_key) < 1 OR char_length(p_key) > 200 THEN
+    RAISE EXCEPTION 'Invalid rate-limit key';
+  END IF;
+  IF p_max IS NULL OR p_max < 1 OR p_window_ms IS NULL OR p_window_ms < 1 THEN
+    RAISE EXCEPTION 'Invalid rate-limit window';
+  END IF;
+  INSERT INTO public.rate_limit_counters AS c (key, count, window_start)
+  VALUES (p_key, 1, now_ts)
+  ON CONFLICT (key) DO UPDATE
+    SET count = CASE
+          WHEN c.window_start <= now_ts - ((p_window_ms::text || ' milliseconds')::interval)
+            THEN 1
+          ELSE c.count + 1
+        END,
+        window_start = CASE
+          WHEN c.window_start <= now_ts - ((p_window_ms::text || ' milliseconds')::interval)
+            THEN now_ts
+          ELSE c.window_start
+        END
+  RETURNING * INTO rec;
+  RETURN rec.count <= p_max;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.rate_limit_hit(TEXT, INTEGER, INTEGER) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.rate_limit_hit(TEXT, INTEGER, INTEGER) TO service_role;
+
+CREATE INDEX IF NOT EXISTS rate_limit_counters_window_start_idx
+  ON public.rate_limit_counters (window_start);
+
+CREATE OR REPLACE FUNCTION public.purge_rate_limit_counters(
+  p_older_than INTERVAL DEFAULT INTERVAL '2 hours'
+) RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+DECLARE
+  deleted INTEGER := 0;
+BEGIN
+  DELETE FROM public.rate_limit_counters
+   WHERE window_start < clock_timestamp() - p_older_than;
+  GET DIAGNOSTICS deleted = ROW_COUNT;
+  RETURN deleted;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.purge_rate_limit_counters(INTERVAL) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.purge_rate_limit_counters(INTERVAL) TO service_role;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 3. Installment writes keep the originating channel
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DROP FUNCTION IF EXISTS public.create_installment_transactions(UUID, UUID, NUMERIC, TEXT, INTEGER, UUID, TEXT, TIMESTAMPTZ);
+
+CREATE OR REPLACE FUNCTION public.create_installment_transactions(
+  p_user_id UUID,
+  p_account_id UUID,
+  p_total_amount NUMERIC,
+  p_currency TEXT,
+  p_installments INTEGER,
+  p_category_id UUID,
+  p_description TEXT,
+  p_start_date TIMESTAMPTZ DEFAULT NOW(),
+  p_source TEXT DEFAULT 'web'
+)
+RETURNS UUID
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+DECLARE
+  group_id UUID := extensions.uuid_generate_v4();
+  base_amount NUMERIC;
+  this_amount NUMERIC;
+  installment_date TIMESTAMPTZ;
+  i INTEGER;
+  v_owner UUID;
+  v_source TEXT := COALESCE(NULLIF(btrim(p_source), ''), 'web');
+BEGIN
+  IF p_installments < 2 OR p_installments > 36 THEN
+    RAISE EXCEPTION 'Las cuotas tienen que ser entre 2 y 36.';
+  END IF;
+  IF v_source NOT IN ('web', 'telegram', 'wallet', 'api', 'mcp') THEN
+    RAISE EXCEPTION 'Canal de escritura inválido';
+  END IF;
+
+  SELECT user_id INTO v_owner FROM accounts WHERE id = p_account_id;
+  IF v_owner IS NULL OR v_owner <> p_user_id THEN
+    RAISE EXCEPTION 'Cuenta no encontrada';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+
+  base_amount := round(p_total_amount / p_installments, 2);
+
+  FOR i IN 1..p_installments LOOP
+    installment_date := p_start_date + (i - 1) * INTERVAL '1 month';
+    this_amount := CASE WHEN i = p_installments
+      THEN p_total_amount - base_amount * (p_installments - 1)
+      ELSE base_amount
+    END;
+
+    INSERT INTO transactions (
+      user_id, type, account_id, amount, currency, amount_in_account_currency,
+      category_id, description, transaction_date,
+      installment_number, installment_total, installment_group_id, source
+    ) VALUES (
+      p_user_id, 'expense', p_account_id, this_amount, p_currency, this_amount,
+      p_category_id, p_description || ' (' || i || '/' || p_installments || ')',
+      installment_date, i, p_installments, group_id, v_source
+    );
+  END LOOP;
+
+  RETURN group_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.create_installment_transactions(UUID, UUID, NUMERIC, TEXT, INTEGER, UUID, TEXT, TIMESTAMPTZ, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.create_installment_transactions(UUID, UUID, NUMERIC, TEXT, INTEGER, UUID, TEXT, TIMESTAMPTZ, TEXT) TO service_role;
+
+CREATE OR REPLACE FUNCTION public.create_transaction_once(
+  p_user_id UUID, p_request_id TEXT, p_request_hash TEXT, p_transaction JSONB,
+  p_installments INTEGER DEFAULT 1
+) RETURNS JSONB LANGUAGE plpgsql SECURITY INVOKER SET search_path = public AS $$
+DECLARE
+  prior public.transaction_requests%ROWTYPE;
+  t public.transactions%ROWTYPE;
+  result JSONB;
+  installment_group UUID;
+  v_inbox_item UUID;
+  v_inbox_status TEXT;
+BEGIN
+  IF p_request_id IS NULL OR p_request_id !~ '^[A-Za-z0-9][A-Za-z0-9:._-]{7,199}$'
+     OR p_request_hash IS NULL OR p_request_hash !~ '^[0-9a-f]{64}$' THEN
+    RAISE EXCEPTION 'Invalid request identifier or fingerprint';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  -- Wallet inbox writes share discard's lock order: inbox key, then request key.
+  -- Canonicalize wallet:{uuid} (hyphenated or 32-hex, any case) so lock, receipt
+  -- and discarded check share one identity. JS still rejects dashless at entry.
+  IF p_request_id ~* '^wallet:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32})$' THEN
+    v_inbox_item := substring(p_request_id from 8)::uuid;
+    p_request_id := 'wallet:' || v_inbox_item::text;
+    PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || v_inbox_item::text, 0));
+  END IF;
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':' || p_request_id, 0));
+  SELECT * INTO prior FROM public.transaction_requests
+    WHERE user_id = p_user_id AND request_id = p_request_id;
+  IF FOUND THEN
+    IF prior.request_hash <> p_request_hash THEN
+      RAISE EXCEPTION USING ERRCODE = 'Z0001', MESSAGE = 'Request payload conflict';
+    END IF;
+    RETURN prior.response;
+  END IF;
+  IF v_inbox_item IS NOT NULL THEN
+    SELECT status INTO v_inbox_status
+      FROM public.pending_inbox_items
+     WHERE id = v_inbox_item AND user_id = p_user_id
+     FOR UPDATE;
+    IF FOUND AND v_inbox_status = 'discarded' THEN
+      RAISE EXCEPTION 'Este pendiente fue descartado.';
+    END IF;
+  END IF;
+
+  t := jsonb_populate_record(NULL::public.transactions, p_transaction);
+  IF t.user_id IS DISTINCT FROM p_user_id THEN RAISE EXCEPTION 'No autorizado'; END IF;
+  IF p_installments IS NULL OR p_installments < 1 OR p_installments > 36 THEN
+    RAISE EXCEPTION 'Invalid installments';
+  END IF;
+  IF p_installments > 1 THEN
+    IF t.type <> 'expense' THEN RAISE EXCEPTION 'Installments require expense'; END IF;
+    installment_group := public.create_installment_transactions(p_user_id, t.account_id,
+      t.amount, t.currency, p_installments, t.category_id, t.description,
+      COALESCE(t.transaction_date, now()), COALESCE(t.source, 'web'));
+    SELECT to_jsonb(tx) INTO STRICT result FROM public.transactions tx
+      WHERE tx.user_id = p_user_id AND tx.installment_group_id = installment_group
+        AND tx.installment_number = 1;
+  ELSE
+    INSERT INTO public.transactions (user_id, type, account_id, destination_account_id,
+      amount, currency, amount_in_account_currency, destination_amount_in_account_currency,
+      exchange_rate, category_id, description, notes, tags, transaction_date, is_recurring,
+      recurring_rule_id, source)
+    VALUES (p_user_id, t.type, t.account_id, t.destination_account_id, t.amount, t.currency,
+      t.amount_in_account_currency, t.destination_amount_in_account_currency, t.exchange_rate,
+      t.category_id, t.description, t.notes, t.tags, COALESCE(t.transaction_date, now()),
+      COALESCE(t.is_recurring, false), t.recurring_rule_id, COALESCE(t.source, 'web'))
+    RETURNING to_jsonb(transactions.*) INTO result;
+  END IF;
+  INSERT INTO public.transaction_requests (user_id, request_id, request_hash, response)
+    VALUES (p_user_id, p_request_id, p_request_hash, result);
+  RETURN result;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.create_transaction_once(UUID, TEXT, TEXT, JSONB, INTEGER) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.create_transaction_once(UUID, TEXT, TEXT, JSONB, INTEGER) TO service_role;
+-- END supabase/migrations/20261024200000_inbox_dedupe_uncertain_rate_limit.sql
+
+-- BEGIN supabase/migrations/20261024210000_inbox_possible_duplicate.sql
+-- SHA256 46f8b95167472ee40041af73df3c3ecc901726ad8f7d5adb799b0b197ec22166
+-- Silent duplicate is Idempotency-Key replay only. Anonymous (no key, including
+-- date-only) always inserts; a 15-minute match is flagged possible_duplicate_of.
+-- Forward-only and re-runnable. NEVER `supabase db push`.
+-- Fail closed if Vault is missing at apply time. PGlite tests stub schema vault.
+
+DO $$
+BEGIN
+  PERFORM zarix_vault.vault_available();
+EXCEPTION
+  WHEN undefined_function THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'zarix_vault.vault_available() must exist before this migration.';
+END $$;
+
+-- Drop the anonymous fingerprint unique indexes. Keyed uniqueness stays on
+-- (user_id, idempotency_key) and (user_id, ingest_key).
+DROP INDEX IF EXISTS public.pending_inbox_fingerprint_reserved_unique;
+DROP INDEX IF EXISTS public.pending_inbox_fingerprint_pending_unique;
+
+ALTER TABLE public.pending_inbox_items
+  ADD COLUMN IF NOT EXISTS possible_duplicate_of UUID;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+      FROM pg_constraint
+     WHERE conname = 'pending_inbox_possible_duplicate_fk'
+       AND conrelid = 'public.pending_inbox_items'::regclass
+  ) THEN
+    ALTER TABLE public.pending_inbox_items
+      ADD CONSTRAINT pending_inbox_possible_duplicate_fk
+      FOREIGN KEY (possible_duplicate_of)
+      REFERENCES public.pending_inbox_items(id)
+      ON DELETE SET NULL;
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS pending_inbox_possible_duplicate_idx
+  ON public.pending_inbox_items (user_id, possible_duplicate_of)
+  WHERE possible_duplicate_of IS NOT NULL;
+
+-- Canonical tool_payload for keyed replay vs 409. Null stored vs incoming is a mismatch.
+CREATE OR REPLACE FUNCTION public.inbox_canonical_tool_payload(p JSONB)
+RETURNS JSONB
+LANGUAGE sql
+IMMUTABLE
+AS $$
+  SELECT CASE
+    WHEN p IS NULL OR jsonb_typeof(p) = 'null' THEN NULL
+    ELSE jsonb_build_object(
+      'type', p->>'type',
+      'amount', p->'amount',
+      'currency', p->>'currency',
+      'description', p->>'description',
+      'account', p->>'account',
+      'accountId', p->>'accountId',
+      'category', p->>'category',
+      'categoryId', p->>'categoryId',
+      'destinationAccount', p->>'destinationAccount',
+      'destinationAccountId', p->>'destinationAccountId',
+      'transactionDate', COALESCE(p->>'transactionDate', p->>'date'),
+      'installments', p->'installments'
+    )
+  END;
+$$;
+
+REVOKE ALL ON FUNCTION public.inbox_canonical_tool_payload(JSONB) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.inbox_canonical_tool_payload(JSONB) TO service_role;
+
+-- Replace the fingerprint-window reserve. Old 8-arg signature must go first.
+DROP FUNCTION IF EXISTS public.reserve_pending_inbox_item(UUID, TEXT, TEXT[], INTEGER, TEXT, BOOLEAN, TEXT, JSONB);
+
+CREATE OR REPLACE FUNCTION public.reserve_pending_inbox_item(
+  p_user_id UUID,
+  p_lock_key TEXT,
+  p_ingest_key TEXT,
+  p_client_keyed BOOLEAN,
+  p_lookback_ms INTEGER,
+  p_row JSONB
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+DECLARE
+  rec public.pending_inbox_items%ROWTYPE;
+  match_id UUID;
+  lookback INTERVAL;
+  incoming_amount NUMERIC;
+  incoming_currency TEXT;
+  incoming_direction TEXT;
+  incoming_merchant TEXT;
+  incoming_account UUID;
+  incoming_source TEXT;
+  incoming_payload JSONB;
+BEGIN
+  IF p_user_id IS NULL OR p_lock_key IS NULL OR length(p_lock_key) < 8
+     OR p_ingest_key IS NULL OR p_row IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_advisory_xact_lock(
+    hashtextextended(p_user_id::text || ':inbox-dedupe:' || p_lock_key, 0));
+
+  incoming_amount := NULLIF(p_row->>'amount', '')::numeric;
+  incoming_currency := COALESCE(NULLIF(p_row->>'currency', ''), 'ARS');
+  incoming_direction := COALESCE(NULLIF(p_row->>'direction', ''), 'expense');
+  incoming_merchant := COALESCE(NULLIF(p_row->>'merchant', ''), '');
+  incoming_account := NULLIF(p_row->>'account_id', '')::uuid;
+  incoming_source := COALESCE(NULLIF(p_row->>'source', ''), 'wallet');
+  incoming_payload := public.inbox_canonical_tool_payload(
+    CASE WHEN p_row ? 'tool_payload' AND jsonb_typeof(p_row->'tool_payload') <> 'null'
+         THEN p_row->'tool_payload' ELSE NULL END);
+
+  IF COALESCE(p_client_keyed, false) THEN
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+    IF NOT FOUND THEN
+      SELECT * INTO rec
+        FROM public.pending_inbox_items
+       WHERE user_id = p_user_id AND idempotency_key = p_ingest_key;
+    END IF;
+    IF FOUND THEN
+      IF rec.source IS DISTINCT FROM incoming_source
+         OR rec.amount IS DISTINCT FROM incoming_amount
+         OR rec.currency IS DISTINCT FROM incoming_currency
+         OR rec.direction IS DISTINCT FROM incoming_direction
+         OR lower(coalesce(rec.merchant, '')) IS DISTINCT FROM lower(incoming_merchant)
+         OR rec.account_id IS DISTINCT FROM incoming_account
+         OR public.inbox_canonical_tool_payload(rec.tool_payload) IS DISTINCT FROM incoming_payload THEN
+        RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+      END IF;
+      RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+    END IF;
+  END IF;
+
+  BEGIN
+    INSERT INTO public.pending_inbox_items (
+      user_id, amount, currency, merchant, card_name, account_id, category_id,
+      occurred_at, raw_payload, raw_text, status, suggestion_source,
+      idempotency_key, ingest_key, direction, amount_ambiguous, source, fingerprint,
+      tool_payload
+    ) VALUES (
+      p_user_id,
+      incoming_amount,
+      incoming_currency,
+      NULLIF(incoming_merchant, ''),
+      NULLIF(p_row->>'card_name', ''),
+      incoming_account,
+      NULLIF(p_row->>'category_id', '')::uuid,
+      NULLIF(p_row->>'occurred_at', '')::timestamptz,
+      CASE WHEN p_row ? 'raw_payload' AND jsonb_typeof(p_row->'raw_payload') <> 'null'
+           THEN p_row->'raw_payload' ELSE NULL END,
+      NULLIF(p_row->>'raw_text', ''),
+      COALESCE(NULLIF(p_row->>'status', ''), 'pending'),
+      NULLIF(p_row->>'suggestion_source', ''),
+      CASE WHEN COALESCE(p_client_keyed, false) THEN NULLIF(p_row->>'idempotency_key', '') ELSE NULL END,
+      COALESCE(NULLIF(p_row->>'ingest_key', ''), p_ingest_key),
+      incoming_direction,
+      COALESCE((p_row->>'amount_ambiguous')::boolean, false),
+      incoming_source,
+      COALESCE(NULLIF(p_row->>'fingerprint', ''), p_ingest_key),
+      CASE WHEN p_row ? 'tool_payload' AND jsonb_typeof(p_row->'tool_payload') <> 'null'
+           THEN p_row->'tool_payload' ELSE NULL END
+    )
+    RETURNING * INTO rec;
+  EXCEPTION WHEN unique_violation THEN
+    IF COALESCE(p_client_keyed, false) THEN
+      SELECT * INTO rec
+        FROM public.pending_inbox_items
+       WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+      IF NOT FOUND THEN
+        SELECT * INTO rec
+          FROM public.pending_inbox_items
+         WHERE user_id = p_user_id AND idempotency_key = p_ingest_key;
+      END IF;
+      IF FOUND THEN
+        IF rec.source IS DISTINCT FROM incoming_source
+           OR rec.amount IS DISTINCT FROM incoming_amount
+           OR rec.currency IS DISTINCT FROM incoming_currency
+           OR rec.direction IS DISTINCT FROM incoming_direction
+           OR lower(coalesce(rec.merchant, '')) IS DISTINCT FROM lower(incoming_merchant)
+           OR rec.account_id IS DISTINCT FROM incoming_account
+           OR public.inbox_canonical_tool_payload(rec.tool_payload) IS DISTINCT FROM incoming_payload THEN
+          RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+        END IF;
+        RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', true);
+      END IF;
+    END IF;
+    RAISE;
+  END;
+
+  -- Anonymous: never duplicate:true. Flag a rolling 15-minute match instead.
+  IF NOT COALESCE(p_client_keyed, false) THEN
+    lookback := make_interval(secs => GREATEST(COALESCE(p_lookback_ms, 900000), 0) / 1000.0);
+    SELECT id INTO match_id
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id
+       AND id <> rec.id
+       AND amount IS NOT DISTINCT FROM incoming_amount
+       AND currency = incoming_currency
+       AND direction = incoming_direction
+       AND (
+         (incoming_account IS NOT NULL AND account_id IS NOT DISTINCT FROM incoming_account)
+         OR (incoming_merchant <> '' AND lower(coalesce(merchant, '')) = lower(incoming_merchant))
+       )
+       AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+       AND created_at >= now() - lookback
+     ORDER BY created_at ASC, id ASC
+     LIMIT 1;
+    IF match_id IS NOT NULL THEN
+      UPDATE public.pending_inbox_items
+         SET possible_duplicate_of = match_id,
+             updated_at = now()
+       WHERE id = rec.id
+         AND user_id = p_user_id
+      RETURNING * INTO rec;
+    END IF;
+  END IF;
+
+  RETURN jsonb_build_object('item', to_jsonb(rec), 'duplicate', false);
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLEAN, INTEGER, JSONB)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLEAN, INTEGER, JSONB)
+  TO service_role;
+-- END supabase/migrations/20261024210000_inbox_possible_duplicate.sql
+
+-- BEGIN supabase/migrations/20261024220000_inbox_request_canonical.sql
+-- SHA256 d0f684ef268d815bc74afe1006911dda7a80d43d882317d56434366244fa5098
+-- Immutable request identity for keyed Wallet/REST/MCP replay.
+-- Compute the canonical string in JS (`v1:{json}`); SQL stores it once and compares it.
+-- Prod currently has none of 180000–240000 (latest applied 20261024182923), so this
+-- backfill is a no-op there. Preview/staging keyed rows created before this file
+-- get `legacy:<id>`, which never matches JS canonical: those keys stay bound
+-- (409 on retry) and are not released.
+-- Forward-only and re-runnable. NEVER `supabase db push`.
+-- Fail closed if Vault is missing at apply time. PGlite tests stub schema vault.
+
+DO $$
+BEGIN
+  PERFORM zarix_vault.vault_available();
+EXCEPTION
+  WHEN undefined_function THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'zarix_vault.vault_available() must exist before this migration.';
+END $$;
+
+ALTER TABLE public.pending_inbox_items
+  ADD COLUMN IF NOT EXISTS request_canonical TEXT;
+
+-- Drop the freeze trigger before backfill so a re-run can fill empty canonicals
+-- (and empty fingerprints) that were inserted between applies.
+DROP TRIGGER IF EXISTS pending_inbox_freeze_request_canonical ON public.pending_inbox_items;
+
+UPDATE public.pending_inbox_items
+   SET request_canonical = 'legacy:' || id::text
+ WHERE request_canonical IS NULL OR request_canonical = '';
+
+UPDATE public.pending_inbox_items
+   SET fingerprint = 'legacy-fp:' || id::text
+ WHERE fingerprint IS NULL OR fingerprint = '';
+
+ALTER TABLE public.pending_inbox_items
+  ALTER COLUMN request_canonical SET DEFAULT '',
+  ALTER COLUMN request_canonical SET NOT NULL;
+
+-- Replace keyed compare: source + request_canonical only. Lock key still comes from JS.
+CREATE OR REPLACE FUNCTION public.reserve_pending_inbox_item(
+  p_user_id UUID,
+  p_lock_key TEXT,
+  p_ingest_key TEXT,
+  p_client_keyed BOOLEAN,
+  p_lookback_ms INTEGER,
+  p_row JSONB
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  rec public.pending_inbox_items%ROWTYPE;
+  match_id UUID;
+  lookback INTERVAL;
+  incoming_amount NUMERIC;
+  incoming_currency TEXT;
+  incoming_direction TEXT;
+  incoming_merchant TEXT;
+  incoming_account UUID;
+  incoming_source TEXT;
+  incoming_canonical TEXT;
+BEGIN
+  IF p_user_id IS NULL OR p_lock_key IS NULL OR pg_catalog.length(p_lock_key) < 8
+     OR p_ingest_key IS NULL OR p_row IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox-dedupe:' || p_lock_key, 0));
+
+  incoming_amount := NULLIF(p_row->>'amount', '')::numeric;
+  incoming_currency := COALESCE(NULLIF(p_row->>'currency', ''), 'ARS');
+  incoming_direction := COALESCE(NULLIF(p_row->>'direction', ''), 'expense');
+  incoming_merchant := COALESCE(NULLIF(p_row->>'merchant', ''), '');
+  incoming_account := NULLIF(p_row->>'account_id', '')::uuid;
+  incoming_source := COALESCE(NULLIF(p_row->>'source', ''), 'wallet');
+  incoming_canonical := COALESCE(p_row->>'request_canonical', '');
+  IF COALESCE(p_client_keyed, false) AND incoming_canonical = '' THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+
+  IF COALESCE(p_client_keyed, false) THEN
+    SELECT * INTO rec
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+    IF NOT FOUND THEN
+      SELECT * INTO rec
+        FROM public.pending_inbox_items
+       WHERE user_id = p_user_id AND idempotency_key = p_ingest_key;
+    END IF;
+    IF FOUND THEN
+      -- Never release/expire the key here. Mismatch is 409 even for old rows.
+      IF rec.source IS DISTINCT FROM incoming_source
+         OR rec.request_canonical IS DISTINCT FROM incoming_canonical THEN
+        RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+      END IF;
+      RETURN pg_catalog.jsonb_build_object('item', pg_catalog.to_jsonb(rec), 'duplicate', true);
+    END IF;
+  END IF;
+
+  BEGIN
+    INSERT INTO public.pending_inbox_items (
+      user_id, amount, currency, merchant, card_name, account_id, category_id,
+      occurred_at, raw_payload, raw_text, status, suggestion_source,
+      idempotency_key, ingest_key, direction, amount_ambiguous, source, fingerprint,
+      tool_payload, request_canonical
+    ) VALUES (
+      p_user_id,
+      incoming_amount,
+      incoming_currency,
+      NULLIF(incoming_merchant, ''),
+      NULLIF(p_row->>'card_name', ''),
+      incoming_account,
+      NULLIF(p_row->>'category_id', '')::uuid,
+      NULLIF(p_row->>'occurred_at', '')::timestamptz,
+      CASE WHEN p_row ? 'raw_payload' AND pg_catalog.jsonb_typeof(p_row->'raw_payload') <> 'null'
+           THEN p_row->'raw_payload' ELSE NULL END,
+      NULLIF(p_row->>'raw_text', ''),
+      COALESCE(NULLIF(p_row->>'status', ''), 'pending'),
+      NULLIF(p_row->>'suggestion_source', ''),
+      CASE WHEN COALESCE(p_client_keyed, false) THEN NULLIF(p_row->>'idempotency_key', '') ELSE NULL END,
+      COALESCE(NULLIF(p_row->>'ingest_key', ''), p_ingest_key),
+      incoming_direction,
+      COALESCE((p_row->>'amount_ambiguous')::boolean, false),
+      incoming_source,
+      COALESCE(NULLIF(p_row->>'fingerprint', ''), p_ingest_key),
+      CASE WHEN p_row ? 'tool_payload' AND pg_catalog.jsonb_typeof(p_row->'tool_payload') <> 'null'
+           THEN p_row->'tool_payload' ELSE NULL END,
+      incoming_canonical
+    )
+    RETURNING * INTO rec;
+  EXCEPTION WHEN unique_violation THEN
+    IF COALESCE(p_client_keyed, false) THEN
+      SELECT * INTO rec
+        FROM public.pending_inbox_items
+       WHERE user_id = p_user_id AND ingest_key = p_ingest_key;
+      IF NOT FOUND THEN
+        SELECT * INTO rec
+          FROM public.pending_inbox_items
+         WHERE user_id = p_user_id AND idempotency_key = p_ingest_key;
+      END IF;
+      IF FOUND THEN
+        IF rec.source IS DISTINCT FROM incoming_source
+           OR rec.request_canonical IS DISTINCT FROM incoming_canonical THEN
+          RAISE EXCEPTION 'Esa Idempotency-Key ya se usó con otro cuerpo.';
+        END IF;
+        RETURN pg_catalog.jsonb_build_object('item', pg_catalog.to_jsonb(rec), 'duplicate', true);
+      END IF;
+    END IF;
+    RAISE;
+  END;
+
+  IF NOT COALESCE(p_client_keyed, false) THEN
+    lookback := pg_catalog.make_interval(
+      secs => (CASE WHEN COALESCE(p_lookback_ms, 900000) < 0 THEN 0 ELSE COALESCE(p_lookback_ms, 900000) END) / 1000.0);
+    SELECT id INTO match_id
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id
+       AND id <> rec.id
+       AND amount IS NOT DISTINCT FROM incoming_amount
+       AND currency = incoming_currency
+       AND direction = incoming_direction
+       AND (
+         (incoming_account IS NOT NULL AND account_id IS NOT DISTINCT FROM incoming_account)
+         OR (incoming_merchant <> '' AND pg_catalog.lower(coalesce(merchant, '')) = pg_catalog.lower(incoming_merchant))
+       )
+       AND status IN ('pending', 'confirming', 'confirmed', 'uncertain')
+       AND created_at >= pg_catalog.now() - lookback
+     ORDER BY created_at ASC, id ASC
+     LIMIT 1;
+    IF match_id IS NOT NULL THEN
+      UPDATE public.pending_inbox_items
+         SET possible_duplicate_of = match_id,
+             updated_at = pg_catalog.now()
+       WHERE id = rec.id
+         AND user_id = p_user_id
+      RETURNING * INTO rec;
+    END IF;
+  END IF;
+
+  RETURN pg_catalog.jsonb_build_object('item', pg_catalog.to_jsonb(rec), 'duplicate', false);
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLEAN, INTEGER, JSONB)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.reserve_pending_inbox_item(UUID, TEXT, TEXT, BOOLEAN, INTEGER, JSONB)
+  TO service_role;
+
+REVOKE UPDATE (request_canonical) ON public.pending_inbox_items FROM PUBLIC, anon, authenticated;
+
+CREATE OR REPLACE FUNCTION public.pending_inbox_freeze_request_canonical()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  IF NEW.request_canonical IS DISTINCT FROM OLD.request_canonical THEN
+    RAISE EXCEPTION 'request_canonical is immutable';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS pending_inbox_freeze_request_canonical ON public.pending_inbox_items;
+CREATE TRIGGER pending_inbox_freeze_request_canonical
+  BEFORE UPDATE ON public.pending_inbox_items
+  FOR EACH ROW
+  EXECUTE FUNCTION public.pending_inbox_freeze_request_canonical();
+
+REVOKE ALL ON FUNCTION public.pending_inbox_freeze_request_canonical() FROM PUBLIC, anon, authenticated;
+-- END supabase/migrations/20261024220000_inbox_request_canonical.sql
+
+-- BEGIN supabase/migrations/20261024230000_inbox_possible_duplicate_owner_fk.sql
+-- SHA256 059dc3104ae84fe1e845add028e92d201935cd4bae564e3d4a6749c19b8b5f88
+-- possible_duplicate_of must point at the same owner's row.
+-- ON DELETE SET NULL applies only to the reference column, not user_id.
+-- Forward-only and re-runnable. NEVER `supabase db push`.
+
+DO $$
+BEGIN
+  PERFORM zarix_vault.vault_available();
+EXCEPTION
+  WHEN undefined_function THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'zarix_vault.vault_available() must exist before this migration.';
+END $$;
+
+UPDATE public.pending_inbox_items child
+   SET possible_duplicate_of = NULL
+ WHERE child.possible_duplicate_of IS NOT NULL
+   AND NOT EXISTS (
+     SELECT 1
+       FROM public.pending_inbox_items parent
+      WHERE parent.id = child.possible_duplicate_of
+        AND parent.user_id = child.user_id
+   );
+
+CREATE UNIQUE INDEX IF NOT EXISTS pending_inbox_user_id_id_unique
+  ON public.pending_inbox_items (user_id, id);
+
+ALTER TABLE public.pending_inbox_items
+  DROP CONSTRAINT IF EXISTS pending_inbox_possible_duplicate_fk;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+      FROM pg_constraint
+     WHERE conname = 'pending_inbox_possible_duplicate_fk'
+       AND conrelid = 'public.pending_inbox_items'::regclass
+  ) THEN
+    ALTER TABLE public.pending_inbox_items
+      ADD CONSTRAINT pending_inbox_possible_duplicate_fk
+      FOREIGN KEY (user_id, possible_duplicate_of)
+      REFERENCES public.pending_inbox_items (user_id, id)
+      ON DELETE SET NULL (possible_duplicate_of);
+  END IF;
+END $$;
+-- END supabase/migrations/20261024230000_inbox_possible_duplicate_owner_fk.sql
+
+-- BEGIN supabase/migrations/20261024240000_installments_cordoba_calendar.sql
+-- SHA256 c7f6348c36e88a3e0f7a98d6a6b5420e45896bb21096424a8b2fcdf75f40a124
+-- Add installment months on the Córdoba civil calendar, then convert to timestamptz.
+-- Independent of the session TimeZone. Forward-only; do not edit 20261024200000.
+-- NEVER `supabase db push`.
+
+DO $$
+BEGIN
+  PERFORM zarix_vault.vault_available();
+EXCEPTION
+  WHEN undefined_function THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'zarix_vault.vault_available() must exist before this migration.';
+END $$;
+
+CREATE OR REPLACE FUNCTION public.cordoba_add_months(p_start TIMESTAMPTZ, p_months INTEGER)
+RETURNS TIMESTAMPTZ
+LANGUAGE sql
+IMMUTABLE
+SET search_path = pg_catalog, pg_temp
+SET timezone = 'UTC'
+AS $$
+  SELECT (
+    (
+      ((p_start AT TIME ZONE 'America/Argentina/Cordoba')::date + (COALESCE(p_months, 0) * INTERVAL '1 month'))::date
+      + ((p_start AT TIME ZONE 'America/Argentina/Cordoba')::time)
+    ) AT TIME ZONE 'America/Argentina/Cordoba'
+  );
+$$;
+
+REVOKE ALL ON FUNCTION public.cordoba_add_months(TIMESTAMPTZ, INTEGER) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.cordoba_add_months(TIMESTAMPTZ, INTEGER) TO service_role;
+
+DROP FUNCTION IF EXISTS public.create_installment_transactions(UUID, UUID, NUMERIC, TEXT, INTEGER, UUID, TEXT, TIMESTAMPTZ, TEXT);
+
+CREATE OR REPLACE FUNCTION public.create_installment_transactions(
+  p_user_id UUID,
+  p_account_id UUID,
+  p_total_amount NUMERIC,
+  p_currency TEXT,
+  p_installments INTEGER,
+  p_category_id UUID,
+  p_description TEXT,
+  p_start_date TIMESTAMPTZ DEFAULT NOW(),
+  p_source TEXT DEFAULT 'web'
+)
+RETURNS UUID
+LANGUAGE plpgsql
+SET search_path = public
+SET timezone = 'UTC'
+AS $$
+DECLARE
+  group_id UUID := extensions.uuid_generate_v4();
+  base_amount NUMERIC;
+  this_amount NUMERIC;
+  installment_date TIMESTAMPTZ;
+  i INTEGER;
+  v_owner UUID;
+  v_source TEXT := COALESCE(NULLIF(btrim(p_source), ''), 'web');
+BEGIN
+  IF p_installments < 2 OR p_installments > 36 THEN
+    RAISE EXCEPTION 'Las cuotas tienen que ser entre 2 y 36.';
+  END IF;
+  IF v_source NOT IN ('web', 'telegram', 'wallet', 'api', 'mcp') THEN
+    RAISE EXCEPTION 'Canal de escritura inválido';
+  END IF;
+
+  SELECT user_id INTO v_owner FROM accounts WHERE id = p_account_id;
+  IF v_owner IS NULL OR v_owner <> p_user_id THEN
+    RAISE EXCEPTION 'Cuenta no encontrada';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+
+  base_amount := round(p_total_amount / p_installments, 2);
+
+  FOR i IN 1..p_installments LOOP
+    installment_date := public.cordoba_add_months(p_start_date, i - 1);
+    this_amount := CASE WHEN i = p_installments
+      THEN p_total_amount - base_amount * (p_installments - 1)
+      ELSE base_amount
+    END;
+
+    INSERT INTO transactions (
+      user_id, type, account_id, amount, currency, amount_in_account_currency,
+      category_id, description, transaction_date,
+      installment_number, installment_total, installment_group_id, source
+    ) VALUES (
+      p_user_id, 'expense', p_account_id, this_amount, p_currency, this_amount,
+      p_category_id, p_description || ' (' || i || '/' || p_installments || ')',
+      installment_date, i, p_installments, group_id, v_source
+    );
+  END LOOP;
+
+  RETURN group_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.create_installment_transactions(UUID, UUID, NUMERIC, TEXT, INTEGER, UUID, TEXT, TIMESTAMPTZ, TEXT)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.create_installment_transactions(UUID, UUID, NUMERIC, TEXT, INTEGER, UUID, TEXT, TIMESTAMPTZ, TEXT)
+  TO service_role;
+-- END supabase/migrations/20261024240000_installments_cordoba_calendar.sql

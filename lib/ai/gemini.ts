@@ -1,6 +1,5 @@
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { GoogleGenerativeAI, Content, type FunctionDeclaration } from '@google/generative-ai';
-import { createServiceClientSync } from '@/lib/supabase/server';
 
 const GEMINI_LITE_MODEL = process.env.GEMINI_MODEL_LITE || 'gemini-2.5-flash-lite';
 const GEMINI_FULL_MODEL = process.env.GEMINI_MODEL_FULL || 'gemini-2.5-flash';
@@ -264,15 +263,16 @@ export function createGeminiClient(apiKey: string): GeminiClient {
  * Resolves API key: user row first, then server env (hosting default).
  */
 export async function getGeminiForUser(userId: string): Promise<GeminiClient> {
-  const supabase = createServiceClientSync();
-  const { data } = await supabase
-    .from('users')
-    .select('gemini_api_key')
-    .eq('id', userId)
-    .single();
+  const { getUserGeminiApiKey } = await import('@/lib/secrets/user-secrets');
+  let fromStore = '';
+  try {
+    fromStore = (await getUserGeminiApiKey(userId))?.trim() || '';
+  } catch {
+    fromStore = '';
+  }
 
   const key =
-    (data?.gemini_api_key && String(data.gemini_api_key).trim()) ||
+    fromStore ||
     (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim()) ||
     '';
 

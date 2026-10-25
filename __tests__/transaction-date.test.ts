@@ -4,7 +4,12 @@ import {
   calendarDateToUtcNoonIso,
   isoToLocalDateInputValue,
   parseBotTransactionDateInput,
+  parseCivilMonthQuery,
   isCivilYmd,
+  transactionCivilYmd,
+  ymdToQueryEndIso,
+  ymdToQueryExclusiveEndIso,
+  ymdToQueryStartIso,
 } from '@/lib/transaction-date';
 
 describe('todayLocalYmd', () => {
@@ -87,4 +92,40 @@ describe('parseBotTransactionDateInput', () => {
       expect(parseBotTransactionDateInput(input)).toBeUndefined();
     }
   );
+});
+
+describe('parseCivilMonthQuery', () => {
+  it('treats YYYY-MM as Córdoba noon on day 1, not UTC midnight', () => {
+    const month = parseCivilMonthQuery('2026-10');
+    expect(month.toISOString()).toBe('2026-10-01T15:00:00.000Z');
+    expect(new Date('2026-10').toISOString()).toBe('2026-10-01T00:00:00.000Z');
+    expect(month.getTime()).not.toBe(new Date('2026-10').getTime());
+  });
+
+  it('falls back to now for an unparseable month', () => {
+    const now = new Date('2026-09-15T12:00:00.000Z');
+    expect(parseCivilMonthQuery('nope', now)).toBe(now);
+    expect(parseCivilMonthQuery(null, now)).toBe(now);
+  });
+});
+
+describe('Córdoba civil grouping and month bounds', () => {
+  it('keeps 24 Oct 23:30 local on the 24th, not the UTC 25th', () => {
+    expect(transactionCivilYmd('2026-10-24T23:30:00-03:00')).toBe('2026-10-24');
+    expect(transactionCivilYmd('2026-10-24T23:30:00-03:00')).not.toBe('2026-10-25');
+  });
+
+  it('keeps 31 Oct 23:30 local inside October query bounds', () => {
+    expect(transactionCivilYmd('2026-10-31T23:30:00-03:00')).toBe('2026-10-31');
+    const start = ymdToQueryStartIso('2026-10-01');
+    const end = ymdToQueryEndIso('2026-10-31');
+    const stored = new Date('2026-10-31T23:30:00-03:00').toISOString();
+    expect(stored).toBe('2026-11-01T02:30:00.000Z');
+    expect(stored >= start).toBe(true);
+    expect(stored <= end).toBe(true);
+    expect(end).toBe('2026-11-01T02:59:59.999Z');
+    const exclusive = ymdToQueryExclusiveEndIso('2026-10-31');
+    expect(exclusive).toBe('2026-11-01T03:00:00.000Z');
+    expect(stored < exclusive).toBe(true);
+  });
 });

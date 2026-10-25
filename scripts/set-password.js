@@ -67,7 +67,14 @@ const password = process.argv[3];
 
 if (!email || !password) {
   console.log('❌ Uso: node scripts/set-password.js EMAIL PASSWORD');
-  console.log('📝 Ejemplo: node scripts/set-password.js jeff@example.com mipassword123');
+  console.log('📝 Ejemplo: node scripts/set-password.js test-a@zarix.invalid mipassword123');
+  process.exit(1);
+}
+
+const normalizedEmail = String(email).trim().toLowerCase();
+const FIXTURE_MAILBOXES = new Set(['test-a@zarix.invalid', 'test-b@zarix.invalid']);
+if (!FIXTURE_MAILBOXES.has(normalizedEmail)) {
+  console.error('❌ Only fixture mailboxes are allowed (test-a@zarix.invalid / test-b@zarix.invalid). Never the owner account.');
   process.exit(1);
 }
 
