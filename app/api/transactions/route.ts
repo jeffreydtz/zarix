@@ -5,7 +5,7 @@ import { transactionsService } from '@/lib/services/transactions';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { errorResponse, requireUser } from '@/lib/api-handler';
 import { observedRequest } from '@/lib/observability/correlation';
-import { moneyAmountFromToken, rawJsonHasInvalidMoney } from '@/lib/money-amount';
+import { positiveMoneyAmount, rawJsonHasInvalidMoney } from '@/lib/money-amount';
 
 export async function GET(req: NextRequest) {
   try {
@@ -104,11 +104,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const amount =
-      typeof body.amount === 'string'
-        ? moneyAmountFromToken(body.amount)
-        : Number(body.amount);
-    if (amount == null || !Number.isFinite(amount) || amount <= 0) {
+    const amount = positiveMoneyAmount(body.amount);
+    if (amount == null) {
       return NextResponse.json({ error: 'Monto inválido' }, { status: 400 });
     }
 

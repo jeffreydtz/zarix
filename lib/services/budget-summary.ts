@@ -1,4 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { APP_CIVIL_TIMEZONE, civilTodayYmd, startOfMonthYmd } from '@/lib/transaction-date';
 import { budgetsService } from './budgets';
 
 export interface TopBudgetItem {
@@ -14,10 +15,9 @@ export interface TopBudgetItem {
   currency: string;
 }
 
-/** Primer día del mes en curso, formato YYYY-MM-01 (mismo formato que la columna `budgets.month`). */
-function currentMonthStr(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+/** Primer día del mes civil Córdoba, formato YYYY-MM-01 (mismo formato que `budgets.month`). */
+function currentMonthStr(now: Date = new Date()): string {
+  return startOfMonthYmd(civilTodayYmd(APP_CIVIL_TIMEZONE, now));
 }
 
 /**
@@ -39,7 +39,7 @@ export async function getTopBudgets(userId: string, limit = 4): Promise<TopBudge
   if (!budgets || budgets.length === 0) return [];
 
   // La RPC incluye presupuestos sin categoría; null también identifica su estado.
-  const status = await budgetsService.getStatus(userId, new Date(month));
+  const status = await budgetsService.getStatus(userId, month);
   const statusByCategory = new Map(status.map((s) => [s.category_id, s]));
 
   const items: TopBudgetItem[] = budgets.map((b: any) => {

@@ -6,6 +6,7 @@ import {
   hasAtMostTwoMoneyDecimals,
   integerCentsFromToken,
   moneyAmountFromToken,
+  positiveMoneyAmount,
   rawJsonHasInvalidMoney,
 } from '@/lib/money-amount';
 
@@ -74,6 +75,37 @@ describe('integer cents money check (no float*100)', () => {
     expect(extractTopLevelJsonAmount(dup).duplicate).toBe(true);
     expect(integerCentsFromToken(extractJsonNumberToken(dup)!)).toBeNull();
     expect(rawJsonHasInvalidMoney(dup)).toBe(true);
+  });
+
+  it('preserves a leading sign so "-50" is not stored as +50', () => {
+    expect(integerCentsFromToken('-50')).toBe(BigInt(-5000));
+    expect(moneyAmountFromToken('-50')).toBe(-50);
+    expect(moneyAmountFromToken('-50')).not.toBe(50);
+    expect(positiveMoneyAmount('-50')).toBeNull();
+    expect(positiveMoneyAmount(-50)).toBeNull();
+    expect(positiveMoneyAmount(50)).toBe(50);
+  });
+
+  it('accepts only a finite number or validated money string as a positive amount', () => {
+    expect(positiveMoneyAmount(true)).toBeNull();
+    expect(positiveMoneyAmount([1000])).toBeNull();
+    expect(positiveMoneyAmount(['1e3'])).toBeNull();
+    expect(positiveMoneyAmount('1e3')).toBeNull();
+    expect(positiveMoneyAmount('1000')).toBe(1000);
+  });
+
+  it('counts every amount-like JSON key case-insensitively and parks conflicts', () => {
+    const dupNull = '{"amount":2,"amount":null,"importe":1000}';
+    expect(extractTopLevelJsonAmount(dupNull).duplicate).toBe(true);
+    expect(rawJsonHasInvalidMoney(dupNull)).toBe(true);
+    const mixedCase = '{"Amount":2,"importe":1000}';
+    expect(extractTopLevelJsonAmount(mixedCase).duplicate).toBe(true);
+    expect(rawJsonHasInvalidMoney(mixedCase)).toBe(true);
+    const amountValue = '{"AMOUNT":2,"value":1000}';
+    expect(extractTopLevelJsonAmount(amountValue).duplicate).toBe(true);
+    expect(rawJsonHasInvalidMoney(amountValue)).toBe(true);
+    const boolDup = '{"amount":2,"amount":true}';
+    expect(extractTopLevelJsonAmount(boolDup).duplicate).toBe(true);
   });
 
   it('rejects exponent and hex money tokens on REST/MCP-shaped JSON', () => {

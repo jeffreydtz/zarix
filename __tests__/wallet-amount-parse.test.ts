@@ -171,6 +171,29 @@ describe('wallet amount parser (table)', () => {
     expect(zero.amountAmbiguous).toBe(true);
   });
 
+  it('parks the full malformed token and ignores dates/times', () => {
+    const cases: Array<{ input: string; note: string }> = [
+      { input: 'Compra $ .5 en COTO con tarjeta Visa', note: 'leading decimal' },
+      { input: 'Compra $ 1_000 en COTO con tarjeta Visa', note: 'underscore' },
+      { input: 'Compra $ 1.2.3 en COTO con tarjeta Visa', note: 'extra dots' },
+      { input: 'Compra 25/10 12:30 en COTO con tarjeta Visa', note: 'date/time' },
+      { input: 'Compra $ 1.250,501 en COTO con tarjeta Visa', note: 'three fractional digits' },
+      { input: 'Compra $ 1.250.50 en COTO con tarjeta Visa', note: 'broken thousands' },
+    ];
+    for (const { input } of cases) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.amount, input).toBeNull();
+      expect(parsed.amount, input).not.toBe(5);
+      expect(parsed.amount, input).not.toBe(1);
+      expect(parsed.amount, input).not.toBe(1.2);
+      expect(parsed.amount, input).not.toBe(25);
+      expect(parsed.amount, input).not.toBe(1250.5);
+      expect(parsed.amount, input).not.toBe(1250);
+    }
+    expect(parseAmountFromText('Compra 25/10 12:30 en COTO').ambiguous).toBe(false);
+    expect(parseAmountFromText('Compra $ .5 en COTO').ambiguous).toBe(true);
+  });
+
   it('parks exponent and hex text tokens instead of auto-confirming 1 or 16', () => {
     const exponent = parseAmountFromText('Compra $ 1e3 en COTO con tarjeta Visa');
     expect(exponent.amount).toBeNull();
@@ -184,6 +207,32 @@ describe('wallet amount parser (table)', () => {
     expect(hex.amount).toBeNull();
     expect(hex.amount).not.toBe(16);
     expect(hex.ambiguous).toBe(true);
+  });
+
+  it('parks conflicting JSON amount aliases regardless of casing or value type', () => {
+    const dupNull = '{"amount":2,"amount":null,"importe":1000,"currency":"ARS","merchant":"Café"}';
+    const parsedDup = parseWalletPayload({
+      json: JSON.parse(dupNull) as Record<string, unknown>,
+      rawJson: dupNull,
+    });
+    expect(parsedDup.amount).toBeNull();
+    expect(parsedDup.amount).not.toBe(2);
+    expect(parsedDup.amount).not.toBe(1000);
+    expect(parsedDup.amountAmbiguous).toBe(true);
+    const mixed = '{"Amount":2,"importe":1000,"currency":"ARS","merchant":"Café"}';
+    const parsedMixed = parseWalletPayload({
+      json: JSON.parse(mixed) as Record<string, unknown>,
+      rawJson: mixed,
+    });
+    expect(parsedMixed.amount).toBeNull();
+    expect(parsedMixed.amountAmbiguous).toBe(true);
+    const upper = '{"AMOUNT":2,"value":1000,"currency":"ARS","merchant":"Café"}';
+    const parsedUpper = parseWalletPayload({
+      json: JSON.parse(upper) as Record<string, unknown>,
+      rawJson: upper,
+    });
+    expect(parsedUpper.amount).toBeNull();
+    expect(parsedUpper.amountAmbiguous).toBe(true);
   });
 
   it('uses the top-level JSON amount and parks duplicate top-level keys', () => {

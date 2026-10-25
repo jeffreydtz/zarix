@@ -207,12 +207,16 @@ for(const legacyGrants of [false,true]) {
       const row=await owner(db,"INSERT INTO budgets(user_id,category_id,month,amount) VALUES($1,$2,'2026-10-01',100) RETURNING id",[ids.a,ids.categoryA]);assert.equal(row.rows.length,1);
     });
     await test(profile,'budget status uses Córdoba bounds under UTC session',async()=>{
-      await service(db,"SET TimeZone TO 'UTC'");
-      await owner(db,"INSERT INTO transactions(user_id,type,account_id,category_id,amount,currency,amount_in_account_currency,transaction_date) VALUES($1,'expense',$2,$3,50,'ARS',50,'2026-10-31 23:30:00-03')",[ids.a,ids.accountA,ids.categoryA]);
-      const october=await service(db,'SELECT spent_amount FROM get_budget_status($1,$2::date)',[ids.a,'2026-10-01']);
-      assert.equal(Number(october.rows[0].spent_amount),50);
-      const november=await service(db,'SELECT spent_amount FROM get_budget_status($1,$2::date)',[ids.a,'2026-11-01']);
-      assert.equal(november.rows.length,0);
+      await db.exec("SET TimeZone TO 'UTC'");
+      try {
+        await owner(db,"INSERT INTO transactions(user_id,type,account_id,category_id,amount,currency,amount_in_account_currency,transaction_date) VALUES($1,'expense',$2,$3,50,'ARS',50,'2026-10-31 23:30:00-03')",[ids.a,ids.accountA,ids.categoryA]);
+        const october=await service(db,'SELECT spent_amount FROM get_budget_status($1,$2::date)',[ids.a,'2026-10-01']);
+        assert.equal(Number(october.rows[0].spent_amount),50);
+        const november=await service(db,'SELECT spent_amount FROM get_budget_status($1,$2::date)',[ids.a,'2026-11-01']);
+        assert.equal(november.rows.length,0);
+      } finally {
+        await db.exec('RESET TimeZone');
+      }
     });
     await test(profile,'system categories cannot be minted or modified',async()=>{
       await rejects(()=>owner(db,"INSERT INTO categories(user_id,name,type,is_system) VALUES($1,'Fake global','expense',true)",[ids.a]));

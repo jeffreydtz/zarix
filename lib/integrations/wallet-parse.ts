@@ -157,7 +157,15 @@ function parseGroupedNumber(
 }
 
 const CANDIDATE_RE =
-  /(?<![A-Za-z\d])([+-])?\s*(?:(ARS|USD|EUR|U\$S|US\$)\$?|(\$))?\s*((?:0[xX][0-9A-Fa-f]+|\d{1,3}(?:[.\s]\d{3})+(?:,\d{1,2})?|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+[.,]\d+|\d{1,12})(?:[eE][+-]?\d+)?)/gi;
+  /(?<![A-Za-z\d])([+-])?\s*(?:(ARS|USD|EUR|U\$S|US\$)\$?|(\$))?\s*((?:0[xX][0-9A-Fa-f]+|[.,]\d+|\d{1,3}(?:[.\s]\d{3})+(?:,\d{1,2})?|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+[.,]\d+|\d{1,12})(?:[eE][+-]?\d+)?)/gi;
+
+function isDateOrTimeContext(src: string, start: number, end: number): boolean {
+  const before = src.slice(Math.max(0, start - 3), start);
+  const after = src.slice(end, end + 4);
+  if (/\/\s*$/.test(before) || /^\s*\/\s*\d/.test(after)) return true;
+  if (/:\s*$/.test(before) || /^\s*:\s*\d/.test(after)) return true;
+  return false;
+}
 
 export function parseAmountFromText(text: string): AmountParseResult {
   const src = text.replace(/\u00a0/g, ' ');
@@ -171,9 +179,19 @@ export function parseAmountFromText(text: string): AmountParseResult {
   let m: RegExpExecArray | null;
   while ((m = CANDIDATE_RE.exec(stripped))) {
     let digits = (m[4] || '').replace(/\s/g, '');
-    const after = stripped.slice(m.index + m[0].length);
-    const extra = after.match(/^[eExX][+\-0-9A-Fa-f]*/);
-    if (extra) digits += extra[0];
+    let tokenEnd = m.index + m[0].length;
+    const extraSci = stripped.slice(tokenEnd).match(/^[eExX][+\-0-9A-Fa-f]*/);
+    if (extraSci) {
+      digits += extraSci[0];
+      tokenEnd += extraSci[0].length;
+    }
+    const extraJunk = stripped.slice(tokenEnd).match(/^[._,\d]+/);
+    if (extraJunk) {
+      digits += extraJunk[0];
+      tokenEnd += extraJunk[0].length;
+    }
+    CANDIDATE_RE.lastIndex = Math.max(CANDIDATE_RE.lastIndex, tokenEnd);
+    if (isDateOrTimeContext(stripped, m.index, tokenEnd)) continue;
     const anchored = Boolean(m[2] || m[3]);
     matches.push({
       raw: digits,
@@ -236,7 +254,8 @@ function parseAmountValue(v: unknown, amountToken?: string | null): AmountParseR
       }
       return { amount: null, ambiguous: true, direction, excessDecimals: true };
     }
-    const amount = moneyAmountFromToken(token);
+    const parsedAmount = moneyAmountFromToken(token);
+    const amount = parsedAmount == null ? null : Math.abs(parsedAmount);
     if (amount == null || !(amount > 0) || amount > MAX_AMOUNT) {
       return { amount: null, ambiguous: false, direction: 'expense' };
     }

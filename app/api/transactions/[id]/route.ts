@@ -3,7 +3,7 @@ import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService, computeTransferAmounts } from '@/lib/services/transactions';
 import { ApiError, errorResponse, requireUser } from '@/lib/api-handler';
-import { moneyAmountFromToken, rawJsonHasInvalidMoney } from '@/lib/money-amount';
+import { positiveMoneyAmount, rawJsonHasInvalidMoney } from '@/lib/money-amount';
 
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -59,9 +59,8 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       );
     }
 
-    const amount =
-      typeof body.amount === 'string' ? moneyAmountFromToken(body.amount) : Number(body.amount);
-    if (amount == null || !Number.isFinite(amount) || amount <= 0) {
+    const amount = positiveMoneyAmount(body.amount);
+    if (amount == null) {
       return NextResponse.json(
         { error: 'El monto debe ser un número mayor a 0' },
         { status: 400 }

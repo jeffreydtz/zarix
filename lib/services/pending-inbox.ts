@@ -393,8 +393,8 @@ async function ingestWalletItemUnlocked(input: {
   }
   if (payload.excessDecimals) {
     const token = input.rawJson ? extractTopLevelJsonAmount(input.rawJson).token : null;
-    const raw = `${token ?? ''} ${payload.rawText ?? ''} ${input.text ?? ''}`;
-    if (!/[eE]/.test(raw) && !/[xX]/.test(raw)) {
+    const sciOrHex = Boolean(token && (/[eE]/.test(token) || /[xX]/.test(token)));
+    if (!sciOrHex) {
       throw new ApiError('El monto no puede tener más de dos decimales.', 400);
     }
   }
@@ -788,7 +788,11 @@ function parkedConfirmFields(row: PendingInboxItem) {
     (typeof parked?.accountId === 'string' ? parked.accountId : null) ?? row.account_id;
   const type = String(parked?.type || (row.direction === 'income' ? 'income' : 'expense'));
   const accountName = typeof parked?.account === 'string' ? parked.account : null;
-  return { amount, accountId, type, accountName };
+  const destinationAccountId =
+    typeof parked?.destinationAccountId === 'string' ? parked.destinationAccountId : null;
+  const destinationAccountName =
+    typeof parked?.destinationAccount === 'string' ? parked.destinationAccount : null;
+  return { amount, accountId, type, accountName, destinationAccountId, destinationAccountName };
 }
 
 function preflightConfirmItem(row: PendingInboxItem | undefined): { error: string; status: number } | null {
@@ -821,20 +825,38 @@ function parkedCategoryId(row: PendingInboxItem): string | null {
   return row.category_id;
 }
 
+async function resolveOwnedAccount(
+  userId: string,
+  known: Set<string>,
+  accountId: string | null,
+  accountName: string | null,
+  currency?: string
+): Promise<void> {
+  if (accountId) {
+    if (!known.has(accountId)) throw new ApiError('La cuenta no existe.', 400);
+    return;
+  }
+  if (!accountName) return;
+  const fuzzy = await accountsService.findByNameFuzzy(userId, accountName, currency ? { currency } : undefined);
+  if (fuzzy.confidence !== 'exact' && fuzzy.confidence !== 'high') {
+    throw new ApiError('La cuenta no existe.', 400);
+  }
+}
+
 async function assertBatchAccountsResolvable(userId: string, rows: PendingInboxItem[]): Promise<void> {
   const accounts = await accountsService.list(userId);
   const known = new Set(accounts.map((account) => account.id));
   for (const row of rows) {
     if (row.status === 'confirmed') continue;
-    const { accountId, type, accountName } = parkedConfirmFields(row);
+    const { accountId, type, accountName, destinationAccountId, destinationAccountName } =
+      parkedConfirmFields(row);
     if (accountId) {
-      if (!known.has(accountId)) throw new ApiError('La cuenta no existe.', 400);
-      continue;
+      await resolveOwnedAccount(userId, known, accountId, null);
+    } else if (type !== 'transfer' && accountName) {
+      await resolveOwnedAccount(userId, known, null, accountName, row.currency);
     }
-    if (type === 'transfer' || !accountName) continue;
-    const fuzzy = await accountsService.findByNameFuzzy(userId, accountName, { currency: row.currency });
-    if (fuzzy.confidence !== 'exact' && fuzzy.confidence !== 'high') {
-      throw new ApiError('La cuenta no existe.', 400);
+    if (type === 'transfer') {
+      await resolveOwnedAccount(userId, known, destinationAccountId, destinationAccountName);
     }
   }
 }
@@ -887,12 +909,13 @@ export async function confirmPendingItems(input: {
     throw new ApiError(blocked.err.error, blocked.err.status);
   }
   const pendingRows = ids.map((id) => byId.get(id)).filter((row): row is PendingInboxItem => Boolean(row));
+  const priorStatusById = new Map(pendingRows.map((row) => [row.id, row.status]));
   await assertBatchAccountsResolvable(input.userId, pendingRows);
   await assertBatchCategoriesOwned(input.userId, pendingRows);
 
   const stale = pendingRows.filter((row) => isStaleConfirming(row));
   if (stale.length > 0) {
-    const staleRelease = await releaseClaimedPendingItems(input.userId, stale);
+    const staleRelease = await releaseClaimedPendingItems(input.userId, stale, priorStatusById);
     if (staleRelease.length > 0) {
       throw new ApiError(staleRelease[0]!.error, 409);
     }
@@ -962,6 +985,7 @@ export async function confirmPendingItems(input: {
     const claimedRow = claimedById.get(id);
     if (!claimedRow) throw new ApiError('Este pendiente se está confirmando.', 409);
     try {
+      const priorLedger = await loadPriorLedger(input.userId, pendingInboxRequestId(id));
       const confirmed = await confirmPendingItem({
         userId: input.userId,
         itemId: id,
@@ -971,7 +995,7 @@ export async function confirmPendingItems(input: {
       });
       out.push(confirmed);
       report.push({ pendingId: id, status: 'confirmed' });
-      executedCount += 1;
+      if (!priorLedger) executedCount += 1;
     } catch (error) {
       failed = error;
       report.push({
@@ -984,7 +1008,8 @@ export async function confirmPendingItems(input: {
   if (failed) {
     const releaseFailures = await releaseClaimedPendingItems(
       input.userId,
-      leftoverIds.map((id) => claimedById.get(id)).filter((row): row is PendingInboxItem => Boolean(row))
+      leftoverIds.map((id) => claimedById.get(id)).filter((row): row is PendingInboxItem => Boolean(row)),
+      priorStatusById
     );
     const releaseById = new Map(releaseFailures.map((item) => [item.id, item.error]));
     for (const id of leftoverIds) {
@@ -1006,20 +1031,22 @@ type ClaimReleaseFailure = { id: string; error: string };
 
 async function releaseClaimedPendingItems(
   userId: string,
-  rows: PendingInboxItem[]
+  rows: PendingInboxItem[],
+  priorStatusById?: Map<string, string>
 ): Promise<ClaimReleaseFailure[]> {
   const supabase = createServiceClientSync();
   const failures: ClaimReleaseFailure[] = [];
   for (const row of rows) {
-    if (row.status === 'confirmed' || !row.claim_id) continue;
-    const { data, error } = await supabase
+    if (row.status === 'confirmed') continue;
+    const restore = priorStatusById?.get(row.id) === 'uncertain' ? 'uncertain' : 'pending';
+    let query = supabase
       .from('pending_inbox_items')
-      .update({ status: 'pending', claim_id: null })
+      .update({ status: restore, claim_id: null })
       .eq('id', row.id)
       .eq('user_id', userId)
-      .eq('status', 'confirming')
-      .eq('claim_id', row.claim_id)
-      .select('id');
+      .eq('status', 'confirming');
+    query = row.claim_id ? query.eq('claim_id', row.claim_id) : query.is('claim_id', null);
+    const { data, error } = await query.select('id');
     if (error || (Array.isArray(data) && data.length === 0)) {
       const message = error?.message?.trim() || 'No se pudo liberar el pendiente.';
       console.error('[inbox] leftover claim release failed', { itemId: row.id, message });

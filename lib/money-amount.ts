@@ -1,12 +1,18 @@
 /** Exact money precision from a raw token or integer cents. Never float*100. */
 
-function stripMoneyDecorations(raw: string): string {
-  return raw
-    .trim()
-    .replace(/^[+-]\s*/, '')
+function stripMoneyDecorations(raw: string): { sign: bigint; token: string } {
+  let s = raw.trim();
+  let negative = false;
+  const sign = s.match(/^([+-])\s*/);
+  if (sign) {
+    negative = sign[1] === '-';
+    s = s.slice(sign[0].length);
+  }
+  s = s
     .replace(/^(ARS|USD|EUR|U\$S|US\$)\$?\s*/i, '')
     .replace(/^\$\s*/, '')
     .replace(/\s+/g, '');
+  return { sign: negative ? BigInt(-1) : BigInt(1), token: s };
 }
 
 function centsFromParts(whole: string, frac: string): bigint | null {
@@ -40,9 +46,10 @@ function centsFromSingleSeparator(token: string, sep: '.' | ','): bigint | null 
  * Mixed separators (1.234,56 / 1,234.56) keep at most two fraction digits.
  */
 export function integerCentsFromToken(raw: string): bigint | null {
-  const s = stripMoneyDecorations(raw);
+  const { sign, token: s } = stripMoneyDecorations(raw);
   if (!s || /[eE]/.test(s) || /[xX]/.test(s) || !/^[\d.,]+$/.test(s)) return null;
 
+  let cents: bigint | null;
   if (s.includes(',') && s.includes('.')) {
     const lastComma = s.lastIndexOf(',');
     const lastDot = s.lastIndexOf('.');
@@ -52,11 +59,15 @@ export function integerCentsFromToken(raw: string): bigint | null {
     const frac = s.slice(decPos + 1);
     if (intRaw.includes(s[decPos] ?? '')) return null;
     const whole = intRaw.split(thou).join('');
-    return centsFromParts(whole, frac);
+    cents = centsFromParts(whole, frac);
+  } else if (s.includes(',') && !s.includes('.')) {
+    cents = centsFromSingleSeparator(s, ',');
+  } else if (s.includes('.') && !s.includes(',')) {
+    cents = centsFromSingleSeparator(s, '.');
+  } else {
+    cents = centsFromParts(s, '');
   }
-  if (s.includes(',') && !s.includes('.')) return centsFromSingleSeparator(s, ',');
-  if (s.includes('.') && !s.includes(',')) return centsFromSingleSeparator(s, '.');
-  return centsFromParts(s, '');
+  return cents == null ? null : cents * sign;
 }
 
 export function formatCents(cents: bigint): string {
@@ -123,6 +134,17 @@ function parseJsonNumberRaw(src: string, start: number): { raw: string; end: num
   const m = slice.match(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/);
   if (!m) return null;
   return { raw: m[0], end: start + m[0].length };
+}
+
+/** Raw token for a JSON value used as money. Empty string = present but not a number/string amount. */
+function jsonMoneyValueToken(src: string, i: number): string {
+  if (src[i] === '"') {
+    const str = parseJsonString(src, i);
+    return str ? str.value : '';
+  }
+  const num = parseJsonNumberRaw(src, i);
+  if (num) return num.raw;
+  return '';
 }
 
 function isMoneyContext(ancestors: readonly string[]): boolean {
@@ -194,23 +216,22 @@ function parseJsonObject(
     i = skipWs(src, i + 1);
     const capture = Boolean(collect) && MONEY_KEY_SET.has(keyLower) && isMoneyContext(ancestors);
     if (capture && collect) {
-      let token: string | null = null;
-      if (src[i] === '"') {
-        const str = parseJsonString(src, i);
-        if (str && str.value !== '') token = str.value;
-      } else if (src[i] !== 'n') {
-        const num = parseJsonNumberRaw(src, i);
-        if (num) token = num.raw;
-      }
-      if (token != null) {
-        const prior = seen.get(keyLower);
-        if (prior) {
-          prior.duplicate = true;
-        } else {
-          const rec: JsonMoneyToken = { token, key: keyLower, duplicate: false, depth: ancestors.length };
-          seen.set(keyLower, rec);
-          collect.push(rec);
+      const token = jsonMoneyValueToken(src, i);
+      const prior = seen.get(keyLower);
+      if (prior) {
+        prior.duplicate = true;
+      } else {
+        const rec: JsonMoneyToken = {
+          token,
+          key: keyLower,
+          duplicate: seen.size > 0,
+          depth: ancestors.length,
+        };
+        if (seen.size > 0) {
+          for (const existing of seen.values()) existing.duplicate = true;
         }
+        seen.set(keyLower, rec);
+        collect.push(rec);
       }
     }
     i = skipJsonValue(src, i, [...ancestors, keyLower], collect);
@@ -242,13 +263,15 @@ export function extractTopLevelJsonAmount(
   keys: readonly string[] = JSON_AMOUNT_KEYS
 ): JsonAmountExtract {
   const top = collectJsonMoneyTokens(rawJson).filter((token) => token.depth === 0);
+  if (top.some((token) => token.duplicate) || new Set(top.map((token) => token.key)).size > 1) {
+    const preferred =
+      keys.map((key) => top.find((token) => token.key === key.toLowerCase())).find(Boolean) ?? top[0];
+    return { token: preferred?.token || null, duplicate: true };
+  }
   for (const key of keys) {
     const matches = top.filter((token) => token.key === key.toLowerCase());
     if (matches.length === 0) continue;
-    if (matches.some((token) => token.duplicate)) {
-      return { token: matches[0]?.token ?? null, duplicate: true };
-    }
-    return { token: matches[0]!.token, duplicate: false };
+    return { token: matches[0]!.token || null, duplicate: false };
   }
   return { token: null, duplicate: false };
 }
@@ -265,8 +288,11 @@ export function extractJsonNumberToken(
 
 /** True when a money field is exponent/hex/duplicate/malformed. */
 export function rawJsonHasInvalidMoney(rawJson: string): boolean {
-  return collectJsonMoneyTokens(rawJson).some(
-    (token) => token.duplicate || integerCentsFromToken(token.token) == null
+  const tokens = collectJsonMoneyTokens(rawJson);
+  const top = tokens.filter((token) => token.depth === 0);
+  if (new Set(top.map((token) => token.key)).size > 1) return true;
+  return tokens.some(
+    (token) => token.duplicate || !token.token || integerCentsFromToken(token.token) == null
   );
 }
 
@@ -283,4 +309,23 @@ export function moneyAmountFromToken(raw: string): number | null {
   const cents = integerCentsFromToken(raw);
   if (cents == null) return null;
   return Number(cents / BigInt(100)) + Number(cents % BigInt(100)) / 100;
+}
+
+/**
+ * Web POST/PATCH amounts: only a finite number or a validated money string.
+ * Booleans, arrays, objects, and non-positive values are rejected.
+ */
+export function positiveMoneyAmount(value: unknown): number | null {
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value) || value <= 0) return null;
+    const token = numberToDecimalString(value);
+    if (!token) return null;
+    const amount = moneyAmountFromToken(token);
+    return amount != null && amount > 0 ? amount : null;
+  }
+  if (typeof value === 'string') {
+    const amount = moneyAmountFromToken(value);
+    return amount != null && amount > 0 ? amount : null;
+  }
+  return null;
 }
