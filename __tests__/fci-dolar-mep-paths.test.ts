@@ -32,6 +32,48 @@ import { GET as quoteGet } from '@/app/api/investments/quote/route';
 import { GET as cronGet } from '@/app/api/cron/update-prices/route';
 
 const MEP = 1300;
+const CAFCI_PRICE = 1.098;
+const TICKERS = ['IOLDOLD', 'ADCGLOA'] as const;
+const USD_LABELS = [
+  'Dolar EEUU',
+  'Dólar billete',
+  'US Dollar',
+  'U.S. Dollar',
+  'Dólar USA',
+  'Dólar MEP',
+  'Dólares CCL',
+  'Dólares estadounidenses MEP',
+  'USD Billete',
+  'USD billetes',
+  'U$S MEP',
+  'Dólar',
+  'Dólares',
+  'Dollar',
+  'USD',
+  'Dólar Cable',
+  'Dólar Estadounidense',
+  'U$S',
+] as const;
+const ARS_LABELS = [
+  'Pesos',
+  'Peso Argentino',
+  'Pesos Argentinos',
+  'ARS',
+  'ARS - Moneda local',
+  'Peso',
+] as const;
+const SKIP_LABELS = [
+  'Dolar fiyiano',
+  'New Zealand Dollar',
+  'NZ Dollar',
+  'Dólar liberiano',
+  'Pesos/Dólares',
+  'Canadian Dollar',
+  'Peso mexicano',
+  'Sol peruano',
+  'HKD',
+  'EUR',
+] as const;
 
 function stubCafci(moneda: string) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
@@ -39,17 +81,16 @@ function stubCafci(moneda: string) {
     if (href.includes('/ficha')) {
       return {
         ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, moneda, fecha: '2026-10-23' } }),
+        json: async () => ({ data: { valorCuotaparte: CAFCI_PRICE, moneda, fecha: '2026-10-23' } }),
       };
     }
     return {
       ok: true,
       json: async () => ({
-        data: [{
-          id: 1,
-          nombre: 'IOL Dolar',
-          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-        }],
+        data: [
+          { id: 1, nombre: 'IOL Dolar', clases: [{ id: 2, simbolo: 'IOLDOLD' }] },
+          { id: 3, nombre: 'ADC Global', clases: [{ id: 4, simbolo: 'ADCGLOA' }] },
+        ],
       }),
     };
   }));
@@ -59,8 +100,20 @@ const cronRequest = () => new NextRequest('http://localhost/api/cron/update-pric
   headers: { authorization: 'Bearer synthetic-cron-secret' },
 });
 
-const quoteRequest = (currency = 'USD') =>
-  new NextRequest(`http://localhost/api/investments/quote?symbol=IOLDOLD&type=fci&currency=${currency}`);
+const quoteRequest = (ticker: string, currency: string) =>
+  new NextRequest(`http://localhost/api/investments/quote?symbol=${ticker}&type=fci&currency=${currency}`);
+
+function setCronPosition(ticker: string, currency: string) {
+  mocks.investments = [{
+    id: `fixture-fci-${ticker.toLowerCase()}`,
+    type: 'fci',
+    ticker,
+    market_currency: currency,
+    purchase_currency: currency,
+    current_price: currency === 'USD' ? 1.09 : CAFCI_PRICE,
+    is_manual_price: false,
+  }];
+}
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -78,15 +131,7 @@ beforeEach(() => {
   mocks.arg.mockResolvedValue({
     byStock: new Map(), byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
   });
-  mocks.investments = [{
-    id: 'fixture-fci-ioldold',
-    type: 'fci',
-    ticker: 'IOLDOLD',
-    market_currency: 'USD',
-    purchase_currency: 'USD',
-    current_price: 1.09,
-    is_manual_price: false,
-  }];
+  setCronPosition('IOLDOLD', 'USD');
   mocks.update.mockImplementation((payload: Record<string, unknown>) => {
     mocks.updates.push(payload);
     return { eq: vi.fn().mockResolvedValue({ error: null }) };
@@ -112,77 +157,97 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe.each([
-  'Dolar EEUU',
-  'Dólar billete',
-  'US Dollar',
-  'U.S. Dollar',
-  'Dólar USA',
-  'Dólar MEP',
-  'Dólares CCL',
-  'Dólares estadounidenses MEP',
-] as const)('IOLDOLD CAFCI %s → 1.098 USD', (moneda) => {
-  it('interactive quote path', async () => {
+describe.each(USD_LABELS)('CAFCI USD label %s', (moneda) => {
+  it.each(TICKERS)('interactive %s USD book keeps 1.098 USD', async (ticker) => {
     stubCafci(moneda);
-    const response = await quoteGet(quoteRequest());
-    const body = await response.json();
-    expect(body).toMatchObject({ ok: true, symbol: 'IOLDOLD', currency: 'USD' });
-    expect(body.price).toBeCloseTo(1.098, 8);
+    const body = await (await quoteGet(quoteRequest(ticker, 'USD'))).json();
+    expect(body).toMatchObject({ ok: true, symbol: ticker, currency: 'USD' });
+    expect(body.price).toBeCloseTo(CAFCI_PRICE, 8);
   });
 
-  it('cron update-prices path', async () => {
+  it.each(TICKERS)('interactive %s ARS book converts via MEP', async (ticker) => {
     stubCafci(moneda);
-    const response = await cronGet(cronRequest());
-    expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    const body = await (await quoteGet(quoteRequest(ticker, 'ARS'))).json();
+    expect(body).toMatchObject({ ok: true, symbol: ticker, currency: 'ARS' });
+    expect(body.price).toBeCloseTo(CAFCI_PRICE * MEP, 8);
+  });
+
+  it.each(TICKERS)('cron %s USD book keeps 1.098 USD', async (ticker) => {
+    setCronPosition(ticker, 'USD');
+    stubCafci(moneda);
+    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 1, errors: 0 });
     expect(mocks.updates).toHaveLength(1);
     expect(mocks.updates[0].market_currency).toBe('USD');
-    expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
-  });
-});
-
-describe.each(['Pesos', 'Peso Argentino'] as const)('IOLDOLD CAFCI %s → ARS', (moneda) => {
-  it('interactive quote path', async () => {
-    mocks.investments[0].market_currency = 'ARS';
-    mocks.investments[0].purchase_currency = 'ARS';
-    stubCafci(moneda);
-    const response = await quoteGet(quoteRequest('ARS'));
-    const body = await response.json();
-    expect(body).toMatchObject({ ok: true, symbol: 'IOLDOLD', currency: 'ARS' });
-    expect(body.price).toBeCloseTo(1.098, 8);
+    expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE, 8);
   });
 
-  it('cron update-prices path', async () => {
-    mocks.investments[0].market_currency = 'ARS';
-    mocks.investments[0].purchase_currency = 'ARS';
+  it.each(TICKERS)('cron %s ARS book converts via MEP', async (ticker) => {
+    setCronPosition(ticker, 'ARS');
     stubCafci(moneda);
-    const response = await cronGet(cronRequest());
-    expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 1, errors: 0 });
     expect(mocks.updates).toHaveLength(1);
     expect(mocks.updates[0].market_currency).toBe('ARS');
-    expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
+    expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE * MEP, 8);
   });
 });
 
-describe.each([
-  'Sol peruano',
-  'Indian Rupee',
-  'HKD',
-  'EUR',
-  'Canadian Dollar',
-  'Dólar canadiense',
-  'Peso mexicano',
-  'Peso uruguayo',
-] as const)('IOLDOLD CAFCI %s skips', (moneda) => {
-  it('interactive quote path', async () => {
+describe.each(ARS_LABELS)('CAFCI ARS label %s', (moneda) => {
+  it.each(TICKERS)('interactive %s ARS book keeps the peso cuotaparte', async (ticker) => {
     stubCafci(moneda);
-    const response = await quoteGet(quoteRequest());
-    expect(await response.json()).toMatchObject({ ok: false });
+    const body = await (await quoteGet(quoteRequest(ticker, 'ARS'))).json();
+    expect(body).toMatchObject({ ok: true, symbol: ticker, currency: 'ARS' });
+    expect(body.price).toBeCloseTo(CAFCI_PRICE, 8);
   });
 
-  it('cron update-prices path', async () => {
+  it.each(TICKERS)('interactive %s USD book converts via MEP', async (ticker) => {
     stubCafci(moneda);
-    const response = await cronGet(cronRequest());
-    const body = await response.json();
+    const body = await (await quoteGet(quoteRequest(ticker, 'USD'))).json();
+    expect(body).toMatchObject({ ok: true, symbol: ticker, currency: 'USD' });
+    expect(body.price).toBeCloseTo(CAFCI_PRICE / MEP, 8);
+  });
+
+  it.each(TICKERS)('cron %s ARS book keeps the peso cuotaparte', async (ticker) => {
+    setCronPosition(ticker, 'ARS');
+    stubCafci(moneda);
+    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(mocks.updates).toHaveLength(1);
+    expect(mocks.updates[0].market_currency).toBe('ARS');
+    expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE, 8);
+  });
+
+  it.each(TICKERS)('cron %s USD book converts via MEP', async (ticker) => {
+    setCronPosition(ticker, 'USD');
+    stubCafci(moneda);
+    expect(await (await cronGet(cronRequest())).json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(mocks.updates).toHaveLength(1);
+    expect(mocks.updates[0].market_currency).toBe('USD');
+    expect(mocks.updates[0].current_price).toBeCloseTo(CAFCI_PRICE / MEP, 8);
+  });
+});
+
+describe.each(SKIP_LABELS)('CAFCI skip label %s never writes', (moneda) => {
+  it.each(TICKERS)('interactive %s USD book', async (ticker) => {
+    stubCafci(moneda);
+    expect(await (await quoteGet(quoteRequest(ticker, 'USD'))).json()).toMatchObject({ ok: false });
+  });
+
+  it.each(TICKERS)('interactive %s ARS book', async (ticker) => {
+    stubCafci(moneda);
+    expect(await (await quoteGet(quoteRequest(ticker, 'ARS'))).json()).toMatchObject({ ok: false });
+  });
+
+  it.each(TICKERS)('cron %s USD book', async (ticker) => {
+    setCronPosition(ticker, 'USD');
+    stubCafci(moneda);
+    const body = await (await cronGet(cronRequest())).json();
+    expect(body.processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+
+  it.each(TICKERS)('cron %s ARS book', async (ticker) => {
+    setCronPosition(ticker, 'ARS');
+    stubCafci(moneda);
+    const body = await (await cronGet(cronRequest())).json();
     expect(body.processed).toBe(0);
     expect(mocks.updates).toHaveLength(0);
   });

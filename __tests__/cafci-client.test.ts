@@ -189,11 +189,10 @@ describe('CAFCI client headers and 403', () => {
   it.each([
     ['Pesos', 'ARS'],
     ['Peso', 'ARS'],
-    ['Peso Argentina', 'ARS'],
-    ['Pesos Argentina', 'ARS'],
     ['Peso Argentino', 'ARS'],
     ['Pesos Argentinos', 'ARS'],
     ['ARS', 'ARS'],
+    ['ARS - Moneda local', 'ARS'],
     ['Dólar', 'USD'],
     ['Dólares', 'USD'],
     ['Dolar', 'USD'],
@@ -203,8 +202,6 @@ describe('CAFCI client headers and 403', () => {
     ['Dollar', 'USD'],
     ['Dollars', 'USD'],
     ['USD', 'USD'],
-    ['US', 'USD'],
-    ['USS', 'USD'],
     ['Dólar MEP', 'USD'],
     ['Dólares MEP', 'USD'],
     ['Dólar Cable', 'USD'],
@@ -220,6 +217,9 @@ describe('CAFCI client headers and 403', () => {
     ['USD MEP', 'USD'],
     ['USD Cable', 'USD'],
     ['USD CCL', 'USD'],
+    ['USD Billete', 'USD'],
+    ['USD billetes', 'USD'],
+    ['U$S MEP', 'USD'],
     ['Dolar EEUU', 'USD'],
     ['Dólar billete', 'USD'],
     ['US Dollar', 'USD'],
@@ -253,12 +253,23 @@ describe('CAFCI client headers and 403', () => {
     'Dólar canadiense',
     'Peso mexicano',
     'Peso uruguayo',
+    'Dolar fiyiano',
+    'New Zealand Dollar',
+    'NZ Dollar',
+    'Dólar liberiano',
+    'Pesos/Dólares',
+    'Peso Ley',
+    'Moneda local',
+    'Peso Argentina',
+    'US',
+    'Dollar de Fiyi',
   ])('treats %s as unsupported instead of ARS/USD', (label) => {
     expect(parseCafciCurrencyLabel(label)).toBe('unsupported');
   });
 
   it('ignores numeric codes and non-currency words instead of treating them as unsupported', () => {
     expect(parseCafciCurrencyLabel(2)).toBeNull();
+    expect(parseCafciCurrencyLabel('123')).toBeNull();
     expect(parseCafciCurrencyLabel('Local')).toBeNull();
     expect(parseCafciCurrencyLabel('$')).toBeNull();
     expect(parseCafciCurrencyLabel('')).toBeNull();
@@ -325,6 +336,29 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
+  it('prices IOLDOLD as ARS when CAFCI names ARS - Moneda local', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'ARS - Moneda local' } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      price: 1.098,
+      currency: 'ARS',
+    });
+  });
+
   it('keeps ARS when moneda Pesos and tipoMoneda Local share a level', async () => {
     expect(firstCurrencyLabel('Pesos', 'Local')).toBe('ARS');
     const fetchMock = vi.fn()
@@ -374,8 +408,9 @@ describe('CAFCI client headers and 403', () => {
   });
 
   it.each([
-    'Dólar MEP', 'Dólar Cable', 'Dólares CCL', 'Dólares estadounidenses MEP',
+    'Dólar MEP', 'Dólares CCL', 'Dólares estadounidenses MEP',
     'Dolar EEUU', 'Dólar billete', 'US Dollar', 'U.S. Dollar', 'Dólar USA',
+    'USD Billete', 'USD billetes', 'U$S MEP',
   ] as const)(
     'prices IOLDOLD 1.098 USD when CAFCI names %s',
     async (moneda) => {
@@ -403,7 +438,10 @@ describe('CAFCI client headers and 403', () => {
     }
   );
 
-  it.each(['Canadian Dollar', 'Mexican Peso'] as const)(
+  it.each([
+    'Canadian Dollar', 'Mexican Peso', 'Dolar fiyiano', 'NZ Dollar',
+    'Pesos/Dólares', 'HKD', 'EUR',
+  ] as const)(
     'skips IOLDOLD when CAFCI names %s',
     async (moneda) => {
       expect(parseCafciCurrencyLabel(moneda)).toBe('unsupported');

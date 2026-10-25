@@ -112,82 +112,48 @@ function classKeys(fondo: Record<string, unknown>, clase: Record<string, unknown
   return [...new Set(names.map(fold).filter(Boolean))];
 }
 
-/** Folded CAFCI labels that mean Argentine pesos. */
-const CAFCI_ARS_LABELS = new Set([
-  'ARS',
-  'PESO',
-  'PESOS',
-  'PESOARGENTINA',
-  'PESOSARGENTINA',
-  'PESOARGENTINO',
-  'PESOSARGENTINOS',
+const CAFCI_USD_WORDS = new Set([
+  'DOLAR', 'DOLARES', 'DOLLAR', 'DOLLARS', 'USD', 'US', 'U', 'S',
+  'EEUU', 'EE', 'UU', 'USA', 'ESTADOUNIDENSE', 'ESTADOUNIDENSES',
+  'AMERICANO', 'AMERICANOS', 'MEP', 'CABLE', 'CCL', 'BILLETE', 'BILLETES', 'U$S',
 ]);
+const CAFCI_USD_CORE = new Set(['DOLAR', 'DOLARES', 'DOLLAR', 'DOLLARS', 'USD', 'U$S']);
 
-/** Folded CAFCI labels that mean US dollars (incl. U$S → USS). */
-const CAFCI_USD_LABELS = new Set([
-  'USD',
-  'US',
-  'USS',
-  'DOLAR',
-  'DOLARES',
-  'DOLLAR',
-  'DOLLARS',
-  'DOLARESTADOUNIDENSE',
-  'DOLARESESTADOUNIDENSES',
-  'DOLLARESTADOUNIDENSE',
-  'DOLLARSESTADOUNIDENSES',
-  'DOLARMEP',
-  'DOLARESMEP',
-  'DOLARCABLE',
-  'DOLARESCABLE',
-  'DOLARCCL',
-  'DOLARESCCL',
-  'USDMEP',
-  'USDCABLE',
-  'USDCCL',
-  'DOLARESTADOUNIDENSEMEP',
-  'DOLARESTADOUNIDENSECABLE',
-  'DOLARESTADOUNIDENSECCL',
-  'DOLARESESTADOUNIDENSESMEP',
-  'DOLARESESTADOUNIDENSESCABLE',
-  'DOLARESESTADOUNIDENSESCCL',
+const CAFCI_ARS_WORDS = new Set([
+  'PESO', 'PESOS', 'ARGENTINO', 'ARGENTINOS', 'ARS', '$', 'MONEDA', 'LOCAL',
 ]);
+const CAFCI_ARS_CORE = new Set(['PESO', 'PESOS', 'ARS']);
 
-const CAFCI_USD_OTHER_MARKERS = [
-  'CANAD', 'AUSTRAL', 'NEOZEL', 'ZELAND', 'HONGKONG', 'SINGAP', 'TAIWAN',
-  'JAMAIC', 'BAHAM', 'BELIZ', 'CARIBE', 'CARIBB',
-] as const;
-
-const CAFCI_PESO_OTHER_MARKERS = [
-  'MEXIC', 'CHILE', 'URUGU', 'COLOMB', 'FILIP', 'PHILIPP', 'DOMINIC', 'CUBA', 'BOLIV',
-] as const;
-
-function hasFoldedMarker(folded: string, markers: readonly string[]): boolean {
-  return markers.some((marker) => folded.includes(marker));
+/** Accents stripped, uppercased; U$S and $ kept as tokens, then split on other non-alphanumerics. */
+function cafciLabelTokens(value: string): string[] {
+  const folded = value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase();
+  return folded.match(/U\$S|\$|[A-Z0-9]+/g) ?? [];
 }
 
 /**
- * Folded/uppercased, accents and punctuation stripped.
- * 1. Ignore (missing): empty, '$', pure numbers, LOCAL.
- * 2. Exact ARS/USD lists.
- * 3. Contains DOLAR/DOLLAR → USD unless another-country marker; PESO → ARS unless marker.
- * 4. Any other letters → unsupported (skip).
+ * Token allowlist (no substring heuristics).
+ * Ignore (missing): empty, only '$', only numbers, exactly LOCAL.
+ * USD: every word in the USD set and at least one core USD token.
+ * ARS: every word in the ARS set and at least one of PESO/PESOS/ARS.
+ * Anything else → unsupported (skip).
  */
 export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
   if (value == null || typeof value === 'object' || typeof value === 'boolean') return null;
   if (typeof value === 'number') return null;
-  const folded = fold(String(value));
-  if (!folded || folded === 'LOCAL' || /^\d+$/.test(folded)) return null;
-  if (CAFCI_USD_LABELS.has(folded)) return 'USD';
-  if (CAFCI_ARS_LABELS.has(folded)) return 'ARS';
-  if (folded.includes('DOLAR') || folded.includes('DOLLAR')) {
-    return hasFoldedMarker(folded, CAFCI_USD_OTHER_MARKERS) ? 'unsupported' : 'USD';
+  const tokens = cafciLabelTokens(String(value));
+  if (tokens.length === 0) return null;
+  if (tokens.length === 1 && (tokens[0] === '$' || tokens[0] === 'LOCAL')) return null;
+  if (tokens.every((token) => /^\d+$/.test(token))) return null;
+  if (tokens.every((token) => CAFCI_USD_WORDS.has(token)) && tokens.some((token) => CAFCI_USD_CORE.has(token))) {
+    return 'USD';
   }
-  if (folded.includes('PESO')) {
-    return hasFoldedMarker(folded, CAFCI_PESO_OTHER_MARKERS) ? 'unsupported' : 'ARS';
+  if (tokens.every((token) => CAFCI_ARS_WORDS.has(token)) && tokens.some((token) => CAFCI_ARS_CORE.has(token))) {
+    return 'ARS';
   }
-  if (/[A-Z]/.test(folded)) return 'unsupported';
-  return null;
+  return 'unsupported';
 }
 
 /**
