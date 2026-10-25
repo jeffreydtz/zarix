@@ -209,7 +209,8 @@ function durableRequestId(args: ToolArgs, requestId?: string): string | undefine
 }
 
 async function confirmRemoteWrite(userId: string, args: ToolArgs, source: WriteChannel | undefined) {
-  const ids = pendingIdsFromArgs(args);
+  const { confirmPendingItem, canonicalPendingInboxIds } = await import('@/lib/services/pending-inbox');
+  const ids = canonicalPendingInboxIds(pendingIdsFromArgs(args));
   if (ids.length === 0) {
     return {
       response: {
@@ -218,7 +219,6 @@ async function confirmRemoteWrite(userId: string, args: ToolArgs, source: WriteC
       },
     } satisfies RegistryToolResult;
   }
-  const { confirmPendingItem } = await import('@/lib/services/pending-inbox');
   const item = await confirmPendingItem({
     userId,
     itemId: ids[0],
@@ -288,8 +288,16 @@ async function executeRegistryToolImpl(
       };
     }
     if (name === 'create_transactions') {
-      const ids = pendingIdsFromArgs(frozen.data as ToolArgs);
-      const { confirmPendingItems } = await import('@/lib/services/pending-inbox');
+      const { confirmPendingItems, canonicalPendingInboxIds } = await import('@/lib/services/pending-inbox');
+      const ids = canonicalPendingInboxIds(pendingIdsFromArgs(frozen.data as ToolArgs));
+      if (ids.length === 0) {
+        return {
+          response: {
+            success: false,
+            error: 'Faltan pendingIds. Confirmá los pendientes; no escribas el ledger directo.',
+          },
+        };
+      }
       const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
       return {
         response: {
@@ -317,20 +325,21 @@ async function executeRegistryToolImpl(
     case 'create_transaction': {
       if (remoteWrite && !isConfirmed(safeArgs)) {
         const parked = await parkCreate(userId, safeArgs, source, durableRequestId(safeArgs, requestId));
+        const parkedPayload = parked.tool_payload;
         return {
           response: {
             success: false,
             needs_confirm: true,
             pendingId: parked.id,
             preview: {
-              type: safeArgs.type,
-              amount: safeArgs.amount,
-              currency: safeArgs.currency,
-              account: asUntrustedData(safeArgs.account),
-              accountId: safeArgs.accountId,
-              installments: safeArgs.installments ?? 1,
-              destinationAccountId: safeArgs.destinationAccountId,
-              description: asUntrustedData(safeArgs.description),
+              type: parkedPayload?.type || parked.direction,
+              amount: parked.amount,
+              currency: parked.currency,
+              account: asUntrustedData(parkedPayload?.account),
+              accountId: parked.account_id ?? parkedPayload?.accountId,
+              installments: parkedPayload?.installments ?? 1,
+              destinationAccountId: parkedPayload?.destinationAccountId,
+              description: asUntrustedData(parked.merchant),
             },
             untrusted: true,
             untrusted_instruction: UNTRUSTED_INSTRUCTION,
@@ -361,6 +370,29 @@ async function executeRegistryToolImpl(
     }
 
     case 'create_transactions': {
+      if (remoteWrite && isConfirmed(safeArgs)) {
+        const { confirmPendingItems, canonicalPendingInboxIds } = await import('@/lib/services/pending-inbox');
+        const ids = canonicalPendingInboxIds(pendingIdsFromArgs(safeArgs));
+        if (ids.length === 0) {
+          return {
+            response: {
+              success: false,
+              error: 'Faltan pendingIds. Confirmá los pendientes; no escribas el ledger directo.',
+            },
+          };
+        }
+        const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
+        return {
+          response: {
+            success: true,
+            executedCount: confirmed.length,
+            total: ids.length,
+            pendingIds: confirmed.map((item) => item.id),
+            untrusted: true,
+            untrusted_instruction: UNTRUSTED_INSTRUCTION,
+          },
+        };
+      }
       const rawList = Array.isArray(safeArgs.transactions) ? (safeArgs.transactions as BotTxPayload[]) : [];
       const txs = rawList
         .filter((t) => t && typeof t.amount === 'number' && t.amount > 0)
@@ -388,29 +420,6 @@ async function executeRegistryToolImpl(
             untrusted: true,
             untrusted_instruction: UNTRUSTED_INSTRUCTION,
             error: 'Mostrá el preview. Si el usuario confirma, llamá con confirm=true y pendingIds.',
-          },
-        };
-      }
-      if (remoteWrite && isConfirmed(safeArgs)) {
-        const ids = pendingIdsFromArgs(safeArgs);
-        if (ids.length === 0) {
-          return {
-            response: {
-              success: false,
-              error: 'Faltan pendingIds. Confirmá los pendientes; no escribas el ledger directo.',
-            },
-          };
-        }
-        const { confirmPendingItems } = await import('@/lib/services/pending-inbox');
-        const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
-        return {
-          response: {
-            success: true,
-            executedCount: confirmed.length,
-            total: ids.length,
-            pendingIds: confirmed.map((item) => item.id),
-            untrusted: true,
-            untrusted_instruction: UNTRUSTED_INSTRUCTION,
           },
         };
       }

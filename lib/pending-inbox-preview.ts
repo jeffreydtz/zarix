@@ -20,6 +20,7 @@ export type InboxDraft = {
   direction?: 'expense' | 'income' | string;
   occurred_at?: string | null;
   created_at: string;
+  possible_duplicate_of?: string | null;
   tool_payload?: InboxToolPayload | null;
 };
 

@@ -279,10 +279,15 @@ export default function IntegrationsPanel({
           <li>Método POST, URL <code className="text-foreground">{ingestUrl || 'https://tu-dominio/api/ingest/wallet'}</code>.</li>
           <li>
             Cabeceras: <code className="text-foreground">Authorization: Bearer TU_TOKEN</code>,{' '}
-            <code className="text-foreground">Content-Type: application/json</code> y, si querés auto-confirmar
-            sin fecha, <code className="text-foreground">Idempotency-Key</code>.
+            <code className="text-foreground">Content-Type: application/json</code> y, si querés reintentos
+            silenciosos o auto-confirmar sin timestamp, <code className="text-foreground">Idempotency-Key</code>.
           </li>
-          <li>Cuerpo JSON con monto, moneda, comercio, tarjeta y fecha (ver plantilla). Sin fecha ni Idempotency-Key no hay auto-confirmación.</li>
+          <li>
+            Cuerpo JSON con monto, moneda, comercio, tarjeta y fecha (ver plantilla). La misma Idempotency-Key con el
+            mismo cuerpo y canal reusa el pendiente; otro cuerpo, payload nulo o canal distinto da 409. Sin esa clave
+            siempre se crea un pendiente nuevo: un match de 15 minutos aparece en Pendientes como posible duplicado
+            (un clic para descartar) y no se auto-confirma. Auto-confirmación exige timestamp completo o Idempotency-Key.
+          </li>
           <li>
             Mostrá el status de la respuesta (<code className="text-foreground">autoConfirmed</code> o{' '}
             <code className="text-foreground">pending</code>) y un enlace a Pendientes.
@@ -315,9 +320,9 @@ export default function IntegrationsPanel({
         <p className="text-sm text-muted-foreground">
           Dispará una automatización cuando llega la notificación de la app de tu banco o Wallet. Hacé POST al mismo
           endpoint con el texto crudo de la notificación (Content-Type: text/plain) y el Bearer token. Zarix parsea el
-          monto y el comercio con una heurística; no hace falta una llamada paga a IA. La auto-confirmación exige una
-          fecha (timestamp) o Idempotency-Key; sin eso el aviso queda pending. Mostrá autoConfirmed/pending de la
-          respuesta y un enlace a Pendientes.
+          monto y el comercio con una heurística; no hace falta una llamada paga a IA. La auto-confirmación exige un
+          timestamp completo o Idempotency-Key; una fecha sola (YYYY-MM-DD) no alcanza. Sin clave, un reintento cercano
+          queda pending como posible duplicado. Mostrá autoConfirmed/pending de la respuesta y un enlace a Pendientes.
         </p>
         <p className="text-sm text-muted-foreground">
           Guía completa en{' '}

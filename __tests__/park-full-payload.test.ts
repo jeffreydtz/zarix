@@ -16,6 +16,17 @@ vi.mock('@/lib/services/pending-inbox', () => ({
   parkRegistryWrite: (...args: unknown[]) => mocks.park(...args),
   confirmPendingItem: (...args: unknown[]) => mocks.confirm(...args),
   confirmPendingItems: (...args: unknown[]) => mocks.confirmMany(...args),
+  canonicalPendingInboxIds: (raw: string[]) => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const id of raw) {
+      const canonical = String(id).trim().toLowerCase();
+      if (!canonical || seen.has(canonical)) continue;
+      seen.add(canonical);
+      out.push(canonical);
+    }
+    return out;
+  },
 }));
 
 vi.mock('@/lib/telegram/executeBotTransaction', () => ({

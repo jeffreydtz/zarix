@@ -12,11 +12,9 @@ const RPC_ARGS: Record<string, string[]> = {
   reserve_pending_inbox_item: [
     'p_user_id',
     'p_lock_key',
-    'p_fingerprints',
-    'p_lookback_ms',
     'p_ingest_key',
     'p_client_keyed',
-    'p_fingerprint',
+    'p_lookback_ms',
     'p_row',
   ],
 };
@@ -235,7 +233,6 @@ export function createPgliteSupabaseClient(db: { query: (sql: string, params?: u
         const placeholders = params.map((_, index) => {
           if (name === 'create_transaction_once' && keys[index] === 'p_transaction') return `$${index + 1}::jsonb`;
           if (name === 'reserve_pending_inbox_item' && keys[index] === 'p_row') return `$${index + 1}::jsonb`;
-          if (name === 'reserve_pending_inbox_item' && keys[index] === 'p_fingerprints') return `$${index + 1}::text[]`;
           return `$${index + 1}`;
         });
         if (SETOF_RPC.has(name)) {

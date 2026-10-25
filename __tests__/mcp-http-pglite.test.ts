@@ -51,11 +51,15 @@ vi.mock('@/lib/services/cotizaciones', async () => {
 
 import { generatePersonalAccessToken } from '@/lib/auth/personal-access-token';
 import { POST as mcpPost } from '@/app/api/mcp/route';
+import { POST as walletPost } from '@/app/api/ingest/wallet/route';
+import { POST as restPost } from '@/app/api/v1/tools/[name]/route';
 import { asRole, bootDatabase, ids, seedDatabase } from '../scripts/lib/test-isolated-database.mjs';
 import { createPgliteSupabaseClient } from './helpers/pglite-supabase-client';
 
 const PENDING_A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9';
 const PENDING_UPPER = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+const PENDING_TIME = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc9';
+const PENDING_BATCH = 'dddddddd-dddd-4ddd-8ddd-ddddddddddd9';
 
 async function readMcpJson(res: Response): Promise<Record<string, unknown>> {
   const text = await res.text();
@@ -101,15 +105,17 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     await asRole(db, 'service_role', null, async (tx: { query: (sql: string, params?: unknown[]) => Promise<unknown> }) => {
       await tx.query(
         `INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,hash_version,scopes,expires_at)
-         VALUES ($1,'MCP A',$2,$3,1,ARRAY['read','write','write:confirm'],'2099-01-01T00:00:00Z'),
+         VALUES ($1,'MCP A',$2,$3,1,ARRAY['read','write','write:confirm','ingest'],'2099-01-01T00:00:00Z'),
                 ($4,'MCP B',$5,$6,1,ARRAY['read','write','write:confirm'],'2099-01-01T00:00:00Z')`,
         [ids.a, generatedA.token.slice(0, 12), generatedA.hash, ids.b, generatedB.token.slice(0, 12), generatedB.hash]
       );
       await tx.query(
         `INSERT INTO pending_inbox_items(
-           id, user_id, amount, currency, merchant, account_id, status, fingerprint, source, direction, tool_payload
-         ) VALUES ($1,$2,18,'ARS','MCP Café',$3,'pending','fp-mcp-http-a','mcp','expense',$4::jsonb),
-                  ($5,$2,18,'ARS','MCP Upper',$3,'pending','fp-mcp-http-upper','mcp','expense',$6::jsonb)`,
+           id, user_id, amount, currency, merchant, account_id, status, fingerprint, source, direction, occurred_at, tool_payload
+         ) VALUES ($1,$2,18,'ARS','MCP Café',$3,'pending','fp-mcp-http-a','mcp','expense',NULL,$4::jsonb),
+                  ($5,$2,18,'ARS','MCP Upper',$3,'pending','fp-mcp-http-upper','mcp','expense',NULL,$6::jsonb),
+                  ($7,$2,18,'ARS','MCP Instant',$3,'pending','fp-mcp-http-time','mcp','expense','2026-10-24T23:30:00-03:00',$8::jsonb),
+                  ($9,$2,18,'ARS','MCP Batch',$3,'pending','fp-mcp-http-batch','mcp','expense',NULL,$10::jsonb)`,
         [
           PENDING_A,
           ids.a,
@@ -129,6 +135,25 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
             currency: 'ARS',
             accountId: ids.accountA,
             description: 'MCP Upper',
+            _tool: 'create_transaction',
+          }),
+          PENDING_TIME,
+          JSON.stringify({
+            type: 'expense',
+            amount: 18,
+            currency: 'ARS',
+            accountId: ids.accountA,
+            description: 'MCP Instant',
+            transactionDate: '2026-10-24T23:30:00-03:00',
+            _tool: 'create_transaction',
+          }),
+          PENDING_BATCH,
+          JSON.stringify({
+            type: 'expense',
+            amount: 18,
+            currency: 'ARS',
+            accountId: ids.accountA,
+            description: 'MCP Batch',
             _tool: 'create_transaction',
           }),
         ]
@@ -276,5 +301,195 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     expect(
       (await query('SELECT id FROM transactions WHERE user_id=$1 AND description=$2', [ids.a, 'MCP Upper'])).rows
     ).toHaveLength(1);
+  });
+
+  it('counts mixed-case duplicate pendingIds once over MCP', async () => {
+    const call = await mcpPost(
+      new NextRequest('http://localhost/api/mcp', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          accept: 'application/json, text/event-stream',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 7,
+          method: 'tools/call',
+          params: {
+            name: 'create_transactions',
+            arguments: { confirm: true, pendingIds: [PENDING_BATCH, PENDING_BATCH.toUpperCase()] },
+          },
+        }),
+      })
+    );
+    const body = toolText(await readMcpJson(call));
+    expect(body.success).toBe(true);
+    expect(body.executedCount).toBe(1);
+    expect(body.total).toBe(1);
+    expect(body.pendingIds).toEqual([PENDING_BATCH]);
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    expect(
+      (await query('SELECT id FROM transactions WHERE user_id=$1 AND description=$2', [ids.a, 'MCP Batch'])).rows
+    ).toHaveLength(1);
+  });
+
+  it('preserves 23:30-03:00 through MCP confirm instead of civil noon', async () => {
+    const call = await mcpPost(
+      new NextRequest('http://localhost/api/mcp', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          accept: 'application/json, text/event-stream',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 8,
+          method: 'tools/call',
+          params: {
+            name: 'create_transaction',
+            arguments: { confirm: true, pendingId: PENDING_TIME },
+          },
+        }),
+      })
+    );
+    const body = toolText(await readMcpJson(call));
+    expect(body.success).toBe(true);
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const row = (
+      await query('SELECT transaction_date FROM transactions WHERE user_id=$1 AND description=$2', [
+        ids.a,
+        'MCP Instant',
+      ])
+    ).rows[0];
+    expect(new Date(String(row.transaction_date)).toISOString()).toBe('2026-10-25T02:30:00.000Z');
+  });
+
+  it('Wallet HTTP: date-only same day parks two items; anonymous retry is a possible duplicate; key replay and 409', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    await query(
+      `INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source,direction,occurred_at,created_at)
+       VALUES ($1,18,'ARS','Two-hour café','pending','fp-two-hour','wallet','expense','2026-10-24T12:00:00-03:00', now() - interval '2 hours')`,
+      [ids.a]
+    );
+    const ingest = (body: Record<string, unknown>, key?: string) =>
+      walletPost(
+        new NextRequest('http://localhost/api/ingest/wallet', {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${tokenA}`,
+            'content-type': 'application/json',
+            ...(key ? { 'idempotency-key': key } : {}),
+          },
+          body: JSON.stringify(body),
+        })
+      );
+    const firstDate = await ingest({
+      amount: 18,
+      currency: 'ARS',
+      merchant: 'Date-only café',
+      cardName: 'Visa Ejemplo',
+      timestamp: '2026-10-24',
+    });
+    expect(firstDate.status).toBe(201);
+    const firstJson = (await firstDate.json()) as { duplicate: boolean; autoConfirmed: boolean; item: { id: string } };
+    expect(firstJson.duplicate).toBe(false);
+    expect(firstJson.autoConfirmed).toBe(false);
+
+    const secondDate = await ingest({
+      amount: 18,
+      currency: 'ARS',
+      merchant: 'Date-only café',
+      cardName: 'Visa Ejemplo',
+      timestamp: '2026-10-24',
+    });
+    const secondJson = (await secondDate.json()) as {
+      duplicate: boolean;
+      autoConfirmed: boolean;
+      item: { id: string; possibleDuplicateOf?: string | null };
+    };
+    expect(secondDate.status).toBe(201);
+    expect(secondJson.duplicate).toBe(false);
+    expect(secondJson.autoConfirmed).toBe(false);
+    expect(secondJson.item.id).not.toBe(firstJson.item.id);
+    expect(secondJson.item.possibleDuplicateOf).toBe(firstJson.item.id);
+
+    const keyed = await ingest(
+      { amount: 18, currency: 'ARS', merchant: 'Keyed café', cardName: 'Visa Ejemplo' },
+      'wallet-http-key-001'
+    );
+    expect(keyed.status).toBe(201);
+    const keyedJson = (await keyed.json()) as { item: { id: string }; duplicate: boolean };
+    const replay = await ingest(
+      { amount: 18, currency: 'ARS', merchant: 'Keyed café', cardName: 'Visa Ejemplo' },
+      'wallet-http-key-001'
+    );
+    expect(replay.status).toBe(200);
+    const replayJson = (await replay.json()) as { item: { id: string }; duplicate: boolean };
+    expect(replayJson.duplicate).toBe(true);
+    expect(replayJson.item.id).toBe(keyedJson.item.id);
+
+    const conflict = await ingest(
+      { amount: 900, currency: 'ARS', merchant: 'Otro', cardName: 'Visa Ejemplo' },
+      'wallet-http-key-001'
+    );
+    expect(conflict.status).toBe(409);
+    const rest = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'wallet-http-key-001',
+        },
+        body: JSON.stringify({
+          type: 'expense',
+          amount: 900,
+          currency: 'ARS',
+          accountId: ids.accountA,
+          description: 'REST reuse',
+        }),
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(rest.status).toBe(409);
+    const twoHour = await ingest({
+      amount: 18,
+      currency: 'ARS',
+      merchant: 'Two-hour café',
+      cardName: 'Visa Ejemplo',
+      timestamp: '2026-10-24',
+    });
+    const twoHourJson = (await twoHour.json()) as {
+      duplicate: boolean;
+      item: { id: string; possibleDuplicateOf?: string | null };
+    };
+    expect(twoHour.status).toBe(201);
+    expect(twoHourJson.duplicate).toBe(false);
+    expect(twoHourJson.item.possibleDuplicateOf).toBeNull();
+    expect(
+      (await query('SELECT id FROM pending_inbox_items WHERE ingest_key=$1 AND user_id=$2', [
+        'wallet-http-key-001',
+        ids.a,
+      ])).rows
+    ).toHaveLength(1);
+    expect(
+      (await query("SELECT id FROM pending_inbox_items WHERE merchant='Date-only café' AND user_id=$1", [ids.a])).rows
+        .length
+    ).toBe(2);
+    expect(
+      (await query("SELECT id FROM pending_inbox_items WHERE merchant='Two-hour café' AND user_id=$1", [ids.a])).rows
+        .length
+    ).toBe(2);
   });
 });

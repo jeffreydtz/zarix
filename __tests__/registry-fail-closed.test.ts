@@ -14,6 +14,7 @@ const inboxMocks = vi.hoisted(() => ({
 vi.mock('@/lib/services/pending-inbox', () => ({
   parkRegistryWrite: (input: Record<string, unknown>) => inboxMocks.park(input),
   confirmPendingItem: (input: Record<string, unknown>) => inboxMocks.confirm(input),
+  canonicalPendingInboxIds: (raw: string[]) => [...new Set(raw.map((id) => String(id).trim().toLowerCase()))],
 }));
 
 import { asUntrustedData, maskSensitiveText, UNTRUSTED_OPEN, UNTRUSTED_INSTRUCTION } from '@/lib/ai/registry/mask';
