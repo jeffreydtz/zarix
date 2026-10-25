@@ -253,10 +253,12 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       ids.a,
       'wallet:%',
     ]);
-    expect(receipts.rows.map((row) => row.request_id)).toEqual(
+    expect(receipts.rows.map((row: { request_id: string }) => row.request_id)).toEqual(
       expect.arrayContaining([`wallet:${PENDING_UPPER}`])
     );
-    expect(receipts.rows.map((row) => row.request_id)).not.toContain(`wallet:${PENDING_UPPER.toUpperCase()}`);
+    expect(receipts.rows.map((row: { request_id: string }) => row.request_id)).not.toContain(
+      `wallet:${PENDING_UPPER.toUpperCase()}`
+    );
 
     const retry = await call(PENDING_UPPER, 5);
     const retryBody = toolText(await readMcpJson(retry));
