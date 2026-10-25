@@ -1012,15 +1012,16 @@ async function releaseClaimedPendingItems(
   const failures: ClaimReleaseFailure[] = [];
   for (const row of rows) {
     if (row.status === 'confirmed' || !row.claim_id) continue;
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('pending_inbox_items')
       .update({ status: 'pending', claim_id: null })
       .eq('id', row.id)
       .eq('user_id', userId)
       .eq('status', 'confirming')
-      .eq('claim_id', row.claim_id);
-    if (error) {
-      const message = error.message?.trim() || 'No se pudo liberar el pendiente.';
+      .eq('claim_id', row.claim_id)
+      .select('id');
+    if (error || (Array.isArray(data) && data.length === 0)) {
+      const message = error?.message?.trim() || 'No se pudo liberar el pendiente.';
       console.error('[inbox] leftover claim release failed', { itemId: row.id, message });
       failures.push({ id: row.id, error: message });
     }

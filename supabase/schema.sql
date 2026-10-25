@@ -6661,12 +6661,3 @@ BEGIN
 END;
 $$;
 -- END supabase/migrations/20261025030000_category_system_select.sql
-
--- BEGIN supabase/migrations/20261025040000_categories_force_rls.sql
--- SHA256 c0d40d445c62d0f059ddf8c29182ba89a8afff588ce99c399165e76e18136a64
--- Table owner currently bypasses ENABLE RLS. FORCE applies the same
--- policies to the owner. Superuser and BYPASSRLS (service_role) still
--- bypass. Authenticated already used these policies.
-
-ALTER TABLE public.categories FORCE ROW LEVEL SECURITY;
--- END supabase/migrations/20261025040000_categories_force_rls.sql

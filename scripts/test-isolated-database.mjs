@@ -214,20 +214,6 @@ for(const legacyGrants of [false,true]) {
       const november=await service(db,'SELECT spent_amount FROM get_budget_status($1,$2::date)',[ids.a,'2026-11-01']);
       assert.equal(november.rows.length,0);
     });
-    await test(profile,'categories force row level security without breaking authenticated or service paths',async()=>{
-      const forced=(await db.query("SELECT c.relforcerowsecurity AS force_rls FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname='categories'")).rows[0];
-      assert.equal(forced.force_rls,true);
-      const sys=(await owner(db,'SELECT id FROM categories WHERE is_system=true LIMIT 1')).rows;
-      assert.ok(sys.length>=1);
-      const own=(await owner(db,'SELECT id FROM categories WHERE id=$1',[ids.categoryA])).rows;
-      assert.equal(own.length,1);
-      const other=(await owner(db,'SELECT id FROM categories WHERE id=$1',[ids.categoryB])).rows;
-      assert.equal(other.length,0);
-      const viaService=(await service(db,'SELECT id FROM categories WHERE id IN ($1,$2) ORDER BY id',[ids.categoryA,ids.categoryB])).rows;
-      assert.deepEqual(viaService.map(r=>r.id),[ids.categoryA,ids.categoryB].sort());
-      const minted=await owner(db,"INSERT INTO categories(user_id,name,type) VALUES($1,'Forzada','expense') RETURNING id",[ids.a]);
-      assert.equal(minted.rows.length,1);
-    });
     await test(profile,'system categories cannot be minted or modified',async()=>{
       await rejects(()=>owner(db,"INSERT INTO categories(user_id,name,type,is_system) VALUES($1,'Fake global','expense',true)",[ids.a]));
       assert.equal((await owner(db,"UPDATE categories SET name='Fake' WHERE is_system=true RETURNING id")).rows.length,0);
