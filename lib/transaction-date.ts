@@ -76,7 +76,7 @@ export function parseCivilMonthQuery(raw: string | null | undefined, now: Date =
   if (raw == null) return now;
   const s = String(raw).trim();
   const ym = s.match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/);
-  if (ym && isCivilYmd(`${ym[1]}-${ym[2]}-01`)) {
+  if (ym && isCivilYmd(`${ym[1]}-${ym[2]}-${ym[3] ?? '01'}`)) {
     return new Date(`${ym[1]}-${ym[2]}-01T12:00:00-03:00`);
   }
   return null;
