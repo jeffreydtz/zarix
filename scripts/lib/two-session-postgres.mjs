@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { platformSql, bootstrapSources, ids, seedDatabase } from './test-isolated-database.mjs';
+export { ids };
 
 function pgBinDir() {
   const env = process.env.ZARIX_PG_BIN;
