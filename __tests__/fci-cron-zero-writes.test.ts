@@ -197,16 +197,19 @@ beforeEach(() => {
     mocks.updates.push(payload);
     const chain: {
       eq: ReturnType<typeof vi.fn>;
+      is: ReturnType<typeof vi.fn>;
       or: ReturnType<typeof vi.fn>;
       select: ReturnType<typeof vi.fn>;
       then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
     } = {
       eq: vi.fn(),
+      is: vi.fn(),
       or: vi.fn(),
       select: vi.fn(),
       then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
     };
     chain.eq.mockReturnValue(chain);
+    chain.is.mockReturnValue(chain);
     chain.or.mockImplementation((filter: string) => {
       mocks.orFilters.push(filter);
       return chain;
@@ -607,7 +610,14 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     });
     expect((await (await cronGet(cronRequest())).json()).processed).toBe(1);
     expect(mocks.updates[0].current_price).toBeCloseTo(1241.954039, 8);
-    expect(mocks.orFilters[0]).toContain('current_price_updated_at.gt.');
+    expect(mocks.orFilters).toEqual([]);
+    expect(console.warn).toHaveBeenCalledWith(
+      '[quotes] future stored timestamp',
+      expect.objectContaining({
+        id: 'fixture-prtava-b',
+        stored: '2099-01-01T03:00:00.000Z',
+      }),
+    );
     expect(console.warn).toHaveBeenCalledWith(
       '[quotes] overwrite anomalous stored timestamp',
       expect.objectContaining({

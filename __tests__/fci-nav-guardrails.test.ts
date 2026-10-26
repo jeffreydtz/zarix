@@ -83,7 +83,7 @@ describe('FCI NAV freshness', () => {
     expect(isArgentineMarketHoliday('2026-11-09')).toBe(true);
     expect(isArgentineMarketHoliday('2026-11-10')).toBe(true);
     expect(isArgentineMarketHoliday('2026-12-07')).toBe(true);
-    expect(isArgentineMarketHoliday('2026-12-24')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-12-24')).toBe(false);
     expect(businessDaysBetween('2026-03-17', '2026-03-26')).toBe(5);
     expect(businessDaysBetween('2026-07-03', '2026-07-14')).toBe(5);
     expect(businessDaysBetween('2026-12-01', '2026-12-10')).toBe(5);

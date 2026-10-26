@@ -3,6 +3,7 @@ import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
+  applyFciRowMatch,
   isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
   quoteCacheKeyForPosition,
@@ -111,17 +112,26 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
       })
       .eq('id', inv.id);
     if (inv.type === 'fci' && sourceTs) {
-      const now = new Date();
-      const anomalous = isAnomalousFutureTimestamp(inv.current_price_updated_at, now.getTime());
-      const { data, error } = await query
-        .or(monotonicCurrentPriceFilter(sourceTs, now))
-        .select('id');
+      const anomalous = isAnomalousFutureTimestamp(inv.current_price_updated_at);
+      if (anomalous) {
+        console.warn('[quotes] future stored timestamp', {
+          ticker: inv.ticker,
+          id: inv.id,
+          source: q.source,
+          stored: inv.current_price_updated_at,
+        });
+      }
+      query = applyFciRowMatch(query, inv);
+      const filtered = anomalous && inv.current_price_updated_at
+        ? query.eq('current_price_updated_at', inv.current_price_updated_at)
+        : query.or(monotonicCurrentPriceFilter(sourceTs));
+      const { data, error } = await filtered.select('id');
       if (error) throw error;
       if (!Array.isArray(data) || data.length === 0) {
         console.warn('[quotes] skip CAFCI failure', {
           ticker: inv.ticker,
           id: inv.id,
-          reason: 'older_than_stored',
+          reason: anomalous ? 'future_timestamp_cas_miss' : 'older_than_stored',
           source: q.source,
         });
         return false;

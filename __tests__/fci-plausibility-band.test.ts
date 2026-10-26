@@ -78,15 +78,17 @@ beforeEach(() => {
       upsert: mocks.snapshots.mockResolvedValue({ error: null }),
       update: (payload: Record<string, unknown>) => {
         const chain: {
-          eq: (column: string, id: string) => typeof chain;
+          eq: (column: string, value: unknown) => typeof chain;
+          is: (column: string, value: null) => typeof chain;
           or: (filter: string) => typeof chain;
           select: () => Promise<{ error: null; data: Array<{ id: string }> }>;
           then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
         } = {
-          eq: (_column: string, id: string) => {
-            mocks.updates.push({ ...payload, id });
+          eq: (column: string, value: unknown) => {
+            if (column === 'id') mocks.updates.push({ ...payload, id: value });
             return chain;
           },
+          is: () => chain,
           or: (filter: string) => {
             mocks.orFilters.push(filter);
             return chain;
@@ -514,7 +516,14 @@ it('selects a future stored timestamp for refresh without forceRefreshQuotes', a
     current_price: 1.098,
     valuation_price_source: 'live',
   });
-  expect(mocks.orFilters[0]).toContain('current_price_updated_at.gt.');
+  expect(mocks.orFilters).toEqual([]);
+  expect(console.warn).toHaveBeenCalledWith(
+    '[quotes] future stored timestamp',
+    expect.objectContaining({
+      id: 'fixture-position',
+      stored: '2099-01-01T03:00:00.000Z',
+    }),
+  );
   expect(console.warn).toHaveBeenCalledWith(
     '[quotes] overwrite anomalous stored timestamp',
     expect.objectContaining({

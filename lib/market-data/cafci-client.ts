@@ -21,8 +21,11 @@ import {
   ResponseTooLargeError,
 } from '@/lib/market-data/bounded-fetch';
 import { parseCafciHtmlFichaDetailed } from '@/lib/market-data/cafci-html';
+import { fciJumpMaxAbs } from '@/lib/market-data/fci-daily-jump';
 import { parseCafciDateLabel } from '@/lib/market-data/fci-nav-freshness';
 import { fetchIolFciQuote, resetIolFciPanelCacheForTest } from '@/lib/market-data/iol-fci-panel';
+
+export { fciJumpMaxAbs } from '@/lib/market-data/fci-daily-jump';
 
 export { parseCafciDateLabel };
 
@@ -168,6 +171,10 @@ export interface FciQuote {
   changePct: number | null;
   timestamp: string | null;
   source: 'cafci' | 'yahoo' | 'iol';
+  /** Catalog `tipo_renta` used by the daily_jump band. */
+  fundType?: string | null;
+  /** Max |new/stored - 1| for a stored price ≤10 days old. */
+  jumpMaxAbs?: number;
 }
 
 /** ARS/USD, an explicit other label (EUR), mixed fields at one level, or missing. */
@@ -182,6 +189,10 @@ interface CafciClass {
   fundCurrency?: CafciCurrencyLabel;
   /** Class ARS/USD for existing tests; unsupported/missing is null. */
   currency: 'ARS' | 'USD' | null;
+  /** CAFCI catalog `tipo_renta.nombre` (Mercado de Dinero, Renta Fija, …). */
+  tipoRenta?: string | null;
+  /** Catalog `dias_liquidacion`; 0 is T+0. */
+  diasLiquidacion?: number | null;
 }
 
 let catalogCache: { ts: number; classes: CafciClass[] } | null = null;
@@ -323,6 +334,32 @@ function asArsUsd(label: CafciCurrencyLabel): 'ARS' | 'USD' | null {
   return label === 'ARS' || label === 'USD' ? label : null;
 }
 
+function namedField(value: unknown): string | null {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  const rec = asRecord(value);
+  return rec ? pickText(rec.nombre, rec.name, rec.label) : null;
+}
+
+function numericField(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) {
+    return Number(value);
+  }
+  return null;
+}
+
+function catalogFundType(fondo: Record<string, unknown>): {
+  tipoRenta: string | null;
+  diasLiquidacion: number | null;
+} {
+  return {
+    tipoRenta: namedField(fondo.tipo_renta)
+      ?? pickText(fondo.tipoRenta, fondo.categoria, fondo.tipo),
+    diasLiquidacion: numericField(fondo.dias_liquidacion ?? fondo.diasLiquidacion),
+  };
+}
+
+
 /** Never defaults to ARS. Unknown and unsupported labels stay unknown here. */
 export function parseCafciCurrency(...candidates: unknown[]): 'ARS' | 'USD' | null {
   return asArsUsd(firstCurrencyLabel(...candidates));
@@ -441,6 +478,7 @@ function classesFromCatalogPayload(json: unknown): CafciClass[] {
     const nested = asRows(fondo.clases ?? fondo.classes ?? fondo.clase);
     const rows = nested.length > 0 ? nested : [fondo];
     const fundCurrency = rowCurrencyLabel(fondo);
+    const { tipoRenta, diasLiquidacion } = catalogFundType(fondo);
     for (const clase of rows) {
       const claseId = pickId(clase, 'id', 'claseId', 'idClase') || fondoId;
       if (!fondoId || !claseId) continue;
@@ -459,6 +497,8 @@ function classesFromCatalogPayload(json: unknown): CafciClass[] {
         classCurrency,
         fundCurrency,
         currency: asArsUsd(classCurrency),
+        tipoRenta,
+        diasLiquidacion,
       });
     }
   }
@@ -538,6 +578,13 @@ async function fetchParsedFicha(match: CafciClass): Promise<FichaFetchResult> {
   };
 }
 
+function jumpFields(match: CafciClass | null): Pick<FciQuote, 'fundType' | 'jumpMaxAbs'> {
+  return {
+    fundType: match?.tipoRenta ?? null,
+    jumpMaxAbs: fciJumpMaxAbs(match?.tipoRenta, match?.diasLiquidacion),
+  };
+}
+
 function quoteFromParsed(
   symbol: string,
   match: CafciClass,
@@ -550,6 +597,7 @@ function quoteFromParsed(
     fichaData: parsed.fichaData,
     catalogFund: match.fundCurrency ?? null,
   });
+  const jump = jumpFields(match);
   if (resolved.currency) {
     return {
       ticker: symbol,
@@ -558,6 +606,7 @@ function quoteFromParsed(
       changePct: null,
       timestamp: parsed.timestamp,
       source,
+      ...jump,
     };
   }
   if (resolved.reason === 'unknown') {
@@ -568,6 +617,7 @@ function quoteFromParsed(
       changePct: null,
       timestamp: parsed.timestamp,
       source,
+      ...jump,
     };
   }
   return {
@@ -578,6 +628,7 @@ function quoteFromParsed(
     changePct: null,
     timestamp: parsed.timestamp,
     source,
+    ...jump,
   };
 }
 
@@ -590,11 +641,7 @@ function matchClassDetailed(
   const exact = classes.filter((c) => c.keys.includes(key));
   if (exact.length === 1) return { match: exact[0] };
   if (exact.length > 1) return { match: null, reason: 'ambiguous_match' };
-  const partial = classes.filter((c) =>
-    c.keys.some((k) => k !== key && (k.startsWith(key) || key.startsWith(k)))
-  );
-  if (partial.length === 1) return { match: partial[0] };
-  return { match: null, reason: partial.length > 1 ? 'ambiguous_match' : 'no_match' };
+  return { match: null, reason: 'no_match' };
 }
 
 function matchClass(classes: CafciClass[], ticker: string): CafciClass | null {
@@ -640,7 +687,8 @@ function parseFicha(json: unknown): {
 
 async function fetchIolFallback(
   symbol: string,
-  catalogCurrency?: 'ARS' | 'USD' | null
+  catalogCurrency?: 'ARS' | 'USD' | null,
+  match?: CafciClass | null
 ): Promise<FciQuote | null> {
   const iol = await fetchIolFciQuote(symbol);
   if (!iol || !(iol.price > 0)) return null;
@@ -654,6 +702,7 @@ async function fetchIolFallback(
     changePct: iol.changePct,
     timestamp: iol.timestamp,
     source: 'iol',
+    ...jumpFields(match ?? null),
   };
 }
 
@@ -686,7 +735,11 @@ export async function fetchFciQuote(
       if (result.parsed) return quoteFromParsed(symbol, matched.match, result.parsed, 'cafci');
       if (result.reason === 'class_mismatch') return miss('class_mismatch');
       try {
-        const iol = await fetchIolFallback(symbol, asArsUsd(matched.match.classCurrency ?? matched.match.currency));
+        const iol = await fetchIolFallback(
+          symbol,
+          asArsUsd(matched.match.classCurrency ?? matched.match.currency),
+          matched.match
+        );
         if (iol) return iol;
       } catch (iolError) {
         throw new FciCombinedError(

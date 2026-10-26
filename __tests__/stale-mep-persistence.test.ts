@@ -76,14 +76,16 @@ beforeEach(async () => {
       update: (payload: Record<string, unknown>) => {
         const chain: {
           eq: (column: string, id: string) => typeof chain;
+          is: () => typeof chain;
           or: () => typeof chain;
           select: () => Promise<{ error: null; data: Array<{ id: string }> }>;
           then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
         } = {
-          eq: (_column: string, id: string) => {
-            fixture.updates.push({ ...payload, id });
+          eq: (column: string, id: string) => {
+            if (column === 'id') fixture.updates.push({ ...payload, id });
             return chain;
           },
+          is: () => chain,
           or: () => chain,
           select: async () => ({ error: null, data: [{ id: 'ok' }] }),
           then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),

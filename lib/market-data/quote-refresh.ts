@@ -15,9 +15,17 @@ import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { fetchFciQuote } from '@/lib/market-data/cafci-client';
 import {
+  FCI_DAILY_JUMP_MAX_AGE_MS,
+  FCI_DAILY_JUMP_WIDE,
+  fciJumpMaxAbs,
+} from '@/lib/market-data/fci-daily-jump';
+import {
+  AR_MARKET_TZ,
   evaluateFciNavFreshness,
   FCI_NAV_MAX_BUSINESS_DAYS,
+  navTimestampToCivilYmd,
 } from '@/lib/market-data/fci-nav-freshness';
+import { civilTodayYmd } from '@/lib/transaction-date';
 import {
   isArgentineListedType,
   yahooSymbolFor,
@@ -75,14 +83,21 @@ export function shouldPersistFciQuote(quote: Pick<QuoteResult, 'source' | 'times
 }
 
 export const FCI_ANOMALOUS_FUTURE_MS = 24 * 60 * 60 * 1000;
+export { FCI_DAILY_JUMP_MAX_AGE_MS } from '@/lib/market-data/fci-daily-jump';
 
+/**
+ * Stored NAV date is after today's Argentina civil date.
+ * Clock-horizon (now+24h) is not used: a slow clock would treat a legitimate
+ * newer observation as "future" and overwrite it.
+ */
 export function isAnomalousFutureTimestamp(
   iso: string | null | undefined,
   nowMs: number = Date.now()
 ): boolean {
   if (!iso) return false;
-  const ms = Date.parse(iso);
-  return Number.isFinite(ms) && ms > nowMs + FCI_ANOMALOUS_FUTURE_MS;
+  const ymd = navTimestampToCivilYmd(iso);
+  if (!ymd) return false;
+  return ymd > civilTodayYmd(AR_MARKET_TZ, new Date(nowMs));
 }
 
 function postgrestTimestamp(value: string): string {
@@ -90,13 +105,61 @@ function postgrestTimestamp(value: string): string {
 }
 
 /** PostgREST `.or()` so a concurrent newer observation is not overwritten. */
-export function monotonicCurrentPriceFilter(sourceTs: string, now: Date = new Date()): string {
-  const horizon = new Date(now.getTime() + FCI_ANOMALOUS_FUTURE_MS).toISOString();
+export function monotonicCurrentPriceFilter(sourceTs: string): string {
   return [
     'current_price_updated_at.is.null',
     `current_price_updated_at.lt."${postgrestTimestamp(sourceTs)}"`,
-    `current_price_updated_at.gt."${postgrestTimestamp(horizon)}"`,
   ].join(',');
+}
+
+export type FciRowMatch = {
+  ticker: string | null;
+  market_currency: string | null;
+};
+
+/**
+ * Concurrent edits of ticker, currency, or price mode must not be overwritten.
+ * `is()` is used when the observed currency was null.
+ */
+export function applyFciRowMatch<Q extends {
+  eq: (column: string, value: unknown) => Q;
+  is: (column: string, value: null) => Q;
+}>(query: Q, row: FciRowMatch): Q {
+  let next = query.eq('ticker', row.ticker).eq('is_manual_price', false);
+  const ccy = (row.market_currency ?? '').trim().toUpperCase();
+  return ccy ? next.eq('market_currency', ccy) : next.is('market_currency', null);
+}
+
+export type FciDailyJumpResult =
+  | { ok: true; ratio: number; maxAbs: number; applied: boolean }
+  | { ok: false; reason: 'daily_jump'; ratio: number; maxAbs: number };
+
+/**
+ * Skip a same-day-scale jump vs a stored price ≤10 calendar days old.
+ * Band comes from the CAFCI catalog fund type (8% money-market/renta fija/T+0,
+ * 25% equity/mixed/unknown) so a legitimate equity move is not frozen.
+ */
+export function evaluateFciDailyJump(opts: {
+  candidate: number;
+  storedPrice: number;
+  storedTs: string | null | undefined;
+  nowMs?: number;
+  maxAbs?: number;
+}): FciDailyJumpResult {
+  const maxAbs = opts.maxAbs ?? FCI_DAILY_JUMP_WIDE;
+  const ratio = opts.storedPrice > 0 ? opts.candidate / opts.storedPrice : Number.NaN;
+  if (!(opts.storedPrice > 0) || !Number.isFinite(ratio)) {
+    return { ok: true, ratio, maxAbs, applied: false };
+  }
+  const storedMs = storedFciTimestampMs(opts.storedTs);
+  const nowMs = opts.nowMs ?? Date.now();
+  if (!Number.isFinite(storedMs) || nowMs - storedMs > FCI_DAILY_JUMP_MAX_AGE_MS) {
+    return { ok: true, ratio, maxAbs, applied: false };
+  }
+  if (Math.abs(ratio - 1) > maxAbs) {
+    return { ok: false, reason: 'daily_jump', ratio, maxAbs };
+  }
+  return { ok: true, ratio, maxAbs, applied: true };
 }
 
 /** Stored observation is usable as a monotonic floor (not future/garbage). */
@@ -603,6 +666,25 @@ export async function refreshQuotesForInvestments(
             currency: adapted.currency,
           });
         } else {
+          const jump = storedPrice == null ? null : evaluateFciDailyJump({
+            candidate: adapted.price,
+            storedPrice,
+            storedTs: fci.currentPriceUpdatedAt,
+            maxAbs: q.jumpMaxAbs ?? fciJumpMaxAbs(q.fundType),
+          });
+          if (jump && !jump.ok) {
+            console.warn('[quotes] skip CAFCI failure', {
+              reason: 'daily_jump',
+              ticker: fci.ticker,
+              id: fci.id,
+              source: q.source,
+              candidate: adapted.price,
+              anchor: storedPrice,
+              ratio: jump.ratio,
+              maxAbs: jump.maxAbs,
+              fundType: q.fundType ?? null,
+            });
+          } else {
           const persist = !options?.allowUnanchoredFciPreview;
           const sourceTs = quoteSourceTimestamp(q);
           const freshness = evaluateFciNavFreshness(sourceTs);
@@ -650,6 +732,7 @@ export async function refreshQuotesForInvestments(
                 source: q.source,
               };
             }
+          }
           }
         }
       }

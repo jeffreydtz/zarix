@@ -163,16 +163,19 @@ beforeEach(() => {
     mocks.updates.push(payload);
     const chain: {
       eq: ReturnType<typeof vi.fn>;
+      is: ReturnType<typeof vi.fn>;
       or: ReturnType<typeof vi.fn>;
       select: ReturnType<typeof vi.fn>;
       then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
     } = {
       eq: vi.fn(),
+      is: vi.fn(),
       or: vi.fn(),
       select: vi.fn(),
       then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
     };
     chain.eq.mockReturnValue(chain);
+    chain.is.mockReturnValue(chain);
     chain.or.mockReturnValue(chain);
     chain.select.mockResolvedValue({ error: null, data: [{ id: 'ok' }] });
     return chain;

@@ -82,7 +82,6 @@ const ANNUAL_MARKET_EXCEPTIONS: Record<number, string[]> = {
     '2026-11-09',
     '2026-11-10',
     '2026-12-07',
-    '2026-12-24',
   ],
 };
 

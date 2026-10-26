@@ -6,7 +6,7 @@
  * The live panel has no NAV date, so quotes are not a persistence source.
  */
 
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio/slim';
 import { parseArgentineNumber } from '@/lib/market-data/argentine-number';
 import {
   FETCH_REDIRECT,
@@ -100,9 +100,9 @@ function parseSignedPercent(text: string): number | null {
 export function parseIolFondosPanel(html: string): Map<string, IolFciQuote> {
   const out = new Map<string, IolFciQuote>();
   const skipped = new Set<string>();
-  let $ = cheerio.load(html);
-  // Bare <tr> fragments are dropped by the HTML parser unless they sit in a table.
-  if ($('tr').length === 0) $ = cheerio.load(`<table>${html}</table>`);
+  let $ = load(html);
+  // Bare <tr> fragments are dropped unless they sit in a table.
+  if ($('tr').length === 0) $ = load(`<table>${html}</table>`);
   $('script, style, noscript, template').remove();
   $('tr').each((_, row) => {
     const symbol = $(row).find('[data-symbol]').first().attr('data-symbol');

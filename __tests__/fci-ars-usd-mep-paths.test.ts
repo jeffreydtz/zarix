@@ -88,6 +88,7 @@ beforeEach(() => {
   mocks.update.mockImplementation((payload: Record<string, unknown>) => {
     const chain: {
       eq: ReturnType<typeof vi.fn>;
+      is: ReturnType<typeof vi.fn>;
       or: ReturnType<typeof vi.fn>;
       select: ReturnType<typeof vi.fn>;
       then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
@@ -96,6 +97,7 @@ beforeEach(() => {
         if (col === 'id') mocks.updates.push({ ...payload, id });
         return chain;
       }),
+      is: vi.fn(() => chain),
       or: vi.fn(() => chain),
       select: vi.fn(async () => ({ error: null, data: [{ id: 'ok' }] })),
       then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),

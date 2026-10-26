@@ -850,7 +850,7 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
       moneda: 'Dolar Estadounidense',
       fondoId: '1570',
       claseId: '5100',
-    }))).toMatchObject({ price: 1.097744 });
+    }))).toBeNull();
   });
 
   it('decodes numeric comma entities before parsing the NAV token', () => {
@@ -880,6 +880,7 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
         <div class="inner"><h3>Valores al ${cafciValoresAlLabel()}</h3></div>
         <p>Valor por cada cuotaparte: 1,097744</p>
       </div>
+      <div id="cartera"><div class="valores">Valores al 02/10/2026</div></div>
       <span class="label">Moneda:</span> Dolar Estadounidense
     </body></html>`;
     expect(parseCafciHtmlFicha(html)).toMatchObject({

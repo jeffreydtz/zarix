@@ -149,9 +149,9 @@ describe('Codex r3 HTML parser probes — working controls', () => {
     });
   });
 
-  it('16. nested span that completes the NAV is the whole textContent', () => {
+  it('16. nested span that completes the NAV is markup inside the number', () => {
     const html = shell({ nav: '<p>Valor por cada cuotaparte: 1<span>,097744</span></p>' });
-    expect(parsed(html).parsed).toMatchObject({ price: 1.097744 });
+    expect(parsed(html).parsed).toBeNull();
   });
 
   it('17. IOL US$ 1<span>,097744</span> is the complete cell value', () => {
@@ -163,5 +163,57 @@ describe('Codex r3 HTML parser probes — working controls', () => {
       price: 1.097744,
       currency: 'USD',
     });
+  });
+});
+
+describe('Codex r4 HTML parser — #cuotaparte scope and fail-closed NAV', () => {
+  it('ignores a #cartera Valores al date when #cuotaparte has one', () => {
+    const html = shell({
+      extra: `<div id="cartera"><div class="valores">Valores al 02/10/2026</div></div>`,
+    });
+    expect(parsed(html).parsed).toMatchObject({
+      price: 1241.954039,
+      timestamp: '2026-10-23T03:00:00.000Z',
+    });
+  });
+
+  it('skips a comment that completes the NAV token', () => {
+    expect(parsed(shell({ nav: '<p>Valor por cada cuotaparte: 1.241<!--,954039--></p>' })).parsed).toBeNull();
+    expect(parsed(shell({ nav: '<p>Valor por cada cuotaparte: 1<!--,097744--></p>' })).parsed).toBeNull();
+  });
+
+  it('counts a trailing-slash /fondos/999/ action as a second fund form', () => {
+    const html = shell({
+      extra: `<form method="get" action="/fondos/999/">
+        <select name="other"><option value="1" selected>Z</option></select>
+      </form>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('rejects a selected option inside a disabled optgroup', () => {
+    const html = shell({
+      identity: `<form method="get" action="/fondos/227">
+        <select name="clase">
+          <optgroup disabled>
+            <option value="784" selected>B</option>
+          </optgroup>
+          <option value="227">A</option>
+        </select>
+      </form>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('rejects duplicated option value attributes', () => {
+    const html = shell({
+      identity: `<form method="get" action="/fondos/227">
+        <select name="clase">
+          <option value="784" selected>B</option>
+          <option value="784">Also B</option>
+        </select>
+      </form>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
   });
 });

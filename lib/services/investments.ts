@@ -13,6 +13,7 @@ import {
   priceFactorForType,
 } from '@/lib/investments/type-meta';
 import {
+  applyFciRowMatch,
   InvestmentQuoteMap,
   isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
@@ -404,7 +405,6 @@ class InvestmentsService {
     }
 
     const now = Date.now();
-    const nowDate = new Date(now);
     const needsRefresh = !options?.skipQuoteRefresh;
     const candidatesForRefresh = needsRefresh
       ? investments.filter((inv) => {
@@ -431,25 +431,54 @@ class InvestmentsService {
         continue;
       }
       const anomalous = isAnomalousFutureTimestamp(inv.current_price_updated_at, now);
-      const { data, error: fciUpdateError } = await supabase
-        .from('investments')
-        .update({
-          current_price: fresh.price,
-          current_price_updated_at: fresh.timestamp,
-          current_price_change_pct: fresh.changePct,
-          market_currency: fresh.currency.trim().toUpperCase(),
-        })
-        .eq('id', inv.id)
-        .or(monotonicCurrentPriceFilter(fresh.timestamp, nowDate))
-        .select('id');
+      if (anomalous) {
+        console.warn('[quotes] future stored timestamp', {
+          ticker: inv.ticker,
+          id: inv.id,
+          source: fresh.source,
+          stored: inv.current_price_updated_at,
+        });
+      }
+      let fciQuery = applyFciRowMatch(
+        supabase
+          .from('investments')
+          .update({
+            current_price: fresh.price,
+            current_price_updated_at: fresh.timestamp,
+            current_price_change_pct: fresh.changePct,
+            market_currency: fresh.currency.trim().toUpperCase(),
+          })
+          .eq('id', inv.id),
+        inv,
+      );
+      fciQuery = anomalous && inv.current_price_updated_at
+        ? fciQuery.eq('current_price_updated_at', inv.current_price_updated_at)
+        : fciQuery.or(monotonicCurrentPriceFilter(fresh.timestamp));
+      const { data, error: fciUpdateError } = await fciQuery.select('id');
       if (fciUpdateError) throw fciUpdateError;
       if (!Array.isArray(data) || data.length === 0) {
         console.warn('[quotes] skip CAFCI failure', {
           ticker: inv.ticker,
           id: inv.id,
-          reason: 'older_than_stored',
+          reason: anomalous ? 'future_timestamp_cas_miss' : 'older_than_stored',
           source: fresh.source,
         });
+        const { data: winningRows, error: rereadError } = await supabase
+          .from('investments')
+          .select('*')
+          .eq('id', inv.id);
+        if (rereadError) throw rereadError;
+        const winning = Array.isArray(winningRows)
+          ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
+          : null;
+        if (winning) {
+          inv.current_price = winning.current_price;
+          inv.current_price_updated_at = winning.current_price_updated_at;
+          inv.current_price_change_pct = winning.current_price_change_pct;
+          inv.market_currency = winning.market_currency;
+          inv.ticker = winning.ticker;
+          inv.is_manual_price = winning.is_manual_price;
+        }
         if (cacheKey) quoteMap.delete(cacheKey);
         continue;
       }

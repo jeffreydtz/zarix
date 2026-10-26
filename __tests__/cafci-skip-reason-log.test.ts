@@ -19,11 +19,14 @@ vi.mock('@/lib/market-data/cafci-client', () => ({ fetchFciQuote: mocks.fci }));
 
 import {
   describeFciFetchError,
+  evaluateFciDailyJump,
+  isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
   quoteCacheKey,
   refreshQuotesForInvestments,
   shouldPersistFciQuote,
 } from '@/lib/market-data/quote-refresh';
+import { fciJumpMaxAbs } from '@/lib/market-data/fci-daily-jump';
 import { civilYmdToNavIso, freshFciNavIso, shiftBusinessDays } from '@/lib/market-data/fci-nav-freshness';
 import { civilTodayYmd } from '@/lib/transaction-date';
 
@@ -244,12 +247,79 @@ describe('FCI persist allowlist and monotonic filter', () => {
   });
 
   it('lets an anomalous future stored timestamp match the UPDATE filter', () => {
-    const now = new Date('2026-10-26T15:00:00.000Z');
-    const filter = monotonicCurrentPriceFilter('2026-10-23T03:00:00.000Z', now);
+    const filter = monotonicCurrentPriceFilter('2026-10-23T03:00:00.000Z');
     expect(filter).toBe([
       'current_price_updated_at.is.null',
       'current_price_updated_at.lt."2026-10-23T03:00:00.000Z"',
-      'current_price_updated_at.gt."2026-10-27T15:00:00.000Z"',
     ].join(','));
+  });
+
+  it('treats stored timestamps after today in Argentina civil time as future', () => {
+    const now = Date.parse('2026-10-26T15:00:00.000Z');
+    expect(isAnomalousFutureTimestamp('2026-10-26T20:00:00.000Z', now)).toBe(false);
+    expect(isAnomalousFutureTimestamp('2026-10-27T03:00:00.000Z', now)).toBe(true);
+    expect(isAnomalousFutureTimestamp('2099-01-01T03:00:00.000Z', now)).toBe(true);
+  });
+});
+
+describe('FCI daily_jump per catalog fund type', () => {
+  it('uses ±8% for money-market / renta fija / T+0 and ±25% otherwise', () => {
+    expect(fciJumpMaxAbs('Mercado de Dinero', 1)).toBe(0.08);
+    expect(fciJumpMaxAbs('Renta Fija', 2)).toBe(0.08);
+    expect(fciJumpMaxAbs('Renta Variable', 0)).toBe(0.08);
+    expect(fciJumpMaxAbs('Renta Variable', 1)).toBe(0.25);
+    expect(fciJumpMaxAbs('Renta Mixta', 1)).toBe(0.25);
+    expect(fciJumpMaxAbs(null, null)).toBe(0.25);
+  });
+
+  it('skips a 10% money-market jump vs a stored price ≤10 days old and logs the ratio', () => {
+    const stored = '2026-10-23T03:00:00.000Z';
+    const jump = evaluateFciDailyJump({
+      candidate: 1.20,
+      storedPrice: 1.09,
+      storedTs: stored,
+      nowMs: Date.parse('2026-10-26T15:00:00.000Z'),
+      maxAbs: 0.08,
+    });
+    expect(jump).toMatchObject({ ok: false, reason: 'daily_jump', maxAbs: 0.08 });
+    expect(jump.ratio).toBeCloseTo(1.20 / 1.09, 8);
+  });
+
+  it('accepts the same 10% move on an equity/CEDEAR band', () => {
+    const jump = evaluateFciDailyJump({
+      candidate: 1.20,
+      storedPrice: 1.09,
+      storedTs: '2026-10-23T03:00:00.000Z',
+      nowMs: Date.parse('2026-10-26T15:00:00.000Z'),
+      maxAbs: 0.25,
+    });
+    expect(jump.ok).toBe(true);
+  });
+
+  it('logs daily_jump with the ratio on refresh', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD',
+      price: 1.20,
+      currency: 'USD',
+      changePct: null,
+      timestamp: freshFciNavIso(),
+      source: 'cafci',
+      fundType: 'Mercado de Dinero',
+      jumpMaxAbs: 0.08,
+    });
+    const map = await refreshQuotesForInvestments([{
+      ...IOLDOLD,
+      current_price: 1.09,
+      current_price_updated_at: freshFciNavIso(),
+    }]);
+    expect(map.size).toBe(0);
+    expect(skipLogs(warn)).toEqual([expect.objectContaining({
+      reason: 'daily_jump',
+      ticker: 'IOLDOLD',
+      fundType: 'Mercado de Dinero',
+      maxAbs: 0.08,
+    })]);
+    expect((skipLogs(warn)[0].ratio as number)).toBeCloseTo(1.20 / 1.09, 8);
   });
 });
