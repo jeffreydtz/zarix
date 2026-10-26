@@ -1,0 +1,1552 @@
+[
+  {
+    "id": "fresh-07042",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 y total 1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07046",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 y total 1,5k",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07051",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07052",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07053",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07057",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 total final 15000",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07079",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 sin pagar",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07080",
+    "json": {
+      "monto": 15,
+      "rawText": "Jamás Pagaste U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07081",
+    "json": {
+      "monto": 15,
+      "rawText": "Ni Pagaste U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07082",
+    "json": {
+      "monto": 15,
+      "rawText": "Si hubieras Pagaste U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07085",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 dos veces",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07086",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15 multiplicado por tres",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07087",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste tres veces U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07103",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15; (1500)",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07104",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15; 1500-",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07106",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste U$D15; 1500CR",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07318",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 y total 1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07322",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 y total 1,5k",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07327",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07328",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07329",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07333",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 total final 15000",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07355",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 sin pagar",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07356",
+    "json": {
+      "monto": "15",
+      "rawText": "Jamás Pagaste U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07357",
+    "json": {
+      "monto": "15",
+      "rawText": "Ni Pagaste U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07358",
+    "json": {
+      "monto": "15",
+      "rawText": "Si hubieras Pagaste U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07361",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 dos veces",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07362",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15 multiplicado por tres",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07363",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste tres veces U$D15",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07379",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15; (1500)",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07380",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15; 1500-",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-07382",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste U$D15; 1500CR",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09241",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09242",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09243",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09247",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 total final 15000",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09257",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; tip 10",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09263",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; abono 15",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09264",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; ajuste a favor 15",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09269",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 sin pagar",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09270",
+    "json": {
+      "monto": 1500,
+      "rawText": "Jamás Pagaste AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09271",
+    "json": {
+      "monto": 1500,
+      "rawText": "Ni Pagaste AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09272",
+    "json": {
+      "monto": 1500,
+      "rawText": "Si hubieras Pagaste AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09275",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 dos veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09276",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 multiplicado por tres",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09277",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste tres veces AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09293",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; (1500)",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09294",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; 1500-",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09296",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; 1500CR",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09301",
+    "json": {
+      "monto": 1500,
+      "rawText": "Jamás pagaste 1500 ARS",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09302",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste la tercera parte de 1500 ARS",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09303",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$ 1.500 en COTO; total 15000",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09304",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$ 1.500; tip 150",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09305",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$ 1.500; total quince mil",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09315",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09316",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09317",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09321",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 total final 15000",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09331",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; tip 10",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09337",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; abono 15",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09338",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; ajuste a favor 15",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09343",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 sin pagar",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09344",
+    "json": {
+      "monto": 1500,
+      "rawText": "Jamás Pagaste AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09345",
+    "json": {
+      "monto": 1500,
+      "rawText": "Ni Pagaste AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09346",
+    "json": {
+      "monto": 1500,
+      "rawText": "Si hubieras Pagaste AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09349",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 dos veces",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09350",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500 multiplicado por tres",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09351",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste tres veces AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09367",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; (1500)",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09368",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; 1500-",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09370",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$1.500; 1500CR",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09375",
+    "json": {
+      "monto": 1500,
+      "rawText": "Jamás pagaste 1500 ARS",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09376",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste la tercera parte de 1500 ARS",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09377",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$ 1.500 en COTO; total 15000",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09378",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$ 1.500; tip 150",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09379",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste AR$ 1.500; total quince mil",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09389",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09390",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09391",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09395",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500 total final 15000",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09417",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500 sin pagar",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09418",
+    "json": {
+      "monto": 1500,
+      "rawText": "Jamás Pagaste U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09419",
+    "json": {
+      "monto": 1500,
+      "rawText": "Ni Pagaste U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09420",
+    "json": {
+      "monto": 1500,
+      "rawText": "Si hubieras Pagaste U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09423",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500 dos veces",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09424",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500 multiplicado por tres",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09425",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste tres veces U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09441",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500; (1500)",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09442",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500; 1500-",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09444",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste U$D1500; 1500CR",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09537",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09538",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09539",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09543",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 total final 15000",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09553",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; tip 10",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09559",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; abono 15",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09560",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; ajuste a favor 15",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09565",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 sin pagar",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09566",
+    "json": {
+      "monto": "1500",
+      "rawText": "Jamás Pagaste AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09567",
+    "json": {
+      "monto": "1500",
+      "rawText": "Ni Pagaste AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09568",
+    "json": {
+      "monto": "1500",
+      "rawText": "Si hubieras Pagaste AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09571",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 dos veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09572",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 multiplicado por tres",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09573",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste tres veces AR$1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09589",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; (1500)",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09590",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; 1500-",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09592",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; 1500CR",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09597",
+    "json": {
+      "monto": "1500",
+      "rawText": "Jamás pagaste 1500 ARS",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09598",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste la tercera parte de 1500 ARS",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09599",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$ 1.500 en COTO; total 15000",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09600",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$ 1.500; tip 150",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09601",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$ 1.500; total quince mil",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09611",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09612",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09613",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 y 1 500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09617",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 total final 15000",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09627",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; tip 10",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09633",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; abono 15",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09634",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; ajuste a favor 15",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09639",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 sin pagar",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09640",
+    "json": {
+      "monto": "1500",
+      "rawText": "Jamás Pagaste AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09641",
+    "json": {
+      "monto": "1500",
+      "rawText": "Ni Pagaste AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09642",
+    "json": {
+      "monto": "1500",
+      "rawText": "Si hubieras Pagaste AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09645",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 dos veces",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09646",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500 multiplicado por tres",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09647",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste tres veces AR$1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09663",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; (1500)",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09664",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; 1500-",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09666",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$1.500; 1500CR",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09671",
+    "json": {
+      "monto": "1500",
+      "rawText": "Jamás pagaste 1500 ARS",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09672",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste la tercera parte de 1500 ARS",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09673",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$ 1.500 en COTO; total 15000",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09674",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$ 1.500; tip 150",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09675",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste AR$ 1.500; total quince mil",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09685",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09686",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09687",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500 y 1 500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09691",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500 total final 15000",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09713",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500 sin pagar",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09714",
+    "json": {
+      "monto": "1500",
+      "rawText": "Jamás Pagaste U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09715",
+    "json": {
+      "monto": "1500",
+      "rawText": "Ni Pagaste U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09716",
+    "json": {
+      "monto": "1500",
+      "rawText": "Si hubieras Pagaste U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09719",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500 dos veces",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09720",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500 multiplicado por tres",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09721",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste tres veces U$D1500",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09737",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500; (1500)",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09738",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500; 1500-",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "fresh-09740",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste U$D1500; 1500CR",
+      "merchant": "COTO",
+      "currency": "USD",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0012",
+    "json": {
+      "monto": 1500,
+      "rawText": "Jamás pagaste AR$ 1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0013",
+    "json": {
+      "monto": 1500,
+      "rawText": "Jamás pagaste AR$ 1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0014",
+    "json": {
+      "monto": "1500",
+      "rawText": "Jamás pagaste AR$ 1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0015",
+    "json": {
+      "monto": "1500",
+      "rawText": "Jamás pagaste AR$ 1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0060",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15000 en COTO, incluye envío de AR$ 1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0061",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15000 en COTO, incluye envío de AR$ 1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0062",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15000 en COTO, incluye envío de AR$ 1.500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0063",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15000 en COTO, incluye envío de AR$ 1.500",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0076",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15000 en COTO, incluye envío de 1500 ARS",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0077",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15000 en COTO, incluye envío de 1500 ARS",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0078",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15000 en COTO, incluye envío de 1500 ARS",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "focus-0079",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15000 en COTO, incluye envío de 1500 ARS",
+      "merchant": "COTO",
+      "currency": "ARS",
+      "cardName": "tarjeta Visa"
+    }
+  }
+]

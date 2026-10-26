@@ -168,8 +168,15 @@ function parseGroupedNumber(
 }
 
 const ISO_CODE = 'ARS|USD|EUR';
+/** Parsed for pending/suggested amounts. Auto-confirm uses `isAutoConfirmMarker` only. */
 const SYMBOL_CODE = 'U\\$S|US\\$|U\\$D|AR\\$';
 const PREFIX_TOKEN = `(?:\\b(?:${ISO_CODE})\\b|(?:${SYMBOL_CODE}))`;
+/** Live main `fb63360` auto-confirm markers: `ARS|USD|EUR|U$S|US$|$`. Not `AR$` / `U$D`. */
+const AUTO_CONFIRM_MARKER_RE = /^(?:\$|ARS|USD|EUR|U\$S|US\$)$/i;
+
+function isAutoConfirmMarker(marker: string): boolean {
+  return AUTO_CONFIRM_MARKER_RE.test(marker.replace(/\s+/g, ''));
+}
 const CANDIDATE_RE = new RegExp(
   `(?<![A-Za-z\\d])([+-])?\\s*(?:(${PREFIX_TOKEN})\\s*:?\\s*\\$?|(\\$))?\\s*((?:0[xX][0-9A-Fa-f]+|[.,]\\d+|\\d{1,3}(?:[.\\s]\\d{3})+(?:,\\d{1,2})?|\\d{1,3}(?:,\\d{3})+(?:\\.\\d{1,2})?|\\d+[.,]\\d+|\\d{1,12})(?:[eE][+-]?\\d+)?)`,
   'gi'
@@ -185,7 +192,7 @@ const URL_EMAIL_RE = /https?:\/\/\S+|www\.\S+|\S+@\S+/gi;
 const URL_EMAIL_PRESENT_RE = /https?:\/\/\S+|www\.\S+|\S+@\S+/i;
 const QUOTE_RE = /[“”«»"']/;
 const HARD_DENY_RE =
-  /\breintegr|\bdevol|\bdevuelt|\breembols|\brembols|\brefund|\brevers|\bcontracargo|\bcr[eé]dit|\bacredit|\bcashback|\brecib|\bcobr|transfirieron|no\s+(?:fue\s+)?aprobad[oa]|no\s+realiz|no\s+autoriz|\brechaz|\bdeneg|\bdeclin|\bfall|\banul|\bcancel|sin\s+fondos|\bm[ií]nimo|\ba\s+pagar\b|\bvencim|\bvenc|\bprogram|en\s+proceso|\bpendient|preautoriz|\breserva|\bretenc|\bintento|\bahorr|\bdescuent|\bpropina|por\s+mes|\/mes|\bsaldo\b|\bdisponible\b|\bl[ií]mite\b|\bcuota|\bIVA\b|I\.V\.A|c\s*\/\s*u\b|\bdesde\b|\bhasta\b|available\s+balance|no\s+(?:pag[aá]ste|compr[aá]ste|transferiste|abonaste|consumiste)|si\s+(?:pag[aá]ste|compr[aá]ste)|\bseña\b|\badelanto\b|\bimpuesto|\bbonific|\binter[eé]s|\brecord|\bresumen\b|\baviso\b|\bnunca\b|no\s*,|la\s+mitad|\bte\s+debe|\bCR\b|\d+\s*%/i;
+  /\breintegr|\bdevol|\bdevuelt|\breembols|\brembols|\brefund|\brevers|\bcontracargo|\bcr[eé]dit|\bacredit|\bcashback|\brecib|\bcobr|transfirieron|no\s+(?:fue\s+)?aprobad[oa]|no\s+realiz|no\s+autoriz|\brechaz|\bdeneg|\bdeclin|\bfall|\banul|\bcancel|sin\s+fondos|\bm[ií]nimo|\ba\s+pagar\b|\bvencim|\bvenc|\bprogram|en\s+proceso|\bpendient|preautoriz|\breserva|\bretenc|\bintento|\bahorr|\bdescuent|\bpropina|por\s+mes|\/mes|\bsaldo\b|\bdisponible\b|\bl[ií]mite\b|\bcuota|\bIVA\b|I\.V\.A|c\s*\/\s*u\b|\bdesde\b|\bhasta\b|available\s+balance|no\s+(?:pag[aá]ste|compr[aá]ste|transferiste|abonaste|consumiste)|si\s+(?:pag[aá]ste|compr[aá]ste)|\bseña\b|\badelanto\b|\bimpuesto|\bbonific|\binter[eé]s|\brecord|\bresumen\b|\baviso\b|\bnunca\b|\bjam[aá]s\b|sin\s+pagar|si\s+hubieras?|\bdos\s+veces\b|parte\s+de|\bincluye\b|\benv[ií]o\b|no\s*,|la\s+mitad|\bte\s+debe|\bCR\b|\d+\s*%/i;
 const INSTALLMENT_RE = /\bcuotas?\b|\b\d+\s*x\s*\d*\b|\bx\s*\d+\b/i;
 const GLUED_DATE_TIME_RE = /^(?:[:/]\s*\d|\s*[:/-]\s*\d)/;
 const GLUED_DATE_TIME_SPAN_RE = /^(?:[:/]\s*\d+|\s*[:/-]\s*\d+)+/;
@@ -536,9 +543,10 @@ function evidenceFromScan(
 /**
  * Allowlist Wallet free-text gate. A candidate counts only with an explicit
  * currency marker and a fully valid token. Auto-confirm requires exactly one
- * PREFIX-marked candidate AND a completed past-tense template in the same
- * sentence, with no denylist/income signal. Suffix markers (`15 USD`) are
- * evidence for JSON reconciliation but never auto-confirm free text.
+ * PREFIX-marked candidate using a live-main marker (`ARS|USD|EUR|U$S|US$|$`)
+ * AND a completed past-tense template in the same sentence, with no
+ * denylist/income signal. `AR$` / `U$D` and suffix markers (`15 USD`) are
+ * parsed as pending/suggested evidence but never auto-confirm free text.
  */
 export function parseAmountFromText(text: string): AmountParseResult {
   const scan = scanMarkedAmounts(text);
@@ -576,6 +584,7 @@ export function parseAmountFromText(text: string): AmountParseResult {
   const disagree = currencyWordDisagrees(scan.src, preferred.currency);
   const allow =
     preferred.hasPrefix &&
+    isAutoConfirmMarker(preferred.marker) &&
     !preferred.signed &&
     !leftover &&
     !disagree &&
@@ -738,8 +747,9 @@ function hasUnmarkedAmountLikeToken(stripped: string, start: number, end: number
 
 /**
  * JSON amount + non-empty rawText auto-confirm only when the text has exactly
- * one currency-marked amount that matches JSON cents/currency, is positive,
- * and passes the existing template/deny/hygiene gates.
+ * one live-main currency-marked amount that matches JSON cents/currency, is
+ * positive, and passes the existing template/deny/hygiene gates. `AR$` / `U$D`
+ * may still be parsed for the pending item but never auto-confirm.
  */
 function jsonAmountCorroboratedByText(input: {
   jsonAmount: number;
@@ -750,6 +760,7 @@ function jsonAmountCorroboratedByText(input: {
   const scan = scanMarkedAmounts(input.text);
   if (scan.invalidMarked || scan.valid.length !== 1) return false;
   const preferred = scan.valid[0]!;
+  if (!isAutoConfirmMarker(preferred.marker)) return false;
   if (preferred.signed) return false;
   if (hasUnattachedMarker(scan.stripped, preferred.start, preferred.end)) return false;
   if (currencyWordDisagrees(scan.src, preferred.currency)) return false;
@@ -791,7 +802,10 @@ export function parseWalletPayload(input: {
   const parsedJsonCurrency = jsonCurrencyText ? parseTransactionCurrency(jsonCurrencyText) : null;
   const jsonUnsupported = Boolean(jsonCurrencyText) && parsedJsonCurrency == null;
   const currencyUnsupported = jsonUnsupported || fromText.currencyUnsupported;
-  const jsonAmountRaw = json ? json.amount ?? json.importe ?? json.value ?? json.monto : undefined;
+  const jsonCanonicalAmountRaw = json ? json.amount ?? json.importe ?? json.value : undefined;
+  const jsonMontoRaw = json ? json.monto : undefined;
+  const jsonAmountRaw = jsonCanonicalAmountRaw ?? jsonMontoRaw;
+  const jsonMontoOnly = jsonCanonicalAmountRaw == null && jsonMontoRaw != null;
   const extracted = input.rawJson ? extractTopLevelJsonAmount(input.rawJson) : { token: null, duplicate: false };
   const amountToken =
     extracted.token ?? (typeof jsonAmountRaw === 'string' ? jsonAmountRaw : null);
@@ -844,6 +858,7 @@ export function parseWalletPayload(input: {
     textVeto ||
     wordVeto ||
     jsonTextConflict ||
+    jsonMontoOnly ||
     (jsonAmountUsable && textPresent && !jsonAmountCorroborated) ||
     (jsonAmountUsable && jsonAmount
       ? jsonAmount.ambiguous

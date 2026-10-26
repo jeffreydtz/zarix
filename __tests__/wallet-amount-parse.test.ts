@@ -7,6 +7,7 @@ import {
   parseWalletTimestamp,
 } from '@/lib/integrations/wallet-parse';
 import r16MontoRegresion from './fixtures/wallet-r16-monto-regresion.json';
+import r17MarkerRegresion from './fixtures/wallet-r17-marker-regresion.json';
 
 const CASES: Array<{ input: string; amount: number | null; ambiguous?: boolean; direction?: 'expense' | 'income' }> = [
   { input: '$ 12.500', amount: 12500, ambiguous: true },
@@ -691,7 +692,7 @@ describe('wallet amount parser (table)', () => {
       json: { monto: 1500, currency: 'ARS', merchant: 'COTO' },
     });
     expect(structured.amount).toBe(1500);
-    expect(structured.amountAmbiguous).toBe(false);
+    expect(structured.amountAmbiguous).toBe(true);
   });
 
   it('parks the r16 monto regression corpus (213 payloads) instead of trusting JSON', () => {
@@ -700,6 +701,123 @@ describe('wallet amount parser (table)', () => {
       const parsed = parseWalletPayload({ json: json as Record<string, unknown> });
       expect(parsed.amountAmbiguous, id).toBe(true);
     }
+  });
+
+  it('parks AR$/U$D auto-confirm markers and monto-only JSON while still parsing the pending amount', () => {
+    const arPrefix = parseAmountFromText('Pagaste AR$ 1.500');
+    expect(arPrefix.amount).toBe(1500);
+    expect(arPrefix.currency).toBe('ARS');
+    expect(arPrefix.ambiguous).toBe(true);
+
+    const usdHead = parseAmountFromText('Pagaste U$D15');
+    expect(usdHead.amount).toBe(15);
+    expect(usdHead.currency).toBe('USD');
+    expect(usdHead.ambiguous).toBe(true);
+
+    const uss = parseAmountFromText('Pagaste U$S 15');
+    expect(uss.amount).toBe(15);
+    expect(uss.currency).toBe('USD');
+    expect(uss.ambiguous).toBe(false);
+
+    const dollar = parseWalletPayload({
+      json: { amount: 1500, currency: 'ARS', rawText: 'Pagaste $ 1.500' },
+    });
+    expect(dollar.amount).toBe(1500);
+    expect(dollar.amountAmbiguous).toBe(false);
+
+    const montoEvenWithDollar = parseWalletPayload({
+      json: { monto: 1500, currency: 'ARS', rawText: 'Pagaste $ 1.500' },
+    });
+    expect(montoEvenWithDollar.amount).toBe(1500);
+    expect(montoEvenWithDollar.amountAmbiguous).toBe(true);
+
+    const examples = [
+      { monto: 1500, rawText: 'Pagaste 15000 en COTO, incluye envío de AR$ 1.500' },
+      { monto: 1500, rawText: 'Jamás pagaste AR$ 1.500' },
+      { monto: 1500, rawText: 'Pagaste la tercera parte de 1500 ARS' },
+    ];
+    for (const json of examples) {
+      const parsed = parseWalletPayload({ json });
+      expect(parsed.amountAmbiguous, JSON.stringify(json)).toBe(true);
+    }
+    for (const input of [
+      'Jamás pagaste AR$ 1.500',
+      'Pagaste U$D15 y total 1500',
+      'Pagaste AR$ 1.500',
+      'Pagaste U$D15',
+    ]) {
+      expect(parseAmountFromText(input).ambiguous, input).toBe(true);
+      expect(parseWalletText(input).amountAmbiguous, input).toBe(true);
+    }
+  });
+
+  it('parks the r17 AR$/U$D/monto regression corpus (160 payloads)', () => {
+    expect(r17MarkerRegresion).toHaveLength(160);
+    for (const { id, json } of r17MarkerRegresion) {
+      const parsed = parseWalletPayload({ json: json as Record<string, unknown> });
+      expect(parsed.amountAmbiguous, id).toBe(true);
+    }
+  });
+
+  it('keeps r16+r17 auto-confirm a subset of live-main writes (0 HEAD-only autos)', () => {
+    const verifiedCorrections: Array<{
+      json: Record<string, unknown>;
+      amount: number;
+      currency: string;
+      direction: 'expense' | 'income';
+    }> = [];
+    const wouldAuto = (parsed: ReturnType<typeof parseWalletPayload>) =>
+      !parsed.amountAmbiguous &&
+      parsed.amount != null &&
+      parsed.direction === 'expense' &&
+      !parsed.currencyUnsupported;
+
+    const tally = (rows: Array<{ id: string; json: Record<string, unknown> }>) => {
+      let park = 0;
+      let auto = 0;
+      let verified = 0;
+      const violations: string[] = [];
+      for (const { id, json } of rows) {
+        const parsed = parseWalletPayload({ json });
+        if (!wouldAuto(parsed)) {
+          park += 1;
+          continue;
+        }
+        auto += 1;
+        const listed = verifiedCorrections.find(
+          (row) =>
+            JSON.stringify(row.json) === JSON.stringify(json) &&
+            row.amount === parsed.amount &&
+            row.currency === parsed.currency &&
+            row.direction === parsed.direction
+        );
+        if (listed) verified += 1;
+        else violations.push(id);
+      }
+      return { park, auto, verified, violations };
+    };
+
+    const r16 = tally(r16MontoRegresion as Array<{ id: string; json: Record<string, unknown> }>);
+    const r17 = tally(r17MarkerRegresion as Array<{ id: string; json: Record<string, unknown> }>);
+    expect({
+      r16Park: r16.park,
+      r16Auto: r16.auto,
+      r16Verified: r16.verified,
+      r16Violations: r16.violations.length,
+      r17Park: r17.park,
+      r17Auto: r17.auto,
+      r17Verified: r17.verified,
+      r17Violations: r17.violations.length,
+    }).toEqual({
+      r16Park: 213,
+      r16Auto: 0,
+      r16Verified: 0,
+      r16Violations: 0,
+      r17Park: 160,
+      r17Auto: 0,
+      r17Verified: 0,
+      r17Violations: 0,
+    });
   });
 
   it('parks r15 deny roots, URLs, quotes, unicode splitters, accounting and national currencies', () => {

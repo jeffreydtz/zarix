@@ -928,4 +928,84 @@ describe('Wallet HTTP ingest decimal precision', () => {
       expect(result.captured.row?.currency, rawText).toBe(currency);
     }
   });
+
+  it('parks r17 AR$/U$D and monto-only auto-confirm regressions over HTTP', async () => {
+    const merchant = 'COTO';
+    const cardName = 'tarjeta Visa';
+    const timestamp = '2026-10-25T12:00:00.000Z';
+    const parkJson: Array<{ label: string; body: Record<string, unknown> }> = [
+      {
+        label: 'monto-envio-ar$',
+        body: {
+          monto: 1500,
+          rawText: 'Pagaste 15000 en COTO, incluye envío de AR$ 1.500',
+          merchant,
+          cardName,
+          timestamp,
+        },
+      },
+      {
+        label: 'monto-jamas-ar$',
+        body: { monto: 1500, rawText: 'Jamás pagaste AR$ 1.500', merchant, cardName, timestamp },
+      },
+      {
+        label: 'monto-parte-de',
+        body: { monto: 1500, rawText: 'Pagaste la tercera parte de 1500 ARS', merchant, cardName, timestamp },
+      },
+      {
+        label: 'monto-usd-head',
+        body: { monto: 1500, rawText: 'Pagaste U$D15 y total 1500', merchant, cardName, timestamp },
+      },
+      {
+        label: 'monto-matching-dollar',
+        body: { monto: 1500, currency: 'ARS', rawText: 'Pagaste $ 1.500', merchant, cardName, timestamp },
+      },
+    ];
+    for (const [i, { label, body }] of parkJson.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText: String(body.rawText),
+        key: `wallet-r17-json-${i}`,
+        body: JSON.stringify(body),
+      });
+      expect(result.status, label).toBe(201);
+      expect(result.body.autoConfirmed, label).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, label).toBe(true);
+      expect(mocks.execute, label).not.toHaveBeenCalled();
+    }
+
+    const parkPlain = ['Jamás pagaste AR$ 1.500', 'Pagaste U$D15 y total 1500', 'Pagaste AR$ 1.500', 'Pagaste U$D15'];
+    for (const [i, rawText] of parkPlain.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r17-plain-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.autoConfirmed, rawText).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(true);
+      expect(mocks.execute, rawText).not.toHaveBeenCalled();
+    }
+
+    vi.clearAllMocks();
+    const match = await postWalletWithAutoConfirm({
+      rawText: 'Pagaste $ 1.500',
+      key: 'wallet-r17-amount-match',
+      body: JSON.stringify({
+        amount: 1500,
+        currency: 'ARS',
+        rawText: 'Pagaste $ 1.500',
+        merchant,
+        cardName,
+        timestamp,
+      }),
+    });
+    expect(match.status).toBe(201);
+    expect(match.body.item.amount).toBe(1500);
+    expect(match.captured.row?.amount).toBe(1500);
+    expect(match.captured.row?.amount_ambiguous).toBe(false);
+    expect(match.captured.row?.currency).toBe('ARS');
+  });
 });
