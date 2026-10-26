@@ -685,54 +685,54 @@ export async function refreshQuotesForInvestments(
               fundType: q.fundType ?? null,
             });
           } else {
-          const persist = !options?.allowUnanchoredFciPreview;
-          const sourceTs = quoteSourceTimestamp(q);
-          const freshness = evaluateFciNavFreshness(sourceTs);
-          if (!freshness.ok) {
-            if (persist || freshness.reason !== 'undated') {
-              console.warn('[quotes] skip CAFCI failure', {
-                ticker: fci.ticker,
-                reason: freshness.reason,
-                source: q.source,
-                stage: q.source === 'iol' ? 'iol' : 'ficha',
-                ageBusinessDays: freshness.ageBusinessDays,
-                maxBusinessDays: FCI_NAV_MAX_BUSINESS_DAYS,
-                ...(fci.id ? { id: fci.id } : {}),
-              });
+            const persist = !options?.allowUnanchoredFciPreview;
+            const sourceTs = quoteSourceTimestamp(q);
+            const freshness = evaluateFciNavFreshness(sourceTs);
+            if (!freshness.ok) {
+              if (persist || freshness.reason !== 'undated') {
+                console.warn('[quotes] skip CAFCI failure', {
+                  ticker: fci.ticker,
+                  reason: freshness.reason,
+                  source: q.source,
+                  stage: q.source === 'iol' ? 'iol' : 'ficha',
+                  ageBusinessDays: freshness.ageBusinessDays,
+                  maxBusinessDays: FCI_NAV_MAX_BUSINESS_DAYS,
+                  ...(fci.id ? { id: fci.id } : {}),
+                });
+              } else {
+                stamped = {
+                  price: adapted.price,
+                  changePct: adapted.changePct,
+                  currency: adapted.currency,
+                  timestamp: null,
+                  fxStale: adapted.fxStale,
+                  fxAsOf: adapted.fxAsOf,
+                  source: q.source,
+                };
+              }
             } else {
-              stamped = {
-                price: adapted.price,
-                changePct: adapted.changePct,
-                currency: adapted.currency,
-                timestamp: null,
-                fxStale: adapted.fxStale,
-                fxAsOf: adapted.fxAsOf,
-                source: q.source,
-              };
+              const sourceMs = Date.parse(sourceTs as string);
+              const storedMs = storedFciTimestampMs(fci.currentPriceUpdatedAt);
+              if (Number.isFinite(storedMs) && sourceMs < storedMs) {
+                console.warn('[quotes] skip CAFCI failure', {
+                  ticker: fci.ticker,
+                  reason: 'older_than_stored',
+                  source: q.source,
+                  stage: q.source === 'iol' ? 'iol' : 'ficha',
+                  ...(fci.id ? { id: fci.id } : {}),
+                });
+              } else {
+                stamped = {
+                  price: adapted.price,
+                  changePct: adapted.changePct,
+                  currency: adapted.currency,
+                  timestamp: sourceTs,
+                  fxStale: adapted.fxStale,
+                  fxAsOf: adapted.fxAsOf,
+                  source: q.source,
+                };
+              }
             }
-          } else {
-            const sourceMs = Date.parse(sourceTs as string);
-            const storedMs = storedFciTimestampMs(fci.currentPriceUpdatedAt);
-            if (Number.isFinite(storedMs) && sourceMs < storedMs) {
-              console.warn('[quotes] skip CAFCI failure', {
-                ticker: fci.ticker,
-                reason: 'older_than_stored',
-                source: q.source,
-                stage: q.source === 'iol' ? 'iol' : 'ficha',
-                ...(fci.id ? { id: fci.id } : {}),
-              });
-            } else {
-              stamped = {
-                price: adapted.price,
-                changePct: adapted.changePct,
-                currency: adapted.currency,
-                timestamp: sourceTs,
-                fxStale: adapted.fxStale,
-                fxAsOf: adapted.fxAsOf,
-                source: q.source,
-              };
-            }
-          }
           }
         }
       }
