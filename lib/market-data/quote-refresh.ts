@@ -649,9 +649,6 @@ export async function refreshQuotesForInvestments(
                 fxAsOf: adapted.fxAsOf,
                 source: q.source,
               };
-              if (persist && !shouldPersistFciQuote(stamped)) {
-                stamped = null;
-              }
             }
           }
         }

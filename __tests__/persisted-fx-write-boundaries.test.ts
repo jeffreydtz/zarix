@@ -35,7 +35,7 @@ beforeEach(() => {
   fixture.history.mockResolvedValue({ error: null });
   fixture.snapshots.mockResolvedValue({ error: null });
   fixture.updates.mockResolvedValue({ error: null });
-  fixture.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW });
+  fixture.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW, source: 'cafci' });
   fixture.arg.mockResolvedValue({
     byStock: new Map([['GGAL', { symbol: 'GGAL', price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW }]]),
     byCedear: new Map(), byBond: new Map(), byCorp: new Map(),

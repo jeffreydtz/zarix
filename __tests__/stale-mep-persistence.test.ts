@@ -58,7 +58,7 @@ beforeEach(async () => {
   fixture.updates = [];
   fixture.snapshots.mockResolvedValue({ error: null });
   fixture.ratesWritten.mockResolvedValue({ error: null });
-  fixture.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW });
+  fixture.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW, source: 'cafci' });
   fixture.from.mockImplementation((table: string) => {
     let source = '';
     const rateResult = async () => ({
