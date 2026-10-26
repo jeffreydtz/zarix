@@ -69,6 +69,27 @@ export function quoteTimestampOrFetchedAt(quote: unknown, fetchedAtIso: string):
   return quoteSourceTimestamp(quote) ?? fetchedAtIso;
 }
 
+/** IOL is preview-only. Automatic FCI writes need a source NAV timestamp. */
+export function shouldPersistFciQuote(quote: Pick<QuoteResult, 'source' | 'timestamp'>): boolean {
+  return quote.source !== 'iol' && typeof quote.timestamp === 'string' && quote.timestamp.length > 0;
+}
+
+/** PostgREST `.or()` so a concurrent newer observation is not overwritten. */
+export function monotonicCurrentPriceFilter(sourceTs: string): string {
+  const escaped = sourceTs.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return `current_price_updated_at.is.null,current_price_updated_at.lt."${escaped}"`;
+}
+
+/** Stored observation is usable as a monotonic floor (not future/garbage). */
+export function storedFciTimestampMs(storedIso: string | null | undefined): number {
+  const storedTs = quoteSourceTimestamp({ timestamp: storedIso });
+  if (!storedTs) return Number.NaN;
+  const freshness = evaluateFciNavFreshness(storedTs);
+  if (!freshness.ok && freshness.reason !== 'stale_nav') return Number.NaN;
+  const ms = Date.parse(storedTs);
+  return Number.isFinite(ms) ? ms : Number.NaN;
+}
+
 export function desiredQuoteCurrency(inv: QuoteRefreshPosition): string {
   const stored = (inv.market_currency || '').trim().toUpperCase();
   if (stored) return stored;
@@ -581,9 +602,8 @@ export async function refreshQuotesForInvestments(
               };
             }
           } else {
-            const storedTs = quoteSourceTimestamp({ timestamp: fci.currentPriceUpdatedAt });
             const sourceMs = Date.parse(sourceTs as string);
-            const storedMs = storedTs ? Date.parse(storedTs) : Number.NaN;
+            const storedMs = storedFciTimestampMs(fci.currentPriceUpdatedAt);
             if (Number.isFinite(storedMs) && sourceMs < storedMs) {
               console.warn('[quotes] skip CAFCI failure', {
                 ticker: fci.ticker,

@@ -85,12 +85,23 @@ beforeEach(() => {
     purchase_price: 0.14,
     is_manual_price: false,
   }];
-  mocks.update.mockImplementation((payload: Record<string, unknown>) => ({
-    eq: vi.fn((_col: string, id: string) => {
-      mocks.updates.push({ ...payload, id });
-      return Promise.resolve({ error: null });
-    }),
-  }));
+  mocks.update.mockImplementation((payload: Record<string, unknown>) => {
+    const chain: {
+      eq: ReturnType<typeof vi.fn>;
+      or: ReturnType<typeof vi.fn>;
+      select: ReturnType<typeof vi.fn>;
+      then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+    } = {
+      eq: vi.fn((col: string, id: string) => {
+        if (col === 'id') mocks.updates.push({ ...payload, id });
+        return chain;
+      }),
+      or: vi.fn(() => chain),
+      select: vi.fn(async () => ({ error: null, data: [{ id: 'ok' }] })),
+      then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+    };
+    return chain;
+  });
   mocks.from.mockImplementation((table: string) => {
     if (table === 'exchange_rates') {
       return { upsert: vi.fn().mockResolvedValue({ error: null }) };

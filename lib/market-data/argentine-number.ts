@@ -7,7 +7,7 @@ const ARGENTINE_NUMBER = /^-?(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d+)?$/;
 
 export function parseArgentineNumber(value: string): number | null {
   if (typeof value !== 'string') return null;
-  const s = value.replace(/\s+/g, '').trim();
+  const s = value.replace(/\u2212/g, '-').replace(/\s+/g, '').trim();
   if (!s || !ARGENTINE_NUMBER.test(s)) return null;
   const negative = s.startsWith('-');
   const unsigned = negative ? s.slice(1) : s;

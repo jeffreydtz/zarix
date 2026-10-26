@@ -1,9 +1,9 @@
 /**
  * FCI automatic updates require a real source NAV date, not fetch time.
- * Age is measured in Argentina weekdays (Sat/Sun skipped); holidays are
- * treated as weekdays so a long weekend still fits inside the max age.
+ * Age is measured in Argentina banking days (weekends and BCRA holidays skipped).
  */
 
+import { isArgentineMarketHoliday } from '@/lib/market-data/ar-holidays';
 import { addDaysYmd, civilTodayYmd, isCivilYmd } from '@/lib/transaction-date';
 
 export const AR_MARKET_TZ = 'America/Argentina/Buenos_Aires';
@@ -37,7 +37,11 @@ export function isWeekendYmd(ymd: string): boolean {
   return day === 0 || day === 6;
 }
 
-/** Move `ymd` by `delta` weekdays (negative = back). */
+export function isNonBusinessYmd(ymd: string): boolean {
+  return isWeekendYmd(ymd) || isArgentineMarketHoliday(ymd);
+}
+
+/** Move `ymd` by `delta` Argentina banking days (negative = back). */
 export function shiftBusinessDays(ymd: string, delta: number): string {
   if (!delta) return ymd;
   const step = delta > 0 ? 1 : -1;
@@ -45,12 +49,12 @@ export function shiftBusinessDays(ymd: string, delta: number): string {
   let cur = ymd;
   while (left > 0) {
     cur = addDaysYmd(cur, step);
-    if (!isWeekendYmd(cur)) left -= 1;
+    if (!isNonBusinessYmd(cur)) left -= 1;
   }
   return cur;
 }
 
-/** Weekdays strictly after `fromYmd` up to and including `toYmd`. */
+/** Banking days strictly after `fromYmd` up to and including `toYmd`. */
 export function businessDaysBetween(fromYmd: string, toYmd: string): number {
   if (fromYmd === toYmd) return 0;
   if (fromYmd > toYmd) return -businessDaysBetween(toYmd, fromYmd);
@@ -58,7 +62,7 @@ export function businessDaysBetween(fromYmd: string, toYmd: string): number {
   let cur = fromYmd;
   while (cur < toYmd) {
     cur = addDaysYmd(cur, 1);
-    if (!isWeekendYmd(cur)) days += 1;
+    if (!isNonBusinessYmd(cur)) days += 1;
   }
   return days;
 }
@@ -71,7 +75,14 @@ export function civilYmdToNavIso(ymd: string): string | null {
 
 /** Argentina civil YYYY-MM-DD for an observation timestamp. */
 export function navTimestampToCivilYmd(timestamp: string): string | null {
-  const ms = Date.parse(timestamp);
+  const trimmed = timestamp.trim();
+  const dateOnly = trimmed.match(/^(\d{4}-\d{2}-\d{2})$/);
+  if (dateOnly) return isCivilYmd(dateOnly[1]) ? dateOnly[1] : null;
+  const m = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})(?:[Tt ]|$)/);
+  if (!m) return null;
+  const ymd = `${m[1]}-${m[2]}-${m[3]}`;
+  if (!isCivilYmd(ymd)) return null;
+  const ms = Date.parse(trimmed);
   if (!Number.isFinite(ms)) return null;
   return civilTodayYmd(AR_MARKET_TZ, new Date(ms));
 }

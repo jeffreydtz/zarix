@@ -3,8 +3,10 @@ import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
+  monotonicCurrentPriceFilter,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
+  shouldPersistFciQuote,
   type QuoteResult,
 } from '@/lib/market-data/quote-refresh';
 import type { InvestmentType } from '@/types/database';
@@ -83,20 +85,22 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     return Boolean(q && q.price > 0 && !q.fxStale);
   }
 
-  protected async processItem(supabase: ServiceClient, inv: PriceRow): Promise<void> {
+  protected async processItem(supabase: ServiceClient, inv: PriceRow): Promise<boolean | void> {
     const key = this.cacheKey(inv);
-    if (!key) return;
+    if (!key) return false;
     const q = this.quotes.get(key);
-    if (!q || q.price <= 0 || q.fxStale) return;
-    if (inv.type === 'fci' && q.source === 'iol') {
-      console.info('[quotes] fci persist', {
+    if (!q || q.price <= 0 || q.fxStale) return false;
+    if (inv.type === 'fci' && !shouldPersistFciQuote(q)) {
+      console.warn('[quotes] skip CAFCI failure', {
         ticker: inv.ticker,
         id: inv.id,
-        source: 'iol',
-        timestamp: q.timestamp,
+        reason: q.source === 'iol' ? 'undated' : 'invalid_date',
+        source: q.source,
       });
+      return false;
     }
-    const { error } = await supabase
+    const sourceTs = q.timestamp;
+    let query = supabase
       .from('investments')
       .update({
         current_price: q.price,
@@ -105,7 +109,14 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
         market_currency: q.currency.trim().toUpperCase(),
       })
       .eq('id', inv.id);
-
+    if (inv.type === 'fci' && sourceTs) {
+      const { data, error } = await query
+        .or(monotonicCurrentPriceFilter(sourceTs))
+        .select('id');
+      if (error) throw error;
+      return Array.isArray(data) && data.length > 0;
+    }
+    const { error } = await query;
     if (error) throw error;
   }
 

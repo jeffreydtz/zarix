@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { resetCafciCatalogCacheForTest } from '@/lib/market-data/cafci-client';
-import { freshFciNavIso } from '@/lib/market-data/fci-nav-freshness';
+import { cafciValoresAlLabel } from '@/lib/market-data/fci-nav-freshness';
 
 const mocks = vi.hoisted(() => ({
   arg: vi.fn(),
@@ -89,22 +89,36 @@ const SKIP_LABELS = [
 function stubCafci(moneda: string) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     const href = String(url);
-    if (href.includes('/ficha') || /\/fondos\/\d+/.test(href)) {
-      const payload = { data: { valorCuotaparte: CAFCI_PRICE, moneda, fecha: freshFciNavIso().slice(0, 10) } };
+    const ficha = href.match(/\/fondos\/(\d+)\?clase=(\d+)/);
+    if (ficha) {
+      const html = `<html><body>
+        <form method="get" action="/fondos/${ficha[1]}">
+          <select name="clase"><option value="${ficha[2]}" selected>Clase</option></select>
+        </form>
+        <div id="cuotaparte">
+          <h3>Valores al ${cafciValoresAlLabel()}</h3>
+          <p>Valor por cada cuotaparte: 1,098</p>
+        </div>
+        <span class="label">Moneda:</span> ${moneda}
+      </body></html>`;
       return {
         ok: true,
-        json: async () => payload,
-        text: async (): Promise<string> => JSON.stringify(payload),
+        json: async () => ({}),
+        text: async (): Promise<string> => html,
+        headers: new Headers(),
       };
     }
+    const catalog = {
+      data: [
+        { id: 1, nombre: 'IOL Dolar', clases: [{ id: 2, simbolo: 'IOLDOLD' }] },
+        { id: 3, nombre: 'ADC Global', clases: [{ id: 4, simbolo: 'ADCGLOA' }] },
+      ],
+    };
     return {
       ok: true,
-      json: async () => ({
-        data: [
-          { id: 1, nombre: 'IOL Dolar', clases: [{ id: 2, simbolo: 'IOLDOLD' }] },
-          { id: 3, nombre: 'ADC Global', clases: [{ id: 4, simbolo: 'ADCGLOA' }] },
-        ],
-      }),
+      json: async () => catalog,
+      text: async (): Promise<string> => JSON.stringify(catalog),
+      headers: new Headers(),
     };
   }));
 }
@@ -147,7 +161,21 @@ beforeEach(() => {
   setCronPosition('IOLDOLD', 'USD');
   mocks.update.mockImplementation((payload: Record<string, unknown>) => {
     mocks.updates.push(payload);
-    return { eq: vi.fn().mockResolvedValue({ error: null }) };
+    const chain: {
+      eq: ReturnType<typeof vi.fn>;
+      or: ReturnType<typeof vi.fn>;
+      select: ReturnType<typeof vi.fn>;
+      then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+    } = {
+      eq: vi.fn(),
+      or: vi.fn(),
+      select: vi.fn(),
+      then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+    };
+    chain.eq.mockReturnValue(chain);
+    chain.or.mockReturnValue(chain);
+    chain.select.mockResolvedValue({ error: null, data: [{ id: 'ok' }] });
+    return chain;
   });
   mocks.from.mockImplementation((table: string) => {
     if (table === 'exchange_rates') {

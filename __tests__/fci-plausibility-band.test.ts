@@ -72,10 +72,23 @@ beforeEach(() => {
       select: () => builder, eq: () => builder, in: () => builder,
       order: () => builder, gte: () => builder,
       upsert: mocks.snapshots.mockResolvedValue({ error: null }),
-      update: (payload: Record<string, unknown>) => ({ eq: (_column: string, id: string) => {
-        mocks.updates.push({ ...payload, id });
-        return Promise.resolve({ error: null });
-      } }),
+      update: (payload: Record<string, unknown>) => {
+        const chain: {
+          eq: (column: string, id: string) => typeof chain;
+          or: () => typeof chain;
+          select: () => Promise<{ error: null; data: Array<{ id: string }> }>;
+          then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+        } = {
+          eq: (_column: string, id: string) => {
+            mocks.updates.push({ ...payload, id });
+            return chain;
+          },
+          or: () => chain,
+          select: async () => ({ error: null, data: [{ id: 'ok' }] }),
+          then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+        };
+        return chain;
+      },
       then: (resolve: (value: unknown) => unknown) => Promise.resolve(resolve({
         data: table === 'investments' ? mocks.positions : [], error: null,
       })),

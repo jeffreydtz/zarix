@@ -14,8 +14,10 @@ import {
 } from '@/lib/investments/type-meta';
 import {
   InvestmentQuoteMap,
+  monotonicCurrentPriceFilter,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
+  shouldPersistFciQuote,
   type QuoteResult,
 } from '@/lib/market-data/quote-refresh';
 import {
@@ -513,7 +515,9 @@ class InvestmentsService {
         updates.map(async (u) => {
           // Display estimates must not lose their FX provenance in stored prices.
           if (u.fxStale) return;
-          const { error: updateError } = await supabase
+          const invType = investments.find((row) => row.id === u.id)?.type;
+          if (invType === 'fci' && !shouldPersistFciQuote(u)) return;
+          let query = supabase
             .from('investments')
             .update({
               current_price: u.price,
@@ -522,6 +526,14 @@ class InvestmentsService {
               market_currency: u.currency.trim().toUpperCase(),
             })
             .eq('id', u.id);
+          if (invType === 'fci' && u.timestamp) {
+            const { error: updateError } = await query
+              .or(monotonicCurrentPriceFilter(u.timestamp))
+              .select('id');
+            if (updateError) throw updateError;
+            return;
+          }
+          const { error: updateError } = await query;
           if (updateError) throw updateError;
         })
       );

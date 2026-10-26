@@ -22,6 +22,11 @@ import {
   ResponseTooLargeError,
 } from '@/lib/market-data/bounded-fetch';
 import { civilYmdToNavIso } from '@/lib/market-data/fci-nav-freshness';
+import {
+  extractElementById,
+  htmlToVisibleText,
+  stripInactiveHtml,
+} from '@/lib/market-data/html-text';
 import { fetchIolFciQuote, resetIolFciPanelCacheForTest } from '@/lib/market-data/iol-fci-panel';
 import { isCivilYmd } from '@/lib/transaction-date';
 
@@ -482,65 +487,52 @@ async function loadCatalog(): Promise<CafciClass[]> {
   return catalogInflight;
 }
 
-/** `23/10/2026` or `2026-10-23` → ISO. Rejects impossible calendar dates (31/02). */
+/** `23/10/2026` → ISO. Only dd/mm/yyyy that round-trips; no Date.parse fallback. */
 export function parseCafciDateLabel(value: string): string | null {
   const trimmed = value.trim();
-  const dmy = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
-  if (dmy) {
-    const day = dmy[1].padStart(2, '0');
-    const month = dmy[2].padStart(2, '0');
-    const year = dmy[3].length === 2 ? `20${dmy[3]}` : dmy[3];
-    return civilYmdToNavIso(`${year}-${month}-${day}`);
-  }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-    return isCivilYmd(trimmed) ? civilYmdToNavIso(trimmed) : null;
-  }
-  const ms = Date.parse(trimmed);
-  return Number.isFinite(ms) ? new Date(ms).toISOString() : null;
-}
-
-function stripHtmlText(html: string): string {
-  return html
-    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const dmy = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!dmy) return null;
+  const day = dmy[1].padStart(2, '0');
+  const month = dmy[2].padStart(2, '0');
+  const year = dmy[3];
+  const ymd = `${year}-${month}-${day}`;
+  if (!isCivilYmd(ymd)) return null;
+  const [y, mo, d] = ymd.split('-');
+  if (Number(d) !== Number(dmy[1]) || Number(mo) !== Number(dmy[2]) || y !== year) return null;
+  return civilYmdToNavIso(ymd);
 }
 
 function parseSelectedClaseId(html: string): string | null {
-  const select = html.match(/<select\b[^>]*name=["']clase["'][^>]*>[\s\S]*?<\/select>/i);
-  if (!select) return null;
-  const selected: string[] = [];
-  for (const opt of select[0].matchAll(/<option\b([^>]*)>/gi)) {
-    const attrs = opt[1];
-    if (!/\bselected\b/i.test(attrs)) continue;
-    const value = attrs.match(/\bvalue=["']([^"']+)["']/i);
-    if (value) selected.push(value[1].trim());
+  const selects = [...html.matchAll(/<select\b[^>]*name=["']clase["'][^>]*>[\s\S]*?<\/select>/gi)];
+  if (selects.length === 0) return null;
+  const selectedIds: string[] = [];
+  for (const select of selects) {
+    const selected: string[] = [];
+    for (const opt of select[0].matchAll(/<option\b([^>]*)>/gi)) {
+      if (!/\bselected\b/i.test(opt[1])) continue;
+      const value = opt[1].match(/\bvalue=["']([^"']+)["']/i);
+      if (value) selected.push(value[1].trim());
+    }
+    if (selected.length !== 1) return null;
+    selectedIds.push(selected[0]);
   }
-  return selected.length === 1 ? selected[0] : null;
+  return new Set(selectedIds).size === 1 ? selectedIds[0] : null;
 }
 
 function parseFondoIdFromForm(html: string): string | null {
   const ids = [...html.matchAll(/<form\b[^>]*\baction=["']\/fondos\/(\d+)["']/gi)].map((m) => m[1]);
-  if (ids.length === 0) {
-    const alt = [...html.matchAll(/\baction=["']\/fondos\/(\d+)["']/gi)].map((m) => m[1]);
-    if (new Set(alt).size === 1) return alt[0];
-    return null;
-  }
+  if (ids.length === 0) return null;
   return new Set(ids).size === 1 ? ids[0] : null;
 }
 
 function parseCuotapartePrices(html: string): number[] | null {
-  const cuotaSection = html.match(/id=["']cuotaparte["'][^>]*>[\s\S]*?<\/div>/i)?.[0] ?? html;
-  const text = stripHtmlText(cuotaSection);
-  const labels = [...text.matchAll(/Valor por cada cuotaparte:\s*([0-9][0-9.\s,]*)/gi)];
+  const cuotaSection = extractElementById(html, 'cuotaparte') ?? html;
+  const text = htmlToVisibleText(cuotaSection);
+  const labels = [...text.matchAll(/Valor por cada cuotaparte:\s*(\S+)/gi)];
   if (labels.length === 0) return null;
   const prices: number[] = [];
   for (const label of labels) {
-    const token = label[1].replace(/\s+/g, '').replace(/[^\d.,]+$/g, '');
-    const price = parseArgentineNumber(token);
+    const price = parseArgentineNumber(label[1]);
     if (price == null || !Number.isFinite(price) || price <= 0) return null;
     prices.push(price);
   }
@@ -562,13 +554,14 @@ export function parseCafciHtmlFicha(html: string): {
   claseId: string | null;
 } | null {
   if (!html || typeof html !== 'string') return null;
-  const prices = parseCuotapartePrices(html);
+  const visible = stripInactiveHtml(html);
+  const prices = parseCuotapartePrices(visible);
   if (!prices || prices.length === 0) return null;
   if (prices.some((p) => p !== prices[0])) return null;
-  const cuotaSection = html.match(/id=["']cuotaparte["'][^>]*>[\s\S]*?<\/div>/i)?.[0] ?? html;
-  const dateMatch = cuotaSection.match(/Valores al\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
+  const cuotaSection = extractElementById(visible, 'cuotaparte') ?? visible;
+  const dateMatch = htmlToVisibleText(cuotaSection).match(/Valores al\s+(\d{1,2}\/\d{1,2}\/\d{4})/i);
   const timestamp = dateMatch ? parseCafciDateLabel(dateMatch[1]) : null;
-  const monedaMatch = html.match(/Moneda:<\/span>\s*([^<]+)/i) ?? html.match(/Moneda:\s*([^<]+)/i);
+  const monedaMatch = visible.match(/Moneda:<\/span>\s*([^<]+)/i) ?? visible.match(/Moneda:\s*([^<]+)/i);
   const fichaClass = firstCurrencyLabel(monedaMatch?.[1]?.replace(/\s+/g, ' ').trim());
   return {
     price: prices[0],
@@ -576,8 +569,8 @@ export function parseCafciHtmlFicha(html: string): {
     fichaClass,
     fichaData: null,
     timestamp,
-    fondoId: parseFondoIdFromForm(html),
-    claseId: parseSelectedClaseId(html),
+    fondoId: parseFondoIdFromForm(visible),
+    claseId: parseSelectedClaseId(visible),
   };
 }
 
@@ -609,19 +602,11 @@ async function fetchParsedFicha(match: CafciClass): Promise<FichaFetchResult> {
   const url = `${CAFCI_STATS_BASE}/fondos/${encodeURIComponent(match.fondoId)}?clase=${encodeURIComponent(match.claseId)}`;
   const text = await fetchCafciText(url, 'ficha', FETCH_TIMEOUT_MS, FICHA_MAX_BYTES);
   const htmlParsed = parseCafciHtmlFicha(text);
-  if (htmlParsed) {
-    if (!htmlIdentityMatches(htmlParsed, match)) {
-      return { parsed: null, reason: 'class_mismatch' };
-    }
-    return { parsed: htmlParsed };
+  if (!htmlParsed) return { parsed: null, reason: 'unparseable_ficha' };
+  if (!htmlIdentityMatches(htmlParsed, match)) {
+    return { parsed: null, reason: 'class_mismatch' };
   }
-  try {
-    const jsonParsed = parseFicha(JSON.parse(text));
-    if (jsonParsed) return { parsed: jsonParsed };
-  } catch {
-    // body was neither the stats HTML nor a JSON ficha
-  }
-  return { parsed: null, reason: 'unparseable_ficha' };
+  return { parsed: htmlParsed };
 }
 
 function quoteFromParsed(
@@ -795,10 +780,19 @@ export async function fetchFciQuote(
     if (iol) return iol;
   } catch (error) {
     if (cafciError) throw new FciCombinedError(cafciError, error, 'CAFCI failure');
+    if (missReason) {
+      throw new FciCombinedError(
+        { message: missReason, stage: 'catalog' },
+        error,
+        missReason
+      );
+    }
     throw error;
   }
 
-  if (cafciError) throw cafciError;
+  if (cafciError) {
+    throw new FciCombinedError(cafciError, { message: 'no_match', stage: 'iol' }, 'CAFCI failure');
+  }
   return miss(missReason ?? 'no_match');
 }
 

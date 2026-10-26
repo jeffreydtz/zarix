@@ -1,15 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { parseArgentineNumber } from '@/lib/market-data/argentine-number';
 import {
+  easterSundayYmd,
+  isArgentineMarketHoliday,
+  isArgentinePublicHoliday,
+} from '@/lib/market-data/ar-holidays';
+import {
   businessDaysBetween,
   cafciValoresAlLabel,
   evaluateFciNavFreshness,
   FCI_NAV_MAX_BUSINESS_DAYS,
   freshFciNavIso,
+  navTimestampToCivilYmd,
   shiftBusinessDays,
 } from '@/lib/market-data/fci-nav-freshness';
 import { parseCafciDateLabel } from '@/lib/market-data/cafci-client';
 import { civilTodayYmd } from '@/lib/transaction-date';
+import { storedFciTimestampMs } from '@/lib/market-data/quote-refresh';
 
 describe('strict Argentine number parsing', () => {
   it('treats grouped integers without a decimal comma as thousands', () => {
@@ -18,6 +25,7 @@ describe('strict Argentine number parsing', () => {
     expect(parseArgentineNumber('1.241,954039')).toBeCloseTo(1241.954039);
     expect(parseArgentineNumber('1,097744')).toBeCloseTo(1.097744);
     expect(parseArgentineNumber('-0,15')).toBeCloseTo(-0.15);
+    expect(parseArgentineNumber('\u22120,15')).toBeCloseTo(-0.15);
   });
 
   it('rejects markup, malformed grouping and leftover tokens', () => {
@@ -59,6 +67,31 @@ describe('FCI NAV freshness', () => {
     expect(cafciValoresAlLabel(monday)).toBe('23/10/2026');
     expect(freshFciNavIso(monday)).toBe('2026-10-23T03:00:00.000Z');
   });
+
+  it('skips Argentine market holidays such as 12 October', () => {
+    expect(easterSundayYmd(2026)).toBe('2026-04-05');
+    expect(isArgentinePublicHoliday('2026-10-12')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-04-02')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-04-03')).toBe(true);
+    expect(businessDaysBetween('2026-03-30', '2026-04-07')).toBe(4);
+    expect(shiftBusinessDays('2026-10-13', -1)).toBe('2026-10-09');
+  });
+
+  it('rejects an impossible ISO timestamp instead of Date.parse rollover', () => {
+    expect(navTimestampToCivilYmd('2026-02-31T03:00:00Z')).toBeNull();
+    expect(evaluateFciNavFreshness('2026-02-31T03:00:00.000Z', { now: monday })).toMatchObject({
+      reason: 'invalid_date',
+    });
+    expect(navTimestampToCivilYmd('2026-10-23')).toBe('2026-10-23');
+  });
+
+  it('does not let a future stored timestamp block writes', () => {
+    expect(storedFciTimestampMs('2099-01-01T03:00:00.000Z')).toBeNaN();
+    expect(storedFciTimestampMs('not-a-date')).toBeNaN();
+    expect(storedFciTimestampMs('2026-10-23T03:00:00.000Z')).toBe(
+      Date.parse('2026-10-23T03:00:00.000Z')
+    );
+  });
 });
 
 describe('CAFCI calendar dates', () => {
@@ -66,5 +99,7 @@ describe('CAFCI calendar dates', () => {
     expect(parseCafciDateLabel('31/02/2026')).toBeNull();
     expect(parseCafciDateLabel('29/02/2026')).toBeNull();
     expect(parseCafciDateLabel('29/02/2024')).toBe('2024-02-29T03:00:00.000Z');
+    expect(parseCafciDateLabel('2026-10-23')).toBeNull();
+    expect(parseCafciDateLabel('October 23, 2026')).toBeNull();
   });
 });

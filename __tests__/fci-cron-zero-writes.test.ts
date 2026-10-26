@@ -7,7 +7,7 @@ import {
   freshFciNavIso,
   shiftBusinessDays,
 } from '@/lib/market-data/fci-nav-freshness';
-import { civilTodayYmd } from '@/lib/transaction-date';
+import { addDaysYmd, civilTodayYmd } from '@/lib/transaction-date';
 
 const mocks = vi.hoisted(() => ({
   arg: vi.fn(),
@@ -103,11 +103,14 @@ function stubFetch(handlers: {
   fichas?: Record<string, string>;
   iol?: string;
   status?: Record<string, number>;
+  fichaHeaders?: Headers;
+  throwOn?: Partial<Record<'catalog' | 'ficha' | 'iol', Error>>;
 }) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     const u = String(url);
     const statusFor = (key: string, fallback = 200) => handlers.status?.[key] ?? fallback;
     if (u.includes('consulta-de-fondos.json')) {
+      if (handlers.throwOn?.catalog) throw handlers.throwOn.catalog;
       const status = statusFor('catalog');
       const body = handlers.catalog ?? STATS_CATALOG;
       return {
@@ -120,6 +123,7 @@ function stubFetch(handlers: {
     }
     const ficha = u.match(/\/fondos\/(\d+)\?clase=(\d+)/);
     if (ficha) {
+      if (handlers.throwOn?.ficha) throw handlers.throwOn.ficha;
       const key = `${ficha[1]}:${ficha[2]}`;
       const status = statusFor('ficha');
       const html = handlers.fichas?.[key] ?? '';
@@ -128,10 +132,11 @@ function stubFetch(handlers: {
         status,
         text: async () => html,
         json: async () => ({}),
-        headers: new Headers(),
+        headers: handlers.fichaHeaders ?? new Headers(),
       };
     }
     if (u.includes('invertironline.com')) {
+      if (handlers.throwOn?.iol) throw handlers.throwOn.iol;
       const status = statusFor('iol');
       return {
         ok: status >= 200 && status < 300,
@@ -186,7 +191,21 @@ beforeEach(() => {
   setPosition();
   mocks.update.mockImplementation((payload: Record<string, unknown>) => {
     mocks.updates.push(payload);
-    return { eq: vi.fn().mockResolvedValue({ error: null }) };
+    const chain: {
+      eq: ReturnType<typeof vi.fn>;
+      or: ReturnType<typeof vi.fn>;
+      select: ReturnType<typeof vi.fn>;
+      then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+    } = {
+      eq: vi.fn(),
+      or: vi.fn(),
+      select: vi.fn(),
+      then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+    };
+    chain.eq.mockReturnValue(chain);
+    chain.or.mockReturnValue(chain);
+    chain.select.mockResolvedValue({ error: null, data: [{ id: 'ok' }] });
+    return chain;
   });
   mocks.from.mockImplementation((table: string) => {
     if (table === 'exchange_rates') {
@@ -381,5 +400,100 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
       reason: 'older_than_stored',
     }));
+  });
+
+  it('does not write JSON served on the HTML ficha endpoint', async () => {
+    stubFetch({
+      fichas: {
+        '227:784': JSON.stringify({
+          data: { valorCuotaparte: 1451.064642, moneda: 'Peso Argentina', fecha: '2026-10-23' },
+        }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('does not write a future Valores al date', async () => {
+    const tomorrow = addDaysYmd(civilTodayYmd('America/Argentina/Buenos_Aires'), 1);
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({
+          priceLabel: '1.241,954039',
+          date: civilYmdToDmyLabel(tomorrow),
+          fondoId: '227',
+          claseId: '784',
+        }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'future_nav',
+    }));
+  });
+
+  it('does not write an impossible Valores al date', async () => {
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({
+          priceLabel: '1.241,954039',
+          date: '31/02/2026',
+          fondoId: '227',
+          claseId: '784',
+        }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: expect.stringMatching(/undated|invalid_date/),
+    }));
+  });
+
+  it('does not write when the ficha returns 401', async () => {
+    stubFetch({ status: { ficha: 401, iol: 403 } });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('does not write when the catalog has no match', async () => {
+    stubFetch({ catalog: { fondos: [] }, iol: '<html></html>' });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'no_match',
+    }));
+  });
+
+  it('does not write when IOL lists the ticker twice with conflicting prices', async () => {
+    stubFetch({
+      catalog: { fondos: [] },
+      iol: `<table>
+        ${iolRow('PRTAVAB', 'AR$ 1.241,95')}
+        ${iolRow('PRTAVAB', 'AR$ 9.999,00')}
+      </table>`,
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('does not write when the ficha fetch refuses a redirect', async () => {
+    stubFetch({
+      throwOn: { ficha: Object.assign(new TypeError('Failed to fetch'), { cause: 'redirect' }) },
+      iol: '<html></html>',
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('does not write an oversized ficha body', async () => {
+    stubFetch({
+      fichas: { '227:784': 'x'.repeat(600_000) },
+      fichaHeaders: new Headers({ 'content-length': '600000' }),
+      iol: '<html></html>',
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
   });
 });

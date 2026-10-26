@@ -16,6 +16,49 @@ import {
 import { cafciValoresAlLabel } from '@/lib/market-data/fci-nav-freshness';
 import { parseArgentineNumber, parseIolFondosPanel } from '@/lib/market-data/iol-fci-panel';
 
+function quoteHtml(opts: {
+  price?: string;
+  moneda?: string | null;
+  fondoId?: string;
+  claseId?: string;
+  date?: string;
+}): string {
+  const fondoId = opts.fondoId ?? '1';
+  const claseId = opts.claseId ?? '2';
+  const price = opts.price ?? '1,098';
+  const date = opts.date ?? cafciValoresAlLabel();
+  const monedaLine = opts.moneda != null && opts.moneda !== ''
+    ? `<span class="label">Moneda:</span> ${opts.moneda}`
+    : '';
+  return `<html><body>
+    <form method="get" action="/fondos/${fondoId}">
+      <select name="clase"><option value="${claseId}" selected>Clase</option></select>
+    </form>
+    <div id="cuotaparte"><h3>Valores al ${date}</h3><p>Valor por cada cuotaparte: ${price}</p></div>
+    ${monedaLine}
+  </body></html>`;
+}
+
+function htmlRes(html: string) {
+  return {
+    ok: true,
+    status: 200,
+    text: async (): Promise<string> => html,
+    json: async () => ({}),
+    headers: new Headers(),
+  };
+}
+
+function catalogRes(data: unknown) {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => data,
+    text: async (): Promise<string> => JSON.stringify(data),
+    headers: new Headers(),
+  };
+}
+
 describe('CAFCI client headers and 403', () => {
   beforeEach(() => {
     resetCafciCatalogCacheForTest();
@@ -85,62 +128,44 @@ describe('CAFCI client headers and 403', () => {
 
   it('returns null when valorCuotaparte is missing', async () => {
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: null, fecha: '2026-10-23' } }),
-      })
-      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes('<html><body>no nav</body></html>'))
+      .mockResolvedValue(htmlRes('<html></html>'));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
   });
 
   it('returns null when the ficha 200 cannot be parsed', async () => {
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ foo: 1 }),
-      })
-      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes('<html><body>foo</body></html>'))
+      .mockResolvedValue(htmlRes('<html></html>'));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
   });
 
   it('uses the class moneda when the ficha payload has no currency', async () => {
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, fecha: '2026-10-23' } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       ticker: 'IOLDOLD',
@@ -152,22 +177,14 @@ describe('CAFCI client headers and 403', () => {
 
   it('keeps catalog class USD when the ficha only has fondo.moneda Pesos', async () => {
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: { valorCuotaparte: 1.098, fondo: { moneda: 'Pesos' } },
-        }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       ticker: 'IOLDOLD',
@@ -178,21 +195,15 @@ describe('CAFCI client headers and 403', () => {
 
   it('does not let catalog fund Pesos beat a ficha data-level USD cuotaparte', async () => {
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            moneda: 'Pesos',
-            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'USD' } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          moneda: 'Pesos',
+          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'USD' })));
     vi.stubGlobal('fetch', fetchMock);
     const quote = await fetchFciQuote('IOLDOLD');
     expect(quote?.price).toBe(1.098);
@@ -313,45 +324,33 @@ describe('CAFCI client headers and 403', () => {
   it('skips when tipoMoneda USD disagrees with moneda EUR at the same ficha level', async () => {
     expect(firstCurrencyLabel('USD', 'EUR')).toBe('conflict');
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, tipoMoneda: 'USD', moneda: 'EUR' } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'EUR' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
       currency: null,
-      currencySkip: 'conflict',
+      currencySkip: 'unsupported',
     });
   });
 
   it('keeps USD when moneda USD and numeric tipoMoneda 2 share a level', async () => {
     expect(firstCurrencyLabel('USD', 2)).toBe('USD');
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'USD', tipoMoneda: 2 } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'USD' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
@@ -361,20 +360,14 @@ describe('CAFCI client headers and 403', () => {
 
   it('prices IOLDOLD as ARS when CAFCI names ARS - Moneda local', async () => {
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'ARS - Moneda local' } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'ARS - Moneda local' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
@@ -385,20 +378,14 @@ describe('CAFCI client headers and 403', () => {
   it('keeps ARS when moneda Pesos and tipoMoneda Local share a level', async () => {
     expect(firstCurrencyLabel('Pesos', 'Local')).toBe('ARS');
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'Peso fund',
-            clases: [{ id: 2, simbolo: 'CONIOLA' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 179.598, moneda: 'Pesos', tipoMoneda: 'Local' } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'Peso fund',
+          clases: [{ id: 2, simbolo: 'CONIOLA' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '179,598', moneda: 'Pesos' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('CONIOLA')).resolves.toMatchObject({
       price: 179.598,
@@ -409,20 +396,14 @@ describe('CAFCI client headers and 403', () => {
   it('keeps USD when tipoMoneda USD and moneda Dólar agree at the same ficha level', async () => {
     expect(firstCurrencyLabel('USD', 'Dólar')).toBe('USD');
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, tipoMoneda: 'USD', moneda: 'Dólar' } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'Dólar' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
@@ -438,20 +419,14 @@ describe('CAFCI client headers and 403', () => {
     'prices IOLDOLD 1.098 USD when CAFCI names %s',
     async (moneda) => {
       const fetchMock = vi.fn()
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            data: [{
-              id: 1,
-              nombre: 'IOL Dolar',
-              clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-            }],
-          }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ data: { valorCuotaparte: 1.098, moneda, fecha: '2026-10-23' } }),
-        });
+        .mockResolvedValueOnce(catalogRes({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }))
+        .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda })));
       vi.stubGlobal('fetch', fetchMock);
       await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
         ticker: 'IOLDOLD',
@@ -470,20 +445,14 @@ describe('CAFCI client headers and 403', () => {
     async (moneda) => {
       expect(parseCafciCurrencyLabel(moneda)).toBe('unsupported');
       const fetchMock = vi.fn()
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            data: [{
-              id: 1,
-              nombre: 'IOL Dolar',
-              clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-            }],
-          }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ data: { valorCuotaparte: 1.098, moneda } }),
-        });
+        .mockResolvedValueOnce(catalogRes({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }))
+        .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda })));
       vi.stubGlobal('fetch', fetchMock);
       await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
         price: 1.098,
@@ -499,20 +468,14 @@ describe('CAFCI client headers and 403', () => {
       catalogClass: null, fichaClass: null, fichaData: 'unsupported', catalogFund: null,
     })).toEqual({ currency: null, reason: 'unsupported' });
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          data: [{
-            id: 1,
-            nombre: 'IOL Euro',
-            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-          }],
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'EUR' } }),
-      });
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Euro',
+          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'EUR' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
@@ -549,8 +512,8 @@ describe('CAFCI failure diagnostics', () => {
 
   it('tags a ficha 401 after a good catalog', async () => {
     vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => catalog, text: async () => JSON.stringify(catalog) })
-      .mockResolvedValueOnce({ ok: false, status: 401, headers: new Headers(), json: async () => ({}) })
+      .mockResolvedValueOnce(catalogRes(catalog))
+      .mockResolvedValueOnce({ ok: false, status: 401, headers: new Headers(), json: async () => ({}), text: async () => '' })
       .mockResolvedValue({ ok: false, status: 403, json: async () => ({}), text: async () => '' }));
     const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
     expect(err).toMatchObject({
@@ -565,21 +528,17 @@ describe('CAFCI failure diagnostics', () => {
 
   it('rejects an oversized ficha body', async () => {
     vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => catalog,
-        text: async () => JSON.stringify(catalog),
-        headers: new Headers(),
-      })
+      .mockResolvedValueOnce(catalogRes(catalog))
       .mockResolvedValueOnce({
         ok: true,
         text: async () => 'x'.repeat(600_000),
         headers: new Headers({ 'content-length': '600000' }),
       })
-      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) }));
+      .mockResolvedValue(htmlRes('<html></html>')));
     await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
-      name: 'CafciFetchError',
-      stage: 'ficha',
+      name: 'FciCombinedError',
+      cafciStage: 'ficha',
+      iolStage: 'iol',
     });
   });
 
@@ -605,12 +564,16 @@ describe('CAFCI failure diagnostics', () => {
     });
   });
 
-  it('wraps an invalid JSON ficha with the stage', async () => {
+  it('does not parse JSON on the HTML ficha endpoint', async () => {
     vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => catalog, text: async () => JSON.stringify(catalog) })
-      .mockResolvedValueOnce({ ok: true, json: async () => { throw new SyntaxError('Unexpected token <'); } })
-      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) }));
-    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ name: 'CafciFetchError', stage: 'ficha' });
+      .mockResolvedValueOnce(catalogRes(catalog))
+      .mockResolvedValueOnce(htmlRes(JSON.stringify({
+        data: { valorCuotaparte: 1.098, fecha: '2026-10-23', moneda: 'USD' },
+      })))
+      .mockResolvedValue(htmlRes('<html></html>')));
+    const reasons: string[] = [];
+    await expect(fetchFciQuote('IOLDOLD', (r) => reasons.push(r))).resolves.toBeNull();
+    expect(reasons).toEqual(['unparseable_ficha']);
   });
 
   it('reports no_match, ambiguous_match and unparseable_ficha without changing the null result', async () => {
@@ -627,11 +590,7 @@ describe('CAFCI failure diagnostics', () => {
       if (u.includes('invertironline')) {
         return { ok: true, text: async (): Promise<string> => '<html><body>no funds</body></html>' };
       }
-      return {
-        ok: true,
-        json: async () => ({ data: { valorCuotaparte: null } }),
-        text: async () => JSON.stringify({ data: { valorCuotaparte: null } }),
-      };
+      return htmlRes('<html><body>no nav</body></html>');
     }));
     const reasons: string[] = [];
     const onMiss = (r: string) => reasons.push(r);
@@ -805,6 +764,9 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
     expect(parseCafciDateLabel('23/10/2026')).toBe('2026-10-23T03:00:00.000Z');
     expect(parseCafciDateLabel('31/02/2026')).toBeNull();
     expect(parseCafciDateLabel('2026-02-31')).toBeNull();
+    expect(parseCafciDateLabel('2026-10-23')).toBeNull();
+    expect(parseCafciDateLabel('23/10/26')).toBeNull();
+    expect(parseCafciDateLabel('October 23, 2026')).toBeNull();
   });
 
   it('reads fund/class identity from the stats HTML form', () => {
@@ -854,6 +816,68 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
       fondoId: '1570',
       claseId: '5100',
     }))).toMatchObject({ price: 1.097744 });
+  });
+
+  it('decodes numeric comma entities before parsing the NAV token', () => {
+    expect(parseCafciHtmlFicha(htmlFicha({
+      priceLabel: '1&#44;097744',
+      moneda: 'Dolar Estadounidense',
+      fondoId: '1570',
+      claseId: '5100',
+    }))).toMatchObject({ price: 1.097744 });
+  });
+
+  it('rejects a NAV token with trailing junk', () => {
+    expect(parseCafciHtmlFicha(htmlFicha({
+      priceLabel: '1,09x7744',
+      moneda: 'Dolar Estadounidense',
+      fondoId: '1570',
+      claseId: '5100',
+    }))).toBeNull();
+  });
+
+  it('reads a nested #cuotaparte instead of stopping at the first </div>', () => {
+    const html = `<html><body>
+      <form method="get" action="/fondos/1570">
+        <select name="clase"><option value="5100" selected>D</option></select>
+      </form>
+      <div id="cuotaparte" class="divContent">
+        <div class="inner"><h3>Valores al ${cafciValoresAlLabel()}</h3></div>
+        <p>Valor por cada cuotaparte: 1,097744</p>
+      </div>
+      <span class="label">Moneda:</span> Dolar Estadounidense
+    </body></html>`;
+    expect(parseCafciHtmlFicha(html)).toMatchObject({
+      price: 1.097744, fondoId: '1570', claseId: '5100',
+    });
+  });
+
+  it('ignores a form and selected class hidden in comments or script', () => {
+    const html = `<!-- <form action="/fondos/999"><select name="clase"><option value="888" selected></option></select></form> -->
+      <script>document.write('<form action="/fondos/111"><select name="clase"><option value="222" selected></option></select></form>');</script>
+      ${htmlFicha({
+        priceLabel: '1.241,954039',
+        moneda: 'Peso Argentina',
+        fondoId: '227',
+        claseId: '784',
+      })}`;
+    expect(parseCafciHtmlFicha(html)).toMatchObject({
+      price: 1241.954039, fondoId: '227', claseId: '784',
+    });
+  });
+
+  it('rejects conflicting selected class options', () => {
+    const html = `<html><body>
+      <form method="get" action="/fondos/227">
+        <select name="clase">
+          <option value="784" selected>B</option>
+          <option value="227" selected>A</option>
+        </select>
+      </form>
+      <div id="cuotaparte"><h3>Valores al ${cafciValoresAlLabel()}</h3>
+      <p>Valor por cada cuotaparte: 1.241,954039</p></div>
+    </body></html>`;
+    expect(parseCafciHtmlFicha(html)?.claseId ?? null).toBeNull();
   });
 
   it('matches Bloomberg tickers including an AR suffix and the IOLDOLD alias', () => {
@@ -966,6 +990,18 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
     expect(reasons).toEqual(['ambiguous_match']);
     expect(fetchMock.mock.calls.some((call) => String(call[0]).includes('invertironline'))).toBe(false);
   });
+
+  it('keeps CAFCI no_match when IOL throws instead of dropping the miss reason', async () => {
+    stubByUrl({ catalog: { fondos: [] }, status: { iol: 403 } });
+    const err = await fetchFciQuote('PRTAVAB').catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(FciCombinedError);
+    expect(err).toMatchObject({
+      cafciReason: 'no_match',
+      cafciStage: 'catalog',
+      iolStatus: 403,
+      iolStage: 'iol',
+    });
+  });
 });
 
 describe('IOL fondos panel parser', () => {
@@ -1017,6 +1053,14 @@ describe('IOL fondos panel parser', () => {
     `;
     const panel = parseIolFondosPanel(html);
     expect(panel.get('PRGLBDB')).toMatchObject({ changePct: -0.15 });
+    const minusHtml = `
+      <tr>
+        <td><a data-symbol="MINUSFCI">MINUSFCI</a></td>
+        <td class="text-right">US$ 1,10</td>
+        <td class="text-right">\u22120,15%</td>
+      </tr>
+    `;
+    expect(parseIolFondosPanel(minusHtml).get('MINUSFCI')).toMatchObject({ changePct: -0.15 });
     expect(panel.get('ABC')).toMatchObject({ price: 3 });
     expect(panel.has('AB C')).toBe(false);
     expect(panel.has('ABC ')).toBe(false);

@@ -72,7 +72,23 @@ beforeEach(() => {
   mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), buy: 1200, sell: 1200  }, mep: { timestamp: new Date(), buy: 1200, sell: 1200  } });
   mocks.alert.mockResolvedValue(undefined);
   mocks.upsert.mockResolvedValue({ error: null });
-  mocks.update.mockImplementation(() => ({ eq: vi.fn().mockResolvedValue({ error: null }) }));
+  mocks.update.mockImplementation(() => {
+    const chain: {
+      eq: ReturnType<typeof vi.fn>;
+      or: ReturnType<typeof vi.fn>;
+      select: ReturnType<typeof vi.fn>;
+      then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+    } = {
+      eq: vi.fn(),
+      or: vi.fn(),
+      select: vi.fn(),
+      then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+    };
+    chain.eq.mockReturnValue(chain);
+    chain.or.mockReturnValue(chain);
+    chain.select.mockResolvedValue({ error: null, data: [{ id: 'ok' }] });
+    return chain;
+  });
   mocks.from.mockImplementation((table: string) => {
     if (table === 'exchange_rates') return { upsert: mocks.upsert };
     const query = {

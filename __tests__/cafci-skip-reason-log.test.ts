@@ -167,6 +167,19 @@ describe('IOL quotes never persist through the band or a newer CAFCI store', () 
     }));
   });
 
+  it('does not let a future stored timestamp block a fresh CAFCI write', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null,
+      timestamp: freshFciNavIso(), source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([{
+      ...IOLDOLD, current_price: 1.09, current_price_updated_at: '2099-01-01T03:00:00.000Z',
+    }]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toMatchObject({
+      price: 1.098, source: 'cafci',
+    });
+  });
+
   it('does not let dated IOL replace a newer stored CAFCI timestamp', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const stored = freshFciNavIso();

@@ -12,6 +12,7 @@ import {
   readResponseTextCapped,
   ResponseTooLargeError,
 } from '@/lib/market-data/bounded-fetch';
+import { decodeHtmlEntities } from '@/lib/market-data/html-text';
 
 export { parseArgentineNumber } from '@/lib/market-data/argentine-number';
 
@@ -79,22 +80,8 @@ export function normalizeIolTicker(raw: string): string | null {
   return ticker;
 }
 
-function decodeEntities(value: string): string {
-  return value
-    .replace(/&amp;/g, '&')
-    .replace(/&#243;|&oacute;/gi, 'ó')
-    .replace(/&#225;|&aacute;/gi, 'á')
-    .replace(/&#233;|&eacute;/gi, 'é')
-    .replace(/&#237;|&iacute;/gi, 'í')
-    .replace(/&#250;|&uacute;/gi, 'ú')
-    .replace(/&#241;|&ntilde;/gi, 'ñ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
-    .replace(/&quot;/g, '"');
-}
-
 function stripTags(value: string): string {
-  return decodeEntities(value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')).trim();
+  return decodeHtmlEntities(value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')).trim();
 }
 
 function quotesEqual(a: IolFciQuote, b: IolFciQuote): boolean {
@@ -102,7 +89,8 @@ function quotesEqual(a: IolFciQuote, b: IolFciQuote): boolean {
 }
 
 function parseSignedPercent(text: string): number | null {
-  const match = text.match(/([+-]?)\s*([\d.]+(?:,\d+)?)\s*%/);
+  const normalized = text.replace(/\u2212/g, '-');
+  const match = normalized.match(/([+-]?)\s*(\S+?)\s*%/);
   if (!match) return null;
   const n = parseArgentineNumber(`${match[1]}${match[2]}`);
   return n != null && Number.isFinite(n) ? n : null;
@@ -123,8 +111,8 @@ export function parseIolFondosPanel(html: string): Map<string, IolFciQuote> {
     const ticker = normalizeIolTicker(symbolMatch[1]);
     if (!ticker || skipped.has(ticker)) continue;
     const tds = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => stripTags(m[1]));
-    const priceCell = tds.find((td) => /(?:US\$|AR\$|USD|ARS)\s*[\d.,]+/i.test(td)) ?? '';
-    const priceMatch = priceCell.match(/(US\$|AR\$|USD|ARS)\s*([\d.]+(?:,\d+)?)/i);
+    const priceCell = tds.find((td) => /(?:US\$|AR\$|USD|ARS)\s*\S+/i.test(td)) ?? '';
+    const priceMatch = priceCell.match(/(US\$|AR\$|USD|ARS)\s*(\S+)/i);
     if (!priceMatch) continue;
     const price = parseArgentineNumber(priceMatch[2]);
     if (price == null || !(price > 0)) continue;

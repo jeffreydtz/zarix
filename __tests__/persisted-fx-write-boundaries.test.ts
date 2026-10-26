@@ -56,7 +56,23 @@ beforeEach(() => {
       single: rateResult, maybeSingle: rateResult,
       insert: fixture.history,
       upsert: table === 'portfolio_performance_snapshots' ? fixture.snapshots : fixture.history,
-      update: (payload: unknown) => ({ eq: () => fixture.updates(payload) }),
+      update: (payload: unknown) => {
+        const chain: {
+          eq: () => typeof chain;
+          or: () => typeof chain;
+          select: () => Promise<{ error: null; data: Array<{ id: string }> }>;
+          then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+        } = {
+          eq: () => {
+            fixture.updates(payload);
+            return chain;
+          },
+          or: () => chain,
+          select: async () => ({ error: null, data: [{ id: 'ok' }] }),
+          then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+        };
+        return chain;
+      },
       then: (resolve: (result: unknown) => unknown) => Promise.resolve({
         data: table === 'investments' ? fixture.positions : [], error: null,
       }).then(resolve),
