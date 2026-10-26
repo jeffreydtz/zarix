@@ -137,6 +137,51 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     ).parsed).toMatchObject({ price: 1241.954039, fondoId: '227', claseId: '784' });
   });
 
+  const CARRIERS = ['template', 'noscript', 'script', 'style', 'iframe', 'comment'] as const;
+  const TAILS: Record<string, { token: string; prefix: string; tail: string; truncated: number }> = {
+    '227-784.html': { token: '1.241,954039', prefix: '1.241,95', tail: '4039', truncated: 1241.95 },
+    '622-1255.html': { token: '179,598356', prefix: '179,598', tail: '356', truncated: 179.598 },
+    '1570-5100.html': { token: '1,097744', prefix: '1,097', tail: '744', truncated: 1.097 },
+    '750-1645.html': { token: '1,348784', prefix: '1,348', tail: '784', truncated: 1.348 },
+  };
+
+  function carrier(kind: typeof CARRIERS[number], inner: string): string {
+    return kind === 'comment' ? `<!--${inner}-->` : `<${kind}>${inner}</${kind}>`;
+  }
+
+  it('template, noscript, script, style, iframe and comment tails do not truncate the 4 live fichas', () => {
+    const failures: string[] = [];
+    let cases = 0;
+    for (const row of LIVE) {
+      const html = readFileSync(join(fixtures, row.file), 'utf8');
+      const split = TAILS[row.file];
+      const navLine = `<p>Valor por cada cuotaparte: ${split.token}</p>`;
+      const monedaLine = `<li><span class="label">Moneda:</span>         ${row.monedaLabel}</li>`;
+      expect(html).toContain(navLine);
+      expect(html).toContain(monedaLine);
+      for (const kind of CARRIERS) {
+        const payload = carrier(kind, split.tail);
+        const variants = [
+          ['after p', html.replace(navLine, `<p>Valor por cada cuotaparte: ${split.prefix}</p>${payload}`)],
+          ['inside p', html.replace(navLine, `<p>Valor por cada cuotaparte: ${split.prefix}${payload}</p>`)],
+          ['after moneda', html.replace(monedaLine, `<li><span class="label">Moneda:</span>         ${row.monedaLabel}${carrier(kind, ' Extra')}</li>`)],
+        ] as const;
+        for (const [where, mutated] of variants) {
+          cases += 1;
+          const result = parseCafciHtmlFichaDetailed(mutated, { fondoId: row.fondoId, claseId: row.claseId });
+          if (result.parsed) {
+            failures.push(`${row.file} ${kind} ${where} parsed ${result.parsed.price} ${result.parsed.monedaLabel}`);
+          }
+          if (result.parsed?.price === split.truncated) {
+            failures.push(`${row.file} ${kind} ${where} truncated to ${split.truncated}`);
+          }
+        }
+      }
+    }
+    expect(cases).toBe(72);
+    expect(failures).toEqual([]);
+  });
+
   it.each(LIVE)('$fondoId/$claseId still parses with an identical adjacent Moneda li', (row) => {
     const html = readFileSync(join(fixtures, row.file), 'utf8');
     const needle = `<li><span class="label">Moneda:</span>         ${row.monedaLabel}</li>`;

@@ -890,6 +890,118 @@ describe('Kael/Codex r11 HTML parser — rendered section text, Moneda whitelist
     expect(result.parsed).toMatchObject({ monedaLabel: 'Peso Argentina' });
   });
 
+  it('does not save 1241.95 when a template sibling carries the NAV tail', () => {
+    const html = shell({
+      nav: '<p>Valor por cada cuotaparte: 1.241,95</p><template>4039</template>',
+    });
+    const result = parsed(html);
+    expect(result.parsed).toBeNull();
+    expect(result.parsed?.price).not.toBe(1241.95);
+  });
+
+  it('skips a textarea, xmp or plaintext tail after the NAV token', () => {
+    for (const tag of ['textarea', 'xmp', 'plaintext'] as const) {
+      const result = parsed(shell({
+        nav: `<p>Valor por cada cuotaparte: 1.241,95</p><${tag}>4039</${tag}>`,
+      }));
+      expect(result.parsed).toBeNull();
+      expect(result.parsed?.price).not.toBe(1241.95);
+    }
+  });
+
+  it('skips an empty template, noscript, iframe, object or embed inside #cuotaparte', () => {
+    for (const extra of [
+      '<template></template>',
+      '<noscript></noscript>',
+      '<iframe></iframe>',
+      '<object></object>',
+      '<embed>',
+      '<script></script>',
+      '<style></style>',
+    ]) {
+      expect(parsed(shell({
+        nav: `<p>Valor por cada cuotaparte: 1.241,954039</p>${extra}`,
+      })).parsed).toBeNull();
+    }
+  });
+
+  it('Kael token corpus, including template noscript and comment siblings, has 0 truncations', () => {
+    const wraps: Array<[string, (inner: string) => string]> = [
+      ['template', (inner) => `<template>${inner}</template>`],
+      ['noscript', (inner) => `<noscript>${inner}</noscript>`],
+      ['comment', (inner) => `<!--${inner}-->`],
+      ['script', (inner) => `<script>${inner}</script>`],
+      ['style', (inner) => `<style>${inner}</style>`],
+      ['iframe', (inner) => `<iframe>${inner}</iframe>`],
+    ];
+    const cases: Array<{ name: string; html: string; kind: 'nav' | 'date' | 'moneda'; raw: boolean }> = [];
+    for (const [sepName, sep] of SEPARATORS) {
+      for (const [pos, build] of NAV_POSITIONS) {
+        cases.push({ name: `NAV ${pos} ${sepName}`, html: shell({ nav: build(sep) }), kind: 'nav', raw: false });
+      }
+      for (const [pos, build] of DATE_POSITIONS) {
+        cases.push({ name: `date ${pos} ${sepName}`, html: shell({ date: build(sep) }), kind: 'date', raw: false });
+      }
+      for (const [pos, build] of MONEDA_POSITIONS) {
+        cases.push({ name: `Moneda ${pos} ${sepName}`, html: shell({ moneda: build(sep) }), kind: 'moneda', raw: false });
+      }
+      for (const [wrapName, wrap] of wraps) {
+        for (const where of ['sibling', 'inside'] as const) {
+          const navPayload = wrap(`${sep}039`);
+          const datePayload = wrap(`${sep}26`);
+          const monedaPayload = wrap(`${sep}Argentina`);
+          cases.push({
+            name: `NAV ${wrapName} ${where} ${sepName}`,
+            html: shell({
+              nav: where === 'sibling'
+                ? `<p>Valor por cada cuotaparte: 1.241,954</p>${navPayload}`
+                : `<p>Valor por cada cuotaparte: 1.241,954${navPayload}</p>`,
+            }),
+            kind: 'nav',
+            raw: true,
+          });
+          cases.push({
+            name: `date ${wrapName} ${where} ${sepName}`,
+            html: shell({
+              date: where === 'sibling'
+                ? `<h3>Valores al 23/10/20</h3>${datePayload}`
+                : `<h3>Valores al 23/10/20${datePayload}</h3>`,
+            }),
+            kind: 'date',
+            raw: true,
+          });
+          cases.push({
+            name: `Moneda ${wrapName} ${where} ${sepName}`,
+            html: shell({
+              moneda: where === 'sibling'
+                ? `<div id="fichaRight"><p><span class="label">Moneda:</span> Peso</p>${monedaPayload}</div>`
+                : `<div id="fichaRight"><span class="label">Moneda:</span> Peso${monedaPayload}</div>`,
+            }),
+            kind: 'moneda',
+            raw: true,
+          });
+        }
+      }
+    }
+    const truncations: string[] = [];
+    for (const row of cases) {
+      const result = parsed(row.html);
+      if (row.kind === 'nav' && result.parsed?.price === 1241.954) truncations.push(row.name);
+      if (row.kind === 'date' && result.parsed && result.parsed.timestamp !== '2026-10-23T03:00:00.000Z') {
+        truncations.push(row.name);
+      }
+      const label = result.parsed?.monedaLabel;
+      if (row.kind === 'moneda' && (label === 'Peso' || (label && foldSweep(label) !== 'PESO ARGENTINA'))) {
+        truncations.push(`${row.name} saved ${label}`);
+      }
+      if (row.raw && result.parsed) {
+        truncations.push(`${row.name} parsed ${result.parsed.price} ${result.parsed.monedaLabel}`);
+      }
+    }
+    expect(cases.length).toBe(324);
+    expect(truncations).toEqual([]);
+  });
+
   it('parses Dolar Estadounidense Billete when that is the exact block value', () => {
     const html = shell({
       moneda: '<div id="fichaRight"><span class="label">Moneda:</span> Dólar Estadounidense Billete</div>',

@@ -30,12 +30,18 @@
  * containing block; leftover digits after the date in the section also skip.
  * Hidden/non-allowlisted nodes never terminate a token: if one sits inside the
  * token (or between it and further visible digits/letters), skip. The
- * unfiltered descendant-text cross-check must yield the same token. Unicode
- * Cf/format characters (ZWSP, BOM/U+FEFF, bidi, soft hyphens) are stripped
- * before any whitespace normalization so they never become a space. iframe/
- * raw-text, `<base href>`, `<meta http-equiv=refresh>`, and non-whitespace
- * after `</html>` fail closed (live fichas have none of those except a trailing
- * newline after `</html>`).
+ * unfiltered descendant-text cross-check must yield the same token. That
+ * unfiltered string includes comment data and the raw text of `template`
+ * (its inner document), `noscript`, `script`, `style`, `iframe`, `textarea`,
+ * `xmp` and `plaintext`. The same tail rule runs on it: a letter, digit, `.`
+ * or `,` after the token skips. `#cuotaparte` and the Moneda block also skip
+ * when they contain `template`, `noscript`, `iframe`, `object`, `embed`,
+ * `script` or `style` (none of the 28 live fichas captured 2026-10-26 have
+ * those inside either block). Unicode Cf/format characters (ZWSP, BOM/U+FEFF,
+ * bidi, soft hyphens) are stripped before any whitespace normalization so they
+ * never become a space. `<base href>`, `<meta http-equiv=refresh>`, and
+ * non-whitespace after `</html>` fail closed (live fichas have none of those
+ * except a trailing newline after `</html>`).
  *
  * Accepted limits (not checked): CSS from `<style>` or external stylesheets
  * (pseudo-element replacement, class hiding); parse5 hoisting a hidden wrapper
@@ -56,6 +62,10 @@ const DMY = /(?<!\d)(\d{2}\/\d{2}\/\d{4})(?!\d)/g;
 const FORMAT_CHARS = /\p{Cf}/gu;
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
 const DATE_TAIL_CONTINUE = /[\p{N}.,\-\/]/u;
+/** Present in neither `#cuotaparte` nor the Moneda block on the 28 live fichas. */
+const INERT_CARRIERS = new Set([
+  'template', 'noscript', 'iframe', 'object', 'embed', 'script', 'style',
+]);
 
 /**
  * Live-ficha ancestor tags plus equivalent visible HTML content wrappers.
@@ -367,15 +377,25 @@ function renderedText($: CheerioAPI, root: AnyNode, mode: 'visible' | 'unfiltere
       emit(stripFormatChars(textData(node)));
       return;
     }
-    if (!isElement(node)) return;
+    if (node.type === 'comment' || node.type === 'script' || node.type === 'style') {
+      if (mode === 'visible') {
+        skips.push(length);
+        return;
+      }
+      if (node.type === 'comment') {
+        emit(stripFormatChars(textData(node)));
+        return;
+      }
+      for (const child of elementChildren(node)) walk(child);
+      return;
+    }
+    if (!isElement(node)) {
+      for (const child of elementChildren(node)) walk(child);
+      return;
+    }
     const name = node.name.toLowerCase();
     if (name === 'br') {
       emit(' ');
-      return;
-    }
-    if (name === 'script' || name === 'style') {
-      if (mode === 'unfiltered') emit(stripFormatChars(textData(node) || $(node).text()));
-      else skips.push(length);
       return;
     }
     if (mode === 'visible' && (!isAllowedElement(node) || hiddenChain($, node))) {
@@ -408,6 +428,22 @@ function tailIsParenOrEof(text: string, index: number): boolean {
 
 function skipInsideToken(skips: number[], tokenStart: number, tokenEnd: number): boolean {
   return skips.some((offset) => offset > tokenStart && offset < tokenEnd);
+}
+
+function containsInertCarrier(root: AnyNode): boolean {
+  let found = false;
+  walkEveryNode(root, (node) => {
+    if (found) return 'skip-children';
+    if (node.type === 'script' || node.type === 'style') {
+      found = true;
+      return 'skip-children';
+    }
+    if (isElement(node) && INERT_CARRIERS.has(node.name.toLowerCase())) {
+      found = true;
+      return 'skip-children';
+    }
+  });
+  return found;
 }
 
 function descendantTextRaw(root: AnyNode): string {
@@ -773,6 +809,7 @@ function sectionHasCssContentReplacement($: CheerioAPI, root: Element): boolean 
 }
 
 function parseNavPrice($: CheerioAPI, section: Element): number | null {
+  if (containsInertCarrier(section)) return null;
   const nodes = innermostIn($, section, (el) => /Valor por cada cuotaparte:/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
   const el = nodes[0];
@@ -814,6 +851,7 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
 }
 
 function parseValoresAl($: CheerioAPI, section: Element): string | null {
+  if (containsInertCarrier(section)) return null;
   const nodes = innermostIn($, section, (el) => /Valores al\s+/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
   const block = containingBlock(nodes[0]);
@@ -934,6 +972,7 @@ export function parseCafciHtmlFichaDetailed(
   const monedaBlocks = collectMonedaBlocks($);
   const visibleValues: string[] = [];
   for (const block of monedaBlocks) {
+    if (containsInertCarrier(block)) return { parsed: null, reason: 'unparseable_ficha' };
     const visible = monedaValuesFromBlock($, block, 'visible');
     const unfiltered = monedaValuesFromBlock($, block, 'unfiltered');
     if (visible.length === 0 || visible.length !== unfiltered.length) {
