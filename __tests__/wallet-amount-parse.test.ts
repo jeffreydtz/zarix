@@ -48,13 +48,14 @@ describe('wallet amount parser (table)', () => {
     expect(parsed.amountAmbiguous).toBe(false);
   });
 
-  it('JSON numeric amount is not ambiguous; missing currency falls back to text', () => {
+  it('parks JSON amount when rawText claims a non-default currency and JSON omits currency', () => {
     const parsed = parseWalletPayload({
       json: { amount: 1250, merchant: 'Ejemplo Café', rawText: 'USD 1250 Ejemplo' },
     });
     expect(parsed.amount).toBe(1250);
-    expect(parsed.amountAmbiguous).toBe(false);
+    expect(parsed.amountAmbiguous).toBe(true);
     expect(parsed.currency).toBe('USD');
+    expect(parsed.currency).not.toBe('ARS');
   });
 
   it('parses structured amount "1250" as 1250 without the card last-4 heuristic', () => {
@@ -634,6 +635,77 @@ describe('wallet amount parser (table)', () => {
       expect(parsed.amount, input).toBe(amount);
       expect(parsed.ambiguous, input).toBe(false);
       expect(parsed.amount, input).not.toBe(1234);
+    }
+  });
+
+  it('reconciles JSON vs rawText cents, currency and sign including suffix markers', () => {
+    const park = [
+      { amount: 15, rawText: 'Pagaste 15 USD' },
+      { amount: 15, rawText: 'Pagaste 15 US$' },
+      { monto: 1500, rawText: 'Pagaste -$ 1.500' },
+      { monto: 1500, rawText: 'Pagaste $ 0' },
+      { monto: 1500, rawText: 'Pagaste $ 15.000' },
+      { amount: 1500, currency: 'ARS', rawText: 'Pagaste $ 15.000' },
+      { amount: 1500, currency: 'ARS', rawText: 'Pagaste USD 1.500' },
+      { amount: 1500, rawText: 'Pagaste USD 15' },
+      { amount: 800, rawText: 'Pagaste $ 900' },
+      { importe: 1500, rawText: 'Pagaste $ 15.000' },
+      { value: '1500', rawText: 'Pagaste $ 15.000' },
+      { monto: '1500', rawText: 'Pagaste $ 15.000' },
+    ];
+    for (const json of park) {
+      const parsed = parseWalletPayload({ json });
+      expect(parsed.amountAmbiguous, JSON.stringify(json)).toBe(true);
+    }
+    const match = parseWalletPayload({
+      json: { amount: 1500, currency: 'ARS', rawText: 'Pagaste $ 1.500' },
+    });
+    expect(match.amount).toBe(1500);
+    expect(match.amountAmbiguous).toBe(false);
+    expect(match.currency).toBe('ARS');
+    expect(match.direction).toBe('expense');
+  });
+
+  it('parks r15 deny roots, URLs, quotes, unicode splitters, accounting and national currencies', () => {
+    const park = [
+      'Recordatorio: Pagaste $ 1.500',
+      'Recordá Pagaste $ 1.500',
+      'Resumen: Pagaste $ 1.500',
+      'Aviso: Pagaste $ 1.500',
+      'Pagaste $ 1.500 https://banco.test/refund',
+      'Pagaste $ 1.500 user@banco.test',
+      'Nunca pagaste $ 1.500',
+      'no, pagaste $ 1.500',
+      '¿Pagaste $ 1.500?',
+      'Pagaste $ 1.500?',
+      '“Pagaste $ 1.500”',
+      '"Pagaste $ 1.500"',
+      '«Pagaste $ 1.500»',
+      "Pagaste '$ 1.500'",
+      'Pagaste la mitad de $ 3.000',
+      'Pagaste en COTO, Juan te debe $ 1.500',
+      'Pagaste $ 1\u034F.500',
+      'Pagaste $ 1\u0085.500',
+      'Pagaste $ 1\u2028.500',
+      'Pagaste $ 1\u2029.500',
+      'Pagaste $1500-',
+      'Pagaste ($1500)',
+      'Pagaste $1500CR',
+      'Pagaste $ 1.500 CR',
+      'Pagaste USD 10 dólares canadienses',
+      'Pagaste $ 1.500 pesos mexicanos',
+      'Pagaste $ 1.500 pesos chilenos',
+      'Pagaste $ 1.500 pesos uruguayos',
+      'Pagaste USD 10 dólares australianos',
+      'Pago de interés $ 1.500',
+    ];
+    for (const input of park) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.ambiguous, input).toBe(true);
+      const payload = parseWalletPayload({
+        json: { amount: 1500, currency: 'ARS', merchant: 'COTO', rawText: input },
+      });
+      expect(payload.amountAmbiguous, input).toBe(true);
     }
   });
 

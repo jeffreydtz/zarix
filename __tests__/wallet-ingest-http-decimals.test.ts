@@ -673,4 +673,166 @@ describe('Wallet HTTP ingest decimal precision', () => {
       expect(mocks.execute, rawText.slice(0, 40)).not.toHaveBeenCalled();
     }
   });
+
+  it('parks round-15 JSON vs rawText mismatches with auto-confirm armed and writes nothing', async () => {
+    const merchant = 'COTO';
+    const cardName = 'tarjeta Visa';
+    const timestamp = '2026-10-25T12:00:00.000Z';
+    const parkBodies: Array<{ body: Record<string, unknown>; label: string }> = [
+      { label: 'amount15-suffix-USD', body: { amount: 15, rawText: 'Pagaste 15 USD', merchant, cardName, timestamp } },
+      { label: 'amount15-suffix-US$', body: { amount: 15, rawText: 'Pagaste 15 US$', merchant, cardName, timestamp } },
+      { label: 'monto-negative', body: { monto: 1500, rawText: 'Pagaste -$ 1.500', merchant, cardName, timestamp } },
+      { label: 'monto-zero', body: { monto: 1500, rawText: 'Pagaste $ 0', merchant, cardName, timestamp } },
+      { label: 'monto-15000', body: { monto: 1500, rawText: 'Pagaste $ 15.000', merchant, cardName, timestamp } },
+      { label: 'monto-string-15000', body: { monto: '1500', rawText: 'Pagaste $ 15.000', merchant, cardName, timestamp } },
+      { label: 'importe-15000', body: { importe: 1500, rawText: 'Pagaste $ 15.000', merchant, cardName, timestamp } },
+      { label: 'importe-string', body: { importe: '1500', rawText: 'Pagaste $ 15.000', merchant, cardName, timestamp } },
+      { label: 'value-15000', body: { value: 1500, rawText: 'Pagaste $ 15.000', merchant, cardName, timestamp } },
+      { label: 'value-string', body: { value: '1500', rawText: 'Pagaste $ 15.000', merchant, cardName, timestamp } },
+      { label: 'amount-ARS-15000', body: { amount: 1500, currency: 'ARS', rawText: 'Pagaste $ 15.000', merchant, cardName, timestamp } },
+      { label: 'json-ARS-text-USD', body: { amount: 1500, currency: 'ARS', rawText: 'Pagaste USD 1.500', merchant, cardName, timestamp } },
+      { label: 'no-currency-USD-15', body: { amount: 1500, rawText: 'Pagaste USD 15', merchant, cardName, timestamp } },
+      { label: 'cents-800-vs-900', body: { amount: 800, rawText: 'Pagaste $ 900', merchant, cardName, timestamp } },
+      { label: 'amount-string-suffix-USD', body: { amount: '15', rawText: 'Pagaste 15 USD', merchant, cardName, timestamp } },
+    ];
+    for (const [i, { body, label }] of parkBodies.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText: String(body.rawText),
+        key: `wallet-r15-json-${i}`,
+        body: JSON.stringify(body),
+      });
+      expect(result.status, label).toBe(201);
+      expect(result.body.autoConfirmed, label).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, label).toBe(true);
+      expect(mocks.execute, label).not.toHaveBeenCalled();
+    }
+
+    vi.clearAllMocks();
+    const match = await postWalletWithAutoConfirm({
+      rawText: 'Pagaste $ 1.500',
+      key: 'wallet-r15-json-match',
+      body: JSON.stringify({
+        amount: 1500,
+        currency: 'ARS',
+        rawText: 'Pagaste $ 1.500',
+        merchant,
+        cardName,
+        timestamp,
+      }),
+    });
+    expect(match.status).toBe(201);
+    expect(match.body.item.amount).toBe(1500);
+    expect(match.captured.row?.amount).toBe(1500);
+    expect(match.captured.row?.amount_ambiguous).toBe(false);
+    expect(match.captured.row?.currency).toBe('ARS');
+  });
+
+  it('parks round-15 deny roots, URLs, template hedges, unicode, accounting and national currencies', async () => {
+    const park = [
+      'Recordatorio: Pagaste $ 1.500',
+      'Recordá Pagaste $ 1.500',
+      'Resumen: Pagaste $ 1.500',
+      'Aviso: Pagaste $ 1.500',
+      'Pagaste $ 1.500 https://banco.test/refund',
+      'Pagaste $ 1.500 user@banco.test',
+      'Nunca pagaste $ 1.500',
+      'no, pagaste $ 1.500',
+      '¿Pagaste $ 1.500?',
+      'Pagaste $ 1.500?',
+      '“Pagaste $ 1.500”',
+      '"Pagaste $ 1.500"',
+      '«Pagaste $ 1.500»',
+      "Pagaste '$ 1.500'",
+      'Pagaste la mitad de $ 3.000',
+      'Pagaste en COTO, Juan te debe $ 1.500',
+      'Pagaste $ 1\u034F.500',
+      'Pagaste $ 1\u0085.500',
+      'Pagaste $ 1\u2028.500',
+      'Pagaste $ 1\u2029.500',
+      'Pagaste $1500-',
+      'Pagaste ($1500)',
+      'Pagaste $1500CR',
+      'Pagaste $ 1.500 CR',
+      'Pagaste USD 10 dólares canadienses',
+      'Pagaste $ 1.500 pesos mexicanos',
+      'Pagaste $ 1.500 pesos chilenos',
+      'Pagaste $ 1.500 pesos uruguayos',
+      'Pagaste USD 10 dólares australianos',
+      'Pago de interés $ 1.500',
+    ];
+    for (const [i, rawText] of park.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r15-park-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.autoConfirmed, rawText).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(true);
+      expect(mocks.execute, rawText).not.toHaveBeenCalled();
+    }
+  });
+
+  it('keeps the 30-format table and 8 positives auto-confirmable over HTTP', async () => {
+    const nbsp1250 = `$ 1\u00a0250`;
+    const nbspCents = `$\u00a01.250,50`;
+    const tokens: Array<{ token: string; amount: number; currency?: string }> = [
+      { token: '$ 1.250,50', amount: 1250.5 },
+      { token: '$1250', amount: 1250 },
+      { token: '$ 1.250', amount: 1250 },
+      { token: 'USD 12,50', amount: 12.5, currency: 'USD' },
+      { token: 'US$ 12.50', amount: 12.5, currency: 'USD' },
+      { token: 'ARS 1.234,5', amount: 1234.5 },
+      { token: '$ 0,99', amount: 0.99 },
+      { token: '$ 1.000.000', amount: 1_000_000 },
+      { token: nbsp1250, amount: 1250 },
+      { token: nbspCents, amount: 1250.5 },
+    ];
+    expect(tokens).toHaveLength(10);
+    let i = 0;
+    for (const { token, amount, currency } of tokens) {
+      for (const rawText of [`Pagaste ${token}`, `Pagaste ${token} en COTO`, `Pagaste ${token}.`]) {
+        vi.clearAllMocks();
+        const result = await postWalletWithAutoConfirm({
+          rawText,
+          key: `wallet-r15-fmt-${i++}`,
+          contentType: 'text/plain',
+          body: rawText,
+        });
+        expect(result.status, rawText).toBe(201);
+        expect(result.body.item.amount, rawText).toBe(amount);
+        expect(result.captured.row?.amount, rawText).toBe(amount);
+        expect(result.captured.row?.amount_ambiguous, rawText).toBe(false);
+        if (currency) expect(result.captured.row?.currency, rawText).toBe(currency);
+      }
+    }
+    const positives = [
+      { rawText: 'Pagaste $ 3.500', amount: 3500 },
+      { rawText: 'Compraste en COTO por $ 1.250,50', amount: 1250.5 },
+      { rawText: 'Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.', amount: 5000 },
+      { rawText: 'Transferiste $ 8.000', amount: 8000 },
+      { rawText: 'Pagaste con saldo $ 1.500 en COTO', amount: 1500 },
+      { rawText: 'Compra aprobada US$ 12.50', amount: 12.5 },
+      { rawText: 'Abonaste USD 10', amount: 10 },
+      { rawText: '25/10 12:30 Pagaste $ 1.250,50', amount: 1250.5 },
+    ];
+    expect(positives).toHaveLength(8);
+    for (const [j, { rawText, amount }] of positives.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r15-pos-${j}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.item.amount, rawText).toBe(amount);
+      expect(result.captured.row?.amount, rawText).toBe(amount);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(false);
+      expect(result.body.item.amount, rawText).not.toBe(1234);
+    }
+  });
 });
