@@ -454,6 +454,8 @@ class InvestmentsService {
       ? await this.refreshQuotesForInvestments(candidatesForRefresh)
       : new InvestmentQuoteMap();
 
+    const skippedQuoteIds = new Set<string>();
+
     for (const inv of investments) {
       if (inv.type !== 'fci' || inv.is_manual_price || !inv.ticker) continue;
       const cacheKey = quoteCacheKeyForPosition(inv);
@@ -494,7 +496,7 @@ class InvestmentsService {
           source: fresh.source,
         });
         if (winning) copyWinningAutomaticPrice(inv, winning);
-        if (cacheKey) quoteMap.delete(cacheKey);
+        skippedQuoteIds.add(inv.id);
         continue;
       }
     }
@@ -540,7 +542,7 @@ class InvestmentsService {
           type: inv.type,
         });
         if (winning) copyWinningAutomaticPrice(inv, winning);
-        if (cacheKey) quoteMap.delete(cacheKey);
+        skippedQuoteIds.add(inv.id);
       }
     }
 
@@ -557,7 +559,7 @@ class InvestmentsService {
       const cacheKey = quoteCacheKeyForPosition(inv);
       const requiredFxUnavailable = cacheKey != null && quoteMap.unavailableFxKeys.has(cacheKey);
 
-      if (inv.ticker && !inv.is_manual_price) {
+      if (inv.ticker && !inv.is_manual_price && !skippedQuoteIds.has(inv.id)) {
         const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
         if (fresh && fresh.price > 0) {
           currentPrice = fresh.price;

@@ -44,6 +44,7 @@ function skipLogs(warn: { mock: { calls: unknown[][] } }) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.arg.mockResolvedValue({ byStock: new Map(), byCedear: new Map(), byBond: new Map(), byCorp: new Map() });
   mocks.dolar.mockResolvedValue({
     blue: { timestamp: new Date(), sell: 1300, buy: 1280 },
@@ -89,6 +90,45 @@ describe('skip CAFCI failure log carries the reason', () => {
     });
     await refreshQuotesForInvestments([IOLDOLD]);
     expect(skipLogs(warn)).toEqual([{ ticker: 'IOLDOLD', reason: 'unparseable_ficha' }]);
+  });
+
+  it('emits one fci_all_failed error when every FCI ticker fails with the same parse reason', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mocks.fci.mockImplementation(async (_t: string, onMiss?: (r: string) => void) => {
+      onMiss?.('unparseable_ficha');
+      return null;
+    });
+    await refreshQuotesForInvestments([
+      IOLDOLD,
+      { type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(skipLogs(warn)).toEqual([
+      { ticker: 'IOLDOLD', reason: 'unparseable_ficha' },
+      { ticker: 'PRTAVAB', reason: 'unparseable_ficha' },
+    ]);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('[quotes] fci_all_failed', {
+      reason: 'unparseable_ficha',
+      count: 2,
+    });
+  });
+
+  it('does not emit fci_all_failed when one FCI parses', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockImplementation(async (ticker: string, onMiss?: (r: string) => void) => {
+      if (ticker === 'IOLDOLD') {
+        return { ticker, price: 1.098, currency: 'USD', changePct: 0, timestamp: freshFciNavIso(), source: 'cafci' };
+      }
+      onMiss?.('unparseable_ficha');
+      return null;
+    });
+    await refreshQuotesForInvestments([
+      { ...IOLDOLD, current_price: 1.09 },
+      { type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', purchase_currency: 'ARS', current_price: 1240 },
+    ]);
+    expect(error).not.toHaveBeenCalledWith('[quotes] fci_all_failed', expect.anything());
   });
 
   it('defaults a bare null to no_match', async () => {

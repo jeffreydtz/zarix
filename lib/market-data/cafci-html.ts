@@ -7,23 +7,22 @@
  * does not expose them via location info in cheerio's DOM, so duplicate attrs
  * cannot be rejected robustly here.
  *
- * Every node used for identity, `#cuotaparte`, NAV, date, and Moneda must be
- * in the HTML namespace, and its ancestor chain through `<body>` then `<html>`
- * may contain only allowlisted HTML-namespace tags (derived from the live
- * CAFCI fichas, plus a few equivalent content wrappers). Any other ancestor
- * (svg, math, foreignObject, noscript, script, style, template, iframe, …)
- * skips. Text values come only from text nodes whose direct parent is
- * allowlisted. iframe/raw-text and comment checks remain as defense in depth.
+ * Uniqueness is document-wide and runs before trust: every identity control,
+ * `por cada cuotaparte`, `Valores al` (except `#cartera`), `Moneda:` label, and
+ * case-insensitive `cuotaparte` id counts, whether allowlisted, hidden, foreign
+ * namespace, or raw-text. Live fichas (2026-10-26) have one of each countable
+ * candidate (two raw `Valores al`, of which one is `#cartera`). Any extra skips.
+ * The single candidate must then sit on an HTML-namespace allowlist chain
+ * through `<body>` then `<html>` and must not be hidden (`hidden`,
+ * `aria-hidden="true"`, `inert`, closed `details`/`dialog`, or an inline style
+ * whose last `display`/`visibility` declaration is `none` / `hidden`/`collapse`).
+ * External and class-based CSS cannot be checked and is an accepted limit.
  *
- * Currency: every allowlisted `Moneda:` label on the page (except `#cartera`)
- * must agree on ARS vs USD. Identical duplicate labels count as one.
- * `#fichaRight` (Datos del Fondo on the live CAFCI ficha) must contain an
- * exact `Moneda:` label text node on the allowlist chain.
- *
- * Disabled fieldset: descendants of a `fieldset[disabled]` are skipped, except
- * descendants of that fieldset's first child `legend` (HTML disabled-fieldset
- * first-legend exception). `fieldset`/`legend` are not on the live allowlist,
- * so a fieldset ancestor already skips.
+ * Text values come only from text nodes whose direct parent is allowlisted and
+ * visible. Unicode Cf/format characters are stripped before the node-vs-block
+ * NAV cross-check. iframe/raw-text, `<base href>`, `<meta http-equiv=refresh>`,
+ * and non-whitespace after `</html>` fail closed (live fichas have none of those
+ * except a trailing newline after `</html>`).
  */
 
 import { load, type CheerioAPI } from 'cheerio';
@@ -38,18 +37,20 @@ const CUOTAPARTE_LABEL = /^Valor por cada cuotaparte:\s*(.*)$/i;
 const MONEDA_LABEL = /^Moneda:\s*(.*)$/i;
 const RAW_TEXT_OR_FRAME = 'iframe, noembed, noframes, plaintext, xmp, textarea, title';
 const DMY = /(?<!\d)(\d{2}\/\d{2}\/\d{4})(?!\d)/g;
-const NAV_TOKEN_CONTINUE = /[\p{L}\p{N}.,]/u;
+const FORMAT_CHARS = /\p{Cf}/gu;
+const BOUNDARY_CONTINUE = /[\p{L}\p{N}\p{M}.,]/u;
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
 
 /**
- * Live-ficha ancestor tags plus equivalent HTML content wrappers.
- * Walked 2026-10-26 from 227/784, 622/1255, 1570/5100, 750/1645:
- * form/select/option/label, #cuotaparte h3/p, #fichaRight span/li/ul, wrapping divs.
+ * Live-ficha ancestor tags plus equivalent visible HTML content wrappers.
+ * Walked 2026-10-26 from 227/784, 622/1255, 1570/5100, 750/1645, plus harmless
+ * visible wrappers (article/aside/nav/footer/h2/em/small/a).
  */
 export const CAFCI_HTML_ALLOWLIST = [
   'html', 'body', 'div', 'section', 'main', 'header',
+  'article', 'aside', 'nav', 'footer',
   'form', 'select', 'optgroup', 'option', 'label',
-  'h3', 'p', 'span', 'strong', 'b',
+  'h2', 'h3', 'p', 'span', 'strong', 'b', 'em', 'small', 'a',
   'table', 'tbody', 'tr', 'td',
   'ul', 'li',
 ] as const;
@@ -91,6 +92,57 @@ function isAllowedElement(el: Element): boolean {
   return isHtmlNamespace(el) && ALLOWED.has(el.name.toLowerCase());
 }
 
+function attrCi($: CheerioAPI, el: Element, name: string): string {
+  return ($(el).attr(name) ?? '').trim().toLowerCase();
+}
+
+function hasAttr($: CheerioAPI, el: Element, name: string): boolean {
+  return $(el).attr(name) != null;
+}
+
+/** Last declaration wins; case/whitespace/!important-tolerant. Not a substring match. */
+export function parseInlineStyleDeclarations(style: string): Map<string, string> {
+  const decls = new Map<string, string>();
+  for (const raw of style.split(';')) {
+    const part = raw.trim();
+    if (!part) continue;
+    const colon = part.indexOf(':');
+    if (colon <= 0) continue;
+    const prop = part.slice(0, colon).trim().toLowerCase();
+    let value = part.slice(colon + 1).trim();
+    value = value.replace(/!important\s*$/i, '').trim().toLowerCase();
+    if (prop) decls.set(prop, value);
+  }
+  return decls;
+}
+
+function inlineStyleHides(style: string | undefined): boolean {
+  if (!style) return false;
+  const decls = parseInlineStyleDeclarations(style);
+  const display = decls.get('display');
+  const visibility = decls.get('visibility');
+  return display === 'none' || visibility === 'hidden' || visibility === 'collapse';
+}
+
+function elementHides($: CheerioAPI, el: Element): boolean {
+  if (hasAttr($, el, 'hidden')) return true;
+  if (hasAttr($, el, 'inert')) return true;
+  if (attrCi($, el, 'aria-hidden') === 'true') return true;
+  if (inlineStyleHides($(el).attr('style'))) return true;
+  const name = el.name.toLowerCase();
+  if ((name === 'details' || name === 'dialog') && !hasAttr($, el, 'open')) return true;
+  return false;
+}
+
+function hiddenChain($: CheerioAPI, el: Element): boolean {
+  let node: AnyNode | null = el;
+  while (node) {
+    if (isElement(node) && elementHides($, node)) return true;
+    node = parentOf(node);
+  }
+  return false;
+}
+
 /** HTML-namespace allowlisted chain through `<body>` then `<html>`. */
 function allowlistedAncestry(el: Element): boolean {
   let node: AnyNode | null = el;
@@ -111,9 +163,13 @@ function allowlistedAncestry(el: Element): boolean {
   return sawBody && sawHtml;
 }
 
-function textParentAllowed(node: AnyNode): boolean {
+function usableAncestry($: CheerioAPI, el: Element): boolean {
+  return allowlistedAncestry(el) && !hiddenChain($, el);
+}
+
+function textParentAllowed($: CheerioAPI, node: AnyNode): boolean {
   const parent = parentOf(node);
-  return Boolean(parent && isElement(parent) && isAllowedElement(parent) && allowlistedAncestry(parent));
+  return Boolean(parent && isElement(parent) && isAllowedElement(parent) && usableAncestry($, parent));
 }
 
 function isDescendantOrSelf(el: Element, ancestor: Element): boolean {
@@ -148,7 +204,29 @@ function textData(node: AnyNode): string {
     : '';
 }
 
-/** Concatenate descendant text nodes whose direct parent is allowlisted. */
+function stripFormatChars(text: string): string {
+  return text.replace(FORMAT_CHARS, '');
+}
+
+function countRe(text: string, re: RegExp): number {
+  const flags = re.flags.includes('g') ? re.flags : `${re.flags}g`;
+  return (text.match(new RegExp(re.source, flags)) || []).length;
+}
+
+function walkEveryNode(root: AnyNode | null, visit: (node: AnyNode) => 'skip-children' | void): void {
+  if (!root) return;
+  const stack: AnyNode[] = [root];
+  while (stack.length > 0) {
+    const node = stack.pop();
+    if (!node) continue;
+    if (visit(node) === 'skip-children') continue;
+    if ('children' in node && Array.isArray(node.children)) {
+      for (let i = node.children.length - 1; i >= 0; i--) stack.push(node.children[i]);
+    }
+  }
+}
+
+/** Concatenate descendant text nodes whose direct parent is allowlisted and visible. */
 function allowlistedText($: CheerioAPI, root: AnyNode): string {
   const bits: string[] = [];
   const stack: AnyNode[] = [root];
@@ -156,10 +234,10 @@ function allowlistedText($: CheerioAPI, root: AnyNode): string {
     const node = stack.pop();
     if (!node) continue;
     if (node.type === 'text') {
-      if (textParentAllowed(node)) bits.push($(node).text());
+      if (textParentAllowed($, node)) bits.push($(node).text());
       continue;
     }
-    if (!isElement(node) || !isAllowedElement(node)) continue;
+    if (!isElement(node) || !isAllowedElement(node) || hiddenChain($, node)) continue;
     if ('children' in node && Array.isArray(node.children)) {
       for (let i = node.children.length - 1; i >= 0; i--) stack.push(node.children[i]);
     }
@@ -171,7 +249,7 @@ function directText($: CheerioAPI, el: Element): string {
   return $(el)
     .contents()
     .toArray()
-    .filter((node) => node.type === 'text' && textParentAllowed(node))
+    .filter((node) => node.type === 'text' && textParentAllowed($, node))
     .map((node) => $(node).text())
     .join('')
     .replace(/\s+/g, ' ')
@@ -206,25 +284,10 @@ function innermostIn(
     .find('*')
     .addBack()
     .each((_, el) => {
-      if (!isElement(el) || !allowlistedAncestry(el) || !predicate(el)) return;
-      const nested = $(el).find('*').toArray().some((child) => isElement(child) && allowlistedAncestry(child) && predicate(child));
+      if (!isElement(el) || !usableAncestry($, el) || !predicate(el)) return;
+      const nested = $(el).find('*').toArray().some((child) => isElement(child) && usableAncestry($, child) && predicate(child));
       if (!nested) hits.push(el);
     });
-  return hits;
-}
-
-function innermost(
-  $: CheerioAPI,
-  predicate: (el: Element) => boolean,
-  excludeClosest?: string
-): Element[] {
-  const hits: Element[] = [];
-  $('*').each((_, el) => {
-    if (!isElement(el) || !allowlistedAncestry(el) || !predicate(el)) return;
-    if (excludeClosest && $(el).closest(excludeClosest).length > 0) return;
-    const nested = $(el).find('*').toArray().some((child) => isElement(child) && allowlistedAncestry(child) && predicate(child));
-    if (!nested) hits.push(el);
-  });
   return hits;
 }
 
@@ -263,7 +326,7 @@ function followingText($: CheerioAPI, el: Element): string {
     const node = nodes[i];
     if (node.type === 'comment') return '';
     if (node.type === 'text') {
-      if (!textParentAllowed(node)) return '';
+      if (!textParentAllowed($, node)) return '';
       bits.push($(node).text());
       continue;
     }
@@ -275,6 +338,17 @@ function followingText($: CheerioAPI, el: Element): string {
 function remainderHasBareNavToken(remainder: string, token: string): boolean {
   const decoded = decodeCommaEntities(remainder).replace(/^\s+/, '').replace(/\s+$/, '');
   return decoded === token;
+}
+
+function nextCodePoint(text: string, index: number): string | undefined {
+  if (index >= text.length) return undefined;
+  const cp = text.codePointAt(index);
+  if (cp == null) return undefined;
+  return String.fromCodePoint(cp);
+}
+
+function tokenContinues(next: string | undefined): boolean {
+  return Boolean(next && BOUNDARY_CONTINUE.test(next));
 }
 
 function monedaKind(label: string): 'ARS' | 'USD' | 'other' {
@@ -289,13 +363,77 @@ function monedaKind(label: string): 'ARS' | 'USD' | 'other' {
   return 'other';
 }
 
+function isClaseControl($: CheerioAPI, el: Element): boolean {
+  const name = el.name.toLowerCase();
+  if (name !== 'select' && name !== 'input') return false;
+  return attrCi($, el, 'name') === 'clase' || attrCi($, el, 'id') === 'clase';
+}
+
+function countRaw(html: string, re: RegExp): number {
+  const flags = re.flags.includes('g') ? re.flags : `${re.flags}g`;
+  return (html.match(new RegExp(re.source, flags)) || []).length;
+}
+
+function hasBaseHref(html: string): boolean {
+  const tags = html.match(/<base\b[^>]*>/gi) || [];
+  return tags.some((tag) => /\bhref\s*=/i.test(tag));
+}
+
+function hasMetaRefresh(html: string): boolean {
+  const tags = html.match(/<meta\b[^>]*>/gi) || [];
+  return tags.some((tag) => /\bhttp-equiv\s*=\s*(["']?)refresh\1/i.test(tag));
+}
+
+function hasNonWhitespaceAfterHtml(html: string): boolean {
+  const close = html.toLowerCase().lastIndexOf('</html>');
+  if (close < 0) return false;
+  return html.slice(close + '</html>'.length).trim() !== '';
+}
+
+function documentUniquenessOk($: CheerioAPI, html: string): boolean {
+  const fundForms = $('form').toArray().filter(isElement).filter((el) => Boolean(fondoIdFromAction($(el).attr('action'))));
+  const claseControls = $('*').toArray().filter(isElement).filter((el) => isClaseControl($, el));
+  const cuotaIds = $('*').toArray().filter(isElement).filter((el) => attrCi($, el, 'id') === 'cuotaparte');
+  if (fundForms.length !== 1) return false;
+  if (claseControls.length !== 1) return false;
+  if (cuotaIds.length !== 1) return false;
+  if (countRaw(html, /<form\b[^>]*\baction\s*=\s*["'][^"']*fondos\/\d+/i) !== 1) return false;
+  if (countRaw(html, /<select\b[^>]*\b(?:name|id)\s*=\s*(["']?)clase\1/i) !== 1) return false;
+  if (countRaw(html, /\bid\s*=\s*(["']?)cuotaparte\1/i) !== 1) return false;
+
+  let navDom = 0;
+  let valoresDom = 0;
+  let monedaDom = 0;
+  const root = $.root()[0];
+  walkEveryNode(root, (node) => {
+    if (isElement(node) && attrCi($, node, 'id') === 'cartera') return 'skip-children';
+    if (node.type === 'script' || node.type === 'style') {
+      const raw = textData(node) || $(node).text();
+      navDom += countRe(raw, /por cada cuotaparte/gi);
+      valoresDom += countRe(raw, /Valores al\s+/gi);
+      monedaDom += countRe(raw, /Moneda:/g);
+      return 'skip-children';
+    }
+    if (node.type !== 'text' && node.type !== 'comment') return;
+    const raw = textData(node);
+    if (!raw) return;
+    navDom += countRe(raw, /por cada cuotaparte/gi);
+    valoresDom += countRe(raw, /Valores al\s+/gi);
+    monedaDom += countRe(raw, /Moneda:/g);
+  });
+  if (navDom !== 1 || countRaw(html, /por cada cuotaparte/gi) !== 1) return false;
+  if (valoresDom !== 1) return false;
+  if (monedaDom !== 1 || countRaw(html, /Moneda:/g) !== 1) return false;
+  return true;
+}
+
 function parseIdentity(
   $: CheerioAPI,
   expected?: { fondoId: string; claseId: string }
 ): { fondoId: string; claseId: string } | { fail: CafciHtmlParseFail } {
   const fundForms = $('form').toArray()
     .filter(isElement)
-    .filter((el) => allowlistedAncestry(el))
+    .filter((el) => usableAncestry($, el))
     .map((el) => ({ el, fondoId: fondoIdFromAction($(el).attr('action')) }))
     .filter((row): row is { el: Element; fondoId: string } => Boolean(row.fondoId));
   if (fundForms.some((row) => aroundOrInsideRawTextOrFrame($, row.el))) {
@@ -307,7 +445,9 @@ function parseIdentity(
     return { fail: 'unparseable_ficha' };
   }
 
-  const selects = $('select[name=clase]').toArray().filter(isElement).filter((el) => allowlistedAncestry(el));
+  const selects = $('select').toArray()
+    .filter(isElement)
+    .filter((el) => isClaseControl($, el) && usableAncestry($, el));
   if (selects.length !== 1) return { fail: 'unparseable_ficha' };
   const select = selects[0];
   if ($(select).closest('form')[0] !== fundForm.el) return { fail: 'unparseable_ficha' };
@@ -323,7 +463,7 @@ function parseIdentity(
 
   const selected = $(select).find('option[selected]').toArray().filter(isElement);
   if (selected.length !== 1) return { fail: 'unparseable_ficha' };
-  if (!allowlistedAncestry(selected[0])) return { fail: 'unparseable_ficha' };
+  if (!usableAncestry($, selected[0])) return { fail: 'unparseable_ficha' };
   if ($(selected[0]).attr('disabled') != null) return { fail: 'unparseable_ficha' };
   if ($(selected[0]).closest('optgroup[disabled]').length > 0) {
     return { fail: 'unparseable_ficha' };
@@ -338,15 +478,16 @@ function parseIdentity(
 }
 
 function navTokenFromSectionText(text: string): string | null {
-  const mentions = text.match(/por cada cuotaparte/gi);
+  const stripped = stripFormatChars(text);
+  const mentions = stripped.match(/por cada cuotaparte/gi);
   if (!mentions || mentions.length !== 1) return null;
-  const labelled = text.match(/Valor por cada cuotaparte:\s*/i);
+  const labelled = stripped.match(/Valor por cada cuotaparte:\s*/i);
   if (!labelled || labelled.index == null) return null;
-  const rest = text.slice(labelled.index + labelled[0].length).trimStart();
+  const rest = stripped.slice(labelled.index + labelled[0].length).trimStart();
   const token = rest.match(NAV_TOKEN_PREFIX);
   if (!token) return null;
-  const next = rest[token[0].length];
-  if (next && NAV_TOKEN_CONTINUE.test(next)) return null;
+  const next = nextCodePoint(rest, token[0].length);
+  if (tokenContinues(next)) return null;
   return token[0];
 }
 
@@ -354,7 +495,7 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
   const nodes = innermostIn($, section, (el) => /Valor por cada cuotaparte:/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
   const el = nodes[0];
-  const own = directText($, el);
+  const own = stripFormatChars(directText($, el));
   const labelled = own.match(CUOTAPARTE_LABEL);
   let token = labelled ? labelled[1].trim() : '';
   let remainder = '';
@@ -364,7 +505,7 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
     remainder = inner.slice(innerMatch.index + innerMatch[0].length);
   }
   if (!token) {
-    token = followingText($, el).replace(/\s+/g, ' ').trim();
+    token = stripFormatChars(followingText($, el).replace(/\s+/g, ' ').trim());
     remainder = followingSiblingHtml($, el);
   }
   if (!token || !CAFCI_NAV_TOKEN.test(token)) return null;
@@ -412,7 +553,7 @@ function monedaValueFromLabelEl($: CheerioAPI, el: Element): string | null {
 function collectMonedaLabels($: CheerioAPI): string[] {
   const labels: string[] = [];
   $('*').each((_, el) => {
-    if (!isElement(el) || !allowlistedAncestry(el)) return;
+    if (!isElement(el) || !usableAncestry($, el)) return;
     if ($(el).closest(`script, style, noscript, template, #cartera, ${RAW_TEXT_OR_FRAME}`).length > 0) {
       return;
     }
@@ -442,16 +583,16 @@ function currenciesAgree(chosen: string, mentions: string[]): boolean {
   return mentions.every((label) => monedaKind(label) === chosenKind);
 }
 
-function hasExactMonedaLabelText(root: Element): boolean {
+function hasExactMonedaLabelText($: CheerioAPI, root: Element): boolean {
   const stack: AnyNode[] = [root];
   while (stack.length > 0) {
     const node = stack.pop();
     if (!node) continue;
     if (node.type === 'text') {
-      if (textParentAllowed(node) && textData(node).trim() === 'Moneda:') return true;
+      if (textParentAllowed($, node) && textData(node).trim() === 'Moneda:') return true;
       continue;
     }
-    if (!isElement(node) || !isAllowedElement(node)) continue;
+    if (!isElement(node) || !isAllowedElement(node) || hiddenChain($, node)) continue;
     if ('children' in node && Array.isArray(node.children)) {
       for (const child of node.children) stack.push(child);
     }
@@ -461,9 +602,11 @@ function hasExactMonedaLabelText(root: Element): boolean {
 
 /** Live CAFCI fichas put Datos del Fondo (including an exact `Moneda:` label) in `#fichaRight`. */
 function hasMonedaInFichaMain($: CheerioAPI): boolean {
-  const mains = $('[id="fichaRight"]').toArray().filter(isElement).filter((el) => allowlistedAncestry(el));
+  const mains = $('*').toArray()
+    .filter(isElement)
+    .filter((el) => attrCi($, el, 'id') === 'ficharight' && usableAncestry($, el));
   if (mains.length !== 1) return false;
-  return hasExactMonedaLabelText(mains[0]);
+  return hasExactMonedaLabelText($, mains[0]);
 }
 
 export function parseCafciHtmlFichaDetailed(
@@ -471,12 +614,18 @@ export function parseCafciHtmlFichaDetailed(
   expected?: { fondoId: string; claseId: string }
 ): CafciHtmlParseResult {
   if (!html || typeof html !== 'string') return { parsed: null, reason: 'unparseable_ficha' };
+  if (hasBaseHref(html) || hasMetaRefresh(html) || hasNonWhitespaceAfterHtml(html)) {
+    return { parsed: null, reason: 'unparseable_ficha' };
+  }
   const $ = load(html);
+  if (!documentUniquenessOk($, html)) return { parsed: null, reason: 'unparseable_ficha' };
 
   const identity = parseIdentity($, expected);
   if ('fail' in identity) return { parsed: null, reason: identity.fail };
 
-  const sections = $('[id="cuotaparte"]').toArray().filter(isElement).filter((el) => allowlistedAncestry(el));
+  const sections = $('*').toArray()
+    .filter(isElement)
+    .filter((el) => attrCi($, el, 'id') === 'cuotaparte' && usableAncestry($, el));
   if (sections.length !== 1) return { parsed: null, reason: 'unparseable_ficha' };
   const section = sections[0];
   if (aroundOrInsideRawTextOrFrame($, section)) return { parsed: null, reason: 'unparseable_ficha' };

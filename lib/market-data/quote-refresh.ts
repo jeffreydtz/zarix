@@ -650,6 +650,8 @@ export async function refreshQuotesForInvestments(
     storedPrice: number | null;
     stamped: QuoteResult | null;
   }>>();
+  const fciTickerOk = new Set<string>();
+  const fciTickerSkip = new Map<string, string>();
   for (const fci of fciTickers) {
     const q = fciQuoteByTicker.get(fci.ticker);
     // Resolve the currency of the actual write before choosing its anchor.
@@ -662,8 +664,10 @@ export async function refreshQuotesForInvestments(
       mepArsPerUsd: anchorMepArsPerUsd,
     });
     let stamped: QuoteResult | null = null;
+    let skipReason: string | null = null;
     const appNowMs = Date.now();
     if (isAnomalousFutureTimestamp(fci.currentPriceUpdatedAt, appNowMs)) {
+      skipReason = 'future_stored';
       console.warn('[quotes] skip CAFCI failure', {
         ticker: fci.ticker,
         reason: 'future_stored',
@@ -680,6 +684,7 @@ export async function refreshQuotesForInvestments(
           : q && q !== 'error'
             ? { reason: 'non_positive_price' }
             : { reason: 'unknown' });
+      skipReason = detail.reason;
       const skipSource = (q && q !== 'error' ? q.source : undefined)
         ?? detail.source
         ?? (detail.stage === 'iol' ? 'iol' : undefined);
@@ -690,6 +695,7 @@ export async function refreshQuotesForInvestments(
         ...(skipSource ? { source: skipSource } : {}),
       });
     } else if (q.currencySkip) {
+      skipReason = q.currencySkip;
       console.warn('[quotes] skip FCI currency', {
         ticker: fci.ticker,
         id: fci.id,
@@ -699,6 +705,7 @@ export async function refreshQuotesForInvestments(
         stored: fci.currency,
       });
     } else if (storedPrice == null && !options?.allowUnanchoredFciPreview) {
+      skipReason = 'no_anchor';
       console.warn('[quotes] fci_implausible', {
         reason: 'no_anchor',
         ticker: fci.ticker,
@@ -716,9 +723,10 @@ export async function refreshQuotesForInvestments(
         storedPrice,
       });
       if (!resolved.currency) {
+        skipReason = fci.currency === 'USD' && storedPrice != null ? 'fci_implausible' : resolved.reason;
         console.warn('[quotes] skip FCI currency', {
           ticker: fci.ticker,
-          reason: fci.currency === 'USD' && storedPrice != null ? 'fci_implausible' : resolved.reason,
+          reason: skipReason,
           id: fci.id,
           source: q.source,
           cafci: q.currency,
@@ -736,6 +744,7 @@ export async function refreshQuotesForInvestments(
           fci.cacheKey,
         );
         if (!adapted) {
+          skipReason = 'mep';
           console.warn('[quotes] skip FCI currency', {
             ticker: fci.ticker,
             id: fci.id,
@@ -761,6 +770,7 @@ export async function refreshQuotesForInvestments(
             anchor: storedPrice,
             currency: adapted.currency,
           });
+          skipReason = 'out_of_band';
           console.warn('[quotes] skip CAFCI failure', {
             reason: 'out_of_band',
             ticker: fci.ticker,
@@ -778,6 +788,7 @@ export async function refreshQuotesForInvestments(
             maxAbs: q.jumpMaxAbs ?? fciJumpMaxAbs(q.fundType),
           });
           if (jump && !jump.ok) {
+            skipReason = 'daily_jump';
             console.warn('[quotes] skip CAFCI failure', {
               reason: 'daily_jump',
               ticker: fci.ticker,
@@ -796,6 +807,7 @@ export async function refreshQuotesForInvestments(
             const freshness = evaluateFciNavFreshness(sourceTs);
             if (!freshness.ok) {
               if (persist || freshness.reason !== 'undated') {
+                skipReason = freshness.reason;
                 console.warn('[quotes] skip CAFCI failure', {
                   ticker: fci.ticker,
                   reason: freshness.reason,
@@ -820,6 +832,7 @@ export async function refreshQuotesForInvestments(
               const sourceMs = Date.parse(sourceTs as string);
               const storedMs = storedFciTimestampMs(fci.currentPriceUpdatedAt);
               if (Number.isFinite(storedMs) && sourceMs < storedMs) {
+                skipReason = 'older_than_stored';
                 console.warn('[quotes] skip CAFCI failure', {
                   ticker: fci.ticker,
                   reason: 'older_than_stored',
@@ -843,6 +856,8 @@ export async function refreshQuotesForInvestments(
         }
       }
     }
+    if (stamped) fciTickerOk.add(fci.ticker);
+    else fciTickerSkip.set(fci.ticker, skipReason ?? 'unknown');
     const rows = fciByKey.get(fci.cacheKey) ?? [];
     rows.push({
       ticker: fci.ticker,
@@ -851,6 +866,14 @@ export async function refreshQuotesForInvestments(
       stamped,
     });
     fciByKey.set(fci.cacheKey, rows);
+  }
+  if (uniqueFci.length > 0) {
+    const reasons = uniqueFci.map((fci) => (
+      fciTickerOk.has(fci.ticker) ? null : (fciTickerSkip.get(fci.ticker) ?? 'unknown')
+    ));
+    if (reasons.every((reason): reason is string => Boolean(reason) && reason === reasons[0])) {
+      console.error('[quotes] fci_all_failed', { reason: reasons[0], count: uniqueFci.length });
+    }
   }
   for (const [key, rows] of fciByKey) {
     // Callers without position IDs share a key: every position must pass its guard.

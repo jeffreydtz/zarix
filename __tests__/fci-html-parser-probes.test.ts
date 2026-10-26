@@ -464,17 +464,14 @@ describe('Codex r7 HTML parser — HTML-namespace allowlist by construction', ()
     expect(parsed(html).parsed).toBeNull();
   });
 
-  it('parses identical duplicate Moneda: labels as one', () => {
+  it('skips identical duplicate Moneda: labels as extra document candidates', () => {
     const html = shell({
       moneda: `<div id="fichaRight">
         <span class="label">Moneda:</span> Peso Argentina
         <span class="label">Moneda:</span> Peso Argentina
       </div>`,
     });
-    expect(parsed(html).parsed).toMatchObject({
-      price: 1241.954039,
-      monedaLabel: 'Peso Argentina',
-    });
+    expect(parsed(html).parsed).toBeNull();
   });
 
   it('still skips conflicting duplicate Moneda: labels', () => {
@@ -485,5 +482,144 @@ describe('Codex r7 HTML parser — HTML-namespace allowlist by construction', ()
       </div>`,
     });
     expect(parsed(html).parsed).toBeNull();
+  });
+});
+
+const WRAPPERS = [
+  'article', 'aside', 'nav', 'footer', 'h2', 'em', 'small', 'a', 'section', 'header',
+] as const;
+
+function wrapTag(tag: string, inner: string): string {
+  return tag === 'a' ? `<a>${inner}</a>` : `<${tag}>${inner}</${tag}>`;
+}
+
+const IDENTITY = `<form method="get" action="/fondos/227">
+  <select name="clase">
+    <option value="227">A</option>
+    <option value="784" selected>B</option>
+  </select>
+</form>`;
+
+describe('Codex r8 HTML parser — uniqueness, visibility, wrappers, zero-width', () => {
+  it.each([
+    ['hidden attribute', 'hidden'],
+    ['aria-hidden=true', 'aria-hidden="true"'],
+    ['inert', 'inert'],
+    ['inline display:none', 'style="display:none"'],
+    ['inline DISPLAY:None !important', 'style="DISPLAY: None !IMPORTANT"'],
+    ['inline visibility:hidden', 'style="visibility: hidden"'],
+    ['inline visibility:collapse', 'style="visibility:collapse"'],
+    ['last style declaration display:none', 'style="display: block; display: none"'],
+  ])('skips identity wrapped with %s', (_name, attr) => {
+    const html = shell({ identity: `<div ${attr}>${IDENTITY}</div>` });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips identity inside a closed details element', () => {
+    expect(parsed(shell({ identity: `<details>${IDENTITY}</details>` })).parsed).toBeNull();
+  });
+
+  it('skips identity inside a closed dialog element', () => {
+    expect(parsed(shell({ identity: `<dialog>${IDENTITY}</dialog>` })).parsed).toBeNull();
+  });
+
+  it('skips a hidden NAV plus a visible NAV', () => {
+    const html = shell({
+      nav: '<p hidden>Valor por cada cuotaparte: 1.300,00</p><p>Valor por cada cuotaparte: 1.241,954039</p>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a hidden date plus a visible date', () => {
+    const html = shell({
+      date: `<h3 hidden>Valores al 01/01/2020</h3><h3>Valores al ${DATE}</h3>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a hidden Moneda plus a visible Moneda', () => {
+    const html = shell({
+      moneda: `<div hidden><span>Moneda:</span> Dolar Estadounidense</div>
+        <div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a hidden 227/784 plus a visible 227/227 inside <article>', () => {
+    const html = shell({
+      identity: `<div hidden>${IDENTITY}</div>
+        <article>
+          <form method="get" action="/fondos/227">
+            <select name="clase">
+              <option value="227" selected>A</option>
+              <option value="784">B</option>
+            </select>
+          </form>
+        </article>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it.each(WRAPPERS.flatMap((tag) => (['form', 'cuota'] as const).map((place) => ({ tag, place }))))(
+    'parses when the $place is wrapped in a visible <$tag>',
+    ({ tag, place }) => {
+      const html = place === 'form'
+        ? shell({ identity: wrapTag(tag, IDENTITY) })
+        : `<html><body>
+            ${IDENTITY}
+            ${wrapTag(tag, `<div id="cuotaparte"><h3>Valores al ${DATE}</h3><p>Valor por cada cuotaparte: 1.241,954039</p></div>`)}
+            <div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div>
+          </body></html>`;
+      expect(parsed(html).parsed).toMatchObject({ price: 1241.954039, fondoId: '227', claseId: '784' });
+    },
+  );
+
+  it.each(WRAPPERS.flatMap((tag) => (['form', 'cuota'] as const).map((place) => ({ tag, place }))))(
+    'skips NAV/date/currency conflicts when the $place is wrapped in <$tag>',
+    ({ tag, place }) => {
+      const form = place === 'form' ? wrapTag(tag, IDENTITY) : IDENTITY;
+      const cuotaInner = `<h3>Valores al ${DATE}</h3><p>Valor por cada cuotaparte: 1.241,954039</p>`;
+      const cuota = place === 'cuota' ? wrapTag(tag, `<div id="cuotaparte">${cuotaInner}</div>`) : `<div id="cuotaparte">${cuotaInner}</div>`;
+      expect(parsed(`<html><body>${form}${cuota}<p hidden>Valor por cada cuotaparte: 1.300,00</p><div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div></body></html>`).parsed).toBeNull();
+      expect(parsed(`<html><body>${form}${cuota}<h3 hidden>Valores al 01/01/2020</h3><div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div></body></html>`).parsed).toBeNull();
+      expect(parsed(`<html><body>${form}${cuota}<div hidden><span>Moneda:</span> Dolar Estadounidense</div><div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div></body></html>`).parsed).toBeNull();
+    },
+  );
+
+  it('skips a zero-width format character that joins a truncated NAV in the whole block', () => {
+    const html = shell({
+      nav: '<p>Valor por cada cuotaparte: 1.241,95<span>\u200B4039</span></p>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a NAV whose next code point is a combining mark or astral digit', () => {
+    expect(parsed(shell({ nav: '<p>Valor por cada cuotaparte: 1,09\u0301</p>' })).parsed).toBeNull();
+    expect(parsed(shell({ nav: '<p>Valor por cada cuotaparte: 1,09\u{1D7D8}</p>' })).parsed).toBeNull();
+  });
+
+  it('skips case-only duplicate cuotaparte ids', () => {
+    const html = shell({ extra: '<div id="CuotaParte"><p>Valor por cada cuotaparte: 9,99</p></div>' });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips content after </html>', () => {
+    const html = `${shell({})}\n<div id="cuotaparte"><h3>Valores al 01/01/2020</h3></div>`;
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a <base href> and a meta refresh', () => {
+    expect(parsed(`<html><head><base href="https://evil.example/"></head><body>${shell({}).replace('<html><body>', '').replace('</body></html>', '')}</body></html>`).parsed).toBeNull();
+    expect(parsed(`<html><head><meta http-equiv="refresh" content="0;url=https://evil.example/"></head><body>${shell({}).replace('<html><body>', '').replace('</body></html>', '')}</body></html>`).parsed).toBeNull();
+  });
+
+  it('does not treat a content:"display:none" substring as hiding', () => {
+    const html = shell({ identity: `<div style="content: 'display:none'; color: none">${IDENTITY}</div>` });
+    expect(parsed(html).parsed).toMatchObject({ price: 1241.954039 });
+  });
+
+  it('treats the last display declaration as winning when it is block', () => {
+    const html = shell({ identity: `<div style="display: none; display: block">${IDENTITY}</div>` });
+    expect(parsed(html).parsed).toMatchObject({ price: 1241.954039 });
   });
 });

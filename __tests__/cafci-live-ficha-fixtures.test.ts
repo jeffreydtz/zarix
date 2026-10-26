@@ -106,4 +106,34 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
       ).parsed).toBeNull();
     },
   );
+
+  it.each(['hidden', 'aria-hidden="true"', 'style="display:none"', 'style="visibility:hidden"'] as const)(
+    'skips a live ficha whose form is wrapped with %s',
+    (attr) => {
+      const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+      expect(parseCafciHtmlFichaDetailed(
+        html.replace('<form method="get"', `<div ${attr}><form method="get"`).replace('</form>', '</form></div>'),
+        { fondoId: '227', claseId: '784' },
+      ).parsed).toBeNull();
+    },
+  );
+
+  it.each(['hidden', 'aria-hidden="true"', 'style="display:none"', 'style="visibility:collapse"'] as const)(
+    'skips a live ficha whose #cuotaparte is wrapped with %s',
+    (attr) => {
+      const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+      expect(parseCafciHtmlFichaDetailed(
+        html.replace('<div id="cuotaparte"', `<div ${attr}><div id="cuotaparte"`),
+        { fondoId: '227', claseId: '784' },
+      ).parsed).toBeNull();
+    },
+  );
+
+  it('parses a live ficha whose form is wrapped in a visible <article>', () => {
+    const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+    expect(parseCafciHtmlFichaDetailed(
+      html.replace('<form method="get"', '<article><form method="get"').replace('</form>', '</form></article>'),
+      { fondoId: '227', claseId: '784' },
+    ).parsed).toMatchObject({ price: 1241.954039, fondoId: '227', claseId: '784' });
+  });
 });

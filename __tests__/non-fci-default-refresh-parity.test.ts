@@ -12,7 +12,8 @@ const mocks = vi.hoisted(() => ({
   positions: [] as Array<Record<string, unknown>>,
   updates: [] as Array<Record<string, unknown>>,
   timestampCas: [] as Array<{ column: string; value: unknown; op: 'eq' | 'is' }>,
-  selectData: [{ id: 'ok' }] as Array<{ id: string }>,
+  selectData: [{ id: 'ok' }] as Array<{ id: string }> | ((id: unknown) => Array<{ id: string }>),
+  rereadData: null as Array<Record<string, unknown>> | null,
 }));
 
 vi.mock('@/lib/market-data/data912-client', () => ({ loadArgentineQuotes: mocks.arg }));
@@ -70,6 +71,7 @@ beforeEach(() => {
   mocks.updates = [];
   mocks.timestampCas = [];
   mocks.selectData = [{ id: 'ok' }];
+  mocks.rereadData = null;
   mocks.positions = [];
   mocks.dolar.mockResolvedValue({
     blue: { timestamp: new Date(), sell: 1300, buy: 1280 },
@@ -97,28 +99,38 @@ beforeEach(() => {
   });
   mocks.from.mockImplementation((table: string) => {
     const builder: {
+      _byId: boolean;
       select: () => typeof builder;
-      eq: () => typeof builder;
+      eq: (column?: string) => typeof builder;
       in: () => typeof builder;
       order: () => typeof builder;
       gte: () => typeof builder;
       update: (payload: Record<string, unknown>) => unknown;
       then: (resolve: (value: unknown) => unknown) => unknown;
     } = {
+      _byId: false,
       select: () => builder,
-      eq: () => builder,
+      eq: (column?: string) => {
+        if (column === 'id') builder._byId = true;
+        return builder;
+      },
       in: () => builder,
       order: () => builder,
       gte: () => builder,
       update: (payload: Record<string, unknown>) => {
         const chain: {
+          _id: unknown;
           eq: (column: string, value: unknown) => typeof chain;
           is: (column: string, value: null) => typeof chain;
           or: () => typeof chain;
           select: () => Promise<{ error: null; data: Array<{ id: string }> }>;
         } = {
+          _id: null,
           eq: (column, value) => {
-            if (column === 'id') mocks.updates.push({ ...payload, id: value });
+            if (column === 'id') {
+              chain._id = value;
+              mocks.updates.push({ ...payload, id: value });
+            }
             if (column === 'current_price_updated_at') {
               mocks.timestampCas.push({ column, value, op: 'eq' });
             }
@@ -131,12 +143,19 @@ beforeEach(() => {
             return chain;
           },
           or: () => chain,
-          select: async () => ({ error: null, data: mocks.selectData }),
+          select: async () => {
+            const data = typeof mocks.selectData === 'function'
+              ? mocks.selectData(chain._id)
+              : mocks.selectData;
+            return { error: null, data };
+          },
         };
         return chain;
       },
       then: (resolve: (value: unknown) => unknown) => Promise.resolve(resolve({
-        data: table === 'investments' ? mocks.positions : [],
+        data: table === 'investments'
+          ? (builder._byId && mocks.rereadData ? mocks.rereadData : mocks.positions)
+          : [],
         error: null,
       })),
     };
@@ -280,5 +299,47 @@ describe('non-FCI default refresh is byte-for-byte main', () => {
     expect(written).toEqual(expected);
     expect(written).toHaveLength(NON_FCI.length);
     expect(mocks.timestampCas).toHaveLength(written.length);
+  });
+
+  it('keeps the shared quote for a sibling lot when the other row loses the CAS', async () => {
+    const lotA = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+    const lotB = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+    const storedTs = '2026-10-20T15:00:00.000Z';
+    const positions = [
+      {
+        ...row({ id: lotA, type: 'stock_us', ts: storedTs, idx: 1, ticker: 'AAA' }),
+        current_price: 120,
+      },
+      {
+        ...row({ id: lotB, type: 'stock_us', ts: storedTs, idx: 2, ticker: 'AAA' }),
+        current_price: 120,
+      },
+    ];
+    mocks.positions = positions;
+    mocks.selectData = (id) => (id === lotA ? [{ id: lotA }] : []);
+    mocks.rereadData = [{
+      ...positions[1],
+      current_price: 200,
+      current_price_updated_at: '2026-10-26T18:00:00.000Z',
+    }];
+    mocks.yahoo.mockResolvedValue(new Map([['AAA', {
+      ticker: 'AAA', name: 'AAA', price: 150, changePct: 1, currency: 'USD',
+      timestamp: '2026-10-26T15:00:00.000Z',
+    }]]));
+    const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+    const a = rows.find((item) => item.id === lotA);
+    const b = rows.find((item) => item.id === lotB);
+    expect(a).toMatchObject({
+      current_price: 150,
+      current_price_updated_at: '2026-10-26T15:00:00.000Z',
+      valuation_price_source: 'live',
+    });
+    expect(b).toMatchObject({
+      current_price: 200,
+      current_price_updated_at: '2026-10-26T18:00:00.000Z',
+      valuation_price_source: 'cache',
+    });
+    expect(b?.current_price).not.toBe(120);
+    expect(b?.current_price).not.toBe(150);
   });
 });
