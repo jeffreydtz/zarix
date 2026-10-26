@@ -387,7 +387,13 @@ function allowlistedText($: CheerioAPI, root: AnyNode): string {
   return normalizeFichaText(bits.join(''));
 }
 
-type RenderedText = { text: string; skips: number[]; boundaries: number[] };
+type RenderedText = {
+  text: string;
+  skips: number[];
+  boundaries: number[];
+  /** Offset of `anchor`'s children in `text`, when an anchor element was requested. */
+  anchorStart: number | null;
+};
 
 function isBlockTag(name: string): boolean {
   return BLOCK_TAGS.has(name);
@@ -435,10 +441,12 @@ function renderedText(
   $: CheerioAPI,
   root: AnyNode,
   mode: 'visible' | 'unfiltered',
+  anchor?: Element,
 ): RenderedText {
   const bits: string[] = [];
   const skips: number[] = [];
   const boundaries: number[] = [];
+  let anchorStart: number | null = anchor === root ? 0 : null;
   let length = 0;
 
   const emit = (chunk: string): void => {
@@ -489,20 +497,21 @@ function renderedText(
     }
     const block = node !== root && isBlockBox($, node);
     if (block) markBoundary();
+    if (anchor && node === anchor) anchorStart = length;
     for (const child of elementChildren(node)) walk(child);
     if (block) markBoundary();
   };
 
   walk(root);
-  return { text: bits.join(''), skips, boundaries };
+  return { text: bits.join(''), skips, boundaries, anchorStart };
 }
 
-function renderedVisible($: CheerioAPI, root: AnyNode): RenderedText {
-  return renderedText($, root, 'visible');
+function renderedVisible($: CheerioAPI, root: AnyNode, anchor?: Element): RenderedText {
+  return renderedText($, root, 'visible', anchor);
 }
 
-function renderedUnfiltered($: CheerioAPI, root: AnyNode): RenderedText {
-  return renderedText($, root, 'unfiltered');
+function renderedUnfiltered($: CheerioAPI, root: AnyNode, anchor?: Element): RenderedText {
+  return renderedText($, root, 'unfiltered', anchor);
 }
 
 function subtreeHasDisallowedControl(root: AnyNode): boolean {
@@ -752,7 +761,7 @@ function documentMonedaValues($: CheerioAPI): string[] {
     const block = monedaScope($, parent);
     if (seen.has(block)) return;
     seen.add(block);
-    values.push(...adjacentMonedaValues(renderedUnfiltered($, block)));
+    values.push(...monedaValuesFor(block, renderedUnfiltered($, block)));
   });
   return values;
 }
@@ -883,19 +892,19 @@ function dateLineEnds(text: string, index: number, boundaries: Set<number>): boo
  * may sit between the label and the date. `lookNextCell` is set only when the
  * element has no date and no other visible remainder.
  */
-function dateFromLabelRender(rendered: RenderedText): { date: string | null; lookNextCell: boolean } {
+function dateFromLabelRender(rendered: RenderedText): { date: string | null; dateStart: number; lookNextCell: boolean } {
   const text = rendered.text;
   const mentions = text.match(/Valores al/gi);
-  if (!mentions || mentions.length !== 1) return { date: null, lookNextCell: false };
+  if (!mentions || mentions.length !== 1) return { date: null, dateStart: -1, lookNextCell: false };
   const labelled = /Valores al/i.exec(text);
-  if (!labelled || labelled.index == null) return { date: null, lookNextCell: false };
+  if (!labelled || labelled.index == null) return { date: null, dateStart: -1, lookNextCell: false };
   const bounds = new Set(rendered.boundaries);
   let i = labelled.index + labelled[0].length;
   let boundariesUsed = 0;
   while (i < text.length) {
     if (bounds.has(i)) {
       boundariesUsed += 1;
-      if (boundariesUsed > 1) return { date: null, lookNextCell: false };
+      if (boundariesUsed > 1) return { date: null, dateStart: -1, lookNextCell: false };
       i += 1;
       continue;
     }
@@ -903,13 +912,13 @@ function dateFromLabelRender(rendered: RenderedText): { date: string | null; loo
     if (!cp || !TAIL_GAP.test(cp)) break;
     i += cp.length;
   }
-  if (i >= text.length) return { date: null, lookNextCell: boundariesUsed === 0 };
+  if (i >= text.length) return { date: null, dateStart: -1, lookNextCell: boundariesUsed === 0 };
   const dateMatch = text.slice(i).match(/^(\d{2}\/\d{2}\/\d{4})/);
-  if (!dateMatch) return { date: null, lookNextCell: false };
+  if (!dateMatch) return { date: null, dateStart: -1, lookNextCell: false };
   const dateEnd = i + dateMatch[1].length;
-  if (skipInsideToken(rendered.skips, i, dateEnd)) return { date: null, lookNextCell: false };
-  if (!dateLineEnds(text, dateEnd, bounds)) return { date: null, lookNextCell: false };
-  return { date: dateMatch[1], lookNextCell: false };
+  if (skipInsideToken(rendered.skips, i, dateEnd)) return { date: null, dateStart: -1, lookNextCell: false };
+  if (!dateLineEnds(text, dateEnd, bounds)) return { date: null, dateStart: -1, lookNextCell: false };
+  return { date: dateMatch[1], dateStart: i, lookNextCell: false };
 }
 
 function nextElementSibling(el: Element): Element | null {
@@ -938,20 +947,53 @@ function ancestorCell(el: Element): Element | null {
   return null;
 }
 
-/** The cell's visible text is exactly one date. Boundary spaces are not content. */
-function exactCellDate(rendered: RenderedText): string | null {
+function textWithoutBoundaryChars(rendered: RenderedText): string {
   const bounds = new Set(rendered.boundaries);
   let kept = '';
   for (let i = 0; i < rendered.text.length; i++) {
     if (!bounds.has(i)) kept += rendered.text[i];
   }
-  const match = normalizeFichaText(kept).match(/^(\d{2}\/\d{2}\/\d{4})$/);
-  return match ? match[1] : null;
+  return normalizeFichaText(kept);
 }
 
-function dateFromNextCell($: CheerioAPI, labelEl: Element): string | null {
+/** The label cell is only the label. Extra visible or unfiltered text skips. */
+function cellIsExactValoresAl($: CheerioAPI, cell: Element): boolean {
+  const visible = textWithoutBoundaryChars(renderedVisible($, cell));
+  const unfiltered = textWithoutBoundaryChars(renderedUnfiltered($, cell));
+  return visible === unfiltered && /^Valores al:?$/i.test(visible);
+}
+
+/** The cell's text is exactly one date. `dateStart` is its offset in `rendered.text`. */
+function exactCellDate(rendered: RenderedText): { date: string; dateStart: number } | null {
+  const bounds = new Set(rendered.boundaries);
+  let i = 0;
+  while (i < rendered.text.length) {
+    if (bounds.has(i)) {
+      i += 1;
+      continue;
+    }
+    const cp = nextCodePoint(rendered.text, i);
+    if (!cp || !TAIL_GAP.test(cp)) break;
+    i += cp.length;
+  }
+  const match = rendered.text.slice(i).match(/^(\d{2}\/\d{2}\/\d{4})/);
+  if (!match) return null;
+  let rest = i + match[1].length;
+  while (rest < rendered.text.length) {
+    if (bounds.has(rest)) {
+      rest += 1;
+      continue;
+    }
+    const cp = nextCodePoint(rendered.text, rest);
+    if (!cp || !TAIL_GAP.test(cp)) return null;
+    rest += cp.length;
+  }
+  return { date: match[1], dateStart: i };
+}
+
+function dateFromNextCell($: CheerioAPI, labelEl: Element): { date: string; dateStart: number; cell: Element } | null {
   const cell = ancestorCell(labelEl);
-  if (!cell) return null;
+  if (!cell || !cellIsExactValoresAl($, cell)) return null;
   const row = parentOf(cell);
   if (!row || !isElement(row) || row.name.toLowerCase() !== 'tr') return null;
   const next = nextElementSibling(cell);
@@ -959,16 +1001,19 @@ function dateFromNextCell($: CheerioAPI, labelEl: Element): string | null {
   const nextName = next.name.toLowerCase();
   if ((nextName !== 'td' && nextName !== 'th') || parentOf(next) !== row) return null;
   const visible = exactCellDate(renderedVisible($, next));
-  if (!visible) return null;
   const unfiltered = exactCellDate(renderedUnfiltered($, next));
-  if (unfiltered !== visible) return null;
-  return visible;
+  if (!visible || !unfiltered || visible.date !== unfiltered.date || visible.dateStart !== unfiltered.dateStart) {
+    return null;
+  }
+  return { date: visible.date, dateStart: visible.dateStart, cell: next };
 }
 
-function noNumericDateContinuation(text: string, date: string): boolean {
-  const at = text.indexOf(date);
-  if (at < 0) return false;
-  const nextAt = skipTailGap(text, at + date.length);
+/** Tail and numeric-continuation checks at the selected date's offset, not the first copy. */
+function selectedDateHolds(text: string, boundaries: number[], offset: number, date: string): boolean {
+  if (offset < 0 || text.slice(offset, offset + date.length) !== date) return false;
+  const bounds = new Set(boundaries);
+  if (!dateLineEnds(text, offset + date.length, bounds)) return false;
+  const nextAt = skipTailGap(text, offset + date.length);
   const next = nextCodePoint(text, nextAt);
   return !(next && DATE_TAIL_CONTINUE.test(next));
 }
@@ -1035,20 +1080,44 @@ function parseValoresAl($: CheerioAPI, section: Element): string | null {
   const nodes = innermostIn($, section, (el) => /Valores al(?![\p{L}\p{N}])/iu.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
   const labelEl = nodes[0];
-  const visibleRead = dateFromLabelRender(renderedVisible($, labelEl));
+  const visibleLabel = renderedVisible($, labelEl);
+  const visibleRead = dateFromLabelRender(visibleLabel);
   let blockDate: string | null = null;
+  let dateStart = -1;
+  let anchor: Element = labelEl;
   if (visibleRead.date) {
-    const unfilteredRead = dateFromLabelRender(renderedUnfiltered($, labelEl));
+    const unfilteredLabel = renderedUnfiltered($, labelEl);
+    const unfilteredRead = dateFromLabelRender(unfilteredLabel);
     if (unfilteredRead.date !== visibleRead.date) return null;
+    if (!selectedDateHolds(visibleLabel.text, visibleLabel.boundaries, visibleRead.dateStart, visibleRead.date)) {
+      return null;
+    }
+    if (!selectedDateHolds(unfilteredLabel.text, unfilteredLabel.boundaries, unfilteredRead.dateStart, visibleRead.date)) {
+      return null;
+    }
     blockDate = visibleRead.date;
+    dateStart = visibleRead.dateStart;
   } else if (visibleRead.lookNextCell) {
-    blockDate = dateFromNextCell($, labelEl);
+    const next = dateFromNextCell($, labelEl);
+    if (!next) return null;
+    const visibleCell = renderedVisible($, next.cell);
+    const unfilteredCell = renderedUnfiltered($, next.cell);
+    if (!selectedDateHolds(visibleCell.text, visibleCell.boundaries, next.dateStart, next.date)) return null;
+    if (!selectedDateHolds(unfilteredCell.text, unfilteredCell.boundaries, next.dateStart, next.date)) return null;
+    blockDate = next.date;
+    dateStart = next.dateStart;
+    anchor = next.cell;
   }
   if (!blockDate) return null;
-  const sectionVisible = renderedVisible($, section);
-  const sectionUnfiltered = renderedUnfiltered($, section);
-  if (!noNumericDateContinuation(sectionVisible.text, blockDate)) return null;
-  if (!noNumericDateContinuation(sectionUnfiltered.text, blockDate)) return null;
+  const sectionVisible = renderedVisible($, section, anchor);
+  const sectionUnfiltered = renderedUnfiltered($, section, anchor);
+  if (sectionVisible.anchorStart == null || sectionUnfiltered.anchorStart == null) return null;
+  if (!selectedDateHolds(sectionVisible.text, sectionVisible.boundaries, sectionVisible.anchorStart + dateStart, blockDate)) {
+    return null;
+  }
+  if (!selectedDateHolds(sectionUnfiltered.text, sectionUnfiltered.boundaries, sectionUnfiltered.anchorStart + dateStart, blockDate)) {
+    return null;
+  }
   const timestamp = parseCafciDateLabel(blockDate);
   if (!timestamp) return null;
 
@@ -1086,6 +1155,24 @@ function longestAdjacentWhitelist(parts: string[]): string | null {
     if (best) break;
   }
   return best;
+}
+
+/** Inside an li/tr the whole remainder after Moneda: is one whitelist value, or nothing. */
+function strictRowMoneda(rendered: RenderedText): string | null {
+  const labels = [...rendered.text.matchAll(/Moneda:/gi)];
+  if (labels.length !== 1 || labels[0].index == null) return null;
+  const value = normalizeFichaText(rendered.text.slice(labels[0].index + labels[0][0].length));
+  if (!isWhitelistedMoneda(value)) return null;
+  return value;
+}
+
+function monedaValuesFor(block: Element, rendered: RenderedText): string[] {
+  const name = block.name.toLowerCase();
+  if (name === 'li' || name === 'tr') {
+    const value = strictRowMoneda(rendered);
+    return value ? [value] : [];
+  }
+  return adjacentMonedaValues(rendered);
 }
 
 function adjacentMonedaValues(rendered: RenderedText): string[] {
@@ -1226,8 +1313,8 @@ export function parseCafciHtmlFichaDetailed(
     if (containsInertCarrier(block) || subtreeHasDisallowedControl(block)) {
       return { parsed: null, reason: 'unparseable_ficha' };
     }
-    const visible = adjacentMonedaValues(renderedVisible($, block));
-    const unfiltered = adjacentMonedaValues(renderedUnfiltered($, block));
+    const visible = monedaValuesFor(block, renderedVisible($, block));
+    const unfiltered = monedaValuesFor(block, renderedUnfiltered($, block));
     if (visible.length === 0 || visible.length !== unfiltered.length) {
       return { parsed: null, reason: 'unparseable_ficha' };
     }

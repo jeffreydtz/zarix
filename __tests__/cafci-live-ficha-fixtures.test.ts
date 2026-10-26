@@ -310,6 +310,41 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     expect(failures).toEqual([]);
   }, 20_000);
 
+  const WRONG_DATES: Array<[string, string]> = [
+    ['label cell has extra text', '<table><tr><td><span>Valores al</span><span>pendientes</span></td><td>26/10/2026</td></tr></table>'],
+    ['th label cell has extra text', '<table><tr><th><span>Valores al</span><span>pendientes</span></th><td>26/10/2026</td></tr></table>'],
+    ['earlier same date', '<p>Publicado 26/10/2026</p><h3>Valores al 26/10/2026<br hidden>1</h3>'],
+    ['earlier date in another block', '<div>Publicado 26/10/2026</div><h3>Valores al 26/10/2026<br hidden>1</h3>'],
+    ['earlier date hidden', '<p hidden>Publicado 26/10/2026</p><h3>Valores al 26/10/2026<br hidden>1</h3>'],
+  ];
+
+  it('does not write a next-cell or duplicated date that is not the selected one', () => {
+    const failures: string[] = [];
+    let cases = 0;
+    for (const row of LIVE) {
+      const html = readFileSync(join(fixtures, row.file), 'utf8');
+      const heading = '<h3>Valores al 23/10/2026</h3>';
+      for (const [name, replacement] of WRONG_DATES) {
+        cases += 1;
+        const result = parseCafciHtmlFichaDetailed(html.replace(heading, replacement), {
+          fondoId: row.fondoId,
+          claseId: row.claseId,
+        });
+        if (result.parsed) failures.push(`${row.file} ${name} ${result.parsed.timestamp}`);
+      }
+      cases += 1;
+      const thControl = parseCafciHtmlFichaDetailed(
+        html.replace(heading, '<table><tr><th>Valores al</th><td>23/10/2026</td></tr></table>'),
+        { fondoId: row.fondoId, claseId: row.claseId },
+      );
+      if (thControl.parsed?.timestamp !== '2026-10-23T03:00:00.000Z' || thControl.parsed.price !== row.price) {
+        failures.push(`${row.file} th control ${thControl.parsed ? thControl.parsed.timestamp : 'skip'}`);
+      }
+    }
+    expect(cases).toBe(24);
+    expect(failures).toEqual([]);
+  }, 20_000);
+
   it('reads a block-displayed Moneda label from the next line in the same parent', () => {
     const failures: string[] = [];
     for (const row of LIVE) {

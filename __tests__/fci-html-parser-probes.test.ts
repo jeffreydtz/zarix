@@ -1037,6 +1037,29 @@ describe('Kael/Codex r11 HTML parser — rendered section text, Moneda whitelist
     });
   });
 
+  it('skips a row whose Moneda text is not exactly one whitelist value', () => {
+    const cases = [
+      ['conflicting second value', `<li>
+        <div><span class="label">Moneda:</span> Peso Argentina</div>
+        <div>Dolar Estadounidense</div>
+      </li>`],
+      ['hidden br tail', '<li><span class="label">Moneda:</span> Peso Argentina<br hidden>1</li>'],
+      ['Billete then Canadiense', `<li>
+        <div><span class="label">Moneda:</span> Dolar Estadounidense</div>
+        <div>Billete</div>
+        <div>Canadiense</div>
+      </li>`],
+      ['empty label beside a subscription aside', `<li>
+        <div><span class="label">Moneda:</span></div>
+        <aside>Moneda de suscripción Peso Argentina</aside>
+      </li>`],
+    ] as const;
+    for (const [name, row] of cases) {
+      const result = parsed(shell({ moneda: `<div id="fichaRight"><ul>${row}</ul></div>` }));
+      expect(result.parsed, name).toBeNull();
+    }
+  });
+
   it('does not let a later non-adjacent Billete complete Dolar Estadounidense', () => {
     const html = shell({
       moneda: `<div id="fichaRight"><ul>
