@@ -726,6 +726,47 @@ function jsonConflictsWithText(input: {
   return false;
 }
 
+/** Signed numbers, standalone 0, or grouped/decimal tokens outside a marked span. */
+const UNMARKED_AMOUNT_LIKE_RE =
+  /(?<![A-Za-z\d])[+-]\s*\d|(?<![A-Za-z\d.,])0(?![A-Za-z\d.,])|(?<![A-Za-z\d])\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{1,2})?|(?<![A-Za-z\d])\d+[.,]\d{1,2}\b/;
+
+function hasUnmarkedAmountLikeToken(stripped: string, start: number, end: number): boolean {
+  const masked = stripped.slice(0, start) + ' '.repeat(Math.max(0, end - start)) + stripped.slice(end);
+  UNMARKED_AMOUNT_LIKE_RE.lastIndex = 0;
+  return UNMARKED_AMOUNT_LIKE_RE.test(masked);
+}
+
+/**
+ * JSON amount + non-empty rawText auto-confirm only when the text has exactly
+ * one currency-marked amount that matches JSON cents/currency, is positive,
+ * and passes the existing template/deny/hygiene gates.
+ */
+function jsonAmountCorroboratedByText(input: {
+  jsonAmount: number;
+  jsonCurrency: string | null;
+  text: string;
+}): boolean {
+  if (textFailsAutoConfirmGates(input.text)) return false;
+  const scan = scanMarkedAmounts(input.text);
+  if (scan.invalidMarked || scan.valid.length !== 1) return false;
+  const preferred = scan.valid[0]!;
+  if (preferred.signed) return false;
+  if (hasUnattachedMarker(scan.stripped, preferred.start, preferred.end)) return false;
+  if (currencyWordDisagrees(scan.src, preferred.currency)) return false;
+  if (!hasAllowlistedExpense(scan.stripped, preferred.start)) return false;
+  if (hasUnmarkedAmountLikeToken(scan.stripped, preferred.start, preferred.end)) return false;
+  const parsed = parseGroupedNumber(preferred.raw, localeFromMarker(preferred.marker));
+  if (!parsed || parsed.ambiguous || parsed.excessDecimals || !(parsed.value > 0) || parsed.value > MAX_AMOUNT) {
+    return false;
+  }
+  const jsonCents = amountCents(input.jsonAmount);
+  const textCents = amountCents(parsed.value);
+  if (jsonCents == null || textCents == null || jsonCents !== textCents) return false;
+  const textEffective = preferred.code ?? ACCOUNT_DEFAULT_CURRENCY;
+  const jsonCur = input.jsonCurrency ?? ACCOUNT_DEFAULT_CURRENCY;
+  return textEffective === jsonCur;
+}
+
 /**
  * Structured JSON body (Apple Shortcut) plus a regex/heuristic parser for
  * Android notification text. Empty amount/merchant are tolerated.
@@ -775,10 +816,20 @@ export function parseWalletPayload(input: {
   }
   const jsonProvidedAmount = jsonAmountRaw != null;
   const jsonProvidedCurrency = Boolean(jsonCurrencyText);
+  const textPresent = Boolean(truncated && truncated.trim());
+  const jsonAmountCorroborated =
+    jsonAmountUsable && jsonAmount && textPresent
+      ? jsonAmountCorroboratedByText({
+          jsonAmount: jsonAmount.amount!,
+          jsonCurrency: parsedJsonCurrency,
+          text: truncated!,
+        })
+      : true;
   const jsonTextConflict =
-    Boolean(truncated && textEvidence && (jsonProvidedAmount || jsonProvidedCurrency)) &&
+    !jsonAmountUsable &&
+    Boolean(truncated && textEvidence && jsonProvidedCurrency) &&
     jsonConflictsWithText({
-      jsonAmount: jsonAmountUsable && jsonAmount ? jsonAmount.amount : null,
+      jsonAmount: null,
       jsonCurrency: parsedJsonCurrency,
       evidence: textEvidence!,
     });
@@ -793,6 +844,7 @@ export function parseWalletPayload(input: {
     textVeto ||
     wordVeto ||
     jsonTextConflict ||
+    (jsonAmountUsable && textPresent && !jsonAmountCorroborated) ||
     (jsonAmountUsable && jsonAmount
       ? jsonAmount.ambiguous
       : jsonAmountRaw != null

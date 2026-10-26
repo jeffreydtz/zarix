@@ -835,4 +835,97 @@ describe('Wallet HTTP ingest decimal precision', () => {
       expect(result.body.item.amount, rawText).not.toBe(1234);
     }
   });
+
+  it('parks r16 monto unmarked-text regressions over HTTP with auto-confirm armed', async () => {
+    const merchant = 'COTO';
+    const cardName = 'tarjeta Visa';
+    const timestamp = '2026-10-25T12:00:00.000Z';
+    const examples: Array<{ label: string; body: Record<string, unknown> }> = [
+      { label: 'monto15-compra-1500,50', body: { monto: 15, rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 'monto15-compra-aprobada-importe', body: { monto: 15, rawText: 'Compra aprobada Importe: 1.500,00', merchant, cardName, timestamp } },
+      { label: 'monto1500-pagaste--1500', body: { monto: 1500, rawText: 'Pagaste -1500', merchant, cardName, timestamp } },
+      { label: 'monto15-pagaste--15', body: { monto: 15, rawText: 'Pagaste -15', merchant, cardName, timestamp } },
+      { label: 'monto15-pagaste-0', body: { monto: 15, rawText: 'Pagaste 0', merchant, cardName, timestamp } },
+      { label: 'amount15-compra-1500,50', body: { amount: 15, rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 'importe15-compra-1500,50', body: { importe: 15, rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 'value15-compra-1500,50', body: { value: 15, rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+    ];
+    const sample: Array<{ label: string; body: Record<string, unknown> }> = [
+      { label: 's-signed-bare', body: { monto: 1500, rawText: '-1500', merchant, cardName, timestamp } },
+      { label: 's-us-group', body: { monto: 15, rawText: 'Compra 1,500.50 en COTO', merchant, cardName, timestamp } },
+      { label: 's-compra-1500', body: { monto: 15, rawText: 'Compra 1.500 en COTO', merchant, cardName, timestamp } },
+      { label: 's-ars-glued', body: { monto: 15, rawText: 'Compra ARS1.500', merchant, cardName, timestamp } },
+      { label: 's-usd-glued', body: { monto: 1500, rawText: 'Compra USD10', merchant, cardName, timestamp } },
+      { label: 's-aprobada-signed', body: { monto: 1500, rawText: 'Compra aprobada -1500', merchant, cardName, timestamp } },
+      { label: 's-importe-label', body: { monto: 15, rawText: 'Importe: 1.500,00', merchant, cardName, timestamp } },
+      { label: 's-pagaste-importe', body: { monto: 15, rawText: 'Pagaste Importe: 1.500,00', merchant, cardName, timestamp } },
+      { label: 's-pagaste-1500,00', body: { monto: 15, rawText: 'Pagaste 1.500,00', merchant, cardName, timestamp } },
+      { label: 's-pagaste-signed-group', body: { monto: 15, rawText: 'Pagaste -1.500,00', merchant, cardName, timestamp } },
+      { label: 's-paren-15', body: { monto: 1500, rawText: 'Pagaste (15)', merchant, cardName, timestamp } },
+      { label: 's-trailing-minus', body: { monto: 1500, rawText: 'Pagaste 15-', merchant, cardName, timestamp } },
+      { label: 's-15CR', body: { monto: 1500, rawText: 'Pagaste 15CR', merchant, cardName, timestamp } },
+      { label: 's-pagaste-15', body: { monto: 1500, rawText: 'Pagaste 15', merchant, cardName, timestamp } },
+      { label: 's-euro-prefix', body: { monto: 1500, rawText: 'Pagaste €15', merchant, cardName, timestamp } },
+      { label: 's-euro-suffix', body: { monto: 1500, rawText: 'Pagaste 15 €', merchant, cardName, timestamp } },
+      { label: 's-quince', body: { monto: 1500, rawText: 'Pagaste quince', merchant, cardName, timestamp } },
+      { label: 's-pesos-unmarked', body: { monto: 15, rawText: 'Pagaste 1.500,00 pesos', merchant, cardName, timestamp } },
+      { label: 's-dolares', body: { monto: 1500, currency: 'USD', rawText: 'Pagaste 15 dólares', merchant, cardName, timestamp } },
+      { label: 's-euros', body: { monto: 1500, currency: 'EUR', rawText: 'Pagaste 15 euros', merchant, cardName, timestamp } },
+      { label: 's-15.00', body: { monto: 15, rawText: 'Pagaste 15.00', merchant, cardName, timestamp } },
+      { label: 's-1.500', body: { monto: 15, rawText: 'Pagaste 1.500', merchant, cardName, timestamp } },
+      { label: 's-1,500', body: { monto: 15, rawText: 'Pagaste 1,500', merchant, cardName, timestamp } },
+      { label: 's-monto-string', body: { monto: '15', rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 's-currency-ARS', body: { monto: 15, currency: 'ARS', rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 's-currency-USD', body: { monto: 15, currency: 'USD', rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 's-currency-EUR', body: { monto: 15, currency: 'EUR', rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 's-monto1500-vs-1500,50', body: { monto: 1500, rawText: 'Compra 1.500,50 en COTO', merchant, cardName, timestamp } },
+      { label: 's-pagaste-0-string', body: { monto: '15', rawText: 'Pagaste 0', merchant, cardName, timestamp } },
+      { label: 's-pagaste--15-string', body: { monto: '15', rawText: 'Pagaste -15', merchant, cardName, timestamp } },
+    ];
+    expect(sample.length).toBeGreaterThanOrEqual(30);
+    for (const [i, { label, body }] of [...examples, ...sample].entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText: String(body.rawText),
+        key: `wallet-r16-monto-${i}`,
+        body: JSON.stringify(body),
+      });
+      expect(result.status, label).toBe(201);
+      expect(result.body.autoConfirmed, label).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, label).toBe(true);
+      expect(mocks.execute, label).not.toHaveBeenCalled();
+    }
+  });
+
+  it('keeps Kael 12 real notifications auto-confirmable over HTTP', async () => {
+    const twelve = [
+      { rawText: 'Pagaste $ 3.500', amount: 3500, currency: 'ARS' },
+      { rawText: 'Compraste en COTO por $ 1.250,50', amount: 1250.5, currency: 'ARS' },
+      { rawText: '25/10 12:30 Pagaste $ 1.250,50', amount: 1250.5, currency: 'ARS' },
+      { rawText: 'Transferiste $ 8.000', amount: 8000, currency: 'ARS' },
+      { rawText: 'Pagaste con saldo $ 1.500 en COTO', amount: 1500, currency: 'ARS' },
+      { rawText: 'Compra aprobada US$ 12.50', amount: 12.5, currency: 'USD' },
+      { rawText: 'Abonaste USD 10', amount: 10, currency: 'USD' },
+      { rawText: 'Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.', amount: 5000, currency: 'ARS' },
+      { rawText: 'Abonaste USD $10', amount: 10, currency: 'USD' },
+      { rawText: 'Abonaste EUR $10', amount: 10, currency: 'EUR' },
+      { rawText: 'Pagaste $10 US$', amount: 10, currency: 'USD' },
+      { rawText: 'Pagaste $ 10 US$ en COTO', amount: 10, currency: 'USD' },
+    ];
+    expect(twelve).toHaveLength(12);
+    for (const [i, { rawText, amount, currency }] of twelve.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r16-kael12-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.item.amount, rawText).toBe(amount);
+      expect(result.captured.row?.amount, rawText).toBe(amount);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(false);
+      expect(result.captured.row?.currency, rawText).toBe(currency);
+    }
+  });
 });

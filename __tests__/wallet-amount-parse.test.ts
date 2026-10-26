@@ -6,6 +6,7 @@ import {
   parseWalletText,
   parseWalletTimestamp,
 } from '@/lib/integrations/wallet-parse';
+import r16MontoRegresion from './fixtures/wallet-r16-monto-regresion.json';
 
 const CASES: Array<{ input: string; amount: number | null; ambiguous?: boolean; direction?: 'expense' | 'income' }> = [
   { input: '$ 12.500', amount: 12500, ambiguous: true },
@@ -664,6 +665,41 @@ describe('wallet amount parser (table)', () => {
     expect(match.amountAmbiguous).toBe(false);
     expect(match.currency).toBe('ARS');
     expect(match.direction).toBe('expense');
+  });
+
+  it('parks JSON amount aliases when rawText has no corroborating marked amount', () => {
+    const examples = [
+      { monto: 15, rawText: 'Compra 1.500,50 en COTO' },
+      { monto: 15, rawText: 'Compra aprobada Importe: 1.500,00' },
+      { monto: 1500, rawText: 'Pagaste -1500' },
+      { monto: 15, rawText: 'Pagaste -15' },
+      { monto: 15, rawText: 'Pagaste 0' },
+    ];
+    for (const json of examples) {
+      const parsed = parseWalletPayload({ json });
+      expect(parsed.amountAmbiguous, JSON.stringify(json)).toBe(true);
+    }
+    for (const alias of ['amount', 'importe', 'value', 'monto'] as const) {
+      for (const raw of [15, '15'] as const) {
+        const parsed = parseWalletPayload({
+          json: { [alias]: raw, rawText: 'Compra 1.500,50 en COTO' },
+        });
+        expect(parsed.amountAmbiguous, `${alias}=${raw}`).toBe(true);
+      }
+    }
+    const structured = parseWalletPayload({
+      json: { monto: 1500, currency: 'ARS', merchant: 'COTO' },
+    });
+    expect(structured.amount).toBe(1500);
+    expect(structured.amountAmbiguous).toBe(false);
+  });
+
+  it('parks the r16 monto regression corpus (213 payloads) instead of trusting JSON', () => {
+    expect(r16MontoRegresion).toHaveLength(213);
+    for (const { id, json } of r16MontoRegresion) {
+      const parsed = parseWalletPayload({ json: json as Record<string, unknown> });
+      expect(parsed.amountAmbiguous, id).toBe(true);
+    }
   });
 
   it('parks r15 deny roots, URLs, quotes, unicode splitters, accounting and national currencies', () => {
