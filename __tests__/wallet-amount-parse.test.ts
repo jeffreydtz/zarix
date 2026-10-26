@@ -210,6 +210,15 @@ describe('wallet amount parser (table)', () => {
   });
 
   it('parks conflicting JSON amount aliases regardless of casing or value type', () => {
+    const montoConflict = '{"amount":2,"monto":1000,"currency":"ARS","merchant":"Café"}';
+    const parsedMonto = parseWalletPayload({
+      json: JSON.parse(montoConflict) as Record<string, unknown>,
+      rawJson: montoConflict,
+    });
+    expect(parsedMonto.amount).toBeNull();
+    expect(parsedMonto.amount).not.toBe(2);
+    expect(parsedMonto.amount).not.toBe(1000);
+    expect(parsedMonto.amountAmbiguous).toBe(true);
     const dupNull = '{"amount":2,"amount":null,"importe":1000,"currency":"ARS","merchant":"Café"}';
     const parsedDup = parseWalletPayload({
       json: JSON.parse(dupNull) as Record<string, unknown>,
@@ -252,6 +261,137 @@ describe('wallet amount parser (table)', () => {
     expect(dup.amount).toBeNull();
     expect(dup.amountAmbiguous).toBe(true);
     expect(dup.amountDuplicate).toBe(true);
+  });
+
+  it('parses round-11 formats, Kael AR formats, and still parks the round-10 set', () => {
+    const nbsp1250 = `$ 1\u00a0250`;
+    const nbspCents = `$\u00a01.250,50`;
+    const round11: Array<{
+      input: string;
+      amount: number | null;
+      ambiguous?: boolean;
+      currency?: string;
+      direction?: 'expense' | 'income';
+    }> = [
+      { input: '$ 1.250,50', amount: 1250.5 },
+      { input: '$1250', amount: 1250 },
+      { input: '$ 1.250', amount: 1250 },
+      { input: 'USD 12,50', amount: 12.5, currency: 'USD' },
+      { input: 'US$ 12.50', amount: 12.5, currency: 'USD' },
+      { input: 'ARS 1.234,5', amount: 1234.5 },
+      { input: '$ 0,99', amount: 0.99 },
+      { input: '$ 1.000.000', amount: 1_000_000 },
+      { input: nbsp1250, amount: 1250 },
+      { input: nbspCents, amount: 1250.5 },
+      { input: '$ 1.250,50 en COTO', amount: 1250.5 },
+      { input: '$1250 en COTO', amount: 1250 },
+      { input: '$ 1.500\nen COTO\nVisa Ejemplo', amount: 1500 },
+      { input: 'Monto: $ 1.500', amount: 1500 },
+      { input: 'Total: ARS 1.234,56', amount: 1234.56 },
+      { input: 'Importe: 1.500,00', amount: 1500 },
+      { input: 'Monto:$1500', amount: 1500 },
+      { input: 'Monto:\n$ 1.500', amount: 1500 },
+      { input: 'Monto:\t$ 1.500', amount: 1500 },
+      { input: '$ 1.500,00.', amount: 1500 },
+      { input: '$1.500,00,', amount: 1500 },
+      { input: '$ 1.500.-', amount: 1500 },
+      { input: '$ 1.500...', amount: 1500 },
+      { input: '$ 1.250,50.', amount: 1250.5 },
+      { input: '$ 1.250.', amount: 1250 },
+      { input: 'US$ 12.50.', amount: 12.5, currency: 'USD' },
+      { input: 'ARS 1.234,5.', amount: 1234.5 },
+      { input: '$ 1.000.000.', amount: 1_000_000 },
+      { input: '$ 0,99.', amount: 0.99 },
+      { input: 'USD 12,50.', amount: 12.5, currency: 'USD' },
+      { input: 'US$ 12.50,', amount: 12.5, currency: 'USD' },
+      { input: '$1250.', amount: 1250 },
+      { input: '$1500,', amount: 1500 },
+      { input: '$1500.-', amount: 1500 },
+      { input: '$ 1.500 cuota 1/3', amount: 1500 },
+      { input: '$ 1.500/mes', amount: 1500 },
+      { input: '$ 1.500 / 3 cuotas', amount: 1500 },
+      { input: '1/2', amount: null },
+      { input: '$ 1/2', amount: null },
+      { input: 'Monto: $ 1.500 en COTO. Saldo disponible $ 20.000', amount: 1500 },
+      { input: 'Tarjeta Visa 1234. Monto: $ 1.500', amount: 1500 },
+      { input: 'Compra $ 0,99.', amount: 0.99 },
+      { input: 'Compra $ 12,50.', amount: 12.5 },
+      { input: 'Compra USD 12,50.', amount: 12.5, currency: 'USD' },
+      { input: 'Compra US$ 12.50,', amount: 12.5, currency: 'USD' },
+      { input: 'Compra $1250,50. en COTO', amount: 1250.5 },
+    ];
+    for (const { input, amount, ambiguous, currency, direction } of round11) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.amount, input).toBe(amount);
+      if (amount != null) expect(parsed.ambiguous, input).toBe(ambiguous ?? false);
+      if (ambiguous != null) expect(parsed.ambiguous, input).toBe(ambiguous);
+      if (direction) expect(parsed.direction, input).toBe(direction);
+      if (currency) expect(parseWalletText(input).currency, input).toBe(currency);
+    }
+    expect(parseAmountFromText('Monto: $ 1.500 en COTO. Saldo disponible $ 20.000').amount).not.toBe(20000);
+    expect(parseAmountFromText('Tarjeta Visa 1234. Monto: $ 1.500').amount).not.toBe(1234);
+    expect(parseAmountFromText('Compra $ 0,99.').amount).not.toBe(99);
+    expect(parseAmountFromText('Compra $ 12,50.').amount).not.toBe(1250);
+    expect(parseAmountFromText('Compra $1250,50. en COTO').amount).not.toBe(125050);
+
+    const kaelAr: Array<{
+      input: string;
+      amount: number;
+      currency?: string;
+      direction?: 'expense' | 'income';
+      ambiguous?: boolean;
+    }> = [
+      { input: '$ 12.345.678,90', amount: 12345678.9 },
+      { input: '$12.345.678,90', amount: 12345678.9 },
+      { input: '1.250,50 ARS', amount: 1250.5 },
+      { input: 'ARS 1.250,50', amount: 1250.5 },
+      { input: 'Pagaste $ 3.500', amount: 3500 },
+      { input: 'Compra $ 1.250 en COTO', amount: 1250 },
+      { input: '25/10 12:30 Pagaste $ 1.250,50', amount: 1250.5 },
+      { input: 'US$ 10', amount: 10, currency: 'USD' },
+      { input: 'US$ 12.50', amount: 12.5, currency: 'USD' },
+      { input: 'USD 12,50', amount: 12.5, currency: 'USD' },
+      { input: '-$ 500', amount: 500, direction: 'income' },
+      { input: '-$1.234,56', amount: 1234.56, direction: 'income' },
+      { input: '$ 0,99', amount: 0.99 },
+      { input: '$ 1.000.000', amount: 1_000_000 },
+      { input: '$ 1.234,5', amount: 1234.5 },
+      { input: '$ 1.500.-', amount: 1500 },
+      { input: '$ 12.500', amount: 12500 },
+      { input: 'U$S 10', amount: 10, currency: 'USD' },
+      { input: '$1.250,00', amount: 1250 },
+      { input: 'ARS 99', amount: 99 },
+      { input: '$ 1.250,50.', amount: 1250.5 },
+      { input: 'Transferiste $ 8.000', amount: 8000 },
+      { input: 'Débito automático $ 2.450,30', amount: 2450.3 },
+    ];
+    expect(kaelAr).toHaveLength(23);
+    for (const { input, amount, currency, direction, ambiguous } of kaelAr) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.amount, input).toBe(amount);
+      expect(parsed.ambiguous, input).toBe(ambiguous ?? false);
+      expect(parsed.direction, input).toBe(direction ?? 'expense');
+      if (currency) expect(parseWalletText(input).currency, input).toBe(currency);
+    }
+
+    const round10Park = [
+      'Compra $ .5 en COTO con tarjeta Visa',
+      'Compra $ 1_000 en COTO con tarjeta Visa',
+      'Compra $ 1.2.3 en COTO con tarjeta Visa',
+      'Compra 25/10 12:30 en COTO con tarjeta Visa',
+      'Compra $ 1.250,501 en COTO con tarjeta Visa',
+      'Compra $ 1.250.50 en COTO con tarjeta Visa',
+    ];
+    for (const input of round10Park) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.amount, input).toBeNull();
+      expect(parsed.amount, input).not.toBe(5);
+      expect(parsed.amount, input).not.toBe(1);
+      expect(parsed.amount, input).not.toBe(1.2);
+      expect(parsed.amount, input).not.toBe(25);
+      expect(parsed.amount, input).not.toBe(1250.5);
+      expect(parsed.amount, input).not.toBe(1250);
+    }
   });
 
   it('parses old timestamps for identity and applies freshness only separately', () => {

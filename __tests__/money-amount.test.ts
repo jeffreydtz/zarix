@@ -94,6 +94,27 @@ describe('integer cents money check (no float*100)', () => {
     expect(positiveMoneyAmount('1000')).toBe(1000);
   });
 
+  it('strips trailing sentence punctuation and rejects an empty fraction', () => {
+    expect(integerCentsFromToken('0,99.')).toBe(BigInt(99));
+    expect(integerCentsFromToken('12,50.')).toBe(BigInt(1250));
+    expect(integerCentsFromToken('12.50,')).toBe(BigInt(1250));
+    expect(integerCentsFromToken('1250,50.')).toBe(BigInt(125050));
+    expect(integerCentsFromToken('12,50.')).not.toBe(BigInt(125000));
+    expect(integerCentsFromToken('0,99.')).not.toBe(BigInt(9900));
+    expect(integerCentsFromToken('12,')).toBe(BigInt(1200));
+    expect(integerCentsFromToken('12,.')).toBe(BigInt(1200));
+    expect(integerCentsFromToken('1.234,')).toBeNull();
+    expect(integerCentsFromToken('1.23.456')).toBeNull();
+    expect(integerCentsFromToken('12.34.567')).toBeNull();
+  });
+
+  it('parks amount+monto JSON alias conflicts', () => {
+    const conflict = '{"amount":2,"monto":1000}';
+    expect(extractTopLevelJsonAmount(conflict).duplicate).toBe(true);
+    expect(rawJsonHasInvalidMoney(conflict)).toBe(true);
+    expect(extractTopLevelJsonAmount('{"monto":1000}')).toEqual({ token: '1000', duplicate: false });
+  });
+
   it('counts every amount-like JSON key case-insensitively and parks conflicts', () => {
     const dupNull = '{"amount":2,"amount":null,"importe":1000}';
     expect(extractTopLevelJsonAmount(dupNull).duplicate).toBe(true);

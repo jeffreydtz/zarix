@@ -283,6 +283,39 @@ describe('pending inbox confirm idempotency', () => {
     expect(eqs).toContainEqual(['claim_id', CLAIM_ID]);
   });
 
+  it('restores a single-item uncertain claim to uncertain instead of pending', async () => {
+    mocks.rpc.mockResolvedValue({ data: [itemRow('confirming')], error: null });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.is = () => self;
+      q.or = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => {
+        if (table === 'pending_inbox_items') return { data: { status: 'uncertain' }, error: null };
+        if (table === 'categories') {
+          return { data: { id: CATEGORY_ID, user_id: FIXTURE_USER, is_system: false }, error: null };
+        }
+        return { data: null, error: null };
+      };
+      q.single = async () => ({ data: itemRow('confirming'), error: null });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    mocks.execute.mockRejectedValue(new Error('ledger exploded'));
+
+    await expect(confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toThrow('ledger exploded');
+    expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'uncertain')).toBe(true);
+    expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'pending')).toBe(false);
+  });
+
   it('lists stale confirming items as retryable', async () => {
     const stale = {
       ...itemRow('confirming'),

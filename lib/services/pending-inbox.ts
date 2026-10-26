@@ -741,6 +741,7 @@ type ConfirmPendingItemInput = {
   source?: WriteChannel;
   req?: Request;
   claimedRow?: PendingInboxItem;
+  priorStatus?: PendingInboxItem['status'];
 };
 
 export async function confirmPendingItem(input: ConfirmPendingItemInput): Promise<PendingInboxItem> {
@@ -992,6 +993,7 @@ export async function confirmPendingItems(input: {
         source: input.source,
         req: input.req,
         claimedRow,
+        priorStatus: priorStatusById.get(id),
       });
       out.push(confirmed);
       report.push({ pendingId: id, status: 'confirmed' });
@@ -1067,7 +1069,18 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
 
   let claimed: unknown = input.claimedRow ?? null;
   let claimErr: { message?: string } | null = null;
+  let restoreStatus: 'pending' | 'uncertain' =
+    input.priorStatus === 'uncertain' ? 'uncertain' : 'pending';
   if (!input.claimedRow) {
+    if (input.priorStatus == null) {
+      const { data: before } = await supabase
+        .from('pending_inbox_items')
+        .select('status')
+        .eq('id', input.itemId)
+        .eq('user_id', input.userId)
+        .maybeSingle();
+      if (before?.status === 'uncertain') restoreStatus = 'uncertain';
+    }
     const result = await claim();
     claimed = result.data;
     claimErr = result.error;
@@ -1130,7 +1143,7 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
     if (!myClaimId) return;
     await supabase
       .from('pending_inbox_items')
-      .update({ status: 'pending', claim_id: null })
+      .update({ status: restoreStatus, claim_id: null })
       .eq('id', input.itemId)
       .eq('user_id', input.userId)
       .eq('status', 'confirming')

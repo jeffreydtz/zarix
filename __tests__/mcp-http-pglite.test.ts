@@ -846,6 +846,85 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     );
   });
 
+  it('Wallet HTTP auto-confirm never writes the round-11 High wrong amounts', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    await query('UPDATE users SET wallet_auto_confirm=true WHERE id=$1', [ids.a]);
+    await query(
+      `INSERT INTO wallet_card_account_maps(user_id,card_name_normalized,account_id)
+       VALUES ($1,'visa ejemplo',$2)
+       ON CONFLICT (user_id, card_name_normalized) DO UPDATE SET account_id=EXCLUDED.account_id`,
+      [ids.a, ids.accountA]
+    );
+    await query(
+      `INSERT INTO transactions(user_id,type,account_id,category_id,amount,currency,amount_in_account_currency,description)
+       VALUES ($1,'expense',$2,$3,80,'ARS',80,'COTO')`,
+      [ids.a, ids.accountA, ids.categoryA]
+    );
+    const cases: Array<{ rawText: string; forbidden: number; key: string }> = [
+      {
+        rawText: 'Monto: $ 1.500 en COTO. Saldo disponible $ 20.000',
+        forbidden: 20000,
+        key: 'wallet-r11-high-saldo',
+      },
+      {
+        rawText: 'Tarjeta Visa 1234. Monto: $ 1.500',
+        forbidden: 1234,
+        key: 'wallet-r11-high-last4',
+      },
+    ];
+    for (const { rawText, forbidden, key } of cases) {
+      const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0]
+        .n;
+      const raw = JSON.stringify({
+        rawText,
+        merchant: 'COTO',
+        cardName: 'Visa Ejemplo',
+        timestamp: '2026-10-25T12:00:00.000Z',
+        currency: 'ARS',
+      });
+      const res = await walletPost(
+        new NextRequest('http://localhost/api/ingest/wallet', {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${tokenA}`,
+            'content-type': 'application/json',
+            'idempotency-key': key,
+          },
+          body: raw,
+        })
+      );
+      expect(res.status, rawText).toBe(201);
+      const json = (await res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
+      expect(json.item.amount, rawText).toBe(1500);
+      expect(json.item.amount, rawText).not.toBe(forbidden);
+      const pending = await query('SELECT amount, amount_ambiguous, status FROM pending_inbox_items WHERE id=$1', [
+        json.item.id,
+      ]);
+      expect(Number(pending.rows[0].amount), rawText).toBe(1500);
+      expect(Number(pending.rows[0].amount), rawText).not.toBe(forbidden);
+      const wrong = await query(
+        'SELECT id FROM transactions WHERE user_id=$1 AND amount=ANY($2::numeric[])',
+        [ids.a, [forbidden, 20000, 1234]]
+      );
+      expect(wrong.rows, rawText).toHaveLength(0);
+      if (json.autoConfirmed) {
+        expect(pending.rows[0].status, rawText).toBe('confirmed');
+        const ledger = await query(
+          'SELECT amount FROM transactions WHERE user_id=$1 AND id=(SELECT confirmed_transaction_id FROM pending_inbox_items WHERE id=$2)',
+          [ids.a, json.item.id]
+        );
+        expect(Number(ledger.rows[0].amount), rawText).toBe(1500);
+        expect(Number(ledger.rows[0].amount), rawText).not.toBe(forbidden);
+        expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+          Number(before) + 1
+        );
+      }
+    }
+  });
+
   it('REST accepts 1048576.37 into the inbox and rejects 40.129 without a ledger write', async () => {
     const query = (sql: string, params: unknown[] = []) =>
       asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>

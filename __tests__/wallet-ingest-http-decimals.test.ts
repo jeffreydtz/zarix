@@ -209,4 +209,84 @@ describe('Wallet HTTP ingest decimal precision', () => {
     expect(captured.row?.amount_ambiguous).toBe(true);
     expect(mocks.execute).not.toHaveBeenCalled();
   });
+
+  it('never auto-confirms the balance or card last-4 for the round-11 High texts', async () => {
+    const cases: Array<{ rawText: string; forbidden: number }> = [
+      { rawText: 'Monto: $ 1.500 en COTO. Saldo disponible $ 20.000', forbidden: 20000 },
+      { rawText: 'Tarjeta Visa 1234. Monto: $ 1.500', forbidden: 1234 },
+    ];
+    for (const { rawText, forbidden } of cases) {
+      vi.clearAllMocks();
+      const captured: { row: Record<string, unknown> | null } = { row: null };
+      mocks.suggest.mockResolvedValue({ categoryId: 'cat-coto', categoryName: 'Supermercado', source: 'history' });
+      mocks.from.mockImplementation((table: string) => {
+        const q: Record<string, unknown> = {};
+        const self = q;
+        q.select = () => self;
+        q.eq = () => self;
+        q.insert = async () => ({ data: null, error: null });
+        q.upsert = async () => ({ data: null, error: null });
+        q.update = () => self;
+        q.maybeSingle = async () => {
+          if (table === 'wallet_card_account_maps') {
+            return { data: { account_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1' }, error: null };
+          }
+          if (table === 'users') return { data: { wallet_auto_confirm: true }, error: null };
+          return { data: null, error: null };
+        };
+        return q;
+      });
+      mocks.rpc.mockImplementation(async (fn: string, args: { p_row?: Record<string, unknown> }) => {
+        if (fn === 'reserve_pending_inbox_item') {
+          captured.row = args.p_row ?? null;
+          return {
+            data: {
+              item: {
+                ...args.p_row,
+                id: ITEM_ID,
+                user_id: FIXTURE_USER,
+                status: 'pending',
+              },
+              duplicate: false,
+            },
+            error: null,
+          };
+        }
+        return { data: null, error: null };
+      });
+      const raw = JSON.stringify({
+        rawText,
+        merchant: 'COTO',
+        cardName: 'Visa Ejemplo',
+        timestamp: '2026-10-25T12:00:00.000Z',
+        currency: 'ARS',
+      });
+      const response = await walletPost(
+        new NextRequest('http://localhost/api/ingest/wallet', {
+          method: 'POST',
+          headers: {
+            authorization: 'Bearer zrxp_' + 'a'.repeat(64),
+            'content-type': 'application/json',
+            'idempotency-key': `wallet-r11-${forbidden}`,
+          },
+          body: raw,
+        })
+      );
+      expect(response.status, rawText).toBe(201);
+      const body = (await response.json()) as {
+        autoConfirmed: boolean;
+        item: { amount: number | null };
+      };
+      expect(body.item.amount, rawText).toBe(1500);
+      expect(body.item.amount, rawText).not.toBe(forbidden);
+      expect(captured.row?.amount, rawText).toBe(1500);
+      expect(captured.row?.amount, rawText).not.toBe(forbidden);
+      expect(captured.row?.amount_ambiguous, rawText).toBe(false);
+      for (const call of mocks.execute.mock.calls) {
+        const args = call[1] as { amount?: number } | undefined;
+        expect(args?.amount, rawText).not.toBe(forbidden);
+        if (typeof args?.amount === 'number') expect(args.amount, rawText).toBe(1500);
+      }
+    }
+  });
 });

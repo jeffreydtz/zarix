@@ -1,5 +1,10 @@
 /** Exact money precision from a raw token or integer cents. Never float*100. */
 
+/** Sentence-final `.` / `,` / `.-` are punctuation, not part of the amount. */
+export function stripTrailingMoneyPunct(token: string): string {
+  return token.replace(/\.-+$/, '').replace(/[.,]+$/, '');
+}
+
 function stripMoneyDecorations(raw: string): { sign: bigint; token: string } {
   let s = raw.trim();
   let negative = false;
@@ -12,7 +17,7 @@ function stripMoneyDecorations(raw: string): { sign: bigint; token: string } {
     .replace(/^(ARS|USD|EUR|U\$S|US\$)\$?\s*/i, '')
     .replace(/^\$\s*/, '')
     .replace(/\s+/g, '');
-  return { sign: negative ? BigInt(-1) : BigInt(1), token: s };
+  return { sign: negative ? BigInt(-1) : BigInt(1), token: stripTrailingMoneyPunct(s) };
 }
 
 function centsFromParts(whole: string, frac: string): bigint | null {
@@ -28,11 +33,13 @@ function centsFromParts(whole: string, frac: string): bigint | null {
 function centsFromSingleSeparator(token: string, sep: '.' | ','): bigint | null {
   const parts = token.split(sep);
   if (parts.length === 2) {
-    return centsFromParts(parts[0] ?? '', parts[1] ?? '');
+    const frac = parts[1] ?? '';
+    if (frac === '') return null;
+    return centsFromParts(parts[0] ?? '', frac);
   }
   if (
     parts.length > 2 &&
-    /^\d+$/.test(parts[0] ?? '') &&
+    /^\d{1,3}$/.test(parts[0] ?? '') &&
     parts.slice(1).every((part) => part.length === 3 && /^\d+$/.test(part))
   ) {
     return centsFromParts(parts.join(''), '');
@@ -57,8 +64,16 @@ export function integerCentsFromToken(raw: string): bigint | null {
     const thou = s[decPos] === ',' ? '.' : ',';
     const intRaw = s.slice(0, decPos);
     const frac = s.slice(decPos + 1);
-    if (intRaw.includes(s[decPos] ?? '')) return null;
-    const whole = intRaw.split(thou).join('');
+    if (frac === '' || intRaw.includes(s[decPos] ?? '')) return null;
+    const groups = intRaw.split(thou);
+    if (
+      groups.length > 1 &&
+      (!/^\d{1,3}$/.test(groups[0] ?? '') ||
+        groups.slice(1).some((group) => group.length !== 3 || !/^\d+$/.test(group)))
+    ) {
+      return null;
+    }
+    const whole = groups.join('');
     cents = centsFromParts(whole, frac);
   } else if (s.includes(',') && !s.includes('.')) {
     cents = centsFromSingleSeparator(s, ',');
@@ -87,7 +102,7 @@ export function numberToDecimalString(value: number): string {
   return s;
 }
 
-const JSON_AMOUNT_KEYS = ['amount', 'importe', 'value'] as const;
+const JSON_AMOUNT_KEYS = ['amount', 'importe', 'value', 'monto'] as const;
 const MONEY_KEY_SET = new Set<string>(JSON_AMOUNT_KEYS);
 /** Ancestors that may contain a money object (MCP JSON-RPC + batch writes). */
 const MONEY_ANCESTORS = new Set(['params', 'arguments', 'transactions']);

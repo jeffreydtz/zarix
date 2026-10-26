@@ -4,6 +4,7 @@ import {
   integerCentsFromToken,
   moneyAmountFromToken,
   numberToDecimalString,
+  stripTrailingMoneyPunct,
 } from '@/lib/money-amount';
 
 const CREDIT_CARD_PHRASE = /tarjeta\s+de\s+cr[eé]dito|credit\s+card/gi;
@@ -85,7 +86,7 @@ function parseGroupedNumber(
   raw: string,
   localeHint: 'AR' | 'US' | 'unknown'
 ): { value: number; ambiguous: boolean; excessDecimals?: boolean } | null {
-  const s = raw.replace(/\s/g, '');
+  const s = stripTrailingMoneyPunct(raw.replace(/\s/g, ''));
   if (!s) return null;
   const hasComma = s.includes(',');
   const hasDot = s.includes('.');
@@ -159,12 +160,20 @@ function parseGroupedNumber(
 const CANDIDATE_RE =
   /(?<![A-Za-z\d])([+-])?\s*(?:(ARS|USD|EUR|U\$S|US\$)\$?|(\$))?\s*((?:0[xX][0-9A-Fa-f]+|[.,]\d+|\d{1,3}(?:[.\s]\d{3})+(?:,\d{1,2})?|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+[.,]\d+|\d{1,12})(?:[eE][+-]?\d+)?)/gi;
 
-function isDateOrTimeContext(src: string, start: number, end: number): boolean {
-  const before = src.slice(Math.max(0, start - 3), start);
-  const after = src.slice(end, end + 4);
-  if (/\/\s*$/.test(before) || /^\s*\/\s*\d/.test(after)) return true;
-  if (/:\s*$/.test(before) || /^\s*:\s*\d/.test(after)) return true;
+function isDateOrTimeSpan(src: string, digitStart: number, digitEnd: number, anchored: boolean): boolean {
+  if (anchored) return false;
+  const token = src.slice(digitStart, digitEnd).replace(/\s/g, '');
+  if (!/^\d{1,4}$/.test(token)) return false;
+  const after = src.slice(digitEnd);
+  const before = src.slice(0, digitStart);
+  if (/^\d{1,2}$/.test(token) && /^\s*[:/]\s*\d{2}(?:\s*[:/]\s*\d{2,4})?/.test(after)) return true;
+  if (/^\d{2}(?:\d{2})?$/.test(token) && /\d{1,2}\s*[:/]\s*$/.test(before)) return true;
   return false;
+}
+
+function isBalanceContext(src: string, matchStart: number): boolean {
+  const before = src.slice(Math.max(0, matchStart - 48), matchStart);
+  return /\bsaldo(?:\s+disponible)?\b|\bdisponible\s*:|\bavailable\s+balance\b/i.test(before);
 }
 
 export function parseAmountFromText(text: string): AmountParseResult {
@@ -178,21 +187,33 @@ export function parseAmountFromText(text: string): AmountParseResult {
   CANDIDATE_RE.lastIndex = 0;
   let m: RegExpExecArray | null;
   while ((m = CANDIDATE_RE.exec(stripped))) {
-    let digits = (m[4] || '').replace(/\s/g, '');
+    const group4 = m[4] || '';
+    const digitStart = m.index + m[0].length - group4.length;
+    let digits = group4.replace(/\s/g, '');
     let tokenEnd = m.index + m[0].length;
     const extraSci = stripped.slice(tokenEnd).match(/^[eExX][+\-0-9A-Fa-f]*/);
     if (extraSci) {
       digits += extraSci[0];
       tokenEnd += extraSci[0].length;
     }
-    const extraJunk = stripped.slice(tokenEnd).match(/^[._,\d]+/);
+    const extraJunk = stripped.slice(tokenEnd).match(/^[._,]*\d[\d._,]*/);
     if (extraJunk) {
       digits += extraJunk[0];
       tokenEnd += extraJunk[0].length;
     }
+    digits = stripTrailingMoneyPunct(digits);
     CANDIDATE_RE.lastIndex = Math.max(CANDIDATE_RE.lastIndex, tokenEnd);
-    if (isDateOrTimeContext(stripped, m.index, tokenEnd)) continue;
     const anchored = Boolean(m[2] || m[3]);
+    if (isDateOrTimeSpan(stripped, digitStart, digitStart + group4.length, anchored)) continue;
+    if (isBalanceContext(stripped, m.index)) continue;
+    if (
+      !/[.,]/.test(group4) &&
+      /^\d{1,2}$/.test(digits) &&
+      (/^\s*\/\s*\d/.test(stripped.slice(tokenEnd)) ||
+        /(?:^|[^\d.,])\d{1,2}\s*\/\s*$/.test(stripped.slice(0, digitStart)))
+    ) {
+      continue;
+    }
     matches.push({
       raw: digits,
       signed: m[1] === '-',
@@ -354,7 +375,7 @@ export function parseWalletPayload(input: {
   const parsedJsonCurrency = jsonCurrencyText ? parseTransactionCurrency(jsonCurrencyText) : null;
   const jsonUnsupported = Boolean(jsonCurrencyText) && parsedJsonCurrency == null;
   const currencyUnsupported = jsonUnsupported || fromText.currencyUnsupported;
-  const jsonAmountRaw = json ? json.amount ?? json.importe ?? json.value : undefined;
+  const jsonAmountRaw = json ? json.amount ?? json.importe ?? json.value ?? json.monto : undefined;
   const extracted = input.rawJson ? extractTopLevelJsonAmount(input.rawJson) : { token: null, duplicate: false };
   const amountToken =
     extracted.token ?? (typeof jsonAmountRaw === 'string' ? jsonAmountRaw : null);

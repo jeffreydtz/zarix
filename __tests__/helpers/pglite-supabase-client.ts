@@ -148,7 +148,7 @@ export function createPgliteSupabaseClient(db: { query: (sql: string, params?: u
         const stripped = columns
           .split(',')
           .map((part) => part.trim())
-          .filter((part) => part && !part.includes(':'))
+          .filter((part) => part && !part.includes(':') && !part.includes('(') && !part.includes(')'))
           .join(', ');
         state.columns = stripped || '*';
       }
