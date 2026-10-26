@@ -2,19 +2,19 @@
 
 Documento: `docs/tif/v2.14/ZARIX-Plan-de-Desarrollo-Tecnologico-v2.14.docx`  
 Antecedente: `docs/tif/v2.13/ZARIX-Plan-de-Desarrollo-Tecnologico-v2.13.docx`  
-Código de referencia: `main` `b7da00bbbffdc2350e6b14ce0888a7453eabbe85` (26/10/2026).  
+Código de referencia del producto: `main` `b7da00bbbffdc2350e6b14ce0888a7453eabbe85` (26/10/2026). La cita de auditoría usa los SHA de las rondas finales: `a86a9f6` (#25) y `b27fad7` (#26).  
 El modelo financiero de v2.13 no se recalculó.
 
 Las 37 figuras centrales del Word conservan numeración. El diagrama de integraciones se agregó como anexo digital (`docs/tif/diagrams/fig14_integraciones.puml` y `docs/tif/png/fig14_integraciones.png`), sin insertar una figura 38 en el cuerpo.
 
-Esta nota cubre la entrega inicial (PR #27, sobre `f43d158`) y el seguimiento que incorpora el PR #26 y completa huecos de #16/#17/#25 sobre el mismo archivo v2.14. No existe una v2.15.
+Esta nota cubre la entrega inicial (PR #27, sobre `f43d158`), el seguimiento de #26/#16/#17/#25 y la cita de la auditoría de código y pruebas diferenciales contra main de #25 y #26, siempre sobre el mismo archivo v2.14. No existe una v2.15. La revisión de pares y los 4.264 casos diferenciales de #25 quedan sin confirmar: no hay reviews ni comentarios en GitHub que las acrediten.
 
 ## Control documental
 
 | Sección | Cambio | PR |
 |---|---|---|
 | Ficha de seguimiento | Versión 2.14, 26 de octubre de 2026; antecedente v2.13 | control de versión |
-| Historial | Fila 26/10/2026 · 2.14 (incluye #26; el número de versión no cambia) | #15–#19, #21, #23–#26 |
+| Historial | Fila 26/10/2026 · 2.14 (incluye #26 y la auditoría de código y pruebas diferenciales contra main; el número de versión no cambia) | #15–#19, #21, #23–#26 |
 | Registro de revisiones académicas | Sin cambio: filas Pendiente | — |
 | Anexo C (seis ítems en blanco) | Sin cambio: req-2, cu-5, ui-3, rob-6, class-6, test-7 siguen Pendiente de validación | — |
 
@@ -33,14 +33,14 @@ Esta nota cubre la entrega inicial (PR #27, sobre `f43d158`) y el seguimiento qu
 |---|---|---|
 | 10.4.4 RF02 | Frescura por tasa (blue 24 h; oficial/MEP/CCL 96 h con stale); degradación sin 500 | #18, #23 |
 | 10.4.4 RF03 | Patrimonio líquido; posiciones fuera del total | #15 |
-| 10.4.4 RF05 | Tipo `on`; cuotaparte desde ficha HTML CAFCI fail-closed; CAS; sin reparar NAV antiguo ni timestamp futuro; salto diario por tipo; ARS/USD; FCI peso→USD vía MEP; IOL de portafolio; panel IOL no persistido | #15, #18, #21, #26 |
+| 10.4.4 RF05 | Tipo `on`; cuotaparte desde ficha HTML CAFCI fail-closed; CAS; sin reparar NAV antiguo ni timestamp futuro; salto diario por tipo; ARS/USD; FCI peso→USD vía MEP; IOL de portafolio; panel IOL no persistido; cita de auditoría de código y pruebas diferenciales contra main (ronda 16/16) | #15, #18, #21, #26 |
 | 10.4.4 RF09 / RF16 | Vault fail-closed para Telegram/Gemini | #16 |
 | 10.4.4 RF10 | Lecturas MCP/REST sobre el mismo catálogo | #17 |
 | 10.4.4 RF17 (nuevo) | PAT `zrxp_`, hash SHA-256, permisos, tope 20 | #16 |
-| 10.4.4 RF18 (nuevo) | Bandeja Wallet, claim atómico y auto-confirmación conservadora (lista permitida de gasto; paridad con `fb63360`) | #16, #25 |
+| 10.4.4 RF18 (nuevo) | Bandeja Wallet, claim atómico y auto-confirmación conservadora (lista permitida de gasto; paridad con `fb63360`); cita de auditoría de código y pruebas diferenciales contra main (ronda 19/19) | #16, #25 |
 | 10.4.4 RF19 (nuevo) | MCP `/api/mcp` y REST `/api/v1/tools` | #17 |
 | 10.4.5 RNF02 | Degradación FX de fin de semana | #23 |
-| 10.4.5 RNF03 | Sesión o PAT; secreto no en claro; `integration_audit_log` con metadatos redactados | #16, #17, #25 |
+| 10.4.5 RNF03 | Sesión o PAT; secreto no en claro; `integration_audit_log` con metadatos redactados; la auditoría de código y pruebas diferenciales contra main no es pentest externo | #16, #17, #25 |
 | 10.4.5 RNF08 | Motivo de skip CAFCI sin cuerpo HTTP (`unparseable_ficha`, `daily_jump`, `older_than_stored`, …) | #24, #26 |
 | 10.4.6 RN01 | Calendario `America/Argentina/Cordoba` en bandeja/cuotas/`get_budget_status` | #25 |
 | 10.4.6 RN06 | Claim atómico de bandeja | #25 |
@@ -67,9 +67,9 @@ Esta nota cubre la entrega inicial (PR #27, sobre `f43d158`) y el seguimiento qu
 | 10.5.6 ADR10–ADR13 | PAT/Vault; bandeja atómica y auto-confirmación conservadora; frescura FX; cuotaparte CAFCI fail-closed y CAS | #16, #17, #23, #25, #26 |
 | 10.5.7 / 10.5.9 | Controles y firmas de líquido, PAT, bandeja, MCP | #15–#17, #25 |
 | 10.5.10 Trazabilidad | 19 RF | #16, #17, #25 |
-| 10.5.12 Pruebas | Corrida 26/10/2026 sobre `b7da00b`: 2424/2424 en 159 archivos; cobertura V8 2404/3079 sent. (78,07%); corpus Wallet r16–r18 y 10k+ ⊆ `fb63360`; tests CAFCI/CAS | #16, #17, #25, #26 |
+| 10.5.12 Pruebas | Corrida 26/10/2026 sobre `b7da00b`: 2424/2424 en 159 archivos; fila «auditoría de código y pruebas diferenciales contra main» (rondas 19/19 y 16/16; 6.742 escrituras; replays R16 9.252, R17 fresh 11.152 y foco 208; no pentest externo; 4.264 de pares sin confirmar) | #16, #17, #25, #26 |
 | 11.2 Formatos | Planilla financiera v2.13 conservada sin recálculo | — |
-| Anexo A | Next.js 15.5.28; migraciones 20261024–20261025; ficha CAFCI; `npm audit` actual sin confirmar | #16, #19, #25, #26 |
+| Anexo A | Next.js 15.5.28; migraciones 20261024–20261025; ficha CAFCI; bala de auditoría de código y pruebas diferenciales contra main (A.1 y A.7; 4.264 de pares sin confirmar); `npm audit` actual sin confirmar | #16, #19, #25, #26 |
 | Anexo E | PT13, PT14, ARQ-Componentes-Integraciones | #16, #17, #25 |
 
 ## Qué no se modificó
