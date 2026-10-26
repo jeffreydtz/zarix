@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { legacyWalletAmount } from '@/lib/integrations/legacy-wallet-amount';
 import {
   isWalletTimestampFresh,
   parseAmountFromText,
@@ -6,8 +7,10 @@ import {
   parseWalletText,
   parseWalletTimestamp,
 } from '@/lib/integrations/wallet-parse';
+import { integerCentsFromToken, numberToDecimalString } from '@/lib/money-amount';
 import r16MontoRegresion from './fixtures/wallet-r16-monto-regresion.json';
 import r17MarkerRegresion from './fixtures/wallet-r17-marker-regresion.json';
+import r18ColonRegresion from './fixtures/wallet-r18-colon-regresion.json';
 
 const CASES: Array<{ input: string; amount: number | null; ambiguous?: boolean; direction?: 'expense' | 'income' }> = [
   { input: '$ 12.500', amount: 12500, ambiguous: true },
@@ -759,65 +762,194 @@ describe('wallet amount parser (table)', () => {
     }
   });
 
-  it('keeps r16+r17 auto-confirm a subset of live-main writes (0 HEAD-only autos)', () => {
-    const verifiedCorrections: Array<{
-      json: Record<string, unknown>;
-      amount: number;
-      currency: string;
-      direction: 'expense' | 'income';
-    }> = [];
+  it('parks colon-after-marker prefixes for auto-confirm while still parsing the pending amount', () => {
+    const colon = parseAmountFromText('Pagaste ARS: 1500');
+    expect(colon.amount).toBe(1500);
+    expect(colon.currency).toBe('ARS');
+    expect(colon.ambiguous).toBe(true);
+    const space = parseAmountFromText('Pagaste ARS 1500');
+    expect(space.amount).toBe(1500);
+    expect(space.ambiguous).toBe(false);
+    for (const input of [
+      'Tampoco pagaste ARS: 1500',
+      'Pagaste un tercio de ARS: 1500',
+      'Pagaste ARS: 1500; total final 15000',
+    ]) {
+      expect(parseAmountFromText(input).ambiguous, input).toBe(true);
+      expect(parseWalletPayload({ text: input }).amountAmbiguous, input).toBe(true);
+      expect(parseWalletPayload({ json: { rawText: input } }).amountAmbiguous, input).toBe(true);
+    }
+  });
+
+  it('parks the r18 colon-marker regression corpus (402 unique payloads)', () => {
+    expect(r18ColonRegresion).toHaveLength(402);
+    for (const row of r18ColonRegresion as Array<{ id: string; text?: string; json?: Record<string, unknown> }>) {
+      const parsed = row.text
+        ? parseWalletPayload({ text: row.text })
+        : parseWalletPayload({ json: row.json });
+      expect(parsed.amountAmbiguous, row.id).toBe(true);
+    }
+  });
+
+  it('keeps r16+r17+r18 auto-confirm a subset of live-main writes (0 HEAD-only autos)', () => {
     const wouldAuto = (parsed: ReturnType<typeof parseWalletPayload>) =>
       !parsed.amountAmbiguous &&
       parsed.amount != null &&
       parsed.direction === 'expense' &&
       !parsed.currencyUnsupported;
 
-    const tally = (rows: Array<{ id: string; json: Record<string, unknown> }>) => {
+    const tallyJson = (rows: Array<{ id: string; json: Record<string, unknown> }>) => {
       let park = 0;
       let auto = 0;
-      let verified = 0;
       const violations: string[] = [];
       for (const { id, json } of rows) {
         const parsed = parseWalletPayload({ json });
+        if (!wouldAuto(parsed)) park += 1;
+        else {
+          auto += 1;
+          violations.push(id);
+        }
+      }
+      return { park, auto, violations: violations.length };
+    };
+    const tallyR18 = (rows: Array<{ id: string; text?: string; json?: Record<string, unknown> }>) => {
+      let park = 0;
+      let auto = 0;
+      const violations: string[] = [];
+      for (const row of rows) {
+        const parsed = row.text
+          ? parseWalletPayload({ text: row.text })
+          : parseWalletPayload({ json: row.json });
+        if (!wouldAuto(parsed)) park += 1;
+        else {
+          auto += 1;
+          violations.push(row.id);
+        }
+      }
+      return { park, auto, violations: violations.length };
+    };
+
+    const r16 = tallyJson(r16MontoRegresion as Array<{ id: string; json: Record<string, unknown> }>);
+    const r17 = tallyJson(r17MarkerRegresion as Array<{ id: string; json: Record<string, unknown> }>);
+    const r18 = tallyR18(r18ColonRegresion as Array<{ id: string; text?: string; json?: Record<string, unknown> }>);
+    expect({
+      r16Park: r16.park,
+      r16Auto: r16.auto,
+      r16Violations: r16.violations,
+      r17Park: r17.park,
+      r17Auto: r17.auto,
+      r17Violations: r17.violations,
+      r18Park: r18.park,
+      r18Auto: r18.auto,
+      r18Violations: r18.violations,
+    }).toEqual({
+      r16Park: 213,
+      r16Auto: 0,
+      r16Violations: 0,
+      r17Park: 160,
+      r17Auto: 0,
+      r17Violations: 0,
+      r18Park: 402,
+      r18Auto: 0,
+      r18Violations: 0,
+    });
+  });
+
+  it('HEAD auto-confirm with rawText ⊆ fb63360 extraction (10k+ generated corpus)', () => {
+    const markers = ['ARS', 'USD', 'EUR', 'U$S', 'US$', '$', 'AR$', 'U$D'];
+    const seps = [' ', ': ', ':', ' : ', ':  ', '\u00a0:\u2009'];
+    const nums = ['1500', '1.500', '15', '12.50', '1.250,50', '15000', '3.500', '10', '8.000', '0,99'];
+    const templates = [
+      'Pagaste {m}',
+      'Tampoco pagaste {m}',
+      'Ni pagaste {m}',
+      'Pagaste un tercio de {m}',
+      'Pagaste {m}; total final 15000',
+      'Pagaste {m} tres veces',
+      'No se pagó {m}',
+      'En caso de que pagaste {m}',
+      'Si hubieses pagado {m}',
+      'Pagaste {m} en COTO',
+      'Compra aprobada {m}',
+      'Abonaste {m}',
+      'Transferiste {m}',
+      'Compraste en COTO por {m}',
+      'Pagaste con saldo {m} en COTO',
+    ];
+    const wraps = [(s: string) => s, (s: string) => `Comercio: COTO\ntarjeta Visa\n${s}`];
+    const corpus = new Set<string>();
+    for (const tpl of templates) {
+      for (const marker of markers) {
+        for (const sep of seps) {
+          for (const n of nums) {
+            const token = marker === '$' ? `$${sep.replace(/^ /, '')}${n}` : `${marker}${sep}${n}`;
+            const body = tpl.replace('{m}', token);
+            for (const wrap of wraps) corpus.add(wrap(body));
+          }
+        }
+      }
+    }
+    expect(corpus.size).toBeGreaterThanOrEqual(10_000);
+
+    const centsOf = (n: number): number | null => {
+      const token = numberToDecimalString(n);
+      const cents = token ? integerCentsFromToken(token) : null;
+      return cents == null ? null : Number(cents);
+    };
+    const wouldAuto = (parsed: ReturnType<typeof parseWalletPayload>) =>
+      !parsed.amountAmbiguous &&
+      parsed.amount != null &&
+      parsed.direction === 'expense' &&
+      !parsed.currencyUnsupported;
+
+    let auto = 0;
+    let park = 0;
+    for (const text of corpus) {
+      for (const parsed of [parseWalletPayload({ text }), parseWalletPayload({ json: { rawText: text } })]) {
         if (!wouldAuto(parsed)) {
           park += 1;
           continue;
         }
         auto += 1;
-        const listed = verifiedCorrections.find(
-          (row) =>
-            JSON.stringify(row.json) === JSON.stringify(json) &&
-            row.amount === parsed.amount &&
-            row.currency === parsed.currency &&
-            row.direction === parsed.direction
-        );
-        if (listed) verified += 1;
-        else violations.push(id);
+        const legacy = legacyWalletAmount(text);
+        expect(legacy.amount, text).not.toBeNull();
+        expect(legacy.ambiguous, text).toBe(false);
+        expect(legacy.currencyUnsupported, text).toBe(false);
+        expect(centsOf(parsed.amount!), text).toBe(centsOf(legacy.amount!));
+        expect(parsed.currency, text).toBe(legacy.currency);
+        expect(parsed.direction, text).toBe(legacy.direction);
       }
-      return { park, auto, verified, violations };
-    };
+    }
+    expect(auto + park).toBe(corpus.size * 2);
+    expect(park).toBeGreaterThan(0);
+  });
 
-    const r16 = tally(r16MontoRegresion as Array<{ id: string; json: Record<string, unknown> }>);
-    const r17 = tally(r17MarkerRegresion as Array<{ id: string; json: Record<string, unknown> }>);
-    expect({
-      r16Park: r16.park,
-      r16Auto: r16.auto,
-      r16Verified: r16.verified,
-      r16Violations: r16.violations.length,
-      r17Park: r17.park,
-      r17Auto: r17.auto,
-      r17Verified: r17.verified,
-      r17Violations: r17.violations.length,
-    }).toEqual({
-      r16Park: 213,
-      r16Auto: 0,
-      r16Verified: 0,
-      r16Violations: 0,
-      r17Park: 160,
-      r17Auto: 0,
-      r17Verified: 0,
-      r17Violations: 0,
-    });
+  it('keeps Kael 12 real notifications auto-confirmable at the parser', () => {
+    const twelve = [
+      { rawText: 'Pagaste $ 3.500', amount: 3500, currency: 'ARS' },
+      { rawText: 'Compraste en COTO por $ 1.250,50', amount: 1250.5, currency: 'ARS' },
+      { rawText: '25/10 12:30 Pagaste $ 1.250,50', amount: 1250.5, currency: 'ARS' },
+      { rawText: 'Transferiste $ 8.000', amount: 8000, currency: 'ARS' },
+      { rawText: 'Pagaste con saldo $ 1.500 en COTO', amount: 1500, currency: 'ARS' },
+      { rawText: 'Compra aprobada US$ 12.50', amount: 12.5, currency: 'USD' },
+      { rawText: 'Abonaste USD 10', amount: 10, currency: 'USD' },
+      { rawText: 'Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.', amount: 5000, currency: 'ARS' },
+      { rawText: 'Abonaste USD $10', amount: 10, currency: 'USD' },
+      { rawText: 'Abonaste EUR $10', amount: 10, currency: 'EUR' },
+      { rawText: 'Pagaste $10 US$', amount: 10, currency: 'USD' },
+      { rawText: 'Pagaste $ 10 US$ en COTO', amount: 10, currency: 'USD' },
+    ];
+    expect(twelve).toHaveLength(12);
+    let auto = 0;
+    for (const { rawText, amount, currency } of twelve) {
+      const parsed = parseWalletPayload({ text: rawText });
+      expect(parsed.amountAmbiguous, rawText).toBe(false);
+      expect(parsed.amount, rawText).toBe(amount);
+      expect(parsed.currency, rawText).toBe(currency);
+      expect(parsed.direction, rawText).toBe('expense');
+      auto += 1;
+    }
+    expect(auto).toBe(12);
   });
 
   it('parks r15 deny roots, URLs, quotes, unicode splitters, accounting and national currencies', () => {

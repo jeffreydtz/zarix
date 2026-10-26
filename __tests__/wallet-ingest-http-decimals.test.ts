@@ -1008,4 +1008,38 @@ describe('Wallet HTTP ingest decimal precision', () => {
     expect(match.captured.row?.amount_ambiguous).toBe(false);
     expect(match.captured.row?.currency).toBe('ARS');
   });
+
+  it('parks r18 colon-after-marker regressions over HTTP and keeps Kael 12 AUTO', async () => {
+    const parkPlain = [
+      'Tampoco pagaste ARS: 1500',
+      'Pagaste un tercio de ARS: 1500',
+      'Pagaste ARS: 1500; total final 15000',
+      'Pagaste ARS: 1500',
+    ];
+    for (const [i, rawText] of parkPlain.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r18-plain-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.autoConfirmed, rawText).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(true);
+      expect(mocks.execute, rawText).not.toHaveBeenCalled();
+    }
+    for (const [i, rawText] of parkPlain.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r18-json-${i}`,
+        body: JSON.stringify({ rawText, merchant: 'COTO', cardName: 'tarjeta Visa' }),
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.autoConfirmed, rawText).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(true);
+      expect(mocks.execute, rawText).not.toHaveBeenCalled();
+    }
+  });
 });

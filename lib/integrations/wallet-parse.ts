@@ -1,4 +1,5 @@
 import { parseTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { legacyWalletAmount } from '@/lib/integrations/legacy-wallet-amount';
 import {
   extractTopLevelJsonAmount,
   integerCentsFromToken,
@@ -192,7 +193,7 @@ const URL_EMAIL_RE = /https?:\/\/\S+|www\.\S+|\S+@\S+/gi;
 const URL_EMAIL_PRESENT_RE = /https?:\/\/\S+|www\.\S+|\S+@\S+/i;
 const QUOTE_RE = /[“”«»"']/;
 const HARD_DENY_RE =
-  /\breintegr|\bdevol|\bdevuelt|\breembols|\brembols|\brefund|\brevers|\bcontracargo|\bcr[eé]dit|\bacredit|\bcashback|\brecib|\bcobr|transfirieron|no\s+(?:fue\s+)?aprobad[oa]|no\s+realiz|no\s+autoriz|\brechaz|\bdeneg|\bdeclin|\bfall|\banul|\bcancel|sin\s+fondos|\bm[ií]nimo|\ba\s+pagar\b|\bvencim|\bvenc|\bprogram|en\s+proceso|\bpendient|preautoriz|\breserva|\bretenc|\bintento|\bahorr|\bdescuent|\bpropina|por\s+mes|\/mes|\bsaldo\b|\bdisponible\b|\bl[ií]mite\b|\bcuota|\bIVA\b|I\.V\.A|c\s*\/\s*u\b|\bdesde\b|\bhasta\b|available\s+balance|no\s+(?:pag[aá]ste|compr[aá]ste|transferiste|abonaste|consumiste)|si\s+(?:pag[aá]ste|compr[aá]ste)|\bseña\b|\badelanto\b|\bimpuesto|\bbonific|\binter[eé]s|\brecord|\bresumen\b|\baviso\b|\bnunca\b|\bjam[aá]s\b|sin\s+pagar|si\s+hubieras?|\bdos\s+veces\b|parte\s+de|\bincluye\b|\benv[ií]o\b|no\s*,|la\s+mitad|\bte\s+debe|\bCR\b|\d+\s*%/i;
+  /\breintegr|\bdevol|\bdevuelt|\breembols|\brembols|\brefund|\brevers|\bcontracargo|\bcr[eé]dit|\bacredit|\bcashback|\brecib|\bcobr|transfirieron|no\s+(?:fue\s+)?aprobad[oa]|no\s+realiz|no\s+autoriz|\brechaz|\bdeneg|\bdeclin|\bfall|\banul|\bcancel|sin\s+fondos|\bm[ií]nimo|\ba\s+pagar\b|\bvencim|\bvenc|\bprogram|en\s+proceso|\bpendient|preautoriz|\breserva|\bretenc|\bintento|\bahorr|\bdescuent|\bpropina|por\s+mes|\/mes|\bsaldo\b|\bdisponible\b|\bl[ií]mite\b|\bcuota|\bIVA\b|I\.V\.A|c\s*\/\s*u\b|\bdesde\b|\bhasta\b|available\s+balance|no\s+(?:pag[aá]ste|compr[aá]ste|transferiste|abonaste|consumiste)|si\s+(?:pag[aá]ste|compr[aá]ste)|\bseña\b|\badelanto\b|\bimpuesto|\bbonific|\binter[eé]s|\brecord|\bresumen\b|\baviso\b|\bnunca\b|\bjam[aá]s\b|sin\s+pagar|si\s+hubieras?|si\s+hubieses|\bdos\s+veces\b|tres\s+veces|\btercio\b|parte\s+de|\bincluye\b|\benv[ií]o\b|\btampoco\b|\bni\b|no\s+se\s+pag|en\s+caso\s+de|total\s+final|no\s*,|la\s+mitad|\bte\s+debe|\bCR\b|\d+\s*%/i;
 const INSTALLMENT_RE = /\bcuotas?\b|\b\d+\s*x\s*\d*\b|\bx\s*\d+\b/i;
 const GLUED_DATE_TIME_RE = /^(?:[:/]\s*\d|\s*[:/-]\s*\d)/;
 const GLUED_DATE_TIME_SPAN_RE = /^(?:[:/]\s*\d+|\s*[:/-]\s*\d+)+/;
@@ -374,6 +375,8 @@ type MarkedAmount = {
   code: 'ARS' | 'USD' | 'EUR' | null;
   marker: string;
   hasPrefix: boolean;
+  /** Live main does not treat `ARS:` / `USD:` as a prefix marker. */
+  colonAfterMarker: boolean;
   start: number;
   end: number;
   after: string;
@@ -401,6 +404,8 @@ function scanMarkedAmounts(text: string): {
     let tokenEnd = m.index + m[0].length;
     const after = stripped.slice(tokenEnd);
     const prefixMarker = m[2] || m[3] || '';
+    const prefixSpan = stripped.slice(m.index, m.index + m[0].length - group4.length);
+    const colonAfterMarker = Boolean(m[2]) && /:/.test(prefixSpan);
     const markedHere = Boolean(prefixMarker) || MARKER_SUFFIX_RE.test(after.trimStart());
     if (/^[eExX]/.test(after) || GLUED_DATE_TIME_RE.test(after)) {
       if (markedHere) invalidMarked = true;
@@ -479,6 +484,7 @@ function scanMarkedAmounts(text: string): {
       code,
       marker,
       hasPrefix: Boolean(prefixMarker),
+      colonAfterMarker,
       start: m.index,
       end: consumedEnd,
       after: afterAmount,
@@ -544,9 +550,10 @@ function evidenceFromScan(
  * Allowlist Wallet free-text gate. A candidate counts only with an explicit
  * currency marker and a fully valid token. Auto-confirm requires exactly one
  * PREFIX-marked candidate using a live-main marker (`ARS|USD|EUR|U$S|US$|$`)
- * AND a completed past-tense template in the same sentence, with no
- * denylist/income signal. `AR$` / `U$D` and suffix markers (`15 USD`) are
- * parsed as pending/suggested evidence but never auto-confirm free text.
+ * with no colon after the marker AND a completed past-tense template in the
+ * same sentence, with no denylist/income signal. `AR$` / `U$D`, `ARS:`-style
+ * colon prefixes, and suffix markers (`15 USD`) are parsed as pending/suggested
+ * evidence but never auto-confirm free text.
  */
 export function parseAmountFromText(text: string): AmountParseResult {
   const scan = scanMarkedAmounts(text);
@@ -585,6 +592,7 @@ export function parseAmountFromText(text: string): AmountParseResult {
   const allow =
     preferred.hasPrefix &&
     isAutoConfirmMarker(preferred.marker) &&
+    !preferred.colonAfterMarker &&
     !preferred.signed &&
     !leftover &&
     !disagree &&
@@ -761,6 +769,7 @@ function jsonAmountCorroboratedByText(input: {
   if (scan.invalidMarked || scan.valid.length !== 1) return false;
   const preferred = scan.valid[0]!;
   if (!isAutoConfirmMarker(preferred.marker)) return false;
+  if (preferred.colonAfterMarker) return false;
   if (preferred.signed) return false;
   if (hasUnattachedMarker(scan.stripped, preferred.start, preferred.end)) return false;
   if (currencyWordDisagrees(scan.src, preferred.currency)) return false;
@@ -776,6 +785,24 @@ function jsonAmountCorroboratedByText(input: {
   const textEffective = preferred.code ?? ACCOUNT_DEFAULT_CURRENCY;
   const jsonCur = input.jsonCurrency ?? ACCOUNT_DEFAULT_CURRENCY;
   return textEffective === jsonCur;
+}
+
+/** HEAD may auto-confirm rawText only when fb63360 extracts the same money. */
+function rawTextAgreesWithLegacy(input: {
+  amount: number;
+  currency: string;
+  direction: 'expense' | 'income';
+  text: string;
+}): boolean {
+  const legacy = legacyWalletAmount(input.text);
+  if (legacy.amount == null || legacy.ambiguous || legacy.currencyUnsupported) return false;
+  const headCents = amountCents(input.amount);
+  const legacyCents = amountCents(legacy.amount);
+  if (headCents == null || legacyCents == null || headCents !== legacyCents) return false;
+  const headCur = input.currency || ACCOUNT_DEFAULT_CURRENCY;
+  const legacyCur = legacy.currency || ACCOUNT_DEFAULT_CURRENCY;
+  if (headCur !== legacyCur) return false;
+  return legacy.direction === input.direction;
 }
 
 /**
@@ -851,7 +878,7 @@ export function parseWalletPayload(input: {
     Boolean(fullText) && (currency === 'ARS' || currency === 'USD' || currency === 'EUR')
       ? currencyWordDisagrees(fullText!, currency)
       : false;
-  const amountAmbiguous =
+  let amountAmbiguous =
     currencyUnsupported ||
     jsonExcessDecimals ||
     extracted.duplicate ||
@@ -866,13 +893,29 @@ export function parseWalletPayload(input: {
         ? true
         : fromText.amountAmbiguous);
 
+  const writeAmount =
+    extracted.duplicate || jsonExcessDecimals
+      ? null
+      : jsonAmountUsable && jsonAmount
+        ? jsonAmount.amount
+        : fromText.amount;
+  const writeDirection = jsonAmountUsable && jsonAmount ? jsonAmount.direction : fromText.direction;
+  if (
+    textPresent &&
+    !amountAmbiguous &&
+    writeAmount != null &&
+    !rawTextAgreesWithLegacy({
+      amount: writeAmount,
+      currency,
+      direction: writeDirection,
+      text: truncated!,
+    })
+  ) {
+    amountAmbiguous = true;
+  }
+
   return {
-    amount:
-      extracted.duplicate || jsonExcessDecimals
-        ? null
-        : jsonAmountUsable && jsonAmount
-          ? jsonAmount.amount
-          : fromText.amount,
+    amount: writeAmount,
     currency,
     merchant: (json ? str(json.merchant ?? json.comercio ?? json.name) : null) ?? fromText.merchant,
     cardName: (json ? str(json.cardName ?? json.card ?? json.tarjeta ?? json.account) : null) ?? fromText.cardName,
