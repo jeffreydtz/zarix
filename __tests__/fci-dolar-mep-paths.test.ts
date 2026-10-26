@@ -99,7 +99,7 @@ function stubCafci(moneda: string) {
           <h3>Valores al ${cafciValoresAlLabel()}</h3>
           <p>Valor por cada cuotaparte: 1,098</p>
         </div>
-        <span class="label">Moneda:</span> ${moneda}
+        <div id="fichaRight"><span class="label">Moneda:</span> ${moneda}</div>
       </body></html>`;
       return {
         ok: true,
