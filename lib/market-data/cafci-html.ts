@@ -22,12 +22,16 @@
  * External and class-based CSS cannot be checked and is an accepted limit.
  *
  * Text values come only from text nodes whose direct parent is allowlisted and
- * visible. Visibility filtering never shortens a NAV: the node-vs-block
- * cross-check concatenates ALL descendant text of the NAV paragraph and of
- * `#cuotaparte` (hidden, aria-hidden, inert, display:none included). In the
- * NAV label element only, after the matched token skip `\s`/`\p{Zs}`/Cf; a
- * following letter, digit, mark, comma or dot skips. Unicode Cf/format
- * characters (ZWSP, BOM/U+FEFF, bidi, soft hyphens) are stripped
+ * visible. One rendered visible-text string is built for `#cuotaparte` (and for
+ * each Moneda block): the same visibility rules, with block boundaries and
+ * `<br>` as whitespace. After a NAV token skip `[\p{Zs}\s\p{Cf}]*`; a following
+ * letter, digit, `.`, `,` or `-` skips. Only `(` or end-of-string is allowed,
+ * wrapper-independent. The same tail rule runs on the `Valores al` date's
+ * containing block; leftover digits after the date in the section also skip.
+ * Hidden/non-allowlisted nodes never terminate a token: if one sits inside the
+ * token (or between it and further visible digits/letters), skip. The
+ * unfiltered descendant-text cross-check must yield the same token. Unicode
+ * Cf/format characters (ZWSP, BOM/U+FEFF, bidi, soft hyphens) are stripped
  * before any whitespace normalization so they never become a space. iframe/
  * raw-text, `<base href>`, `<meta http-equiv=refresh>`, and non-whitespace
  * after `</html>` fail closed (live fichas have none of those except a trailing
@@ -46,14 +50,12 @@ import { parseCafciDateLabel } from '@/lib/market-data/fci-nav-freshness';
 
 export const CAFCI_NAV_TOKEN = /^(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d+)?$/;
 const NAV_TOKEN_PREFIX = /^(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d+)?/;
-const VALORES_AL = /^Valores al\s+(\d{2}\/\d{2}\/\d{4})$/i;
 const CUOTAPARTE_LABEL = /^Valor por cada cuotaparte:\s*(.*)$/i;
-const MONEDA_LABEL = /^Moneda:\s*(.*)$/i;
 const RAW_TEXT_OR_FRAME = 'iframe, noembed, noframes, plaintext, xmp, textarea, title';
 const DMY = /(?<!\d)(\d{2}\/\d{2}\/\d{4})(?!\d)/g;
 const FORMAT_CHARS = /\p{Cf}/gu;
-const BOUNDARY_CONTINUE = /[\p{L}\p{N}\p{M}.,]/u;
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
+const DATE_TAIL_CONTINUE = /[\p{N}.,\-\/]/u;
 
 /**
  * Live-ficha ancestor tags plus equivalent visible HTML content wrappers.
@@ -242,17 +244,43 @@ function normalizeFichaText(text: string): string {
 }
 
 const TAIL_GAP = /[\s\p{Zs}\p{Cf}]/u;
-const VALID_DISPLAY = new Set([
-  'none', 'block', 'inline', 'inline-block', 'flex', 'inline-flex',
-  'grid', 'inline-grid', 'contents', 'table', 'table-row', 'table-cell',
-  'list-item', 'flow-root', 'initial', 'inherit', 'unset', 'revert', 'revert-layer',
+/** CSS Display 3 keywords, including two-value `outside inside` tokens. */
+const DISPLAY_KEYWORDS = new Set([
+  'none', 'contents',
+  'block', 'inline', 'run-in',
+  'flow', 'flow-root', 'table', 'flex', 'grid', 'ruby',
+  'list-item',
+  'table-row-group', 'table-header-group', 'table-footer-group',
+  'table-row', 'table-cell', 'table-column-group', 'table-column', 'table-caption',
+  'ruby-base', 'ruby-text', 'ruby-base-container', 'ruby-text-container',
+  'inline-block', 'inline-table', 'inline-flex', 'inline-grid',
+  'initial', 'inherit', 'unset', 'revert', 'revert-layer',
 ]);
 const VALID_VISIBILITY = new Set([
   'visible', 'hidden', 'collapse', 'initial', 'inherit', 'unset', 'revert', 'revert-layer',
 ]);
+const BLOCK_TAGS = new Set([
+  'html', 'body', 'div', 'section', 'main', 'header', 'article', 'aside', 'nav', 'footer',
+  'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p',
+  'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th',
+  'ul', 'ol', 'li', 'blockquote', 'pre', 'hr', 'fieldset', 'address',
+]);
+const MONEDA_WHITELIST_FOLD = new Set([
+  'PESO ARGENTINA',
+  'DOLAR ESTADOUNIDENSE',
+  'DOLAR ESTADOUNIDENSE BILLETE',
+]);
+
+function isValidDisplay(value: string): boolean {
+  const tokens = value.trim().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return false;
+  if (tokens.some((token) => !DISPLAY_KEYWORDS.has(token))) return false;
+  if (tokens.includes('none') || tokens.includes('contents')) return tokens.length === 1;
+  return true;
+}
 
 function isValidInlineValue(prop: string, value: string): boolean {
-  if (prop === 'display') return VALID_DISPLAY.has(value);
+  if (prop === 'display') return isValidDisplay(value);
   if (prop === 'visibility') return VALID_VISIBILITY.has(value);
   return true;
 }
@@ -294,9 +322,92 @@ function allowlistedText($: CheerioAPI, root: AnyNode): string {
   return normalizeFichaText(bits.join(''));
 }
 
-/** All descendant text nodes, including hidden/aria-hidden/inert/display:none. */
-function descendantTextUnfiltered(root: AnyNode): string {
-  return normalizeFichaText(descendantTextRaw(root));
+type RenderedText = { text: string; skips: number[] };
+
+function isBlockElement(el: Element): boolean {
+  return isBlockTag(el.name.toLowerCase());
+}
+
+function isBlockTag(name: string): boolean {
+  return BLOCK_TAGS.has(name);
+}
+
+function containingBlock(el: Element): Element {
+  let node: AnyNode | null = el;
+  while (node) {
+    if (isElement(node) && isBlockTag(node.name.toLowerCase())) return node;
+    node = parentOf(node);
+  }
+  return el;
+}
+
+function elementChildren(node: AnyNode): AnyNode[] {
+  return 'children' in node && Array.isArray(node.children) ? node.children : [];
+}
+
+/**
+ * Document-order visible (or unfiltered) text. Block boundaries and `<br>`
+ * become a space. Cf is stripped on emit. `skips` are visible-string offsets
+ * where a hidden or non-allowlisted subtree sat.
+ */
+function renderedText($: CheerioAPI, root: AnyNode, mode: 'visible' | 'unfiltered'): RenderedText {
+  const bits: string[] = [];
+  const skips: number[] = [];
+  let length = 0;
+
+  const emit = (chunk: string): void => {
+    if (!chunk) return;
+    bits.push(chunk);
+    length += chunk.length;
+  };
+
+  const walk = (node: AnyNode): void => {
+    if (node.type === 'text') {
+      if (mode === 'visible' && !textParentAllowed($, node)) return;
+      emit(stripFormatChars(textData(node)));
+      return;
+    }
+    if (!isElement(node)) return;
+    const name = node.name.toLowerCase();
+    if (name === 'br') {
+      emit(' ');
+      return;
+    }
+    if (name === 'script' || name === 'style') {
+      if (mode === 'unfiltered') emit(stripFormatChars(textData(node) || $(node).text()));
+      else skips.push(length);
+      return;
+    }
+    if (mode === 'visible' && (!isAllowedElement(node) || hiddenChain($, node))) {
+      skips.push(length);
+      return;
+    }
+    const block = isBlockElement(node) && node !== root;
+    if (block) emit(' ');
+    for (const child of elementChildren(node)) walk(child);
+    if (block) emit(' ');
+  };
+
+  walk(root);
+  return { text: bits.join(''), skips };
+}
+
+function renderedVisible($: CheerioAPI, root: AnyNode): RenderedText {
+  return renderedText($, root, 'visible');
+}
+
+function renderedUnfiltered($: CheerioAPI, root: AnyNode): RenderedText {
+  return renderedText($, root, 'unfiltered');
+}
+
+function tailIsParenOrEof(text: string, index: number): boolean {
+  const i = skipTailGap(text, index);
+  if (i >= text.length) return true;
+  return nextCodePoint(text, i) === '(';
+}
+
+function skipInsideToken(skips: number[], tokenStart: number, tokenEnd: number): boolean {
+  return skips.some((offset) => offset > tokenStart && offset < tokenEnd);
 }
 
 function descendantTextRaw(root: AnyNode): string {
@@ -409,10 +520,6 @@ function nextCodePoint(text: string, index: number): string | undefined {
   return String.fromCodePoint(cp);
 }
 
-function tokenContinues(next: string | undefined): boolean {
-  return Boolean(next && BOUNDARY_CONTINUE.test(next));
-}
-
 function skipTailGap(text: string, index: number): number {
   let i = index;
   while (i < text.length) {
@@ -468,15 +575,53 @@ function hasNonWhitespaceAfterHtml(html: string): boolean {
   return html.slice(close + '</html>'.length).trim() !== '';
 }
 
-function extractMonedaValues(blob: string): string[] {
-  const labels = [...blob.matchAll(/Moneda:/g)];
+function extractMonedaValues(blob: string, skips: number[] = []): string[] {
+  const labels = [...blob.matchAll(/Moneda:/gi)];
   const values: string[] = [];
   for (let i = 0; i < labels.length; i++) {
     const start = (labels[i].index ?? 0) + labels[i][0].length;
     const end = i + 1 < labels.length ? (labels[i + 1].index ?? blob.length) : blob.length;
+    if (skips.some((offset) => offset >= start && offset <= end)) {
+      values.push('\u0000');
+      continue;
+    }
     const value = normalizeFichaText(blob.slice(start, end));
     if (value) values.push(value);
   }
+  return values;
+}
+
+function isWhitelistedMoneda(label: string): boolean {
+  return MONEDA_WHITELIST_FOLD.has(foldMoneda(label));
+}
+
+function documentMonedaValues($: CheerioAPI): string[] {
+  const values: string[] = [];
+  const seen = new Set<Element>();
+  const root = $.root()[0];
+  walkEveryNode(root, (node) => {
+    if (isElement(node) && attrCi($, node, 'id') === 'cartera') return 'skip-children';
+    if (node.type === 'script' || node.type === 'style') {
+      values.push(...extractMonedaValues(textData(node) || $(node).text()));
+      return 'skip-children';
+    }
+    if (node.type === 'comment') {
+      values.push(...extractMonedaValues(textData(node)));
+      return;
+    }
+    if (node.type !== 'text') return;
+    const raw = textData(node);
+    if (!/Moneda:/i.test(raw)) return;
+    const parent = parentOf(node);
+    if (!parent || !isElement(parent)) {
+      values.push(...extractMonedaValues(raw));
+      return;
+    }
+    const block = containingBlock(parent);
+    if (seen.has(block)) return;
+    seen.add(block);
+    values.push(...extractMonedaValues(descendantTextRaw(block)));
+  });
   return values;
 }
 
@@ -493,7 +638,6 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
 
   let navDom = 0;
   let valoresDom = 0;
-  const monedaBits: string[] = [];
   const root = $.root()[0];
   walkEveryNode(root, (node) => {
     if (isElement(node) && attrCi($, node, 'id') === 'cartera') return 'skip-children';
@@ -501,7 +645,6 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
       const raw = textData(node) || $(node).text();
       navDom += countRe(raw, /por cada cuotaparte/gi);
       valoresDom += countRe(raw, /Valores al\s+/gi);
-      monedaBits.push(raw);
       return 'skip-children';
     }
     if (node.type !== 'text' && node.type !== 'comment') return;
@@ -509,14 +652,14 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
     if (!raw) return;
     navDom += countRe(raw, /por cada cuotaparte/gi);
     valoresDom += countRe(raw, /Valores al\s+/gi);
-    monedaBits.push(raw);
   });
   if (navDom !== 1 || countRaw(html, /por cada cuotaparte/gi) !== 1) return false;
   if (valoresDom !== 1) return false;
-  const monedaValues = extractMonedaValues(monedaBits.join(''));
+  const monedaValues = documentMonedaValues($);
   if (monedaValues.length === 0) return false;
   const uniqueMoneda = uniqueMonedaLabels(monedaValues);
-  if (uniqueMoneda.length === 0 || !currenciesAgree(uniqueMoneda[0], uniqueMoneda)) return false;
+  if (uniqueMoneda.length === 0 || uniqueMoneda.some((label) => !isWhitelistedMoneda(label))) return false;
+  if (!currenciesAgree(uniqueMoneda[0], uniqueMoneda)) return false;
   return true;
 }
 
@@ -570,89 +713,122 @@ function parseIdentity(
   return { fondoId: fundForm.fondoId, claseId };
 }
 
-function navTokenFromSectionText(text: string): string | null {
+/**
+ * NAV token from rendered (or unfiltered) text. After the match, skip Zs/Cf/`\s`.
+ * Only `(` or end-of-string is allowed. A skip offset inside the token means a
+ * hidden/non-allowlisted node sat between digits and is not a terminator.
+ */
+function navTokenFromRendered(text: string, skips: number[] = []): string | null {
   const stripped = stripFormatChars(text);
   const mentions = stripped.match(/por cada cuotaparte/gi);
   if (!mentions || mentions.length !== 1) return null;
   const labelled = stripped.match(/Valor por cada cuotaparte:\s*/i);
   if (!labelled || labelled.index == null) return null;
-  const rest = stripped.slice(labelled.index + labelled[0].length).trimStart();
-  const token = rest.match(NAV_TOKEN_PREFIX);
+  const tokenAt = skipTailGap(stripped, labelled.index + labelled[0].length);
+  const token = stripped.slice(tokenAt).match(NAV_TOKEN_PREFIX);
   if (!token) return null;
-  const next = nextCodePoint(rest, token[0].length);
-  if (tokenContinues(next)) return null;
+  const tokenEnd = tokenAt + token[0].length;
+  if (skipInsideToken(skips, tokenAt, tokenEnd)) return null;
+  if (!tailIsParenOrEof(stripped, tokenEnd)) return null;
   return token[0];
 }
 
-/** Paragraph (or the labelled node) that holds `Valor por cada cuotaparte`, not `#cuotaparte`. */
-function navLabelScope(el: Element, section: Element): Element {
-  let node: AnyNode | null = el;
-  while (node && node !== section) {
-    if (isElement(node) && node.name.toLowerCase() === 'p') return node;
-    node = parentOf(node);
-  }
-  return el;
-}
-
-/**
- * Unfiltered label-element token. After the match, skip Zs/Cf/`\s`; a following
- * letter, digit, mark, comma or dot means the visible token was truncated.
- */
-function navTokenFromLabelRaw(raw: string): string | null {
-  const text = stripFormatChars(raw);
-  const mentions = text.match(/por cada cuotaparte/gi);
+function dateFromRendered(
+  text: string,
+  skips: number[],
+  tail: 'paren-or-eof' | 'no-numeric-continue',
+): string | null {
+  const stripped = stripFormatChars(text);
+  const mentions = stripped.match(/Valores al\s+/gi);
   if (!mentions || mentions.length !== 1) return null;
-  const labelled = text.match(/Valor por cada cuotaparte:\s*/i);
+  const labelled = stripped.match(/Valores al\s+(\d{2}\/\d{2}\/\d{4})/i);
   if (!labelled || labelled.index == null) return null;
-  const afterLabel = text.slice(labelled.index + labelled[0].length);
-  const rest = afterLabel.slice(skipTailGap(afterLabel, 0));
-  const token = rest.match(NAV_TOKEN_PREFIX);
-  if (!token) return null;
-  const next = nextCodePoint(rest, skipTailGap(rest, token[0].length));
-  if (tokenContinues(next)) return null;
-  return token[0];
+  const date = labelled[1];
+  const dateStart = labelled.index + labelled[0].length - date.length;
+  const dateEnd = labelled.index + labelled[0].length;
+  if (skipInsideToken(skips, dateStart, dateEnd)) return null;
+  const nextAt = skipTailGap(stripped, dateEnd);
+  const next = nextCodePoint(stripped, nextAt);
+  if (tail === 'paren-or-eof') {
+    if (next != null && next !== '(') return null;
+  } else if (next && DATE_TAIL_CONTINUE.test(next)) {
+    return null;
+  }
+  return date;
+}
+
+function sectionHasCssContentReplacement($: CheerioAPI, root: Element): boolean {
+  let found = false;
+  walkEveryNode(root, (node) => {
+    if (found || !isElement(node)) return;
+    const decls = parseInlineStyleDeclarations($(node).attr('style') ?? '');
+    const content = decls.get('content');
+    if (!content || content === 'none' || content === 'normal' || content === 'initial'
+      || content === 'inherit' || content === 'unset' || content === 'revert' || content === 'revert-layer') {
+      return;
+    }
+    found = true;
+  });
+  return found;
 }
 
 function parseNavPrice($: CheerioAPI, section: Element): number | null {
   const nodes = innermostIn($, section, (el) => /Valor por cada cuotaparte:/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
   const el = nodes[0];
+  const visible = renderedVisible($, section);
+  const token = navTokenFromRendered(visible.text, visible.skips);
+  if (!token || !CAFCI_NAV_TOKEN.test(token)) return null;
+  const unfiltered = navTokenFromRendered(renderedUnfiltered($, section).text);
+  if (!unfiltered || unfiltered !== token) return null;
+  if (sectionHasCssContentReplacement($, section)) return null;
+
   const own = stripFormatChars(directText($, el));
   const labelled = own.match(CUOTAPARTE_LABEL);
-  let token = labelled ? labelled[1].trim() : '';
+  let nodeToken = labelled ? labelled[1].trim() : '';
   let remainder = '';
   const inner = decodeCommaEntities($(el).html() ?? '');
   const innerMatch = inner.match(/Valor por cada cuotaparte:\s*/i);
   if (innerMatch && innerMatch.index != null) {
     remainder = inner.slice(innerMatch.index + innerMatch[0].length);
   }
-  if (!token) {
-    token = normalizeFichaText(followingText($, el));
+  if (!nodeToken) {
+    nodeToken = normalizeFichaText(followingText($, el));
     remainder = followingSiblingHtml($, el);
   }
-  if (!token || !CAFCI_NAV_TOKEN.test(token)) return null;
-  if (!remainderHasBareNavToken(remainder, token)) return null;
-  const nodePrice = parseArgentineNumber(token);
-  if (nodePrice == null || !Number.isFinite(nodePrice) || nodePrice <= 0) return null;
+  if (nodeToken) {
+    if (!CAFCI_NAV_TOKEN.test(nodeToken) || nodeToken !== token) return null;
+    if (!remainderHasBareNavToken(remainder, nodeToken)) return null;
+  } else {
+    const blockInner = decodeCommaEntities($(containingBlock(el)).html() ?? '');
+    const blockMatch = blockInner.match(/Valor por cada cuotaparte:\s*/i);
+    if (!blockMatch || blockMatch.index == null) return null;
+    if (!remainderHasBareNavToken(blockInner.slice(blockMatch.index + blockMatch[0].length), token)) {
+      return null;
+    }
+  }
 
-  const nodeToken = navTokenFromLabelRaw(descendantTextRaw(navLabelScope(el, section)));
-  const blockToken = navTokenFromSectionText(descendantTextUnfiltered(section));
-  if (!nodeToken || nodeToken !== token) return null;
-  if (!blockToken || blockToken !== token) return null;
-  const blockPrice = parseArgentineNumber(blockToken);
-  if (blockPrice == null || blockPrice !== nodePrice) return null;
-  return nodePrice;
+  const price = parseArgentineNumber(token);
+  if (price == null || !Number.isFinite(price) || price <= 0) return null;
+  return price;
 }
 
 function parseValoresAl($: CheerioAPI, section: Element): string | null {
   const nodes = innermostIn($, section, (el) => /Valores al\s+/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
-  const match = allowlistedText($, nodes[0]).match(VALORES_AL);
-  if (!match) return null;
-  const timestamp = parseCafciDateLabel(match[1]);
+  const block = containingBlock(nodes[0]);
+  const blockVisible = renderedVisible($, block);
+  const blockDate = dateFromRendered(blockVisible.text, blockVisible.skips, 'paren-or-eof');
+  if (!blockDate) return null;
+  const sectionVisible = renderedVisible($, section);
+  const sectionDate = dateFromRendered(sectionVisible.text, sectionVisible.skips, 'no-numeric-continue');
+  if (sectionDate !== blockDate) return null;
+  const unfilteredDate = dateFromRendered(renderedUnfiltered($, section).text, [], 'no-numeric-continue');
+  if (unfilteredDate !== blockDate) return null;
+  const timestamp = parseCafciDateLabel(blockDate);
   if (!timestamp) return null;
 
-  const dates = [...allowlistedText($, section).matchAll(DMY)]
+  const dates = [...normalizeFichaText(sectionVisible.text).matchAll(DMY)]
     .map((row) => parseCafciDateLabel(row[1]))
     .filter((iso): iso is string => Boolean(iso));
   if (dates.length === 0) return null;
@@ -660,63 +836,26 @@ function parseValoresAl($: CheerioAPI, section: Element): string | null {
   return timestamp;
 }
 
-function monedaValueFromLabelEl($: CheerioAPI, el: Element): string | null {
-  const own = directText($, el);
-  const withValue = own.match(MONEDA_LABEL);
-  if (withValue) {
-    const label = normalizeFichaText(withValue[1]);
-    if (label) return label;
-  }
-  if (/^Moneda:\s*$/i.test(own)) {
-    const rest = normalizeFichaText(followingText($, el));
-    return rest || null;
-  }
-  return null;
+function monedaValuesFromBlock($: CheerioAPI, block: Element, mode: 'visible' | 'unfiltered'): string[] {
+  const rendered = renderedText($, block, mode);
+  return extractMonedaValues(rendered.text, mode === 'visible' ? rendered.skips : []);
 }
 
-function followingUnfiltered($: CheerioAPI, el: Element): string {
-  const parent = parentOf(el);
-  if (!parent || !('children' in parent) || !Array.isArray(parent.children)) return '';
-  const idx = parent.children.indexOf(el);
-  if (idx < 0) return '';
-  const bits: string[] = [];
-  for (let i = idx + 1; i < parent.children.length; i++) {
-    const node = parent.children[i];
-    if (node.type === 'comment') continue;
-    if (node.type === 'text') {
-      bits.push(textData(node));
-      continue;
-    }
-    if (isElement(node) && elementHides($, node)) {
-      bits.push(descendantTextRaw(node));
-      continue;
-    }
-    break;
-  }
-  return bits.join('');
-}
-
-function unfilteredMonedaValue($: CheerioAPI, el: Element): string {
-  const own = descendantTextRaw(el);
-  const labelled = own.match(/Moneda:\s*/i);
-  if (labelled && labelled.index != null) {
-    const rest = normalizeFichaText(own.slice(labelled.index + labelled[0].length));
-    if (rest) return rest;
-  }
-  return normalizeFichaText(followingUnfiltered($, el));
-}
-
-function collectMonedaLabels($: CheerioAPI): string[] {
-  const labels: string[] = [];
-  $('*').each((_, el) => {
-    if (!isElement(el) || !usableAncestry($, el)) return;
+function collectMonedaBlocks($: CheerioAPI): Element[] {
+  const rootEl = ($('body')[0] ?? $.root()[0]) as Element | undefined;
+  if (!rootEl || !isElement(rootEl)) return [];
+  const seen = new Set<Element>();
+  const blocks: Element[] = [];
+  for (const el of innermostIn($, rootEl, (node) => /Moneda:/i.test(allowlistedText($, node)))) {
     if ($(el).closest(`script, style, noscript, template, #cartera, ${RAW_TEXT_OR_FRAME}`).length > 0) {
-      return;
+      continue;
     }
-    const value = monedaValueFromLabelEl($, el);
-    if (value) labels.push(value);
-  });
-  return labels;
+    const block = containingBlock(el);
+    if (seen.has(block)) continue;
+    seen.add(block);
+    blocks.push(block);
+  }
+  return blocks;
 }
 
 function uniqueMonedaLabels(labels: string[]): string[] {
@@ -792,22 +931,28 @@ export function parseCafciHtmlFichaDetailed(
   if (!hasMonedaInFichaMain($)) {
     return { parsed: null, reason: 'unparseable_ficha' };
   }
-  const monedaEntries: Array<{ el: Element; value: string }> = [];
-  $('*').each((_, el) => {
-    if (!isElement(el) || !usableAncestry($, el)) return;
-    if ($(el).closest(`script, style, noscript, template, #cartera, ${RAW_TEXT_OR_FRAME}`).length > 0) {
-      return;
+  const monedaBlocks = collectMonedaBlocks($);
+  const visibleValues: string[] = [];
+  for (const block of monedaBlocks) {
+    const visible = monedaValuesFromBlock($, block, 'visible');
+    const unfiltered = monedaValuesFromBlock($, block, 'unfiltered');
+    if (visible.length === 0 || visible.length !== unfiltered.length) {
+      return { parsed: null, reason: 'unparseable_ficha' };
     }
-    const value = monedaValueFromLabelEl($, el);
-    if (value) monedaEntries.push({ el, value });
-  });
-  const mentions = uniqueMonedaLabels(collectMonedaLabels($));
+    for (let i = 0; i < visible.length; i++) {
+      if (!isWhitelistedMoneda(visible[i]) || !isWhitelistedMoneda(unfiltered[i])) {
+        return { parsed: null, reason: 'unparseable_ficha' };
+      }
+      if (foldMoneda(visible[i]) !== foldMoneda(unfiltered[i])) {
+        return { parsed: null, reason: 'unparseable_ficha' };
+      }
+      visibleValues.push(visible[i]);
+    }
+  }
+  const mentions = uniqueMonedaLabels(visibleValues);
   if (mentions.length === 0) return { parsed: null, reason: 'unparseable_ficha' };
   const monedaLabel = mentions[0];
-  if (!currenciesAgree(monedaLabel, mentions)) {
-    return { parsed: null, reason: 'unparseable_ficha' };
-  }
-  if (monedaEntries.some((row) => foldMoneda(unfilteredMonedaValue($, row.el)) !== foldMoneda(row.value))) {
+  if (!isWhitelistedMoneda(monedaLabel) || !currenciesAgree(monedaLabel, mentions)) {
     return { parsed: null, reason: 'unparseable_ficha' };
   }
 

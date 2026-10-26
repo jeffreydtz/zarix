@@ -136,4 +136,21 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
       { fondoId: '227', claseId: '784' },
     ).parsed).toMatchObject({ price: 1241.954039, fondoId: '227', claseId: '784' });
   });
+
+  it.each(LIVE)('$fondoId/$claseId still parses with an identical adjacent Moneda li', (row) => {
+    const html = readFileSync(join(fixtures, row.file), 'utf8');
+    const needle = `<li><span class="label">Moneda:</span>         ${row.monedaLabel}</li>`;
+    expect(html).toContain(needle);
+    const duplicated = html.replace(
+      needle,
+      `${needle}\n            <li><span class="label">Moneda:</span> ${row.monedaLabel}</li>`,
+    );
+    expect(parseCafciHtmlFichaDetailed(duplicated, {
+      fondoId: row.fondoId, claseId: row.claseId,
+    }).parsed).toMatchObject({
+      price: row.price,
+      monedaLabel: row.monedaLabel,
+      timestamp: '2026-10-23T03:00:00.000Z',
+    });
+  });
 });

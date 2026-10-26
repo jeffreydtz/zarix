@@ -750,3 +750,162 @@ describe('Codex r10 HTML parser — whitespace-split NAV tail, exact Moneda', ()
     expect(parsed(html).parsed).toBeNull();
   });
 });
+
+describe('Kael/Codex r11 HTML parser — rendered section text, Moneda whitelist, display', () => {
+  const SEPARATORS = [
+    ['NNBSP', '&#x202f;'],
+    ['NBSP', '\u00A0'],
+    ['thin space', '\u2009'],
+    ['regular space', ' '],
+    ['nbsp entity', '&nbsp;'],
+    ['ZWSP', '&#x200b;'],
+  ] as const;
+
+  const NAV_POSITIONS: Array<[string, (sep: string) => string]> = [
+    ['inside span', (sep) => `<p>Valor por cada cuotaparte: 1.241,954<span>${sep}039</span></p>`],
+    ['hidden span', (sep) => `<p>Valor por cada cuotaparte: 1.241,954<span hidden>${sep}039</span></p>`],
+    ['inline sibling', (sep) => `<p><span>Valor por cada cuotaparte: 1.241,954</span><span>${sep}039</span></p>`],
+    ['outside p', (sep) => `<p>Valor por cada cuotaparte: 1.241,954</p><p>${sep}039</p>`],
+    ['outside div', (sep) => `<p>Valor por cada cuotaparte: 1.241,954</p><div>${sep}039</div>`],
+    ['br', (sep) => `<p>Valor por cada cuotaparte: 1.241,954</p><br>${sep}039`],
+  ];
+
+  const DATE_POSITIONS: Array<[string, (sep: string) => string]> = [
+    ['inside span', (sep) => `<h3>Valores al 23/10/20<span>${sep}26</span></h3>`],
+    ['hidden span', (sep) => `<h3>Valores al 23/10/20<span hidden>${sep}26</span></h3>`],
+    ['inline sibling', (sep) => `<h3><span>Valores al 23/10/20</span><span>${sep}26</span></h3>`],
+    ['outside p', (sep) => `<h3>Valores al 23/10/20</h3><p>${sep}26</p>`],
+    ['outside div', (sep) => `<h3>Valores al 23/10/20</h3><div>${sep}26</div>`],
+    ['br', (sep) => `<h3>Valores al 23/10/20</h3><br>${sep}26`],
+  ];
+
+  const MONEDA_POSITIONS: Array<[string, (sep: string) => string]> = [
+    ['inside span', (sep) => `<div id="fichaRight"><span class="label">Moneda:</span> Peso<span>${sep}Argentina</span></div>`],
+    ['hidden span', (sep) => `<div id="fichaRight"><span class="label">Moneda:</span> Peso<span hidden>${sep}Argentina</span></div>`],
+    ['inline sibling', (sep) => `<div id="fichaRight"><span class="label">Moneda:</span> Peso<span>${sep}</span>Argentina</div>`],
+    ['outside p', (sep) => `<div id="fichaRight"><p><span class="label">Moneda:</span> Peso</p><p>${sep}Argentina</p></div>`],
+    ['outside div', (sep) => `<div id="fichaRight"><div><span class="label">Moneda:</span> Peso</div><div>${sep}Argentina</div></div>`],
+    ['br', (sep) => `<div id="fichaRight"><span class="label">Moneda:</span> Peso<br>${sep}Argentina</div>`],
+  ];
+
+  it('separator sweep has 0 truncations across NAV, date and Moneda', () => {
+    let truncations = 0;
+    const failures: string[] = [];
+    for (const [sepName, sep] of SEPARATORS) {
+      for (const [pos, build] of NAV_POSITIONS) {
+        const result = parsed(shell({ nav: build(sep) }));
+        if (result.parsed?.price === 1241.954) {
+          truncations += 1;
+          failures.push(`NAV ${pos} ${sepName} saved 1241.954`);
+        }
+      }
+      for (const [pos, build] of DATE_POSITIONS) {
+        const result = parsed(shell({ date: build(sep) }));
+        const ts = result.parsed?.timestamp;
+        if (ts && ts !== '2026-10-23T03:00:00.000Z') {
+          truncations += 1;
+          failures.push(`date ${pos} ${sepName} saved ${ts}`);
+        }
+      }
+      for (const [pos, build] of MONEDA_POSITIONS) {
+        const result = parsed(shell({ moneda: build(sep) }));
+        const label = result.parsed?.monedaLabel;
+        if (label && foldSweep(label) !== 'PESO ARGENTINA') {
+          truncations += 1;
+          failures.push(`Moneda ${pos} ${sepName} saved ${label}`);
+        }
+        if (label === 'Peso' || foldSweep(label ?? '') === 'PESO') {
+          truncations += 1;
+          failures.push(`Moneda ${pos} ${sepName} saved bare Peso`);
+        }
+      }
+    }
+    expect({ truncations, failures }).toEqual({ truncations: 0, failures: [] });
+  });
+
+  it.each(['div', 'section', 'li', 'td'] as const)(
+    'skips a whitespace-split NAV tail inside a <%s> wrapper',
+    (tag) => {
+      const inner = `<span>Valor por cada cuotaparte: 1.241,954</span><span>&#x202f;039</span>`;
+      const nav = tag === 'td'
+        ? `<table><tr><td>${inner}</td></tr></table>`
+        : tag === 'li'
+          ? `<ul><li>${inner}</li></ul>`
+          : `<${tag}>${inner}</${tag}>`;
+      const result = parsed(shell({ nav }));
+      expect(result.parsed).toBeNull();
+      expect(result.parsed?.price).not.toBe(1241.954);
+    },
+  );
+
+  it.each(['-', '('] as const)('skips a hidden %s separator between NAV digit spans', (sep) => {
+    const html = shell({
+      nav: `<p><span>Valor por cada cuotaparte: 1.241,954</span><span hidden>${sep}</span><span>039</span></p>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+    expect(parsed(html).parsed?.price).not.toBe(1241.954);
+  });
+
+  it('parses when the NAV label and value are in separate nodes', () => {
+    const html = shell({
+      nav: '<div><span>Valor por cada cuotaparte:</span> 1.241,954039</div>',
+    });
+    expect(parsed(html).parsed).toMatchObject({ price: 1241.954039 });
+  });
+
+  it('parses a NAV shown with a later valid inline-table display', () => {
+    const html = shell({
+      nav: '<p style="display:none;display:inline-table">Valor por cada cuotaparte: 1.241,954039</p>',
+    });
+    expect(parsed(html).parsed).toMatchObject({ price: 1241.954039 });
+  });
+
+  it('parses a NAV shown with two-value display:inline flow-root', () => {
+    const html = shell({
+      nav: '<p style="display:none;display:inline flow-root">Valor por cada cuotaparte: 1.241,954039</p>',
+    });
+    expect(parsed(html).parsed).toMatchObject({ price: 1241.954039 });
+  });
+
+  it('skips a CSS content replacement that would save 1300 instead of the visible NAV', () => {
+    const html = shell({
+      nav: `<p style="content:'1.241,954039'">Valor por cada cuotaparte: 1300</p>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+    expect(parsed(html).parsed?.price).not.toBe(1300);
+  });
+
+  it('skips a bare Peso Moneda value', () => {
+    expect(parsed(shell({
+      moneda: '<div id="fichaRight"><span class="label">Moneda:</span> Peso</div>',
+    })).parsed).toBeNull();
+  });
+
+  it('skips a Peso / NNBSP / Argentina split that would previously save Peso from followingText', () => {
+    const html = shell({
+      moneda: '<div id="fichaRight"><span class="label">Moneda:</span> Peso<span>&#x202f;</span>Argentina</div>',
+    });
+    const result = parsed(html);
+    expect(result.parsed?.monedaLabel).not.toBe('Peso');
+    expect(result.parsed).toMatchObject({ monedaLabel: 'Peso Argentina' });
+  });
+
+  it('parses Dolar Estadounidense Billete when that is the exact block value', () => {
+    const html = shell({
+      moneda: '<div id="fichaRight"><span class="label">Moneda:</span> Dólar Estadounidense Billete</div>',
+    });
+    expect(parsed(html).parsed).toMatchObject({
+      monedaLabel: 'Dólar Estadounidense Billete',
+    });
+  });
+});
+
+function foldSweep(label: string): string {
+  return label
+    .replace(/\p{Cf}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toUpperCase();
+}

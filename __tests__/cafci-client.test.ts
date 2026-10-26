@@ -222,7 +222,7 @@ describe('CAFCI client headers and 403', () => {
           clases: [{ id: 2, simbolo: 'IOLDOLD' }],
         }],
       }))
-      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'USD' })));
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'Dolar Estadounidense' })));
     vi.stubGlobal('fetch', fetchMock);
     const quote = await fetchFciQuote('IOLDOLD');
     expect(quote?.price).toBe(1.098);
@@ -352,11 +352,8 @@ describe('CAFCI client headers and 403', () => {
       }))
       .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'EUR' })));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
-      price: 1.098,
-      currency: null,
-      currencySkip: 'unsupported',
-    });
+    expect(parseCafciHtmlFicha(quoteHtml({ price: '1,098', moneda: 'EUR' }))).toBeNull();
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ cafciReason: 'unparseable_ficha' });
   });
 
   it('keeps USD when moneda USD and numeric tipoMoneda 2 share a level', async () => {
@@ -369,7 +366,7 @@ describe('CAFCI client headers and 403', () => {
           clases: [{ id: 2, simbolo: 'IOLDOLD' }],
         }],
       }))
-      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'USD' })));
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'Dolar Estadounidense' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
@@ -377,7 +374,7 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
-  it('prices IOLDOLD as ARS when CAFCI names ARS - Moneda local', async () => {
+  it('prices IOLDOLD as ARS from a whitelist Peso Argentina HTML Moneda', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(catalogRes({
         data: [{
@@ -386,7 +383,7 @@ describe('CAFCI client headers and 403', () => {
           clases: [{ id: 2, simbolo: 'IOLDOLD' }],
         }],
       }))
-      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'ARS - Moneda local' })));
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'Peso Argentina' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
@@ -394,7 +391,7 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
-  it('keeps ARS when moneda Pesos and tipoMoneda Local share a level', async () => {
+  it('keeps ARS when moneda Peso Argentina and tipoMoneda Local share a level', async () => {
     expect(firstCurrencyLabel('Pesos', 'Local')).toBe('ARS');
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(catalogRes({
@@ -404,7 +401,7 @@ describe('CAFCI client headers and 403', () => {
           clases: [{ id: 2, simbolo: 'CONIOLA' }],
         }],
       }))
-      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '179,598', moneda: 'Pesos' })));
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '179,598', moneda: 'Peso Argentina' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('CONIOLA')).resolves.toMatchObject({
       price: 179.598,
@@ -422,7 +419,7 @@ describe('CAFCI client headers and 403', () => {
           clases: [{ id: 2, simbolo: 'IOLDOLD' }],
         }],
       }))
-      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'Dólar' })));
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'Dolar Estadounidense' })));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
       price: 1.098,
@@ -435,25 +432,30 @@ describe('CAFCI client headers and 403', () => {
     'Dolar EEUU', 'Dólar billete', 'US Dollar', 'U.S. Dollar', 'Dólar USA',
     'USD Billete', 'USD billetes', 'U$S MEP', 'ＵＳＤ', 'US', 'US$',
   ] as const)(
-    'prices IOLDOLD 1.098 USD when CAFCI names %s',
-    async (moneda) => {
-      const fetchMock = vi.fn()
-        .mockResolvedValueOnce(catalogRes({
-          data: [{
-            id: 1,
-            nombre: 'IOL Dolar',
-            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
-          }],
-        }))
-        .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda })));
-      vi.stubGlobal('fetch', fetchMock);
-      await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
-        ticker: 'IOLDOLD',
-        price: 1.098,
-        currency: 'USD',
-      });
+    'maps alias %s to USD but does not accept it as an HTML Moneda value',
+    (moneda) => {
+      expect(parseCafciCurrencyLabel(moneda)).toBe('USD');
+      expect(parseCafciHtmlFicha(quoteHtml({ price: '1,098', moneda }))).toBeNull();
     }
   );
+
+  it('prices IOLDOLD 1.098 USD from a whitelist HTML Moneda value', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(catalogRes({
+        data: [{
+          id: 1,
+          nombre: 'IOL Dolar',
+          clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+        }],
+      }))
+      .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'Dolar Estadounidense' })));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      ticker: 'IOLDOLD',
+      price: 1.098,
+      currency: 'USD',
+    });
+  });
 
   it.each([
     'Canadian Dollar', 'Mexican Peso', 'Dolar fiyiano', 'NZ Dollar',
@@ -473,11 +475,8 @@ describe('CAFCI client headers and 403', () => {
         }))
         .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda })));
       vi.stubGlobal('fetch', fetchMock);
-      await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
-        price: 1.098,
-        currency: null,
-        currencySkip: 'unsupported',
-      });
+      expect(parseCafciHtmlFicha(quoteHtml({ price: '1,098', moneda }))).toBeNull();
+      await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ cafciReason: 'unparseable_ficha' });
     }
   );
 
@@ -496,11 +495,8 @@ describe('CAFCI client headers and 403', () => {
       }))
       .mockResolvedValueOnce(htmlRes(quoteHtml({ price: '1,098', moneda: 'EUR' })));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
-      price: 1.098,
-      currency: null,
-      currencySkip: 'unsupported',
-    });
+    expect(parseCafciHtmlFicha(quoteHtml({ price: '1,098', moneda: 'EUR' }))).toBeNull();
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ cafciReason: 'unparseable_ficha' });
   });
 });
 
