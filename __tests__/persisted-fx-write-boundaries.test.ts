@@ -35,7 +35,7 @@ beforeEach(() => {
   fixture.history.mockResolvedValue({ error: null });
   fixture.snapshots.mockResolvedValue({ error: null });
   fixture.updates.mockResolvedValue({ error: null });
-  fixture.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW });
+  fixture.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW, source: 'cafci' });
   fixture.arg.mockResolvedValue({
     byStock: new Map([['GGAL', { symbol: 'GGAL', price: 179.598, currency: 'ARS', changePct: 0, timestamp: NOW }]]),
     byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
@@ -56,7 +56,25 @@ beforeEach(() => {
       single: rateResult, maybeSingle: rateResult,
       insert: fixture.history,
       upsert: table === 'portfolio_performance_snapshots' ? fixture.snapshots : fixture.history,
-      update: (payload: unknown) => ({ eq: () => fixture.updates(payload) }),
+      update: (payload: unknown) => {
+        const chain: {
+          eq: () => typeof chain;
+          is: () => typeof chain;
+          or: () => typeof chain;
+          select: () => Promise<{ error: null; data: Array<{ id: string }> }>;
+          then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+        } = {
+          eq: () => {
+            fixture.updates(payload);
+            return chain;
+          },
+          is: () => chain,
+          or: () => chain,
+          select: async () => ({ error: null, data: [{ id: 'ok' }] }),
+          then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+        };
+        return chain;
+      },
       then: (resolve: (result: unknown) => unknown) => Promise.resolve({
         data: table === 'investments' ? fixture.positions : [], error: null,
       }).then(resolve),

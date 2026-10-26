@@ -230,6 +230,9 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     ];
     expect(matchCafciClassForTest('ALPHAB', classes)).toEqual(classes[1]);
     expect(matchCafciClassForTest('ALPHA', classes)).toBeNull();
+    expect(matchCafciClassForTest('PRTAVABX', [
+      { fondoId: '227', claseId: '784', keys: ['PRTAVAB'], currency: 'ARS' as const },
+    ])).toBeNull();
   });
 
   it('reads USD from the class moneda and never assumes ARS when currency is missing', () => {

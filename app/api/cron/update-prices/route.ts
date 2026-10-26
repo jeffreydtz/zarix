@@ -3,8 +3,13 @@ import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
+  applyObservedRowMatch,
+  applyObservedTimestampMatch,
+  classifyAutomaticPriceZeroRows,
+  monotonicCurrentPriceFilter,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
+  shouldPersistFciQuote,
   type QuoteResult,
 } from '@/lib/market-data/quote-refresh';
 import type { InvestmentType } from '@/types/database';
@@ -20,6 +25,7 @@ interface PriceRow {
   purchase_currency: string | null;
   purchase_price: number | string | null;
   current_price: number | string | null;
+  current_price_updated_at: string | null;
   is_manual_price: boolean;
 }
 
@@ -45,7 +51,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
   protected async fetchItems(supabase: ServiceClient): Promise<PriceRow[]> {
     const { data: investments, error } = await supabase
       .from('investments')
-      .select('id, type, ticker, market_currency, purchase_currency, purchase_price, current_price, is_manual_price')
+      .select('id, type, ticker, market_currency, purchase_currency, purchase_price, current_price, current_price_updated_at, is_manual_price')
       .eq('is_active', true)
       .eq('is_manual_price', false)
       .in('type', ['crypto', 'stock_us', 'etf', 'cedear', 'stock_arg', 'bond', 'on', 'fci']);
@@ -82,22 +88,85 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     return Boolean(q && q.price > 0 && !q.fxStale);
   }
 
-  protected async processItem(supabase: ServiceClient, inv: PriceRow): Promise<void> {
+  protected async processItem(supabase: ServiceClient, inv: PriceRow): Promise<boolean | void> {
     const key = this.cacheKey(inv);
-    if (!key) return;
+    if (!key) return false;
     const q = this.quotes.get(key);
-    if (!q || q.price <= 0 || q.fxStale) return;
-    const { error } = await supabase
-      .from('investments')
-      .update({
-        current_price: q.price,
-        current_price_updated_at: q.timestamp,
-        current_price_change_pct: q.changePct,
-        market_currency: q.currency.trim().toUpperCase(),
-      })
-      .eq('id', inv.id);
-
+    if (!q || q.price <= 0 || q.fxStale) return false;
+    if (inv.type === 'fci' && !shouldPersistFciQuote(q)) {
+      console.warn('[quotes] skip CAFCI failure', {
+        ticker: inv.ticker,
+        id: inv.id,
+        reason: q.source === 'iol' ? 'undated' : 'invalid_date',
+        source: q.source,
+      });
+      return false;
+    }
+    const sourceTs = q.timestamp;
+    let query = applyObservedRowMatch(
+      supabase
+        .from('investments')
+        .update({
+          current_price: q.price,
+          current_price_updated_at: q.timestamp,
+          current_price_change_pct: q.changePct,
+          market_currency: q.currency.trim().toUpperCase(),
+        })
+        .eq('id', inv.id),
+      inv,
+    );
+    if (inv.type === 'fci' && sourceTs) {
+      const { data, error } = await query.or(monotonicCurrentPriceFilter(sourceTs)).select('id');
+      if (error) throw error;
+      if (!Array.isArray(data) || data.length === 0) {
+        const { data: winningRows, error: rereadError } = await supabase
+          .from('investments')
+          .select('id, type, ticker, market_currency, is_manual_price, current_price_updated_at')
+          .eq('id', inv.id);
+        if (rereadError) throw rereadError;
+        const winning = Array.isArray(winningRows)
+          ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
+          : null;
+        const reason = classifyAutomaticPriceZeroRows({
+          observed: inv,
+          winning,
+          nowMs: Date.now(),
+        });
+        console.warn('[quotes] skip CAFCI failure', {
+          ticker: inv.ticker,
+          id: inv.id,
+          reason,
+          source: q.source,
+        });
+        return false;
+      }
+      return true;
+    }
+    query = applyObservedTimestampMatch(query, inv.current_price_updated_at);
+    const { data, error } = await query.select('id');
     if (error) throw error;
+    if (!Array.isArray(data) || data.length === 0) {
+      const { data: winningRows, error: rereadError } = await supabase
+        .from('investments')
+        .select('id, type, ticker, market_currency, is_manual_price, current_price_updated_at')
+        .eq('id', inv.id);
+      if (rereadError) throw rereadError;
+      const winning = Array.isArray(winningRows)
+        ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
+        : null;
+      const reason = classifyAutomaticPriceZeroRows({
+        observed: inv,
+        winning,
+        nowMs: Date.now(),
+      });
+      console.warn('[quotes] skip price update', {
+        reason,
+        ticker: inv.ticker,
+        id: inv.id,
+        type: inv.type,
+      });
+      return false;
+    }
   }
 
   protected async afterAll(supabase: ServiceClient, _items: PriceRow[]): Promise<void> {

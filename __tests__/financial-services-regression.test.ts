@@ -22,11 +22,18 @@ let replies: Reply[];
 let writes: Array<{ table: string; operation: string; value: any }>;
 function query(table: string, reply: Reply) {
   const q: any = {};
-  for (const key of ['select', 'eq', 'in', 'order', 'gte', 'lt', 'or', 'limit', 'maybeSingle']) {
+  for (const key of ['select', 'eq', 'is', 'in', 'order', 'gte', 'lt', 'or', 'limit', 'maybeSingle']) {
     q[key] = vi.fn(() => key === 'maybeSingle' ? Promise.resolve(reply) : q);
   }
   for (const operation of ['insert', 'update', 'upsert']) {
-    q[operation] = vi.fn((value: any) => { writes.push({ table, operation, value }); return q; });
+    q[operation] = vi.fn((value: any) => {
+      writes.push({ table, operation, value });
+      if (operation === 'update') {
+        q.then = (resolve: any, reject: any) =>
+          Promise.resolve({ data: [{ id: 'ok' }], error: null }).then(resolve, reject);
+      }
+      return q;
+    });
   }
   q.single = vi.fn(async () => reply);
   q.then = (resolve: any, reject: any) => Promise.resolve(reply).then(resolve, reject);

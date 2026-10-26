@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { resetCafciCatalogCacheForTest } from '@/lib/market-data/cafci-client';
+import { cafciValoresAlLabel } from '@/lib/market-data/fci-nav-freshness';
 
 const mocks = vi.hoisted(() => ({
   arg: vi.fn(),
@@ -35,40 +36,24 @@ const MEP = 1300;
 const CAFCI_PRICE = 1.098;
 const TICKERS = ['IOLDOLD', 'ADCGLOA'] as const;
 const USD_LABELS = [
-  'Dolar EEUU',
-  'Dólar billete',
-  'US Dollar',
-  'U.S. Dollar',
-  'Dólar USA',
-  'Dólar MEP',
-  'Dólares CCL',
-  'Dólares estadounidenses MEP',
-  'USD Billete',
-  'USD billetes',
-  'U$S MEP',
-  'Dólar',
-  'Dólares',
-  'Dollar',
-  'USD',
-  'Dólar Cable',
+  'Dolar Estadounidense',
   'Dólar Estadounidense',
-  'U$S',
-  'ＵＳＤ',
-  'US',
-  'US$',
+  'Dolar Estadounidense Billete',
+  'Dólar Estadounidense Billete',
 ] as const;
 const ARS_LABELS = [
-  'Pesos',
-  'Peso Argentino',
-  'Pesos Argentinos',
   'Peso Argentina',
-  'PESOS ARGENTINA',
-  'Peso Argentina / ARS',
-  'ARS',
-  'ARS - Moneda local',
-  'Peso',
+  'peso argentina',
+  'PESO ARGENTINA',
 ] as const;
 const SKIP_LABELS = [
+  'Dolar EEUU',
+  'Dólar MEP',
+  'USD',
+  'Dólar',
+  'Pesos',
+  'Peso',
+  'ARS',
   'Dolar fiyiano',
   'New Zealand Dollar',
   'NZ Dollar',
@@ -88,20 +73,36 @@ const SKIP_LABELS = [
 function stubCafci(moneda: string) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     const href = String(url);
-    if (href.includes('/ficha')) {
+    const ficha = href.match(/\/fondos\/(\d+)\?clase=(\d+)/);
+    if (ficha) {
+      const html = `<html><body>
+        <form method="get" action="/fondos/${ficha[1]}">
+          <select name="clase"><option value="${ficha[2]}" selected>Clase</option></select>
+        </form>
+        <div id="cuotaparte">
+          <h3>Valores al ${cafciValoresAlLabel()}</h3>
+          <p>Valor por cada cuotaparte: 1,098</p>
+        </div>
+        <div id="fichaRight"><span class="label">Moneda:</span> ${moneda}</div>
+      </body></html>`;
       return {
         ok: true,
-        json: async () => ({ data: { valorCuotaparte: CAFCI_PRICE, moneda, fecha: '2026-10-23' } }),
+        json: async () => ({}),
+        text: async (): Promise<string> => html,
+        headers: new Headers(),
       };
     }
+    const catalog = {
+      data: [
+        { id: 1, nombre: 'IOL Dolar', clases: [{ id: 2, simbolo: 'IOLDOLD' }] },
+        { id: 3, nombre: 'ADC Global', clases: [{ id: 4, simbolo: 'ADCGLOA' }] },
+      ],
+    };
     return {
       ok: true,
-      json: async () => ({
-        data: [
-          { id: 1, nombre: 'IOL Dolar', clases: [{ id: 2, simbolo: 'IOLDOLD' }] },
-          { id: 3, nombre: 'ADC Global', clases: [{ id: 4, simbolo: 'ADCGLOA' }] },
-        ],
-      }),
+      json: async () => catalog,
+      text: async (): Promise<string> => JSON.stringify(catalog),
+      headers: new Headers(),
     };
   }));
 }
@@ -144,7 +145,24 @@ beforeEach(() => {
   setCronPosition('IOLDOLD', 'USD');
   mocks.update.mockImplementation((payload: Record<string, unknown>) => {
     mocks.updates.push(payload);
-    return { eq: vi.fn().mockResolvedValue({ error: null }) };
+    const chain: {
+      eq: ReturnType<typeof vi.fn>;
+      is: ReturnType<typeof vi.fn>;
+      or: ReturnType<typeof vi.fn>;
+      select: ReturnType<typeof vi.fn>;
+      then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+    } = {
+      eq: vi.fn(),
+      is: vi.fn(),
+      or: vi.fn(),
+      select: vi.fn(),
+      then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+    };
+    chain.eq.mockReturnValue(chain);
+    chain.is.mockReturnValue(chain);
+    chain.or.mockReturnValue(chain);
+    chain.select.mockResolvedValue({ error: null, data: [{ id: 'ok' }] });
+    return chain;
   });
   mocks.from.mockImplementation((table: string) => {
     if (table === 'exchange_rates') {

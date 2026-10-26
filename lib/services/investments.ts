@@ -13,10 +13,15 @@ import {
   priceFactorForType,
 } from '@/lib/investments/type-meta';
 import {
+  applyObservedRowMatch,
+  applyObservedTimestampMatch,
+  classifyAutomaticPriceZeroRows,
   InvestmentQuoteMap,
+  isAnomalousFutureTimestamp,
+  monotonicCurrentPriceFilter,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
-  type QuoteResult,
+  shouldPersistFciQuote,
 } from '@/lib/market-data/quote-refresh';
 import {
   composeComposition,
@@ -166,7 +171,43 @@ export interface PortfolioSummaryPayload {
 }
 
 const STABLE_AS_USD = new Set(['USD', 'USDT', 'USDC', 'DAI', 'BUSD']);
-const QUOTE_REFRESH_MS = 15 * 60 * 1000;
+/** Byte-for-byte `origin/main` quote-age window (`lib/services/investments.ts` ~416). */
+export const QUOTE_REFRESH_MS = 15 * 60 * 1000;
+
+/**
+ * Default-mode refresh predicate copied from `origin/main`: ticker, not manual,
+ * force, else age vs `QUOTE_REFRESH_MS`. Non-FCI must stay this function; FCI
+ * may OR `isAnomalousFutureTimestamp` so `future_stored` still logs.
+ */
+export function shouldRefreshQuoteByAge(
+  inv: { ticker: string | null; is_manual_price: boolean; current_price_updated_at: string | null },
+  options: { forceRefreshQuotes?: boolean } | undefined,
+  now: number,
+): boolean {
+  if (!inv.ticker) return false;
+  if (inv.is_manual_price) return false;
+  if (options?.forceRefreshQuotes) return true;
+  const lastUpdatedAt = inv.current_price_updated_at
+    ? new Date(inv.current_price_updated_at).getTime()
+    : 0;
+  return !lastUpdatedAt || now - lastUpdatedAt > QUOTE_REFRESH_MS;
+}
+
+function copyWinningAutomaticPrice(inv: Investment, winning: Investment): void {
+  inv.current_price = winning.current_price;
+  inv.current_price_updated_at = winning.current_price_updated_at;
+  inv.current_price_change_pct = winning.current_price_change_pct;
+  inv.market_currency = winning.market_currency;
+  inv.ticker = winning.ticker;
+  inv.is_manual_price = winning.is_manual_price;
+  if (winning.type) inv.type = winning.type;
+}
+
+function winningInvestmentRow(rows: unknown, id: string): Investment | null {
+  if (!Array.isArray(rows)) return null;
+  const typed = rows as Investment[];
+  return typed.find((row) => row.id === id) ?? typed[0] ?? null;
+}
 
 function arsPerUsdFromDolar(blue: { sell: number; buy: number } | undefined): number {
   if (!blue) throw new FxUnavailableError('blue ARS/USD');
@@ -328,7 +369,7 @@ class InvestmentsService {
 
   /**
    * Pide precios respetando market_currency (rueda D o conversión MEP).
-   * data912 (ARG/CEDEAR/bono/ON) → CAFCI (FCI) → Yahoo `.BA` → Stooq → CoinGecko.
+   * data912 (ARG/CEDEAR/bono/ON) → CAFCI then IOL (FCI) → Yahoo `.BA` → Stooq → CoinGecko.
    */
   private async refreshQuotesForInvestments(
     investments: Investment[]
@@ -404,13 +445,8 @@ class InvestmentsService {
     const needsRefresh = !options?.skipQuoteRefresh;
     const candidatesForRefresh = needsRefresh
       ? investments.filter((inv) => {
-          if (!inv.ticker) return false;
-          if (inv.is_manual_price) return false;
-          if (options?.forceRefreshQuotes) return true;
-          const lastUpdatedAt = inv.current_price_updated_at
-            ? new Date(inv.current_price_updated_at).getTime()
-            : 0;
-          return !lastUpdatedAt || now - lastUpdatedAt > QUOTE_REFRESH_MS;
+          if (shouldRefreshQuoteByAge(inv, options, now)) return true;
+          return inv.type === 'fci' && isAnomalousFutureTimestamp(inv.current_price_updated_at, now);
         })
       : [];
 
@@ -418,7 +454,97 @@ class InvestmentsService {
       ? await this.refreshQuotesForInvestments(candidatesForRefresh)
       : new InvestmentQuoteMap();
 
-    const updates: Array<QuoteResult & { id: string }> = [];
+    const skippedQuoteIds = new Set<string>();
+
+    for (const inv of investments) {
+      if (inv.type !== 'fci' || inv.is_manual_price || !inv.ticker) continue;
+      const cacheKey = quoteCacheKeyForPosition(inv);
+      const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
+      if (!fresh || !(fresh.price > 0) || fresh.fxStale || !shouldPersistFciQuote(fresh) || !fresh.timestamp) {
+        continue;
+      }
+      const fciQuery = applyObservedRowMatch(
+        supabase
+          .from('investments')
+          .update({
+            current_price: fresh.price,
+            current_price_updated_at: fresh.timestamp,
+            current_price_change_pct: fresh.changePct,
+            market_currency: fresh.currency.trim().toUpperCase(),
+          })
+          .eq('id', inv.id),
+        inv,
+      ).or(monotonicCurrentPriceFilter(fresh.timestamp));
+      const { data, error: fciUpdateError } = await fciQuery.select('id');
+      if (fciUpdateError) throw fciUpdateError;
+      if (!Array.isArray(data) || data.length === 0) {
+        const { data: winningRows, error: rereadError } = await supabase
+          .from('investments')
+          .select('*')
+          .eq('id', inv.id);
+        if (rereadError) throw rereadError;
+        const winning = winningInvestmentRow(winningRows, inv.id);
+        const reason = classifyAutomaticPriceZeroRows({
+          observed: inv,
+          winning,
+          nowMs: now,
+        });
+        console.warn('[quotes] skip CAFCI failure', {
+          ticker: inv.ticker,
+          id: inv.id,
+          reason,
+          source: fresh.source,
+        });
+        if (winning) copyWinningAutomaticPrice(inv, winning);
+        skippedQuoteIds.add(inv.id);
+        continue;
+      }
+    }
+
+    for (const inv of investments) {
+      if (inv.type === 'fci' || inv.is_manual_price || !inv.ticker) continue;
+      const cacheKey = quoteCacheKeyForPosition(inv);
+      const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
+      if (!fresh || !(fresh.price > 0) || fresh.fxStale) continue;
+      const query = applyObservedTimestampMatch(
+        applyObservedRowMatch(
+          supabase
+            .from('investments')
+            .update({
+              current_price: fresh.price,
+              current_price_updated_at: fresh.timestamp,
+              current_price_change_pct: fresh.changePct,
+              market_currency: fresh.currency.trim().toUpperCase(),
+            })
+            .eq('id', inv.id),
+          inv,
+        ),
+        inv.current_price_updated_at,
+      );
+      const { data, error: updateError } = await query.select('id');
+      if (updateError) throw updateError;
+      if (!Array.isArray(data) || data.length === 0) {
+        const { data: winningRows, error: rereadError } = await supabase
+          .from('investments')
+          .select('*')
+          .eq('id', inv.id);
+        if (rereadError) throw rereadError;
+        const winning = winningInvestmentRow(winningRows, inv.id);
+        const reason = classifyAutomaticPriceZeroRows({
+          observed: inv,
+          winning,
+          nowMs: now,
+        });
+        console.warn('[quotes] skip price update', {
+          reason,
+          ticker: inv.ticker,
+          id: inv.id,
+          type: inv.type,
+        });
+        if (winning) copyWinningAutomaticPrice(inv, winning);
+        skippedQuoteIds.add(inv.id);
+      }
+    }
 
     const investmentsWithPnL: InvestmentWithPnL[] = investments.map((inv) => {
       let currentPrice = Number(inv.current_price ?? inv.purchase_price);
@@ -433,7 +559,7 @@ class InvestmentsService {
       const cacheKey = quoteCacheKeyForPosition(inv);
       const requiredFxUnavailable = cacheKey != null && quoteMap.unavailableFxKeys.has(cacheKey);
 
-      if (inv.ticker && !inv.is_manual_price) {
+      if (inv.ticker && !inv.is_manual_price && !skippedQuoteIds.has(inv.id)) {
         const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
         if (fresh && fresh.price > 0) {
           currentPrice = fresh.price;
@@ -443,7 +569,6 @@ class InvestmentsService {
           positionFxStale ||= Boolean(fresh.fxStale);
           if (fresh.fxAsOf && (!positionFxAsOf || fresh.fxAsOf < positionFxAsOf)) positionFxAsOf = fresh.fxAsOf;
           priceUpdatedAt = fresh.timestamp;
-          updates.push({ id: inv.id, ...fresh });
         }
       }
 
@@ -507,25 +632,6 @@ class InvestmentsService {
         sales_count: realizedAgg.count,
       };
     });
-
-    if (updates.length > 0) {
-      await Promise.all(
-        updates.map(async (u) => {
-          // Display estimates must not lose their FX provenance in stored prices.
-          if (u.fxStale) return;
-          const { error: updateError } = await supabase
-            .from('investments')
-            .update({
-              current_price: u.price,
-              current_price_updated_at: u.timestamp,
-              current_price_change_pct: u.changePct,
-              market_currency: u.currency.trim().toUpperCase(),
-            })
-            .eq('id', u.id);
-          if (updateError) throw updateError;
-        })
-      );
-    }
 
     const usedAsOf = investmentsWithPnL.map(inv => inv.fxAsOf).filter((asOf): asOf is string => Boolean(asOf));
     return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference,

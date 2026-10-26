@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import { refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
+import { freshFciNavIso } from '@/lib/market-data/fci-nav-freshness';
 
 const mocks = vi.hoisted(() => ({
   dolar: vi.fn(), fci: vi.fn(), arg: vi.fn(), yahoo: vi.fn(), stooq: vi.fn(),
@@ -9,6 +10,9 @@ const mocks = vi.hoisted(() => ({
   positions: [] as Array<Record<string, unknown>>,
   updates: [] as Array<Record<string, unknown>>,
   snapshots: vi.fn(),
+  selectData: [{ id: 'ok' }] as Array<{ id: string }>,
+  orFilters: [] as string[],
+  rereadData: null as Array<Record<string, unknown>> | null,
 }));
 vi.mock('@/lib/market-data/data912-client', () => ({ loadArgentineQuotes: mocks.arg }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
@@ -57,26 +61,69 @@ beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.updates = [];
+  mocks.selectData = [{ id: 'ok' }];
+  mocks.orFilters = [];
+  mocks.rereadData = null;
   mocks.positions = [position()];
   mocks.dolar.mockResolvedValue({
     blue: { timestamp: new Date(), sell: 1300, buy: 1280  }, mep: { timestamp: new Date(), sell: 1300, buy: 1280  },
   });
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
-  mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: '2026-10-23T12:00:00Z' });
+  mocks.fci.mockResolvedValue({
+    price: 1.098, currency: 'USD', changePct: 0, timestamp: freshFciNavIso(), source: 'cafci',
+  });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
   mocks.arg.mockResolvedValue({ byStock: new Map(), byCedear: new Map(), byBond: new Map(), byCorp: new Map() });
   mocks.from.mockImplementation((table: string) => {
-    const builder = {
-      select: () => builder, eq: () => builder, in: () => builder,
-      order: () => builder, gte: () => builder,
+    const builder: {
+      _byId: boolean;
+      select: () => typeof builder;
+      eq: (column?: string, value?: unknown) => typeof builder;
+      in: () => typeof builder;
+      order: () => typeof builder;
+      gte: () => typeof builder;
+      upsert: unknown;
+      update: (payload: Record<string, unknown>) => unknown;
+      then: (resolve: (value: unknown) => unknown) => unknown;
+    } = {
+      _byId: false,
+      select: () => builder,
+      eq: (column?: string) => {
+        if (column === 'id') builder._byId = true;
+        return builder;
+      },
+      in: () => builder,
+      order: () => builder,
+      gte: () => builder,
       upsert: mocks.snapshots.mockResolvedValue({ error: null }),
-      update: (payload: Record<string, unknown>) => ({ eq: (_column: string, id: string) => {
-        mocks.updates.push({ ...payload, id });
-        return Promise.resolve({ error: null });
-      } }),
+      update: (payload: Record<string, unknown>) => {
+        const chain: {
+          eq: (column: string, value: unknown) => typeof chain;
+          is: (column: string, value: null) => typeof chain;
+          or: (filter: string) => typeof chain;
+          select: () => Promise<{ error: null; data: Array<{ id: string }> }>;
+          then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+        } = {
+          eq: (column: string, value: unknown) => {
+            if (column === 'id') mocks.updates.push({ ...payload, id: value });
+            return chain;
+          },
+          is: () => chain,
+          or: (filter: string) => {
+            mocks.orFilters.push(filter);
+            return chain;
+          },
+          select: async () => ({ error: null, data: mocks.selectData }),
+          then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+        };
+        return chain;
+      },
       then: (resolve: (value: unknown) => unknown) => Promise.resolve(resolve({
-        data: table === 'investments' ? mocks.positions : [], error: null,
+        data: table === 'investments'
+          ? (builder._byId && mocks.rereadData ? mocks.rereadData : mocks.positions)
+          : [],
+        error: null,
       })),
     };
     return builder;
@@ -119,7 +166,7 @@ it('M4: skips a typed crypto FX outage without inventing a quote', async () => {
 describe.each(['cron', 'interactive', 'list'] as const)('FCI band on %s', (path) => {
   it.each(cases)('%s %s→%s price %s anchor %s accepted=%s', async (ticker, source, target, price, anchor, accepted) => {
     mocks.positions = [position(ticker, target, anchor)];
-    mocks.fci.mockResolvedValue({ price, currency: source, changePct: 0, timestamp: '2026-10-23T12:00:00Z' });
+    mocks.fci.mockResolvedValue({ price, currency: source, changePct: 0, timestamp: freshFciNavIso(), source: 'cafci' });
     const candidate = source === target ? price : price / 1300;
     if (path === 'interactive') {
       const url = new URL('http://localhost/api/investments/quote');
@@ -165,7 +212,7 @@ it('refreshes same-currency funds when MEP is missing and skips only conversions
   mocks.positions = [position(), { ...position('CONIOLA', 'USD', 0.135), id: 'fixture-needs-mep' }];
   mocks.fci.mockImplementation(async (ticker: string) => ({
     price: ticker === 'IOLDOLD' ? 1.098 : 179.598,
-    currency: ticker === 'IOLDOLD' ? 'USD' : 'ARS', changePct: null, timestamp: null,
+    currency: ticker === 'IOLDOLD' ? 'USD' : 'ARS', changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
   }));
   const body = await (await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
     headers: { authorization: 'Bearer fixture-cron-secret' },
@@ -212,7 +259,7 @@ it('prefers current, then matching or MEP-converted purchase anchors, with inclu
 
 it.each(['cron', 'interactive', 'list'] as const)('rejects an ARS scale error on a normally created FCI through %s', async (path) => {
   mocks.positions = [{ ...position('PRTAVAB', 'ARS', 1240), market_currency: null, current_price: null }];
-  mocks.fci.mockResolvedValue({ price: 1_240_000, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  mocks.fci.mockResolvedValue({ price: 1_240_000, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
   if (path === 'cron') {
     await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
       headers: { authorization: 'Bearer fixture-cron-secret' },
@@ -244,7 +291,7 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
 
   beforeEach(() => {
     mocks.positions = [{ ...position('PRTAVAB', 'USD', 0.95), market_currency: null, current_price: null }];
-    mocks.fci.mockResolvedValue({ price: 1241.954, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    mocks.fci.mockResolvedValue({ price: 1241.954, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
   });
 
   function expectNoAnchor() {
@@ -256,7 +303,7 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
 
   it.each([true, false])('rejects a 1000x ARS quote for a USD purchase (MEP available=%s)', async (hasMep) => {
     mocks.positions = [{ ...position('PRTAVAB', 'USD', 1), market_currency: null, current_price: null }];
-    mocks.fci.mockResolvedValue({ price: 1_240_000, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    mocks.fci.mockResolvedValue({ price: 1_240_000, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
     if (!hasMep) mocks.dolar.mockResolvedValue({ status: 'unavailable' });
     await refresh();
     expect(mocks.updates).toEqual([]);
@@ -280,7 +327,7 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
   });
 
   it('applies the band to the converted 1235 ARS purchase anchor', async () => {
-    mocks.fci.mockResolvedValue({ price: 2470.001, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    mocks.fci.mockResolvedValue({ price: 2470.001, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
     await refresh();
     expect(mocks.updates).toEqual([]);
     expect(console.warn).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
@@ -290,7 +337,7 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
 
   it('converts an ARS purchase to a USD anchor when CAFCI confirms USD', async () => {
     mocks.positions = [{ ...position('IOLDOLD', 'ARS', 1417), market_currency: null, current_price: null }];
-    mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: new Date().toISOString() });
+    mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
     await refresh();
     expect(mocks.updates).toEqual([expect.objectContaining({
       id: 'fixture-position', current_price: 1.098, market_currency: 'USD',
@@ -329,7 +376,10 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
     'requires MEP at most 24 hours old for a purchase anchor (age=%s)', async (hours, accepted) => {
       vi.useFakeTimers({ toFake: ['Date'] });
       try {
-        vi.setSystemTime(new Date('2026-10-25T12:00:00Z'));
+        vi.setSystemTime(new Date('2026-10-26T15:00:00Z'));
+        mocks.fci.mockResolvedValue({
+          price: 1241.954, currency: 'ARS', changePct: 0, timestamp: freshFciNavIso(), source: 'cafci',
+        });
         mocks.dolar.mockResolvedValue({
           blue: { sell: 1300, buy: 1280, timestamp: new Date() },
           mep: { sell: 1300, buy: 1280, timestamp: new Date(Date.now() - hours * 3600_000), stale: false },
@@ -355,7 +405,7 @@ describe.each([2, 72])('explicitly stale MEP aged %s hours', (hours) => {
       mep: { sell: 1300, buy: 1280, timestamp: asOf, asOf, stale: true },
     });
     mocks.positions = [position('CONIOLA', 'USD', 0.135)];
-    mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
     if (path === 'cron') {
       const response = await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
         headers: { authorization: 'Bearer fixture-cron-secret' },
@@ -384,7 +434,7 @@ describe.each([2, 72])('explicitly stale MEP aged %s hours', (hours) => {
 it('skips snapshots when required MEP is missing even if blue and the cached asset price exist', async () => {
   mocks.dolar.mockResolvedValue({ blue: { sell: 1300, buy: 1280, timestamp: new Date() } });
   mocks.positions = [position('CONIOLA', 'USD', 0.135)];
-  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
   const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
   expect(summary.fxUnavailable).toBe(true);
   expect(summary.investments[0]).toMatchObject({ current_price: 0.135, valuation_price_source: 'cache', fxUnavailable: true });
@@ -394,7 +444,7 @@ it('skips snapshots when required MEP is missing even if blue and the cached ass
 
 it('persists a converted FCI price and snapshot with fresh required MEP', async () => {
   mocks.positions = [position('CONIOLA', 'USD', 0.135)];
-  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+  mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
   const summary = await investmentsService.getPortfolioSummary('fixture-user', { forceRefreshQuotes: true });
   expect(summary.fxStale).toBe(false);
   expect(mocks.updates).toHaveLength(1);
@@ -410,7 +460,7 @@ it.each([[24, true], [24 + 1 / 3600, false]] as const)('requires MEP at most 24 
       mep: { sell: 1300, buy: 1280, timestamp: new Date(Date.now() - hours * 3600_000), stale: false },
     });
     mocks.positions = [position('CONIOLA', 'USD', 0.135)];
-    mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString() });
+    mocks.fci.mockResolvedValue({ price: 179.598, currency: 'ARS', changePct: 0, timestamp: new Date().toISOString(), source: 'cafci' });
     const response = await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
       headers: { authorization: 'Bearer fixture-cron-secret' },
     }));
@@ -461,4 +511,221 @@ it('does not persist a cross-currency stock estimate using stale MEP', async () 
   expect(summary.investments[0]).toMatchObject({ current_price: 70, valuation_price_source: 'estimate' });
   expect(mocks.updates).toEqual([]);
   expect(mocks.snapshots).not.toHaveBeenCalled();
+});
+
+it('cron does not write a non-positive CAFCI price', async () => {
+  mocks.fci.mockResolvedValue({
+    price: 0, currency: 'USD', changePct: 0, timestamp: freshFciNavIso(), source: 'cafci',
+  });
+  const body = await (await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
+    headers: { authorization: 'Bearer fixture-cron-secret' },
+  }))).json();
+  expect(body.processed).toBe(0);
+  expect(mocks.updates).toEqual([]);
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+    reason: 'non_positive_price',
+    source: 'cafci',
+  }));
+});
+
+it('selects a future stored timestamp for refresh without forceRefreshQuotes and does not write', async () => {
+  mocks.positions = [{
+    ...position(),
+    current_price: 1.09,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  }];
+  const rows = await investmentsService.list('fixture-user');
+  expect(mocks.fci).toHaveBeenCalled();
+  expect(rows[0]).toMatchObject({
+    current_price: 1.09,
+    valuation_price_source: 'cache',
+  });
+  expect(mocks.updates).toEqual([]);
+  expect(console.warn).toHaveBeenCalledWith(
+    '[quotes] skip CAFCI failure',
+    expect.objectContaining({
+      reason: 'future_stored',
+      id: 'fixture-position',
+      stored: '2099-01-01T03:00:00.000Z',
+    }),
+  );
+});
+
+it('does not return a losing FCI quote as live when the conditional UPDATE matches zero rows', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position(),
+    current_price: 1.09,
+    current_price_updated_at: freshFciNavIso(),
+  }];
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    current_price: 1.09,
+    valuation_price_source: 'cache',
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+    reason: 'older_than_stored',
+    id: 'fixture-position',
+    source: 'cafci',
+  }));
+});
+
+it('logs row_changed when the FCI row is a bond before the UPDATE lands', async () => {
+  mocks.selectData = [];
+  mocks.positions = [position()];
+  mocks.rereadData = [{
+    ...position(),
+    type: 'bond',
+    ticker: 'AL30',
+    market_currency: 'USD',
+    current_price: 77.5,
+  }];
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    type: 'bond',
+    ticker: 'AL30',
+    market_currency: 'USD',
+    current_price: 77.5,
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+    reason: 'row_changed',
+    id: 'fixture-position',
+  }));
+});
+
+it('logs row_changed when a stock becomes an FCI mid-refresh', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position('GGAL', 'ARS', 100),
+    type: 'stock_arg',
+    ticker: 'GGAL',
+  }];
+  mocks.rereadData = [{
+    ...position('GGAL', 'ARS', 100),
+    type: 'fci',
+    ticker: 'GGAL',
+    current_price: 100,
+  }];
+  mocks.arg.mockResolvedValue({
+    byStock: new Map([['GGAL', {
+      symbol: 'GGAL', price: 110, currency: 'ARS', changePct: 1, timestamp: new Date().toISOString(),
+    }]]),
+    byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
+  });
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(mocks.updates).toHaveLength(1);
+  expect(rows[0]).toMatchObject({ type: 'fci', ticker: 'GGAL', current_price: 100 });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+    reason: 'row_changed',
+    ticker: 'GGAL',
+    type: 'stock_arg',
+  }));
+});
+
+it('does not refresh a stock_us row with a future stored ts in default mode', async () => {
+  mocks.positions = [{
+    ...position('AAPL', 'USD', 190),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 190,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  }];
+  mocks.yahoo.mockResolvedValue(new Map([['AAPL', {
+    ticker: 'AAPL', price: 200, changePct: 1, currency: 'USD', timestamp: '2026-10-26T15:00:00.000Z',
+  }]]));
+  const rows = await investmentsService.list('fixture-user');
+  expect(mocks.yahoo).not.toHaveBeenCalled();
+  expect(mocks.stooq).not.toHaveBeenCalled();
+  expect(mocks.updates).toEqual([]);
+  expect(rows[0]).toMatchObject({
+    current_price: 190,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+    valuation_price_source: 'cache',
+  });
+});
+
+it('does not return a losing non-FCI quote as live when the CAS UPDATE matches zero rows', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position('AAPL', 'USD', 190),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 190,
+    current_price_updated_at: '2026-10-20T15:00:00.000Z',
+  }];
+  mocks.rereadData = [{
+    ...position('AAPL', 'USD', 205),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 205,
+    current_price_updated_at: '2026-10-26T18:00:00.000Z',
+  }];
+  mocks.yahoo.mockResolvedValue(new Map([['AAPL', {
+    ticker: 'AAPL', price: 200, changePct: 1, currency: 'USD', timestamp: '2026-10-26T15:00:00.000Z',
+  }]]));
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    current_price: 205,
+    current_price_updated_at: '2026-10-26T18:00:00.000Z',
+    valuation_price_source: 'cache',
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+    reason: 'older_than_stored',
+    ticker: 'AAPL',
+    type: 'stock_us',
+  }));
+});
+
+it('logs future_stored when a concurrent FCI writer introduced a future timestamp', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position(),
+    current_price: 1.09,
+    current_price_updated_at: freshFciNavIso(),
+  }];
+  mocks.rereadData = [{
+    ...position(),
+    current_price: 1.09,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  }];
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    current_price: 1.09,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+    reason: 'future_stored',
+    id: 'fixture-position',
+  }));
+});
+
+it('logs future_stored when a concurrent writer introduced a future timestamp', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position('AAPL', 'USD', 190),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 190,
+    current_price_updated_at: '2026-10-20T15:00:00.000Z',
+  }];
+  mocks.rereadData = [{
+    ...position('AAPL', 'USD', 999),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 999,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  }];
+  mocks.yahoo.mockResolvedValue(new Map([['AAPL', {
+    ticker: 'AAPL', price: 200, changePct: 1, currency: 'USD', timestamp: '2026-10-26T15:00:00.000Z',
+  }]]));
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    current_price: 999,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+    reason: 'future_stored',
+    ticker: 'AAPL',
+    type: 'stock_us',
+  }));
 });

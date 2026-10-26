@@ -17,7 +17,8 @@ vi.mock('@/lib/observability/alert', () => ({ alertAdmin: mocks.alert }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
   getCryptoQuote: mocks.crypto, getStockQuote: mocks.stock, getDolarQuotes: mocks.dolar,
 } }));
-vi.mock('@/lib/market-data/quote-refresh', () => {
+vi.mock('@/lib/market-data/quote-refresh', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/market-data/quote-refresh')>();
   const quoteCacheKeyForPosition = (inv: {
     type: string; ticker: string | null; market_currency?: string | null;
   }) => {
@@ -29,6 +30,7 @@ vi.mock('@/lib/market-data/quote-refresh', () => {
     return `${inv.type}:${ticker}:${ccy}`;
   };
   return {
+    ...actual,
     quoteCacheKeyForPosition,
     refreshQuotesForInvestments: async (investments: Array<{
       type: string; ticker: string | null; market_currency?: string | null;
@@ -72,7 +74,26 @@ beforeEach(() => {
   mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), buy: 1200, sell: 1200  }, mep: { timestamp: new Date(), buy: 1200, sell: 1200  } });
   mocks.alert.mockResolvedValue(undefined);
   mocks.upsert.mockResolvedValue({ error: null });
-  mocks.update.mockImplementation(() => ({ eq: vi.fn().mockResolvedValue({ error: null }) }));
+  mocks.update.mockImplementation(() => {
+    const chain: {
+      eq: ReturnType<typeof vi.fn>;
+      is: ReturnType<typeof vi.fn>;
+      or: ReturnType<typeof vi.fn>;
+      select: ReturnType<typeof vi.fn>;
+      then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) => Promise<unknown>;
+    } = {
+      eq: vi.fn(),
+      is: vi.fn(),
+      or: vi.fn(),
+      select: vi.fn(),
+      then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
+    };
+    chain.eq.mockReturnValue(chain);
+    chain.is.mockReturnValue(chain);
+    chain.or.mockReturnValue(chain);
+    chain.select.mockResolvedValue({ error: null, data: [{ id: 'ok' }] });
+    return chain;
+  });
   mocks.from.mockImplementation((table: string) => {
     if (table === 'exchange_rates') return { upsert: mocks.upsert };
     const query = {
@@ -148,7 +169,23 @@ describe('quote cron provider failure reporting', () => {
 
   it('adds provider failures to individual investment update failures', async () => {
     mocks.dolar.mockRejectedValue(new FxUnavailableError('MEP'));
-    mocks.update.mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: new Error('synthetic write failure') }) });
+    mocks.update.mockImplementation(() => {
+      const chain: {
+        eq: ReturnType<typeof vi.fn>;
+        is: ReturnType<typeof vi.fn>;
+        or: ReturnType<typeof vi.fn>;
+        select: ReturnType<typeof vi.fn>;
+      } = {
+        eq: vi.fn(),
+        is: vi.fn(),
+        or: vi.fn(),
+        select: vi.fn().mockResolvedValue({ error: new Error('synthetic write failure') }),
+      };
+      chain.eq.mockReturnValue(chain);
+      chain.is.mockReturnValue(chain);
+      chain.or.mockReturnValue(chain);
+      return chain;
+    });
     const response = await GET(request());
     expect(await response.json()).toMatchObject({ total: 1, processed: 0, errors: 2 });
   });
