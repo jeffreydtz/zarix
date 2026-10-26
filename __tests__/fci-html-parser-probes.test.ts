@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseCafciHtmlFichaDetailed } from '@/lib/market-data/cafci-html';
+import { parseCafciHtmlFichaDetailed, parseInlineStyleDeclarations } from '@/lib/market-data/cafci-html';
 import { parseIolFondosPanel } from '@/lib/market-data/iol-fci-panel';
 
 const DATE = '23/10/2026';
@@ -464,14 +464,17 @@ describe('Codex r7 HTML parser — HTML-namespace allowlist by construction', ()
     expect(parsed(html).parsed).toBeNull();
   });
 
-  it('skips identical duplicate Moneda: labels as extra document candidates', () => {
+  it('counts identical duplicate Moneda: labels with the same value as one', () => {
     const html = shell({
       moneda: `<div id="fichaRight">
         <span class="label">Moneda:</span> Peso Argentina
         <span class="label">Moneda:</span> Peso Argentina
       </div>`,
     });
-    expect(parsed(html).parsed).toBeNull();
+    expect(parsed(html).parsed).toMatchObject({
+      price: 1241.954039,
+      monedaLabel: 'Peso Argentina',
+    });
   });
 
   it('still skips conflicting duplicate Moneda: labels', () => {
@@ -621,5 +624,59 @@ describe('Codex r8 HTML parser — uniqueness, visibility, wrappers, zero-width'
   it('treats the last display declaration as winning when it is block', () => {
     const html = shell({ identity: `<div style="display: none; display: block">${IDENTITY}</div>` });
     expect(parsed(html).parsed).toMatchObject({ price: 1241.954039 });
+  });
+});
+
+describe('Codex r9 HTML parser — unfiltered NAV tail, style comments, !important', () => {
+  it('skips a truncated NAV whose tail is in an aria-hidden descendant', () => {
+    const html = shell({
+      nav: '<p>Valor por cada cuotaparte: 1.241,95<span aria-hidden="true">4039</span></p>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a truncated NAV whose tail is in an inert descendant', () => {
+    const html = shell({
+      nav: '<p>Valor por cada cuotaparte: 1.241,95<span inert>4039</span></p>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a truncated NAV whose tail is visibility-restored on a descendant', () => {
+    const html = shell({
+      nav: '<p>Valor por cada cuotaparte: 1.241,95<span style="visibility:hidden"><span style="visibility:visible">4039</span></span></p>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a truncated NAV whose tail is joined by a BOM entity', () => {
+    const html = shell({
+      nav: '<p>Valor por cada cuotaparte: 1.241,95<span>&#xfeff;4039</span></p>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a BOM sibling suffix so 1300.01 is not saved as 1300', () => {
+    const html = shell({
+      nav: '<p>Valor por cada cuotaparte: 1300</p><span>\uFEFF.01</span>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+    expect(parsed(html).parsed?.price).not.toBe(1300);
+  });
+
+  it.each([
+    ['display:/*x*/none', 'display:/*x*/none'],
+    ['display:none /*x*/', 'display:none /*x*/'],
+    ['!important beating later block', 'display:none!important;display:block'],
+  ])('skips identity hidden by %s', (_name, style) => {
+    const html = shell({ identity: `<div style="${style}">${IDENTITY}</div>` });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('parses CSS comments and !important in inline styles', () => {
+    expect(parseInlineStyleDeclarations('display:/*x*/none').get('display')).toBe('none');
+    expect(parseInlineStyleDeclarations('display:none /*x*/').get('display')).toBe('none');
+    expect(parseInlineStyleDeclarations('display:none!important;display:block').get('display')).toBe('none');
+    expect(parseInlineStyleDeclarations('display:none;display:block').get('display')).toBe('block');
   });
 });

@@ -316,6 +316,40 @@ export interface FciSkipDetail {
 
 const FCI_SKIP_REASON_MAX = 200;
 
+/**
+ * One skip reason per ticker when lots disagree. Earlier entries win.
+ * Unknown strings sort after this list, then lexicographically.
+ */
+export const FCI_ALL_FAILED_REASON_PRECEDENCE = [
+  'unparseable_ficha',
+  'class_mismatch',
+  'no_match',
+  'non_positive_price',
+  'no_anchor',
+  'out_of_band',
+  'daily_jump',
+  'stale_nav',
+  'undated',
+  'older_than_stored',
+  'future_stored',
+  'mep',
+  'fci_implausible',
+  'budget_exhausted',
+  'unknown',
+] as const;
+
+export function selectFciTickerSkipReason(reasons: readonly string[]): string {
+  if (reasons.length === 0) return 'unknown';
+  const rank = (reason: string): number => {
+    const index = (FCI_ALL_FAILED_REASON_PRECEDENCE as readonly string[]).indexOf(reason);
+    return index >= 0 ? index : FCI_ALL_FAILED_REASON_PRECEDENCE.length;
+  };
+  return [...reasons].sort((a, b) => {
+    const delta = rank(a) - rank(b);
+    return delta !== 0 ? delta : a.localeCompare(b);
+  })[0];
+}
+
 function capReason(value: string): string {
   return value.replace(/[\r\n\t]+/g, ' ').slice(0, FCI_SKIP_REASON_MAX);
 }
@@ -650,8 +684,7 @@ export async function refreshQuotesForInvestments(
     storedPrice: number | null;
     stamped: QuoteResult | null;
   }>>();
-  const fciTickerOk = new Set<string>();
-  const fciTickerSkip = new Map<string, string>();
+  const fciTickerState = new Map<string, { ok: boolean; reasons: string[] }>();
   for (const fci of fciTickers) {
     const q = fciQuoteByTicker.get(fci.ticker);
     // Resolve the currency of the actual write before choosing its anchor.
@@ -856,8 +889,10 @@ export async function refreshQuotesForInvestments(
         }
       }
     }
-    if (stamped) fciTickerOk.add(fci.ticker);
-    else fciTickerSkip.set(fci.ticker, skipReason ?? 'unknown');
+    const tickerState = fciTickerState.get(fci.ticker) ?? { ok: false, reasons: [] };
+    if (stamped) tickerState.ok = true;
+    else tickerState.reasons.push(skipReason ?? 'unknown');
+    fciTickerState.set(fci.ticker, tickerState);
     const rows = fciByKey.get(fci.cacheKey) ?? [];
     rows.push({
       ticker: fci.ticker,
@@ -868,9 +903,11 @@ export async function refreshQuotesForInvestments(
     fciByKey.set(fci.cacheKey, rows);
   }
   if (uniqueFci.length > 0) {
-    const reasons = uniqueFci.map((fci) => (
-      fciTickerOk.has(fci.ticker) ? null : (fciTickerSkip.get(fci.ticker) ?? 'unknown')
-    ));
+    const reasons = uniqueFci.map((fci) => {
+      const state = fciTickerState.get(fci.ticker);
+      if (!state || state.ok) return null;
+      return selectFciTickerSkipReason(state.reasons);
+    });
     if (reasons.every((reason): reason is string => Boolean(reason) && reason === reasons[0])) {
       console.error('[quotes] fci_all_failed', { reason: reasons[0], count: uniqueFci.length });
     }

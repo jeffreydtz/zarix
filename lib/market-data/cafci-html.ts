@@ -11,18 +11,30 @@
  * `por cada cuotaparte`, `Valores al` (except `#cartera`), `Moneda:` label, and
  * case-insensitive `cuotaparte` id counts, whether allowlisted, hidden, foreign
  * namespace, or raw-text. Live fichas (2026-10-26) have one of each countable
- * candidate (two raw `Valores al`, of which one is `#cartera`). Any extra skips.
+ * candidate (two raw `Valores al`, of which one is `#cartera`). Extra identical
+ * `Moneda:` values count as one; conflicting values skip. Any extra identity,
+ * NAV, date, or cuotaparte id skips.
  * The single candidate must then sit on an HTML-namespace allowlist chain
  * through `<body>` then `<html>` and must not be hidden (`hidden`,
  * `aria-hidden="true"`, `inert`, closed `details`/`dialog`, or an inline style
- * whose last `display`/`visibility` declaration is `none` / `hidden`/`collapse`).
+ * whose winning `display`/`visibility` declaration (comments stripped;
+ * `!important` beats a later non-important) is `none` / `hidden`/`collapse`).
  * External and class-based CSS cannot be checked and is an accepted limit.
  *
  * Text values come only from text nodes whose direct parent is allowlisted and
- * visible. Unicode Cf/format characters are stripped before the node-vs-block
- * NAV cross-check. iframe/raw-text, `<base href>`, `<meta http-equiv=refresh>`,
- * and non-whitespace after `</html>` fail closed (live fichas have none of those
- * except a trailing newline after `</html>`).
+ * visible. Visibility filtering never shortens a NAV: the node-vs-block
+ * cross-check concatenates ALL descendant text of the NAV paragraph and of
+ * `#cuotaparte` (hidden, aria-hidden, inert, display:none included). Unicode
+ * Cf/format characters (ZWSP, BOM/U+FEFF, bidi, soft hyphens) are stripped
+ * before any whitespace normalization so they never become a space. iframe/
+ * raw-text, `<base href>`, `<meta http-equiv=refresh>`, and non-whitespace
+ * after `</html>` fail closed (live fichas have none of those except a trailing
+ * newline after `</html>`).
+ *
+ * Accepted limits (not checked): CSS from `<style>` or external stylesheets
+ * (pseudo-element replacement, class hiding); parse5 hoisting a hidden wrapper
+ * out of `<select>`; first-wins duplicate attributes; fichas without identity
+ * controls skip.
  */
 
 import { load, type CheerioAPI } from 'cheerio';
@@ -100,18 +112,31 @@ function hasAttr($: CheerioAPI, el: Element, name: string): boolean {
   return $(el).attr(name) != null;
 }
 
-/** Last declaration wins; case/whitespace/!important-tolerant. Not a substring match. */
+function stripCssComments(style: string): string {
+  return style.replace(/\/\*[\s\S]*?(?:\*\/|$)/g, '');
+}
+
+/**
+ * Inline cascade: comments stripped first; `!important` beats a later
+ * non-important declaration of the same property; later `!important` still wins.
+ * Not a substring match.
+ */
 export function parseInlineStyleDeclarations(style: string): Map<string, string> {
   const decls = new Map<string, string>();
-  for (const raw of style.split(';')) {
+  const important = new Map<string, boolean>();
+  for (const raw of stripCssComments(style).split(';')) {
     const part = raw.trim();
     if (!part) continue;
     const colon = part.indexOf(':');
     if (colon <= 0) continue;
     const prop = part.slice(0, colon).trim().toLowerCase();
     let value = part.slice(colon + 1).trim();
-    value = value.replace(/!important\s*$/i, '').trim().toLowerCase();
-    if (prop) decls.set(prop, value);
+    const isImportant = /!\s*important\s*$/i.test(value);
+    value = value.replace(/!\s*important\s*$/i, '').trim().toLowerCase();
+    if (!prop) continue;
+    if (important.get(prop) && !isImportant) continue;
+    decls.set(prop, value);
+    important.set(prop, isImportant);
   }
   return decls;
 }
@@ -208,6 +233,11 @@ function stripFormatChars(text: string): string {
   return text.replace(FORMAT_CHARS, '');
 }
 
+/** Strip Cf/BOM/soft-hyphen before whitespace so U+FEFF never becomes a space. */
+function normalizeFichaText(text: string): string {
+  return stripFormatChars(text).replace(/\s+/g, ' ').trim();
+}
+
 function countRe(text: string, re: RegExp): number {
   const flags = re.flags.includes('g') ? re.flags : `${re.flags}g`;
   return (text.match(new RegExp(re.source, flags)) || []).length;
@@ -242,18 +272,27 @@ function allowlistedText($: CheerioAPI, root: AnyNode): string {
       for (let i = node.children.length - 1; i >= 0; i--) stack.push(node.children[i]);
     }
   }
-  return bits.join('').replace(/\s+/g, ' ').trim();
+  return normalizeFichaText(bits.join(''));
+}
+
+/** All descendant text nodes, including hidden/aria-hidden/inert/display:none. */
+function descendantTextUnfiltered(root: AnyNode): string {
+  const bits: string[] = [];
+  walkEveryNode(root, (node) => {
+    if (node.type === 'text') bits.push(textData(node));
+  });
+  return normalizeFichaText(bits.join(''));
 }
 
 function directText($: CheerioAPI, el: Element): string {
-  return $(el)
-    .contents()
-    .toArray()
-    .filter((node) => node.type === 'text' && textParentAllowed($, node))
-    .map((node) => $(node).text())
-    .join('')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return normalizeFichaText(
+    $(el)
+      .contents()
+      .toArray()
+      .filter((node) => node.type === 'text' && textParentAllowed($, node))
+      .map((node) => $(node).text())
+      .join(''),
+  );
 }
 
 function subtreeHasComment(root: AnyNode): boolean {
@@ -390,6 +429,18 @@ function hasNonWhitespaceAfterHtml(html: string): boolean {
   return html.slice(close + '</html>'.length).trim() !== '';
 }
 
+function extractMonedaValues(blob: string): string[] {
+  const labels = [...blob.matchAll(/Moneda:/g)];
+  const values: string[] = [];
+  for (let i = 0; i < labels.length; i++) {
+    const start = (labels[i].index ?? 0) + labels[i][0].length;
+    const end = i + 1 < labels.length ? (labels[i + 1].index ?? blob.length) : blob.length;
+    const value = blob.slice(start, end).replace(/\s+/g, ' ').trim();
+    if (value) values.push(value);
+  }
+  return values;
+}
+
 function documentUniquenessOk($: CheerioAPI, html: string): boolean {
   const fundForms = $('form').toArray().filter(isElement).filter((el) => Boolean(fondoIdFromAction($(el).attr('action'))));
   const claseControls = $('*').toArray().filter(isElement).filter((el) => isClaseControl($, el));
@@ -403,7 +454,7 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
 
   let navDom = 0;
   let valoresDom = 0;
-  let monedaDom = 0;
+  const monedaBits: string[] = [];
   const root = $.root()[0];
   walkEveryNode(root, (node) => {
     if (isElement(node) && attrCi($, node, 'id') === 'cartera') return 'skip-children';
@@ -411,7 +462,7 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
       const raw = textData(node) || $(node).text();
       navDom += countRe(raw, /por cada cuotaparte/gi);
       valoresDom += countRe(raw, /Valores al\s+/gi);
-      monedaDom += countRe(raw, /Moneda:/g);
+      monedaBits.push(raw);
       return 'skip-children';
     }
     if (node.type !== 'text' && node.type !== 'comment') return;
@@ -419,11 +470,14 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
     if (!raw) return;
     navDom += countRe(raw, /por cada cuotaparte/gi);
     valoresDom += countRe(raw, /Valores al\s+/gi);
-    monedaDom += countRe(raw, /Moneda:/g);
+    monedaBits.push(raw);
   });
   if (navDom !== 1 || countRaw(html, /por cada cuotaparte/gi) !== 1) return false;
   if (valoresDom !== 1) return false;
-  if (monedaDom !== 1 || countRaw(html, /Moneda:/g) !== 1) return false;
+  const monedaValues = extractMonedaValues(monedaBits.join(''));
+  if (monedaValues.length === 0) return false;
+  const uniqueMoneda = uniqueMonedaLabels(monedaValues);
+  if (uniqueMoneda.length === 0 || !currenciesAgree(uniqueMoneda[0], uniqueMoneda)) return false;
   return true;
 }
 
@@ -505,7 +559,7 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
     remainder = inner.slice(innerMatch.index + innerMatch[0].length);
   }
   if (!token) {
-    token = stripFormatChars(followingText($, el).replace(/\s+/g, ' ').trim());
+    token = normalizeFichaText(followingText($, el));
     remainder = followingSiblingHtml($, el);
   }
   if (!token || !CAFCI_NAV_TOKEN.test(token)) return null;
@@ -513,8 +567,10 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
   const nodePrice = parseArgentineNumber(token);
   if (nodePrice == null || !Number.isFinite(nodePrice) || nodePrice <= 0) return null;
 
-  const blockToken = navTokenFromSectionText(allowlistedText($, section));
-  if (!blockToken) return null;
+  const nodeToken = navTokenFromSectionText(descendantTextUnfiltered(el));
+  const blockToken = navTokenFromSectionText(descendantTextUnfiltered(section));
+  if (!blockToken || blockToken !== token) return null;
+  if (nodeToken && nodeToken !== token) return null;
   const blockPrice = parseArgentineNumber(blockToken);
   if (blockPrice == null || blockPrice !== nodePrice) return null;
   return nodePrice;

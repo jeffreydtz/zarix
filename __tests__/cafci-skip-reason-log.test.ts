@@ -28,6 +28,7 @@ import {
   monotonicCurrentPriceFilter,
   quoteCacheKey,
   refreshQuotesForInvestments,
+  selectFciTickerSkipReason,
   shouldPersistFciQuote,
 } from '@/lib/market-data/quote-refresh';
 import { fciJumpMaxAbs } from '@/lib/market-data/fci-daily-jump';
@@ -112,6 +113,60 @@ describe('skip CAFCI failure log carries the reason', () => {
       reason: 'unparseable_ficha',
       count: 2,
     });
+  });
+
+  it('picks one skip reason per ticker with deterministic precedence', () => {
+    expect(selectFciTickerSkipReason(['out_of_band', 'no_anchor'])).toBe('no_anchor');
+    expect(selectFciTickerSkipReason(['no_anchor', 'out_of_band'])).toBe('no_anchor');
+    expect(selectFciTickerSkipReason(['unknown', 'zeta', 'alpha'])).toBe('unknown');
+  });
+
+  it('aggregates fci_all_failed per ticker, independent of lot order', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'PRTAVAB', price: 5, currency: 'ARS', changePct: 0,
+      timestamp: freshFciNavIso(), source: 'cafci',
+    });
+    const outOfBand = {
+      type: 'fci' as const, ticker: 'PRTAVAB', id: 'lot-out',
+      market_currency: 'ARS', purchase_currency: 'ARS', current_price: 1.09,
+    };
+    const noAnchor = {
+      type: 'fci' as const, ticker: 'PRTAVAB', id: 'lot-anchor',
+      market_currency: 'ARS', purchase_currency: 'ARS',
+    };
+    await refreshQuotesForInvestments([outOfBand, noAnchor]);
+    expect(error).toHaveBeenCalledWith('[quotes] fci_all_failed', {
+      reason: 'no_anchor',
+      count: 1,
+    });
+    error.mockClear();
+    await refreshQuotesForInvestments([noAnchor, outOfBand]);
+    expect(error).toHaveBeenCalledWith('[quotes] fci_all_failed', {
+      reason: 'no_anchor',
+      count: 1,
+    });
+  });
+
+  it('does not emit fci_all_failed when mixed ticker reasons disagree', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockImplementation(async (ticker: string, onMiss?: (r: string) => void) => {
+      if (ticker === 'PRTAVAB') {
+        return {
+          ticker, price: 5, currency: 'ARS', changePct: 0,
+          timestamp: freshFciNavIso(), source: 'cafci',
+        };
+      }
+      onMiss?.('unparseable_ficha');
+      return null;
+    });
+    await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', purchase_currency: 'ARS', current_price: 1.09 },
+      IOLDOLD,
+    ]);
+    expect(error).not.toHaveBeenCalledWith('[quotes] fci_all_failed', expect.anything());
   });
 
   it('does not emit fci_all_failed when one FCI parses', async () => {
