@@ -910,6 +910,9 @@ export async function confirmPendingItems(input: {
     throw new ApiError(blocked.err.error, blocked.err.status);
   }
   const pendingRows = ids.map((id) => byId.get(id)).filter((row): row is PendingInboxItem => Boolean(row));
+  // Same-request snapshot for leftover release. Not a live prior status from
+  // claim_pending_inbox_items (that would need a migration). Restore of each
+  // leftover is still scoped to that row's claim_id.
   const priorStatusById = new Map(pendingRows.map((row) => [row.id, row.status]));
   await assertBatchAccountsResolvable(input.userId, pendingRows);
   await assertBatchCategoriesOwned(input.userId, pendingRows);
@@ -1069,18 +1072,16 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
 
   let claimed: unknown = input.claimedRow ?? null;
   let claimErr: { message?: string } | null = null;
+  // claim_pending_inbox_item RETURNS the post-update row (status=confirming).
+  // Returning the previous status atomically would need a new SQL migration;
+  // we do not add one. Callers that already snapshotted the row in this
+  // request (batch) may pass priorStatus. A pre-claim SELECT is racy under
+  // concurrent confirms and is not used. Restore is scoped to this claim_id
+  // so only the claim owner writes; a concurrent owner is not overwritten.
+  // Residual: if priorStatus is omitted we default to pending.
   let restoreStatus: 'pending' | 'uncertain' =
     input.priorStatus === 'uncertain' ? 'uncertain' : 'pending';
   if (!input.claimedRow) {
-    if (input.priorStatus == null) {
-      const { data: before } = await supabase
-        .from('pending_inbox_items')
-        .select('status')
-        .eq('id', input.itemId)
-        .eq('user_id', input.userId)
-        .maybeSingle();
-      if (before?.status === 'uncertain') restoreStatus = 'uncertain';
-    }
     const result = await claim();
     claimed = result.data;
     claimErr = result.error;
@@ -1118,7 +1119,7 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
       }
       let release = supabase
         .from('pending_inbox_items')
-        .update({ status: 'pending', claim_id: null })
+        .update({ status: restoreStatus, claim_id: null })
         .eq('id', input.itemId)
         .eq('user_id', input.userId)
         .eq('status', 'confirming');
@@ -1141,6 +1142,8 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
 
   const revertClaim = async () => {
     if (!myClaimId) return;
+    // Conditional on claim_id so a concurrent confirm that already owns the
+    // row cannot be restored with this request's (possibly stale) status.
     await supabase
       .from('pending_inbox_items')
       .update({ status: restoreStatus, claim_id: null })

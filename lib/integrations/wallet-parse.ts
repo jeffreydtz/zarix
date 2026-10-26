@@ -40,6 +40,7 @@ export type AmountParseResult = {
   ambiguous: boolean;
   direction: 'expense' | 'income';
   excessDecimals?: boolean;
+  currency?: string;
 };
 
 const MAX_TEXT = 4000;
@@ -160,95 +161,135 @@ function parseGroupedNumber(
 const CANDIDATE_RE =
   /(?<![A-Za-z\d])([+-])?\s*(?:(ARS|USD|EUR|U\$S|US\$)\$?|(\$))?\s*((?:0[xX][0-9A-Fa-f]+|[.,]\d+|\d{1,3}(?:[.\s]\d{3})+(?:,\d{1,2})?|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+[.,]\d+|\d{1,12})(?:[eE][+-]?\d+)?)/gi;
 
-function isDateOrTimeSpan(src: string, digitStart: number, digitEnd: number, anchored: boolean): boolean {
-  if (anchored) return false;
-  const token = src.slice(digitStart, digitEnd).replace(/\s/g, '');
-  if (!/^\d{1,4}$/.test(token)) return false;
-  const after = src.slice(digitEnd);
-  const before = src.slice(0, digitStart);
-  if (/^\d{1,2}$/.test(token) && /^\s*[:/]\s*\d{2}(?:\s*[:/]\s*\d{2,4})?/.test(after)) return true;
-  if (/^\d{2}(?:\d{2})?$/.test(token) && /\d{1,2}\s*[:/]\s*$/.test(before)) return true;
-  return false;
+/** Failure/reversal wording: never auto-confirm a partial/alternate amount. */
+const FAILURE_RE =
+  /rechazad|denegad|fallid|anulad|anulaci[oó]n|cancelad|revertid|devoluci[oó]n|reintegro/i;
+const INSTALLMENT_RE = /\bcuotas?\b|\b\d+\s*x\b/i;
+const UNICODE_SIGN_RE = /[\u2212\u2013\u2014]/;
+const MARKER_SUFFIX_RE = /^(ARS|USD|EUR|U\$S|US\$)\b/i;
+const GLUED_DATE_TIME_RE = /^(?:[:/]\s*\d|\s*[:/-]\s*\d)/;
+const GLUED_DATE_TIME_SPAN_RE = /^(?:[:/]\s*\d+|\s*[:/-]\s*\d+)+/;
+const SPLIT_CENTS_RE = /^\s*,\s*\d{1,2}\b/;
+
+function markerCurrency(marker: string): 'ARS' | 'USD' | 'EUR' {
+  if (/^(USD|US\$|U\$S)$/i.test(marker)) return 'USD';
+  if (/^EUR$/i.test(marker)) return 'EUR';
+  return 'ARS';
 }
 
-function isBalanceContext(src: string, matchStart: number): boolean {
-  const before = src.slice(Math.max(0, matchStart - 48), matchStart);
-  return /\bsaldo(?:\s+disponible)?\b|\bdisponible\s*:|\bavailable\s+balance\b/i.test(before);
+function localeFromMarker(marker: string): 'AR' | 'US' {
+  return markerCurrency(marker) === 'USD' ? 'US' : 'AR';
 }
 
+function isBareDollarDotDecimal(marker: string, token: string): boolean {
+  if (marker !== '$') return false;
+  return /^\d+\.\d{1,2}$/.test(stripTrailingMoneyPunct(token.replace(/\s/g, '')));
+}
+
+function parkAmount(
+  direction: 'expense' | 'income' = 'expense',
+  extra?: { excessDecimals?: boolean }
+): AmountParseResult {
+  return { amount: null, ambiguous: true, direction, ...extra };
+}
+
+/**
+ * Conservative Wallet free-text gate: a candidate counts only with an explicit
+ * currency marker ($, ARS, USD, US$, U$S, EUR) and a fully valid token.
+ * Auto-confirm requires exactly one such candidate; any second amount, mixed
+ * currency, cuota wording, unicode sign, split cents, or glued : / - parks
+ * with amount=null (never a leftover/partial figure). Unmarked numbers are
+ * never the amount. There is no saldo look-back window.
+ */
 export function parseAmountFromText(text: string): AmountParseResult {
-  const src = text.replace(/\u00a0/g, ' ');
-  const refundSrc = src.replace(CREDIT_CARD_PHRASE, ' ');
-  const refund = /\b(devoluci[oó]n|refund|reintegro|contracargo|revers[ao]|cr[eé]dito)\b/i.test(refundSrc);
+  const src = text.replace(/[\u00a0\u202f\u2009]/g, ' ');
   const stripped = src.replace(LAST4_CONTEXT, ' ');
-  const hint = localeHintFromText(src);
 
-  const matches: Array<{ raw: string; signed: boolean; anchored: boolean; digits: string }> = [];
+  if (UNICODE_SIGN_RE.test(src)) return parkAmount();
+  if (FAILURE_RE.test(src.replace(CREDIT_CARD_PHRASE, ' '))) return parkAmount();
+  if (INSTALLMENT_RE.test(src)) return parkAmount();
+
+  type Marked = { raw: string; signed: boolean; currency: 'ARS' | 'USD' | 'EUR'; marker: string };
+  const valid: Marked[] = [];
+  let invalidMarked = false;
   CANDIDATE_RE.lastIndex = 0;
   let m: RegExpExecArray | null;
   while ((m = CANDIDATE_RE.exec(stripped))) {
     const group4 = m[4] || '';
-    const digitStart = m.index + m[0].length - group4.length;
     let digits = group4.replace(/\s/g, '');
     let tokenEnd = m.index + m[0].length;
-    const extraSci = stripped.slice(tokenEnd).match(/^[eExX][+\-0-9A-Fa-f]*/);
-    if (extraSci) {
-      digits += extraSci[0];
-      tokenEnd += extraSci[0].length;
+    const after = stripped.slice(tokenEnd);
+    const prefixMarker = m[2] || m[3] || '';
+    const markedHere = Boolean(prefixMarker) || MARKER_SUFFIX_RE.test(after.trimStart());
+    if (/^[eExX]/.test(after) || GLUED_DATE_TIME_RE.test(after)) {
+      if (markedHere) invalidMarked = true;
+      const span = after.match(GLUED_DATE_TIME_SPAN_RE);
+      tokenEnd += span?.[0].length ?? 0;
+      CANDIDATE_RE.lastIndex = Math.max(CANDIDATE_RE.lastIndex, tokenEnd);
+      continue;
     }
-    const extraJunk = stripped.slice(tokenEnd).match(/^[._,]*\d[\d._,]*/);
+    if (SPLIT_CENTS_RE.test(after)) {
+      if (markedHere) invalidMarked = true;
+      CANDIDATE_RE.lastIndex = Math.max(CANDIDATE_RE.lastIndex, tokenEnd);
+      continue;
+    }
+    const extraJunk = after.match(/^[._]*\d[\d._]*/);
     if (extraJunk) {
       digits += extraJunk[0];
       tokenEnd += extraJunk[0].length;
     }
-    digits = stripTrailingMoneyPunct(digits);
-    CANDIDATE_RE.lastIndex = Math.max(CANDIDATE_RE.lastIndex, tokenEnd);
-    const anchored = Boolean(m[2] || m[3]);
-    if (isDateOrTimeSpan(stripped, digitStart, digitStart + group4.length, anchored)) continue;
-    if (isBalanceContext(stripped, m.index)) continue;
-    if (
-      !/[.,]/.test(group4) &&
-      /^\d{1,2}$/.test(digits) &&
-      (/^\s*\/\s*\d/.test(stripped.slice(tokenEnd)) ||
-        /(?:^|[^\d.,])\d{1,2}\s*\/\s*$/.test(stripped.slice(0, digitStart)))
-    ) {
+    const afterToken = stripped.slice(tokenEnd);
+    const suffix = afterToken.trimStart().match(MARKER_SUFFIX_RE);
+    const suffixMarker = suffix?.[1] || '';
+    if (!prefixMarker && !suffixMarker) {
+      CANDIDATE_RE.lastIndex = Math.max(CANDIDATE_RE.lastIndex, tokenEnd);
       continue;
     }
-    matches.push({
+    digits = stripTrailingMoneyPunct(digits);
+    CANDIDATE_RE.lastIndex = Math.max(
+      CANDIDATE_RE.lastIndex,
+      suffix ? tokenEnd + afterToken.indexOf(suffix[0]!) + suffix[0]!.length : tokenEnd
+    );
+    const marker = prefixMarker || suffixMarker;
+    if (prefixMarker && suffixMarker && markerCurrency(prefixMarker) !== markerCurrency(suffixMarker)) {
+      invalidMarked = true;
+      continue;
+    }
+    if (
+      !digits ||
+      /[:/eExX]/.test(digits) ||
+      /^0[xX]/i.test(digits) ||
+      isBareDollarDotDecimal(marker, digits)
+    ) {
+      invalidMarked = true;
+      continue;
+    }
+    valid.push({
       raw: digits,
       signed: m[1] === '-',
-      anchored,
-      digits: digits.replace(/\D/g, ''),
+      currency: markerCurrency(marker),
+      marker,
     });
   }
 
-  const ranked = matches.filter((c) => {
-    if (!c.raw) return false;
-    if (!c.anchored && c.digits.length === 4 && !c.raw.includes('.') && !c.raw.includes(',')) {
-      return false;
-    }
-    return true;
-  });
-
-  const preferred = ranked.find((c) => c.anchored) ?? ranked[0];
-  if (!preferred) {
-    return { amount: null, ambiguous: false, direction: refund ? 'income' : 'expense' };
+  if (invalidMarked || valid.length !== 1) {
+    return parkAmount(valid.some((c) => c.signed) ? 'income' : 'expense');
   }
 
-  const parsed = parseGroupedNumber(preferred.raw, hint);
-  const extraAnchored = ranked.filter((c) => c.anchored && c.raw !== preferred.raw).length > 0;
-  const direction: 'expense' | 'income' = preferred.signed || refund ? 'income' : 'expense';
+  const preferred = valid[0]!;
+  const parsed = parseGroupedNumber(preferred.raw, localeFromMarker(preferred.marker));
+  const direction: 'expense' | 'income' = preferred.signed ? 'income' : 'expense';
   if (parsed?.excessDecimals) {
-    return { amount: null, ambiguous: true, direction, excessDecimals: true };
+    return parkAmount(direction, { excessDecimals: true });
   }
-  if (!parsed || !(parsed.value > 0) || parsed.value > MAX_AMOUNT) {
-    return { amount: null, ambiguous: true, direction };
+  if (!parsed || parsed.ambiguous || !(parsed.value > 0) || parsed.value > MAX_AMOUNT) {
+    return parkAmount(direction);
   }
-
   return {
     amount: parsed.value,
-    ambiguous: parsed.ambiguous || extraAnchored,
+    ambiguous: false,
     direction,
+    currency: preferred.currency,
   };
 }
 
@@ -436,14 +477,8 @@ export function parseWalletText(text: string | null): Omit<WalletIngestPayload, 
     };
   }
   const unsupported = detectUnsupportedCurrencyInText(text);
-  const currency = unsupported
-    ? unsupported
-    : /\bUSD\b|U\$S|US\$/i.test(text)
-      ? 'USD'
-      : /\bEUR\b/i.test(text)
-        ? 'EUR'
-        : 'ARS';
   const parsed = parseAmountFromText(text);
+  const currency = unsupported ? unsupported : parsed.currency ?? 'ARS';
   const cardName =
     str(text.match(/(?:tarjeta|card|visa|mastercard|amex|naranja|galicia|macro|bbva|santander)\s*[\w*]{0,20}/i)?.[0]) ||
     null;
