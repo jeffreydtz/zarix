@@ -600,17 +600,132 @@ it('logs row_changed when a stock becomes an FCI mid-refresh', async () => {
     type: 'stock_arg',
     ticker: 'GGAL',
   }];
+  mocks.rereadData = [{
+    ...position('GGAL', 'ARS', 100),
+    type: 'fci',
+    ticker: 'GGAL',
+    current_price: 100,
+  }];
   mocks.arg.mockResolvedValue({
     byStock: new Map([['GGAL', {
       symbol: 'GGAL', price: 110, currency: 'ARS', changePct: 1, timestamp: new Date().toISOString(),
     }]]),
     byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
   });
-  await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
   expect(mocks.updates).toHaveLength(1);
+  expect(rows[0]).toMatchObject({ type: 'fci', ticker: 'GGAL', current_price: 100 });
   expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
     reason: 'row_changed',
     ticker: 'GGAL',
     type: 'stock_arg',
+  }));
+});
+
+it('does not refresh a stock_us row with a future stored ts in default mode', async () => {
+  mocks.positions = [{
+    ...position('AAPL', 'USD', 190),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 190,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  }];
+  mocks.yahoo.mockResolvedValue(new Map([['AAPL', {
+    ticker: 'AAPL', price: 200, changePct: 1, currency: 'USD', timestamp: '2026-10-26T15:00:00.000Z',
+  }]]));
+  const rows = await investmentsService.list('fixture-user');
+  expect(mocks.yahoo).not.toHaveBeenCalled();
+  expect(mocks.stooq).not.toHaveBeenCalled();
+  expect(mocks.updates).toEqual([]);
+  expect(rows[0]).toMatchObject({
+    current_price: 190,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+    valuation_price_source: 'cache',
+  });
+});
+
+it('does not return a losing non-FCI quote as live when the CAS UPDATE matches zero rows', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position('AAPL', 'USD', 190),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 190,
+    current_price_updated_at: '2026-10-20T15:00:00.000Z',
+  }];
+  mocks.rereadData = [{
+    ...position('AAPL', 'USD', 205),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 205,
+    current_price_updated_at: '2026-10-26T18:00:00.000Z',
+  }];
+  mocks.yahoo.mockResolvedValue(new Map([['AAPL', {
+    ticker: 'AAPL', price: 200, changePct: 1, currency: 'USD', timestamp: '2026-10-26T15:00:00.000Z',
+  }]]));
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    current_price: 205,
+    current_price_updated_at: '2026-10-26T18:00:00.000Z',
+    valuation_price_source: 'cache',
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+    reason: 'older_than_stored',
+    ticker: 'AAPL',
+    type: 'stock_us',
+  }));
+});
+
+it('logs future_stored when a concurrent FCI writer introduced a future timestamp', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position(),
+    current_price: 1.09,
+    current_price_updated_at: freshFciNavIso(),
+  }];
+  mocks.rereadData = [{
+    ...position(),
+    current_price: 1.09,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  }];
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    current_price: 1.09,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+    reason: 'future_stored',
+    id: 'fixture-position',
+  }));
+});
+
+it('logs future_stored when a concurrent writer introduced a future timestamp', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position('AAPL', 'USD', 190),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 190,
+    current_price_updated_at: '2026-10-20T15:00:00.000Z',
+  }];
+  mocks.rereadData = [{
+    ...position('AAPL', 'USD', 999),
+    type: 'stock_us',
+    ticker: 'AAPL',
+    current_price: 999,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  }];
+  mocks.yahoo.mockResolvedValue(new Map([['AAPL', {
+    ticker: 'AAPL', price: 200, changePct: 1, currency: 'USD', timestamp: '2026-10-26T15:00:00.000Z',
+  }]]));
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0]).toMatchObject({
+    current_price: 999,
+    current_price_updated_at: '2099-01-01T03:00:00.000Z',
+  });
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+    reason: 'future_stored',
+    ticker: 'AAPL',
+    type: 'stock_us',
   }));
 });

@@ -65,4 +65,45 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
       { fondoId: '227', claseId: '784' },
     ).parsed).toBeNull();
   });
+
+  it('skips a live ficha whose identity form is inside <svg>', () => {
+    const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+    expect(parseCafciHtmlFichaDetailed(
+      html.replace('<form method="get"', '<svg><form method="get"').replace('</form>', '</form></svg>'),
+      { fondoId: '227', claseId: '784' },
+    ).parsed).toBeNull();
+  });
+
+  it('skips a live ficha whose identity form is inside <math>', () => {
+    const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+    expect(parseCafciHtmlFichaDetailed(
+      html.replace('<form method="get"', '<math><form method="get"').replace('</form>', '</form></math>'),
+      { fondoId: '227', claseId: '784' },
+    ).parsed).toBeNull();
+  });
+
+  it('skips a live ficha whose NAV paragraph is inside <noscript>', () => {
+    const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+    expect(parseCafciHtmlFichaDetailed(
+      html.replace(
+        '<p>Valor por cada cuotaparte: 1.241,954039</p>',
+        '<noscript><p>Valor por cada cuotaparte: 1.241,954039</p></noscript>',
+      ),
+      { fondoId: '227', claseId: '784' },
+    ).parsed).toBeNull();
+  });
+
+  it.each(['script', 'style', 'noscript'] as const)(
+    'skips a live ficha whose Valores al date is only inside <%s>',
+    (tag) => {
+      const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+      expect(parseCafciHtmlFichaDetailed(
+        html.replace(
+          '<h3>Valores al 23/10/2026</h3>',
+          `<h3><${tag}>Valores al 23/10/2026</${tag}></h3>`,
+        ),
+        { fondoId: '227', claseId: '784' },
+      ).parsed).toBeNull();
+    },
+  );
 });

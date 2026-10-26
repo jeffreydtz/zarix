@@ -166,7 +166,8 @@ export const applyFciRowMatch = applyObservedRowMatch;
 
 export type AutomaticPriceZeroRowReason =
   | 'row_changed'
-  | 'older_than_stored';
+  | 'older_than_stored'
+  | 'future_stored';
 
 export function observedRowStillMatches(
   observed: ObservedRowMatch,
@@ -185,15 +186,25 @@ export function observedRowStillMatches(
 }
 
 export function classifyAutomaticPriceZeroRows(opts: {
-  observed: ObservedRowMatch;
+  observed: ObservedRowMatch & { current_price_updated_at?: string | null };
   winning?: {
     type?: unknown;
     ticker?: unknown;
     market_currency?: unknown;
     is_manual_price?: unknown;
+    current_price_updated_at?: unknown;
   } | null;
+  nowMs?: number;
 }): AutomaticPriceZeroRowReason {
   if (!observedRowStillMatches(opts.observed, opts.winning)) return 'row_changed';
+  const winningTs = typeof opts.winning?.current_price_updated_at === 'string'
+    ? opts.winning.current_price_updated_at
+    : null;
+  const observedTs = opts.observed.current_price_updated_at ?? null;
+  const nowMs = opts.nowMs ?? Date.now();
+  if (isAnomalousFutureTimestamp(winningTs, nowMs) && !isAnomalousFutureTimestamp(observedTs, nowMs)) {
+    return 'future_stored';
+  }
   return 'older_than_stored';
 }
 

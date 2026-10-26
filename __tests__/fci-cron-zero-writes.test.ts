@@ -695,6 +695,14 @@ describe('cron FCI writes stay at zero for bad source data', () => {
       purchase_price: 100,
       current_price_updated_at: null,
     });
+    mocks.rereadData = [{
+      id: 'fixture-prtava-b',
+      type: 'fci',
+      ticker: 'GGAL',
+      market_currency: 'ARS',
+      is_manual_price: false,
+      current_price_updated_at: null,
+    }];
     mocks.arg.mockResolvedValue({
       byStock: new Map([['GGAL', {
         symbol: 'GGAL', price: 110, currency: 'ARS', changePct: 1, timestamp: new Date().toISOString(),
@@ -706,6 +714,35 @@ describe('cron FCI writes stay at zero for bad source data', () => {
       reason: 'row_changed',
       ticker: 'GGAL',
       type: 'stock_arg',
+    }));
+  });
+
+  it('logs future_stored when a concurrent writer introduced a future timestamp on a non-FCI row', async () => {
+    mocks.selectData = [];
+    setPosition({
+      type: 'stock_us',
+      ticker: 'AAPL',
+      market_currency: 'USD',
+      purchase_currency: 'USD',
+      current_price: 190,
+      current_price_updated_at: '2026-10-20T15:00:00.000Z',
+    });
+    mocks.rereadData = [{
+      id: 'fixture-prtava-b',
+      type: 'stock_us',
+      ticker: 'AAPL',
+      market_currency: 'USD',
+      is_manual_price: false,
+      current_price_updated_at: '2099-01-01T03:00:00.000Z',
+    }];
+    mocks.yahoo.mockResolvedValue(new Map([['AAPL', {
+      ticker: 'AAPL', price: 200, changePct: 1, currency: 'USD', timestamp: '2026-10-26T15:00:00.000Z',
+    }]]));
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+      reason: 'future_stored',
+      ticker: 'AAPL',
+      type: 'stock_us',
     }));
   });
 

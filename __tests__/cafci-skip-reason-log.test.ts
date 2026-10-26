@@ -500,4 +500,41 @@ describe('automatic writer row match', () => {
       winning: { type: 'stock_arg', ticker: 'GGAL', market_currency: 'USD', is_manual_price: false },
     })).toBe('row_changed');
   });
+
+  it('classifies a concurrently introduced future timestamp as future_stored', () => {
+    const now = Date.parse('2026-10-26T15:00:00.000Z');
+    expect(classifyAutomaticPriceZeroRows({
+      observed: {
+        type: 'stock_us', ticker: 'AAPL', market_currency: 'USD',
+        current_price_updated_at: '2026-10-20T15:00:00.000Z',
+      },
+      winning: {
+        type: 'stock_us', ticker: 'AAPL', market_currency: 'USD', is_manual_price: false,
+        current_price_updated_at: '2099-01-01T03:00:00.000Z',
+      },
+      nowMs: now,
+    })).toBe('future_stored');
+    expect(classifyAutomaticPriceZeroRows({
+      observed: {
+        type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS',
+        current_price_updated_at: '2026-10-23T03:00:00.000Z',
+      },
+      winning: {
+        type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', is_manual_price: false,
+        current_price_updated_at: '2099-01-01T03:00:00.000Z',
+      },
+      nowMs: now,
+    })).toBe('future_stored');
+    expect(classifyAutomaticPriceZeroRows({
+      observed: {
+        type: 'stock_us', ticker: 'AAPL', market_currency: 'USD',
+        current_price_updated_at: '2026-10-20T15:00:00.000Z',
+      },
+      winning: {
+        type: 'stock_us', ticker: 'AAPL', market_currency: 'USD', is_manual_price: false,
+        current_price_updated_at: '2026-10-26T18:00:00.000Z',
+      },
+      nowMs: now,
+    })).toBe('older_than_stored');
+  });
 });

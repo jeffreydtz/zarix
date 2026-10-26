@@ -374,7 +374,7 @@ describe('Codex r6 / Kael HTML parser — template, NAV boundary, #fichaRight, l
     expect(parsed(html).parsed).toBeNull();
   });
 
-  it('follows the HTML first-legend exception on a disabled fieldset', () => {
+  it('skips a disabled fieldset first-legend identity because fieldset/legend are not allowlisted', () => {
     const html = shell({
       identity: `<fieldset disabled>
         <legend>
@@ -387,10 +387,103 @@ describe('Codex r6 / Kael HTML parser — template, NAV boundary, #fichaRight, l
         </legend>
       </fieldset>`,
     });
+    expect(parsed(html).parsed).toBeNull();
+  });
+});
+
+describe('Codex r7 HTML parser — HTML-namespace allowlist by construction', () => {
+  it('skips identity that exists only inside <svg>', () => {
+    const html = shell({
+      identity: `<svg>
+        <form method="get" action="/fondos/227">
+          <select name="clase">
+            <option value="227">A</option>
+            <option value="784" selected>B</option>
+          </select>
+        </form>
+      </svg>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips identity that exists only inside <math>', () => {
+    const html = shell({
+      identity: `<math>
+        <form method="get" action="/fondos/227">
+          <select name="clase">
+            <option value="227">A</option>
+            <option value="784" selected>B</option>
+          </select>
+        </form>
+      </math>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips identity inside svg foreignObject (HTML-ns form with svg ancestors)', () => {
+    const html = shell({
+      identity: `<svg><foreignObject>
+        <form method="get" action="/fondos/227">
+          <select name="clase">
+            <option value="227">A</option>
+            <option value="784" selected>B</option>
+          </select>
+        </form>
+      </foreignObject></svg>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a NAV that exists only inside <noscript>', () => {
+    const html = shell({
+      nav: '<noscript><p>Valor por cada cuotaparte: 1.241,954039</p></noscript>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it.each(['script', 'style', 'noscript'] as const)(
+    'skips a Valores al date that exists only inside <%s> in the h3',
+    (tag) => {
+      const html = shell({
+        date: `<h3><${tag}>Valores al ${DATE}</${tag}></h3>`,
+      });
+      expect(parsed(html).parsed).toBeNull();
+    },
+  );
+
+  it('skips a NAV whose next character is a Unicode letter or digit', () => {
+    expect(parsed(shell({ nav: '<p>Valor por cada cuotaparte: 1,09٤</p>' })).parsed).toBeNull();
+    expect(parsed(shell({ nav: '<p>Valor por cada cuotaparte: 1,09β</p>' })).parsed).toBeNull();
+    expect(parsed(shell({ nav: '<p>Valor por cada cuotaparte: 1,09²</p>' })).parsed).toBeNull();
+  });
+
+  it('skips when #fichaRight has a Moneda substring instead of an exact Moneda: text node', () => {
+    const html = shell({
+      moneda: '<div id="fichaRight"><span>La Moneda: Peso Argentina</span></div>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('parses identical duplicate Moneda: labels as one', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight">
+        <span class="label">Moneda:</span> Peso Argentina
+        <span class="label">Moneda:</span> Peso Argentina
+      </div>`,
+    });
     expect(parsed(html).parsed).toMatchObject({
       price: 1241.954039,
-      fondoId: '227',
-      claseId: '784',
+      monedaLabel: 'Peso Argentina',
     });
+  });
+
+  it('still skips conflicting duplicate Moneda: labels', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight">
+        <span class="label">Moneda:</span> Peso Argentina
+        <span class="label">Moneda:</span> Dolar Estadounidense
+      </div>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
   });
 });

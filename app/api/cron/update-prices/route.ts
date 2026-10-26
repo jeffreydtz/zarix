@@ -121,7 +121,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
       if (!Array.isArray(data) || data.length === 0) {
         const { data: winningRows, error: rereadError } = await supabase
           .from('investments')
-          .select('id, type, ticker, market_currency, is_manual_price')
+          .select('id, type, ticker, market_currency, is_manual_price, current_price_updated_at')
           .eq('id', inv.id);
         if (rereadError) throw rereadError;
         const winning = Array.isArray(winningRows)
@@ -130,6 +130,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
         const reason = classifyAutomaticPriceZeroRows({
           observed: inv,
           winning,
+          nowMs: Date.now(),
         });
         console.warn('[quotes] skip CAFCI failure', {
           ticker: inv.ticker,
@@ -145,8 +146,21 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     const { data, error } = await query.select('id');
     if (error) throw error;
     if (!Array.isArray(data) || data.length === 0) {
+      const { data: winningRows, error: rereadError } = await supabase
+        .from('investments')
+        .select('id, type, ticker, market_currency, is_manual_price, current_price_updated_at')
+        .eq('id', inv.id);
+      if (rereadError) throw rereadError;
+      const winning = Array.isArray(winningRows)
+        ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
+        : null;
+      const reason = classifyAutomaticPriceZeroRows({
+        observed: inv,
+        winning,
+        nowMs: Date.now(),
+      });
       console.warn('[quotes] skip price update', {
-        reason: 'row_changed',
+        reason,
         ticker: inv.ticker,
         id: inv.id,
         type: inv.type,
