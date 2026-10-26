@@ -679,6 +679,13 @@ describe('Codex r9 HTML parser — unfiltered NAV tail, style comments, !importa
     expect(parseInlineStyleDeclarations('display:none!important;display:block').get('display')).toBe('none');
     expect(parseInlineStyleDeclarations('display:none;display:block').get('display')).toBe('block');
     expect(parseInlineStyleDeclarations('display:none!important;display:invalid!important').get('display')).toBe('none');
+    expect(parseInlineStyleDeclarations('display:none!important;display:flex grid!important').get('display')).toBe('none');
+    expect(parseInlineStyleDeclarations('display:flex grid').get('display')).toBeUndefined();
+    expect(parseInlineStyleDeclarations('display:block block').get('display')).toBeUndefined();
+    expect(parseInlineStyleDeclarations('display:inline table-cell').get('display')).toBeUndefined();
+    expect(parseInlineStyleDeclarations('display:inherit block').get('display')).toBeUndefined();
+    expect(parseInlineStyleDeclarations('display:block flex').get('display')).toBe('block flex');
+    expect(parseInlineStyleDeclarations('display:inline flow list-item').get('display')).toBe('inline flow list-item');
   });
 });
 
@@ -1000,6 +1007,42 @@ describe('Kael/Codex r11 HTML parser — rendered section text, Moneda whitelist
     }
     expect(cases.length).toBe(324);
     expect(truncations).toEqual([]);
+  });
+
+  it('keeps display:none when a later important display combination is invalid', () => {
+    const html = shell({
+      nav: '<p style="display:none!important;display:flex grid!important">Valor por cada cuotaparte: 1.241,954</p>',
+    });
+    const result = parsed(html);
+    expect(result.parsed).toBeNull();
+    expect(result.parsed?.price).not.toBe(1241.954);
+  });
+
+  it('rejects a date tail that stays on the same line', () => {
+    expect(parsed(shell({ date: '<strong>Valores al 23/10/2026x</strong>' })).parsed).toBeNull();
+    expect(parsed(shell({ date: '<span style="display:block">Valores al 23/10/2026 extra</span>' })).parsed).toBeNull();
+  });
+
+  it('parses a date in an inline wrapper when the next sibling is a block', () => {
+    expect(parsed(shell({ date: '<strong>Valores al 23/10/2026</strong>' })).parsed).toMatchObject({
+      price: 1241.954039,
+      timestamp: '2026-10-23T03:00:00.000Z',
+    });
+    expect(parsed(shell({ date: '<span style="display:block">Valores al 23/10/2026</span>' })).parsed).toMatchObject({
+      timestamp: '2026-10-23T03:00:00.000Z',
+    });
+  });
+
+  it('reads Dolar Estadounidense Billete across nested blocks in one li', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight"><ul><li>
+        <div><span class="label">Moneda:</span> Dolar Estadounidense</div>
+        <div>Billete</div>
+      </li></ul></div>`,
+    });
+    expect(parsed(html).parsed).toMatchObject({
+      monedaLabel: 'Dolar Estadounidense Billete',
+    });
   });
 
   it('parses Dolar Estadounidense Billete when that is the exact block value', () => {

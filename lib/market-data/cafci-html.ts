@@ -24,10 +24,13 @@
  * Text values come only from text nodes whose direct parent is allowlisted and
  * visible. One rendered visible-text string is built for `#cuotaparte` (and for
  * each Moneda block): the same visibility rules, with block boundaries and
- * `<br>` as whitespace. After a NAV token skip `[\p{Zs}\s\p{Cf}]*`; a following
- * letter, digit, `.`, `,` or `-` skips. Only `(` or end-of-string is allowed,
- * wrapper-independent. The same tail rule runs on the `Valores al` date's
- * containing block; leftover digits after the date in the section also skip.
+ * `<br>` as whitespace. A boundary is a block tag or an element whose inline
+ * display has a non-inline outer value (block, flex, grid, table, list-item,
+ * flow-root, including two-value syntax). After a NAV token skip
+ * `[\p{Zs}\s\p{Cf}]*`; a following letter, digit, `.`, `,` or `-` skips. Only
+ * `(` or end-of-string is allowed, wrapper-independent. The `Valores al` date
+ * keeps that strict tail on its own line; a block boundary or end of line may
+ * follow the date. Leftover digits after the date in the section also skip.
  * Hidden/non-allowlisted nodes never terminate a token: if one sits inside the
  * token (or between it and further visible digits/letters), skip. The
  * unfiltered descendant-text cross-check must yield the same token. That
@@ -254,17 +257,23 @@ function normalizeFichaText(text: string): string {
 }
 
 const TAIL_GAP = /[\s\p{Zs}\p{Cf}]/u;
-/** CSS Display 3 keywords, including two-value `outside inside` tokens. */
-const DISPLAY_KEYWORDS = new Set([
-  'none', 'contents',
-  'block', 'inline', 'run-in',
-  'flow', 'flow-root', 'table', 'flex', 'grid', 'ruby',
-  'list-item',
+/** Marks a block/`<br>` boundary in the date-line render. Not whitespace. */
+const LINE_END = '\u0001';
+const DISPLAY_OUTSIDE = new Set(['block', 'inline', 'run-in']);
+const DISPLAY_INSIDE = new Set(['flow', 'flow-root', 'table', 'flex', 'grid', 'ruby']);
+const DISPLAY_LIST_FLOW = new Set(['flow', 'flow-root']);
+const DISPLAY_INTERNAL = new Set([
   'table-row-group', 'table-header-group', 'table-footer-group',
   'table-row', 'table-cell', 'table-column-group', 'table-column', 'table-caption',
   'ruby-base', 'ruby-text', 'ruby-base-container', 'ruby-text-container',
-  'inline-block', 'inline-table', 'inline-flex', 'inline-grid',
-  'initial', 'inherit', 'unset', 'revert', 'revert-layer',
+]);
+const DISPLAY_LEGACY = new Set([
+  'inline-block', 'inline-table', 'inline-flex', 'inline-grid', 'inline-list-item',
+]);
+const DISPLAY_BOX = new Set(['none', 'contents']);
+const DISPLAY_WIDE = new Set(['initial', 'inherit', 'unset', 'revert', 'revert-layer']);
+const LEGACY_INLINE = new Set([
+  'inline-block', 'inline-table', 'inline-flex', 'inline-grid', 'inline-list-item',
 ]);
 const VALID_VISIBILITY = new Set([
   'visible', 'hidden', 'collapse', 'initial', 'inherit', 'unset', 'revert', 'revert-layer',
@@ -281,11 +290,53 @@ const MONEDA_WHITELIST_FOLD = new Set([
   'DOLAR ESTADOUNIDENSE BILLETE',
 ]);
 
+/**
+ * CSS Display 3 grammar only. Invalid combinations (`flex grid`, `block block`,
+ * `inline table-cell`) are rejected so a previous `display:none` keeps winning.
+ */
 function isValidDisplay(value: string): boolean {
   const tokens = value.trim().split(/\s+/).filter(Boolean);
-  if (tokens.length === 0) return false;
-  if (tokens.some((token) => !DISPLAY_KEYWORDS.has(token))) return false;
-  if (tokens.includes('none') || tokens.includes('contents')) return tokens.length === 1;
+  if (tokens.length === 0 || new Set(tokens).size !== tokens.length) return false;
+  if (tokens.length === 1) {
+    const token = tokens[0];
+    return DISPLAY_OUTSIDE.has(token) || DISPLAY_INSIDE.has(token) || token === 'list-item'
+      || DISPLAY_INTERNAL.has(token) || DISPLAY_LEGACY.has(token) || DISPLAY_BOX.has(token)
+      || DISPLAY_WIDE.has(token);
+  }
+  if (tokens.some((token) => DISPLAY_BOX.has(token) || DISPLAY_WIDE.has(token) || DISPLAY_LEGACY.has(token) || DISPLAY_INTERNAL.has(token))) {
+    return false;
+  }
+  if (tokens.includes('list-item')) {
+    let outside = 0;
+    let flow = 0;
+    for (const token of tokens) {
+      if (token === 'list-item') continue;
+      if (DISPLAY_OUTSIDE.has(token)) outside += 1;
+      else if (DISPLAY_LIST_FLOW.has(token)) flow += 1;
+      else return false;
+    }
+    return outside <= 1 && flow <= 1;
+  }
+  let outside = 0;
+  let inside = 0;
+  for (const token of tokens) {
+    if (DISPLAY_OUTSIDE.has(token)) outside += 1;
+    else if (DISPLAY_INSIDE.has(token)) inside += 1;
+    else return false;
+  }
+  return outside <= 1 && inside === 1 && tokens.length === outside + inside;
+}
+
+/** Non-inline outer display generates a block boundary. `contents` does not. */
+function displayCreatesBlockBoundary(value: string): boolean {
+  const tokens = value.trim().split(/\s+/).filter(Boolean);
+  if (tokens.length === 1) {
+    const token = tokens[0];
+    if (token === 'none' || token === 'contents' || token === 'inline' || LEGACY_INLINE.has(token)) return false;
+    if (DISPLAY_WIDE.has(token)) return false;
+    return true;
+  }
+  if (tokens.includes('inline')) return false;
   return true;
 }
 
@@ -334,18 +385,33 @@ function allowlistedText($: CheerioAPI, root: AnyNode): string {
 
 type RenderedText = { text: string; skips: number[] };
 
-function isBlockElement(el: Element): boolean {
-  return isBlockTag(el.name.toLowerCase());
-}
-
 function isBlockTag(name: string): boolean {
   return BLOCK_TAGS.has(name);
 }
 
-function containingBlock(el: Element): Element {
+function specifiedDisplay($: CheerioAPI, el: Element): string | null {
+  const value = parseInlineStyleDeclarations($(el).attr('style') ?? '').get('display');
+  return value ?? null;
+}
+
+/** Tag default, overridden by a valid inline display (CSS-wide keywords included). */
+function isBlockBox($: CheerioAPI, el: Element): boolean {
+  const specified = specifiedDisplay($, el);
+  if (!specified) return isBlockTag(el.name.toLowerCase());
+  if (specified === 'inherit') {
+    const parent = parentOf(el);
+    return Boolean(parent && isElement(parent) && isBlockBox($, parent));
+  }
+  if (specified === 'initial' || specified === 'unset') return false;
+  if (specified === 'revert' || specified === 'revert-layer') return isBlockTag(el.name.toLowerCase());
+  if (specified === 'contents' || specified === 'none') return false;
+  return displayCreatesBlockBoundary(specified);
+}
+
+function containingBlock($: CheerioAPI, el: Element): Element {
   let node: AnyNode | null = el;
   while (node) {
-    if (isElement(node) && isBlockTag(node.name.toLowerCase())) return node;
+    if (isElement(node) && isBlockBox($, node)) return node;
     node = parentOf(node);
   }
   return el;
@@ -360,7 +426,12 @@ function elementChildren(node: AnyNode): AnyNode[] {
  * become a space. Cf is stripped on emit. `skips` are visible-string offsets
  * where a hidden or non-allowlisted subtree sat.
  */
-function renderedText($: CheerioAPI, root: AnyNode, mode: 'visible' | 'unfiltered'): RenderedText {
+function renderedText(
+  $: CheerioAPI,
+  root: AnyNode,
+  mode: 'visible' | 'unfiltered',
+  boundary = ' ',
+): RenderedText {
   const bits: string[] = [];
   const skips: number[] = [];
   let length = 0;
@@ -395,29 +466,33 @@ function renderedText($: CheerioAPI, root: AnyNode, mode: 'visible' | 'unfiltere
     }
     const name = node.name.toLowerCase();
     if (name === 'br') {
-      emit(' ');
+      emit(boundary);
       return;
     }
     if (mode === 'visible' && (!isAllowedElement(node) || hiddenChain($, node))) {
       skips.push(length);
       return;
     }
-    const block = isBlockElement(node) && node !== root;
-    if (block) emit(' ');
+    if (specifiedDisplay($, node) === 'contents') {
+      for (const child of elementChildren(node)) walk(child);
+      return;
+    }
+    const block = node !== root && isBlockBox($, node);
+    if (block) emit(boundary);
     for (const child of elementChildren(node)) walk(child);
-    if (block) emit(' ');
+    if (block) emit(boundary);
   };
 
   walk(root);
   return { text: bits.join(''), skips };
 }
 
-function renderedVisible($: CheerioAPI, root: AnyNode): RenderedText {
-  return renderedText($, root, 'visible');
+function renderedVisible($: CheerioAPI, root: AnyNode, boundary = ' '): RenderedText {
+  return renderedText($, root, 'visible', boundary);
 }
 
-function renderedUnfiltered($: CheerioAPI, root: AnyNode): RenderedText {
-  return renderedText($, root, 'unfiltered');
+function renderedUnfiltered($: CheerioAPI, root: AnyNode, boundary = ' '): RenderedText {
+  return renderedText($, root, 'unfiltered', boundary);
 }
 
 function tailIsParenOrEof(text: string, index: number): boolean {
@@ -653,7 +728,7 @@ function documentMonedaValues($: CheerioAPI): string[] {
       values.push(...extractMonedaValues(raw));
       return;
     }
-    const block = containingBlock(parent);
+    const block = preferredMonedaBlock($, parent);
     if (seen.has(block)) return;
     seen.add(block);
     values.push(...extractMonedaValues(descendantTextRaw(block)));
@@ -772,7 +847,7 @@ function navTokenFromRendered(text: string, skips: number[] = []): string | null
 function dateFromRendered(
   text: string,
   skips: number[],
-  tail: 'paren-or-eof' | 'no-numeric-continue',
+  tail: 'paren-or-eof' | 'line-end' | 'no-numeric-continue',
 ): string | null {
   const stripped = stripFormatChars(text);
   const mentions = stripped.match(/Valores al\s+/gi);
@@ -785,8 +860,8 @@ function dateFromRendered(
   if (skipInsideToken(skips, dateStart, dateEnd)) return null;
   const nextAt = skipTailGap(stripped, dateEnd);
   const next = nextCodePoint(stripped, nextAt);
-  if (tail === 'paren-or-eof') {
-    if (next != null && next !== '(') return null;
+  if (tail === 'paren-or-eof' || tail === 'line-end') {
+    if (next != null && next !== '(' && !(tail === 'line-end' && next === LINE_END)) return null;
   } else if (next && DATE_TAIL_CONTINUE.test(next)) {
     return null;
   }
@@ -837,7 +912,7 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
     if (!CAFCI_NAV_TOKEN.test(nodeToken) || nodeToken !== token) return null;
     if (!remainderHasBareNavToken(remainder, nodeToken)) return null;
   } else {
-    const blockInner = decodeCommaEntities($(containingBlock(el)).html() ?? '');
+    const blockInner = decodeCommaEntities($(containingBlock($, el)).html() ?? '');
     const blockMatch = blockInner.match(/Valor por cada cuotaparte:\s*/i);
     if (!blockMatch || blockMatch.index == null) return null;
     if (!remainderHasBareNavToken(blockInner.slice(blockMatch.index + blockMatch[0].length), token)) {
@@ -854,9 +929,8 @@ function parseValoresAl($: CheerioAPI, section: Element): string | null {
   if (containsInertCarrier(section)) return null;
   const nodes = innermostIn($, section, (el) => /Valores al\s+/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
-  const block = containingBlock(nodes[0]);
-  const blockVisible = renderedVisible($, block);
-  const blockDate = dateFromRendered(blockVisible.text, blockVisible.skips, 'paren-or-eof');
+  const line = renderedVisible($, section, LINE_END);
+  const blockDate = dateFromRendered(line.text, line.skips, 'line-end');
   if (!blockDate) return null;
   const sectionVisible = renderedVisible($, section);
   const sectionDate = dateFromRendered(sectionVisible.text, sectionVisible.skips, 'no-numeric-continue');
@@ -879,6 +953,24 @@ function monedaValuesFromBlock($: CheerioAPI, block: Element, mode: 'visible' | 
   return extractMonedaValues(rendered.text, mode === 'visible' ? rendered.skips : []);
 }
 
+function exactWhitelistMoneda($: CheerioAPI, block: Element): string | null {
+  const values = monedaValuesFromBlock($, block, 'visible').filter((value) => value !== '\u0000');
+  if (values.length !== 1 || !isWhitelistedMoneda(values[0])) return null;
+  return values[0];
+}
+
+/** Prefer the parent block when it completes a longer whitelist Moneda value. */
+function preferredMonedaBlock($: CheerioAPI, el: Element): Element {
+  const start = containingBlock($, el);
+  const inner = foldMoneda(exactWhitelistMoneda($, start) ?? '');
+  const parent = parentOf(start);
+  if (!inner || !parent || !isElement(parent) || !isBlockBox($, parent)) return start;
+  const name = parent.name.toLowerCase();
+  if (name === 'body' || name === 'html') return start;
+  const outer = foldMoneda(exactWhitelistMoneda($, parent) ?? '');
+  return outer.startsWith(`${inner} `) ? parent : start;
+}
+
 function collectMonedaBlocks($: CheerioAPI): Element[] {
   const rootEl = ($('body')[0] ?? $.root()[0]) as Element | undefined;
   if (!rootEl || !isElement(rootEl)) return [];
@@ -888,7 +980,7 @@ function collectMonedaBlocks($: CheerioAPI): Element[] {
     if ($(el).closest(`script, style, noscript, template, #cartera, ${RAW_TEXT_OR_FRAME}`).length > 0) {
       continue;
     }
-    const block = containingBlock(el);
+    const block = preferredMonedaBlock($, el);
     if (seen.has(block)) continue;
     seen.add(block);
     blocks.push(block);

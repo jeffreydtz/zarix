@@ -182,6 +182,36 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     expect(failures).toEqual([]);
   });
 
+  const DATE_WRAPS: Array<[string, (inner: string) => string]> = [
+    ['span display:block', (inner) => `<span style="display:block">${inner}</span>`],
+    ['strong', (inner) => `<strong>${inner}</strong>`],
+    ['small', (inner) => `<small>${inner}</small>`],
+    ['div', (inner) => `<div>${inner}</div>`],
+    ['p', (inner) => `<p>${inner}</p>`],
+  ];
+
+  it('parses the live date inside span display:block, strong, small, div and p', () => {
+    const failures: string[] = [];
+    let cases = 0;
+    for (const row of LIVE) {
+      const html = readFileSync(join(fixtures, row.file), 'utf8');
+      const heading = '<h3>Valores al 23/10/2026</h3>';
+      expect(html).toContain(heading);
+      for (const [name, wrap] of DATE_WRAPS) {
+        cases += 1;
+        const result = parseCafciHtmlFichaDetailed(html.replace(heading, wrap('Valores al 23/10/2026')), {
+          fondoId: row.fondoId,
+          claseId: row.claseId,
+        });
+        if (result.parsed?.price !== row.price || result.parsed.timestamp !== '2026-10-23T03:00:00.000Z' || result.parsed.monedaLabel !== row.monedaLabel) {
+          failures.push(`${row.file} ${name} ${result.parsed ? `${result.parsed.price} ${result.parsed.timestamp}` : 'skip'}`);
+        }
+      }
+    }
+    expect(cases).toBe(20);
+    expect(failures).toEqual([]);
+  });
+
   it.each(LIVE)('$fondoId/$claseId still parses with an identical adjacent Moneda li', (row) => {
     const html = readFileSync(join(fixtures, row.file), 'utf8');
     const needle = `<li><span class="label">Moneda:</span>         ${row.monedaLabel}</li>`;
