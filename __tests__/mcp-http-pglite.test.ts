@@ -899,6 +899,8 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       );
     }
 
+    // Full park table is in wallet-ingest-http-decimals (handler + mocked limiter).
+    // Keep this list under the ingest-token bucket (30/min) so later REST tests are not 429.
     const parkCases: Array<{ rawText: string; forbidden: number[]; key: string }> = [
       {
         rawText: 'Monto: $ 1.500 en COTO. Saldo disponible $ 20.000',
@@ -948,21 +950,6 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       { rawText: 'Compra $ 12:30 en COTO', forbidden: [12, 30], key: 'wallet-r12-alto-clock' },
       { rawText: 'Compra $ 12:30:45 en COTO', forbidden: [12], key: 'wallet-r12-alto-hms' },
       { rawText: 'Compra $ 2026/10/25 en COTO', forbidden: [2026, 10, 25], key: 'wallet-r12-alto-date' },
-      { rawText: 'Compra $12:30 en COTO', forbidden: [12], key: 'wallet-r12-kael-clock-tight' },
-      { rawText: 'Compra 25-10-2026 en COTO', forbidden: [25, 10, 2026], key: 'wallet-r12-date-dmy' },
-      { rawText: 'Compra 2026-10-25 en COTO', forbidden: [10, 25, 2026], key: 'wallet-r12-date-ymd' },
-      { rawText: 'Ticket 00123 COTO', forbidden: [123], key: 'wallet-r12-ticket' },
-      { rawText: 'Compra 14 hs en COTO', forbidden: [14], key: 'wallet-r12-hours' },
-      { rawText: 'Compra 10% de descuento en COTO', forbidden: [10], key: 'wallet-r12-percent' },
-      { rawText: '3 cuotas de $ 500', forbidden: [500], key: 'wallet-r12-cuotas' },
-      { rawText: 'Compra 3x $500 en COTO', forbidden: [500], key: 'wallet-r12-3x' },
-      { rawText: 'Compra $ −50 en COTO', forbidden: [50], key: 'wallet-r12-unicode-minus' },
-      { rawText: '$ 1.500 , 50', forbidden: [1500, 50], key: 'wallet-r12-split-cents' },
-      { rawText: 'Compra rechazada $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-rechazada' },
-      { rawText: 'Compra denegada $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-denegada' },
-      { rawText: 'Pago fallido $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-fallido' },
-      { rawText: 'Anulación de compra $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-anulacion' },
-      { rawText: 'Compra USD 10 ($ 10) en COTO', forbidden: [10], key: 'wallet-r12-mixed-usd' },
     ];
     for (const { rawText, forbidden, key } of parkCases) {
       const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0]
