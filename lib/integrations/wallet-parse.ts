@@ -8,7 +8,7 @@ import {
 } from '@/lib/money-amount';
 
 const CREDIT_CARD_PHRASE = /tarjeta\s+de\s+cr[eé]dito|credit\s+card/gi;
-const CON_SALDO_RE = /\b(pagaste|compraste|pago|compra)\s+con\s+saldo\b/gi;
+const PAGASTE_CON_SALDO_RE = /\bpag[aá]ste\s+con\s+saldo\b/gi;
 
 /** ISO codes and symbols that are not ARS/USD/EUR. Word tokens only — never silent ARS. */
 const UNSUPPORTED_ISO =
@@ -160,20 +160,22 @@ function parseGroupedNumber(
   return parsedMoney(n, s, false);
 }
 
-const PREFIX_CODE = 'ARS|USD|EUR|U\\$S|US\\$|U\\$D|AR\\$';
+const ISO_CODE = 'ARS|USD|EUR';
+const SYMBOL_CODE = 'U\\$S|US\\$|U\\$D|AR\\$';
+const PREFIX_TOKEN = `(?:\\b(?:${ISO_CODE})\\b|(?:${SYMBOL_CODE}))`;
 const CANDIDATE_RE = new RegExp(
-  `(?<![A-Za-z\\d])([+-])?\\s*(?:((?:${PREFIX_CODE}))\\s*:?\\s*\\$?|(\\$))?\\s*((?:0[xX][0-9A-Fa-f]+|[.,]\\d+|\\d{1,3}(?:[.\\s]\\d{3})+(?:,\\d{1,2})?|\\d{1,3}(?:,\\d{3})+(?:\\.\\d{1,2})?|\\d+[.,]\\d+|\\d{1,12})(?:[eE][+-]?\\d+)?)`,
+  `(?<![A-Za-z\\d])([+-])?\\s*(?:(${PREFIX_TOKEN})\\s*:?\\s*\\$?|(\\$))?\\s*((?:0[xX][0-9A-Fa-f]+|[.,]\\d+|\\d{1,3}(?:[.\\s]\\d{3})+(?:,\\d{1,2})?|\\d{1,3}(?:,\\d{3})+(?:\\.\\d{1,2})?|\\d+[.,]\\d+|\\d{1,12})(?:[eE][+-]?\\d+)?)`,
   'gi'
 );
 
-const MARKER_SUFFIX_RE = new RegExp(`^(${PREFIX_CODE})(?![A-Za-z])`, 'i');
-const MARKER_ANY_RE = new RegExp(`(?:${PREFIX_CODE})|\\$`, 'gi');
-const ZERO_WIDTH_RE = /[\u200B-\u200D\u2060\uFEFF]/;
-const UNICODE_SIGN_RE = /[\u2010-\u2015\u2212\uFE63\uFF0D]/;
+const MARKER_SUFFIX_RE = new RegExp(`^(${PREFIX_TOKEN})`, 'i');
+const MARKER_ANY_RE = new RegExp(`${PREFIX_TOKEN}|\\$`, 'gi');
+const FORMAT_CHAR_RE = /\p{Cf}/u;
+const OTHER_DASH_RE = /[^\P{Pd}-]|\u2212/u;
 const SUPERSCRIPT_RE = /[\u00B9\u00B2\u00B3\u2070-\u2079]/;
 const URL_EMAIL_RE = /https?:\/\/\S+|www\.\S+|\S+@\S+/gi;
 const HARD_DENY_RE =
-  /refund|revers[ao]|revers(?![a-z])|contracargo|reembolso|recibiste|te\s+transfirieron|cobraste|acredit|ingres[oó]|cashback|te\s+devolvimos|pago\s+recibido|devoluci[oó]n|reintegro|rechazad|denegad|fallid|anulad|anulaci[oó]n|cancelad|revertid|preautorizaci|retenci[oó]n|\breserva\b|\bintento\b|no\s+aprobada|pendiente\s+de\s+aprob|\bcr[eé]dito\b/i;
+  /\breintegr|\bdevol|\bdevuelt|\breembols|\brembols|\brefund|\brevers|\bcontracargo|\bcr[eé]dit|\bacredit|\bcashback|\brecib|\bcobr|transfirieron|no\s+(?:fue\s+)?aprobad[oa]|no\s+realiz|no\s+autoriz|\brechaz|\bdeneg|\bdeclin|\bfall|\banul|\bcancel|sin\s+fondos|\bm[ií]nimo|\ba\s+pagar\b|\bvencim|\bvenc|\bprogram|en\s+proceso|\bpendient|preautoriz|\breserva|\bretenc|\bintento|\bahorr|\bdescuent|\bpropina|por\s+mes|\/mes|\bsaldo\b|\bdisponible\b|\bl[ií]mite\b|\bcuota|\bIVA\b|I\.V\.A|c\s*\/\s*u\b|\bdesde\b|\bhasta\b|available\s+balance|no\s+(?:pag[aá]ste|compr[aá]ste|transferiste|abonaste|consumiste)|si\s+(?:pag[aá]ste|compr[aá]ste)|\bseña\b|\badelanto\b|\bimpuesto|\bbonific|\binteres|\d+\s*%/i;
 const INSTALLMENT_RE = /\bcuotas?\b|\b\d+\s*x\s*\d*\b|\bx\s*\d+\b/i;
 const GLUED_DATE_TIME_RE = /^(?:[:/]\s*\d|\s*[:/-]\s*\d)/;
 const GLUED_DATE_TIME_SPAN_RE = /^(?:[:/]\s*\d+|\s*[:/-]\s*\d+)+/;
@@ -181,14 +183,13 @@ const SPLIT_CENTS_RE = /^\s*,\s*\d{1,2}\b/;
 const SPLIT_SPACE_CENTS_RE = /^(?:\s+[.,]?\s*|\s*\.\s+)\d{1,2}\b/;
 const SCALE_WORD_RE = /^(?:\s*(?:mil|millones?)\b|\s*[Mmk]\b)/;
 const AFTER_AMOUNT_DENY_RE = /^(?:\s*(?:\+|m[aá]s)\s*IVA\b|\s*IVA\b|\s*c\/u\b|\s*por\s+unidad\b|\s*\/u\b)/i;
-const IMMEDIATE_BEFORE_DENY_RE =
-  /\b(desde|hasta|aprox(?:imadamente)?|preautorizaci[oó]n|reserva|retenci[oó]n|intento|pendiente|l[ií]mite|disponible|available\s+balance)\s*$/i;
 const ALLOW_RE =
-  /pagaste\s+con|compra\s+de|pago\s+con|pago\s+de|compraste|pagaste|transferiste|\bcompra\b|\bpago\b|\bmonto\b|\btotal\b|\bimporte\b/gi;
-const DENY_GOVERNOR_RE =
-  /available\s+balance|saldo|disponible|l[ií]mite|restan|te\s+quedan|refund|revers[ao]|contracargo|cr[eé]dito|reembolso|recibiste|cobraste|acredit|cashback|preautoriz|reserva|retenci[oó]n|intento/gi;
-const CURRENCY_WORD_RE = /\b(d[oó]lares|dollars|euros|pesos(?:\s+chilenos)?)\b/i;
+  /pag[aá]ste|compr[aá]ste|transferiste|abonaste|consumiste|compra\s+aprobada|compra\s+realizada|pago\s+realizado|pago\s+aprobado/gi;
+const CURRENCY_WORD_RE = /\b(d[oó]lar\w*|dollars?|euros?|pesos?(?:\s+\w+)?)\b/gi;
 const CODE_BEFORE_RE = /[A-Za-z0-9][-_/@?=&]$/;
+const CODE_SCAN_RE = new RegExp(PREFIX_TOKEN, 'gi');
+const PREFIX_REST_OK = /^\s*(:(?!:))?\s*\$?\s*\d/;
+const PREFIX_REST_JUNK = /^\s*(?:[-+()/:;=#.,]+|\(\s*[+\-]?)(?:\s*[-+()])?\s*\d/;
 
 function spaceMask(re: RegExp, text: string): string {
   return text.replace(re, (m) => ' '.repeat(m.length));
@@ -229,29 +230,75 @@ function parkAmount(
   };
 }
 
-function hasAllowlistedExpense(src: string, amountIndex: number): boolean {
+function maskSentenceNoise(src: string): string {
+  return src
+    .replace(/\bS\.A\.?/gi, (m) => ' '.repeat(m.length))
+    .replace(/\bNro\.?/gi, (m) => ' '.repeat(m.length))
+    .replace(/\bAv\.?/gi, (m) => ' '.repeat(m.length))
+    .replace(/\d{1,3}(?:\.\d{3})+/g, (m) => ' '.repeat(m.length));
+}
+
+function sentenceStart(src: string, amountIndex: number): number {
+  const masked = maskSentenceNoise(src);
   const sentenceBreak = Math.max(
-    src.lastIndexOf('.', amountIndex),
-    src.lastIndexOf('!', amountIndex),
-    src.lastIndexOf('?', amountIndex)
+    masked.lastIndexOf('.', amountIndex),
+    masked.lastIndexOf('!', amountIndex),
+    masked.lastIndexOf('?', amountIndex)
   );
-  const start = Math.max(sentenceBreak + 1, amountIndex - 96);
-  let window = src.slice(start, amountIndex);
-  window = window.replace(CON_SALDO_RE, '$1');
-  if (IMMEDIATE_BEFORE_DENY_RE.test(window)) return false;
-  DENY_GOVERNOR_RE.lastIndex = 0;
-  if (DENY_GOVERNOR_RE.test(window)) return false;
+  return sentenceBreak + 1;
+}
+
+function hasAllowlistedExpense(src: string, amountIndex: number): boolean {
+  const window = src.slice(sentenceStart(src, amountIndex), amountIndex);
   ALLOW_RE.lastIndex = 0;
-  return ALLOW_RE.test(window);
+  let m: RegExpExecArray | null;
+  while ((m = ALLOW_RE.exec(window))) {
+    const before = window.slice(Math.max(0, m.index - 4), m.index);
+    if (/\bno\s+$/i.test(before) || /\bsi\s+$/i.test(before)) continue;
+    return true;
+  }
+  return false;
+}
+
+function prefixRestIsJunk(rest: string): boolean {
+  if (PREFIX_REST_OK.test(rest)) return false;
+  return PREFIX_REST_JUNK.test(rest);
+}
+
+function hasJunkAfterCurrencyCode(src: string): boolean {
+  CODE_SCAN_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = CODE_SCAN_RE.exec(src))) {
+    if (prefixRestIsJunk(src.slice(m.index + m[0].length))) return true;
+  }
+  return false;
+}
+
+function denySrcFor(text: string): string {
+  return spaceMask(CREDIT_CARD_PHRASE, spaceMask(URL_EMAIL_RE, text)).replace(PAGASTE_CON_SALDO_RE, 'pagaste');
+}
+
+/** Length / format / deny-root / installment veto. Used for free-text and JSON+rawText. */
+export function textFailsAutoConfirmGates(text: string): boolean {
+  if (text.length > MAX_TEXT) return true;
+  if (FORMAT_CHAR_RE.test(text) || OTHER_DASH_RE.test(text)) return true;
+  if (SUPERSCRIPT_RE.test(text)) return true;
+  if (INSTALLMENT_RE.test(text)) return true;
+  return HARD_DENY_RE.test(denySrcFor(text));
 }
 
 function currencyWordDisagrees(src: string, currency: 'ARS' | 'USD' | 'EUR'): boolean {
-  const word = src.match(CURRENCY_WORD_RE)?.[1]?.toLowerCase() ?? '';
-  if (!word) return false;
-  if (/chilenos/.test(word)) return true;
-  if (/d[oó]lares|dollars/.test(word)) return currency !== 'USD';
-  if (/euros/.test(word)) return currency !== 'EUR';
-  if (/pesos/.test(word)) return currency !== 'ARS';
+  CURRENCY_WORD_RE.lastIndex = 0;
+  const words = [...src.matchAll(CURRENCY_WORD_RE)].map((m) => (m[1] || '').toLowerCase());
+  if (words.length === 0) return false;
+  if (words.some((w) => /chilen|uruguay/.test(w))) return true;
+  const wantsUsd = words.some((w) => /d[oó]lar|dollar/.test(w));
+  const wantsEur = words.some((w) => /euro/.test(w));
+  const wantsArs = words.some((w) => /peso/.test(w));
+  if ([wantsUsd, wantsEur, wantsArs].filter(Boolean).length > 1) return true;
+  if (wantsUsd) return currency !== 'USD';
+  if (wantsEur) return currency !== 'EUR';
+  if (wantsArs) return currency !== 'ARS';
   return false;
 }
 
@@ -264,19 +311,16 @@ function hasUnattachedMarker(src: string, consumedStart: number, consumedEnd: nu
 /**
  * Allowlist Wallet free-text gate. A candidate counts only with an explicit
  * currency marker and a fully valid token. Auto-confirm requires exactly one
- * such candidate AND an allowlisted expense phrase in a short window before
- * it, with no denylist/income signal. Unmarked numbers are never the amount.
+ * such candidate AND a completed past-tense template in the same sentence,
+ * with no denylist/income signal. Unmarked numbers and numbers before a
+ * marker are never the amount.
  */
 export function parseAmountFromText(text: string): AmountParseResult {
-  if (text.length > MAX_TEXT) return parkAmount();
-  if (ZERO_WIDTH_RE.test(text) || SUPERSCRIPT_RE.test(text)) return parkAmount();
+  if (textFailsAutoConfirmGates(text)) return parkAmount();
 
   const src = text.replace(/[\u00a0\u202f\u2009]/g, ' ');
-  if (UNICODE_SIGN_RE.test(src)) return parkAmount();
-  if (INSTALLMENT_RE.test(src)) return parkAmount();
-
   const stripped = spaceMask(CREDIT_CARD_PHRASE, spaceMask(URL_EMAIL_RE, spaceMask(LAST4_CONTEXT, src)));
-  const denySrc = stripped.replace(CON_SALDO_RE, '$1');
+  let invalidMarked = hasJunkAfterCurrencyCode(stripped);
 
   type Marked = {
     raw: string;
@@ -288,7 +332,6 @@ export function parseAmountFromText(text: string): AmountParseResult {
     after: string;
   };
   const valid: Marked[] = [];
-  let invalidMarked = false;
   CANDIDATE_RE.lastIndex = 0;
   let m: RegExpExecArray | null;
   while ((m = CANDIDATE_RE.exec(stripped))) {
@@ -326,14 +369,15 @@ export function parseAmountFromText(text: string): AmountParseResult {
     let suffixConsumed = 0;
     if (suffix) {
       const rest = trimmedAfter.slice(suffix[0].length);
-      if (/^\s*[:.]?\s*[$\d]/.test(rest)) {
+      if (PREFIX_REST_OK.test(rest) || prefixRestIsJunk(rest)) {
+        // Code is a prefix of the following number (or junk after the code), never a suffix of this one.
         suffixMarker = '';
-      } else {
-        suffixMarker = suffix[1] || '';
+      } else if (prefixMarker) {
+        suffixMarker = suffix[1] || suffix[0] || '';
         suffixConsumed = afterToken.indexOf(suffix[0]!) + suffix[0]!.length;
       }
     }
-    if (!prefixMarker && !suffixMarker) {
+    if (!prefixMarker) {
       CANDIDATE_RE.lastIndex = Math.max(CANDIDATE_RE.lastIndex, tokenEnd);
       continue;
     }
@@ -387,12 +431,10 @@ export function parseAmountFromText(text: string): AmountParseResult {
     return parkAmount(direction);
   }
 
-  const hardDeny = HARD_DENY_RE.test(denySrc);
   const leftover = hasUnattachedMarker(stripped, preferred.start, preferred.end);
   const disagree = currencyWordDisagrees(src, preferred.currency);
   const allow =
     !preferred.signed &&
-    !hardDeny &&
     !leftover &&
     !disagree &&
     hasAllowlistedExpense(stripped, preferred.start);
@@ -520,8 +562,11 @@ export function parseWalletPayload(input: {
 }): WalletIngestPayload {
   const json = input.json && typeof input.json === 'object' ? input.json : null;
   const fullText = typeof input.text === 'string' ? input.text : jsonText(json, false);
-  const fromText = parseWalletText(fullText);
-  const text = fullText ? fullText.slice(0, MAX_TEXT) : null;
+  // Identity (merchant/card/fingerprint) uses the same truncated input as main.
+  const truncated = fullText ? fullText.slice(0, MAX_TEXT) : null;
+  const fromText = parseWalletText(truncated);
+  const text = truncated;
+  const textVeto = Boolean(fullText && textFailsAutoConfirmGates(fullText));
 
   const rawCurrency = json ? json.currency ?? json.moneda : undefined;
   const jsonCurrencyText =
@@ -541,13 +586,19 @@ export function parseWalletPayload(input: {
         : null;
   const jsonAmountUsable = jsonAmount != null && jsonAmount.amount != null;
   const jsonExcessDecimals = Boolean(jsonAmount?.excessDecimals);
-  // If a JSON amount was present but unusable we fell back to rawText — recompute
-  // ambiguity from that text and treat the fallback as ambiguous so auto-confirm
-  // cannot fire on a guessed number. Excess decimals never round and never fall back.
+  const currency = jsonUnsupported
+    ? jsonCurrencyText
+    : parsedJsonCurrency ?? fromText.currency;
+  const wordVeto =
+    Boolean(fullText) && (currency === 'ARS' || currency === 'USD' || currency === 'EUR')
+      ? currencyWordDisagrees(fullText!, currency)
+      : false;
   const amountAmbiguous =
     currencyUnsupported ||
     jsonExcessDecimals ||
     extracted.duplicate ||
+    textVeto ||
+    wordVeto ||
     (jsonAmountUsable && jsonAmount
       ? jsonAmount.ambiguous
       : jsonAmountRaw != null
@@ -561,9 +612,7 @@ export function parseWalletPayload(input: {
         : jsonAmountUsable && jsonAmount
           ? jsonAmount.amount
           : fromText.amount,
-    currency: jsonUnsupported
-      ? jsonCurrencyText
-      : parsedJsonCurrency ?? fromText.currency,
+    currency,
     merchant: (json ? str(json.merchant ?? json.comercio ?? json.name) : null) ?? fromText.merchant,
     cardName: (json ? str(json.cardName ?? json.card ?? json.tarjeta ?? json.account) : null) ?? fromText.cardName,
     occurredAt: (json ? parseWalletTimestamp(json.timestamp ?? json.occurredAt ?? json.date ?? json.fecha) : null) ?? fromText.occurredAt,

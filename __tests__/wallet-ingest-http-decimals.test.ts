@@ -291,13 +291,13 @@ describe('Wallet HTTP ingest decimal precision', () => {
 
   it('never auto-confirms the card last-4; two-amount saldo text now parks', async () => {
     const last4 = await postWalletWithAutoConfirm({
-      rawText: 'Tarjeta Visa 1234. Monto: $ 1.500',
+      rawText: 'Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.',
       key: 'wallet-r11-high-last4',
     });
     expect(last4.status).toBe(201);
-    expect(last4.body.item.amount).toBe(1500);
+    expect(last4.body.item.amount).toBe(5000);
     expect(last4.body.item.amount).not.toBe(1234);
-    expect(last4.captured.row?.amount).toBe(1500);
+    expect(last4.captured.row?.amount).toBe(5000);
     expect(last4.captured.row?.amount_ambiguous).toBe(false);
 
     vi.clearAllMocks();
@@ -522,20 +522,23 @@ describe('Wallet HTTP ingest decimal precision', () => {
     }
 
     const usdPrefix = [
-      { rawText: 'Compra USD $10', currency: 'USD' },
-      { rawText: 'Compra USD $ 10', currency: 'USD' },
-      { rawText: 'Compra EUR $10', currency: 'EUR' },
-      { rawText: 'Compra USD\u00a0$10', currency: 'USD' },
-      { rawText: 'Compra USD\n$10', currency: 'USD' },
-      { rawText: 'Compra $10 US$', currency: 'USD' },
-      { rawText: 'Compra $ 10 US$.', currency: 'USD' },
-      { rawText: 'Compra $ 10 US$ en COTO', currency: 'USD' },
+      { rawText: 'Abonaste USD $10', currency: 'USD' },
+      { rawText: 'Abonaste USD $ 10', currency: 'USD' },
+      { rawText: 'Abonaste EUR $10', currency: 'EUR' },
+      { rawText: 'Abonaste USD\u00a0$10', currency: 'USD' },
+      { rawText: 'Abonaste USD\n$10', currency: 'USD' },
+      { rawText: 'Pagaste $10 US$', currency: 'USD' },
+      { rawText: 'Pagaste $ 10 US$.', currency: 'USD' },
+      { rawText: 'Pagaste $ 10 US$ en COTO', currency: 'USD' },
     ];
     const kaelKeepAuto = [
       { rawText: 'Pagaste $ 3.500', amount: 3500, currency: 'ARS' },
-      { rawText: 'Compra $ 1.250 en COTO', amount: 1250, currency: 'ARS' },
+      { rawText: 'Compraste en COTO por $ 1.250,50', amount: 1250.5, currency: 'ARS' },
       { rawText: '25/10 12:30 Pagaste $ 1.250,50', amount: 1250.5, currency: 'ARS' },
       { rawText: 'Transferiste $ 8.000', amount: 8000, currency: 'ARS' },
+      { rawText: 'Pagaste con saldo $ 1.500 en COTO', amount: 1500, currency: 'ARS' },
+      { rawText: 'Compra aprobada US$ 12.50', amount: 12.5, currency: 'USD' },
+      { rawText: 'Abonaste USD 10', amount: 10, currency: 'USD' },
     ];
     for (const [i, { rawText, currency }] of usdPrefix.entries()) {
       vi.clearAllMocks();
@@ -564,6 +567,110 @@ describe('Wallet HTTP ingest decimal precision', () => {
       expect(result.captured.row?.amount, rawText).toBe(amount);
       expect(result.captured.row?.amount_ambiguous, rawText).toBe(false);
       expect(result.captured.row?.currency, rawText).toBe(currency);
+    }
+  });
+
+  it('parks round-14 signed/paren references, long JSON refunds, and prod-preexisting notices', async () => {
+    const signed = [
+      'Compra referencia 1234 USD -50',
+      'Compra referencia 1234 USD +50',
+      'Compra referencia 1234 USD (50)',
+      'Compra referencia 1234 USD::50',
+      'Compra referencia 1234 USD/50',
+      'Compra referencia 1234 ARS -1.500',
+      'Compra referencia 1234 EUR -50',
+      'Compra en terminal 1234 ARS -1.500',
+      'Compra referencia 1234 U$D -50',
+      'Compra referencia 1234 AR$ -50',
+      'Compra referencia 1234 USD: -50',
+      'Compra referencia 1234 USD (+50)',
+      'Compra referencia 1234 USD #50',
+    ];
+    const orchestrator38 = [
+      'Vence tu resumen. Pago mínimo $ 2.000',
+      'Pago de tu resumen mínimo $ 2.000',
+      'Tu resumen vence mañana. Total a pagar $ 50.000',
+      'Monto a pagar $ 50.000',
+      'Recordatorio: pago de $ 3.000 programado',
+      'Pago de $ 3.000 programado para mañana',
+      'Pago de $ 3.000 en proceso',
+      'Compra en proceso $ 1.500',
+      'Tu compra de $ 1.500 está siendo procesada',
+      'Compra en COTO por $ 1.500 pendiente de confirmación',
+      'Importe a devolver $ 500',
+      'Te vamos a devolver el importe de $ 500',
+      'Reintegrado: compra $ 1.500',
+      'Rembolso compra $ 1.500',
+      'Compra rechasada $ 1.500',
+      'Compra declinada $ 1.500',
+      'Compra no autorizada $ 1.500',
+      'Compra no realizada $ 1.500',
+      'Compra sin fondos $ 1.500',
+      'Compra simulada $ 1.500',
+      'Compra estimada $ 1.500',
+      'Recibió tu pago de $ 1.500',
+      'Pagaste $ 1.500 + propina',
+      'Pagaste $ 1.500 + impuestos',
+      'Pagaste $ 1.500 sin IVA',
+      'Pagaste $ 1.500 por mes',
+      'Pagaste $ 1.500/mes',
+      'Pago de $ 1.500 de 3',
+      'Pagaste el 50% $ 1.500',
+      'Pagaste seña $ 1.500',
+      'Pagaste adelanto $ 1.500',
+      'Importe original $ 1.500',
+      'Importe bonificado $ 1.500',
+      'Descuento total $ 1.500',
+      'Total ahorrado $ 1.500',
+      'Ahorraste en total $ 1.500',
+      'Total descuentos $ 1.500',
+      'Pago de intereses $ 1.500',
+    ];
+    expect(orchestrator38).toHaveLength(38);
+    const kaelExtra = [
+      'Importe reintegrado $ 800',
+      'Total a pagar $ 5.000',
+      'Monto mínimo $ 5.000',
+      'Pago mínimo $ 5.000',
+      'Pago no aprobado $ 800',
+      'Compra en https://x.com $ 500',
+      'Pagaste $ 1\u00AD.500',
+    ];
+    const park = [...signed, ...orchestrator38, ...kaelExtra];
+    for (const [i, rawText] of park.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r14-park-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.autoConfirmed, rawText).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(true);
+      expect(mocks.execute, rawText).not.toHaveBeenCalled();
+      expect(result.body.item.amount, rawText).not.toBe(1234);
+    }
+
+    const longRefund = `Refund $ 1.500\n${'x'.repeat(4050)}\nComercio: COTO\ncon tarjeta Visa`;
+    const longNoRealizada = `Compra no realizada $ 1.500\n${'x'.repeat(4050)}\nComercio: COTO\ncon tarjeta Visa`;
+    for (const [i, rawText] of [longRefund, longNoRealizada].entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r14-long-json-${i}`,
+        body: JSON.stringify({
+          amount: 1500,
+          rawText,
+          timestamp: '2026-10-25T12:00:00.000Z',
+          currency: 'ARS',
+        }),
+      });
+      expect(result.status, rawText.slice(0, 40)).toBe(201);
+      expect(result.body.autoConfirmed, rawText.slice(0, 40)).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText.slice(0, 40)).toBe(true);
+      expect(result.captured.row?.merchant, rawText.slice(0, 40)).not.toBe('COTO');
+      expect(mocks.execute, rawText.slice(0, 40)).not.toHaveBeenCalled();
     }
   });
 });

@@ -17,7 +17,7 @@ describe('wallet parser', () => {
   });
 
   it('parses Android notification text without calling a model', () => {
-    const parsed = parseWalletText('Compra de $1.250,50 en Ejemplo Café con Visa Galicia');
+    const parsed = parseWalletText('Pagaste $1.250,50 en Ejemplo Café con Visa Galicia');
     expect(parsed.amount).toBe(1250.5);
     expect(parsed.merchant?.toLowerCase()).toContain('ejemplo');
     expect(parsed.currency).toBe('ARS');

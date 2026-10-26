@@ -13,9 +13,9 @@ const CASES: Array<{ input: string; amount: number | null; ambiguous?: boolean; 
   { input: 'ARS 1.250', amount: 1250, ambiguous: true },
   { input: '$1,234.56', amount: 1234.56, ambiguous: true },
   { input: 'US$ 1,234.56', amount: 1234.56, ambiguous: true },
-  { input: 'Compra de $1.250,50 en Ejemplo Café', amount: 1250.5, ambiguous: false },
+  { input: 'Compra de $1.250,50 en Ejemplo Café', amount: 1250.5, ambiguous: true },
   { input: '-$1.234,56', amount: 1234.56, direction: 'income', ambiguous: true },
-  { input: 'Devolución $1.250,00', amount: 1250, ambiguous: true },
+  { input: 'Devolución $1.250,00', amount: null, ambiguous: true },
   { input: 'tarjeta terminada en 4321 por $ 5.000,00 en COTO', amount: 5000, ambiguous: true },
   { input: 'Visa terminada en 1111 $ 12.500', amount: 12500, ambiguous: true },
   { input: 'USD 10.50', amount: 10.5, ambiguous: true },
@@ -23,7 +23,7 @@ const CASES: Array<{ input: string; amount: number | null; ambiguous?: boolean; 
   { input: '12,50', amount: null, ambiguous: true },
   { input: '12.50', amount: null, ambiguous: true },
   { input: 'ARS 99', amount: 99, ambiguous: true },
-  { input: 'reintegro ARS 800', amount: 800, ambiguous: true },
+  { input: 'reintegro ARS 800', amount: null, ambiguous: true },
   { input: 'sin monto', amount: null },
   { input: '1.250', amount: null, ambiguous: true },
   { input: 'EUR 1.234,56', amount: 1234.56, ambiguous: true },
@@ -43,7 +43,7 @@ describe('wallet amount parser (table)', () => {
   });
 
   it('does not auto-pick card last-4 when a currency amount exists', () => {
-    const parsed = parseWalletText('Compra con tarjeta terminada en 4321 por $ 5.000,00 en COTO');
+    const parsed = parseWalletText('Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.');
     expect(parsed.amount).toBe(5000);
     expect(parsed.amountAmbiguous).toBe(false);
   });
@@ -71,11 +71,11 @@ describe('wallet amount parser (table)', () => {
   });
 
   it('does not treat tarjeta de crédito as a refund', () => {
-    const parsed = parseAmountFromText('Compra con tarjeta de crédito $5.000 COTO');
+    const parsed = parseAmountFromText('Pagaste con tarjeta de crédito $5.000 COTO');
     expect(parsed.direction).toBe('expense');
     expect(parsed.amount).toBe(5000);
     expect(parsed.ambiguous).toBe(false);
-    const long = parseWalletText('Compra con tarjeta de crédito por $5.000,00 en COTO');
+    const long = parseWalletText('Pagaste con tarjeta de crédito por $5.000,00 en COTO');
     expect(long.direction).toBe('expense');
     expect(long.amount).toBe(5000);
     expect(long.amountAmbiguous).toBe(false);
@@ -84,7 +84,6 @@ describe('wallet amount parser (table)', () => {
   it('parks refund wording instead of auto-picking an income amount', () => {
     const parsed = parseAmountFromText('crédito $1.000 devolución');
     expect(parsed.ambiguous).toBe(true);
-    expect(parsed.amount).not.toBeNull();
     const ascii = parseAmountFromText('-$ 500');
     expect(ascii.amount).toBe(500);
     expect(ascii.direction).toBe('income');
@@ -316,7 +315,7 @@ describe('wallet amount parser (table)', () => {
       { input: '$1500,', amount: 1500 },
       { input: '$1500.-', amount: 1500 },
       { input: '$ 1.500 cuota 1/3', amount: null, ambiguous: true },
-      { input: '$ 1.500/mes', amount: 1500 },
+      { input: '$ 1.500/mes', amount: null, ambiguous: true },
       { input: '$ 1.500 / 3 cuotas', amount: null, ambiguous: true },
       { input: '1/2', amount: null },
       { input: '$ 1/2', amount: null },
@@ -328,7 +327,8 @@ describe('wallet amount parser (table)', () => {
       { input: 'Compra US$ 12.50,', amount: 12.5, currency: 'USD' },
       { input: 'Compra $1250,50. en COTO', amount: 1250.5 },
     ];
-    const allowlisted = /pagaste|compraste|\bcompra\b|\bpago\b|transferiste|\bmonto\b|\btotal\b|\bimporte\b/i;
+    const allowlisted =
+      /pag[aá]ste|compr[aá]ste|transferiste|abonaste|consumiste|compra\s+aprobada|compra\s+realizada|pago\s+realizado|pago\s+aprobado/i;
     for (const { input, amount, ambiguous, currency, direction } of round11) {
       const parsed = parseAmountFromText(input);
       expect(parsed.amount, input).toBe(amount);
@@ -349,14 +349,14 @@ describe('wallet amount parser (table)', () => {
 
     const kaelAr: Array<{
       input: string;
-      amount: number;
+      amount: number | null;
       currency?: string;
       direction?: 'expense' | 'income';
       ambiguous?: boolean;
     }> = [
       { input: '$ 12.345.678,90', amount: 12345678.9 },
       { input: '$12.345.678,90', amount: 12345678.9 },
-      { input: '1.250,50 ARS', amount: 1250.5 },
+      { input: '1.250,50 ARS', amount: null, ambiguous: true },
       { input: 'ARS 1.250,50', amount: 1250.5 },
       { input: 'Pagaste $ 3.500', amount: 3500 },
       { input: 'Compra $ 1.250 en COTO', amount: 1250 },
@@ -381,18 +381,18 @@ describe('wallet amount parser (table)', () => {
     expect(kaelAr).toHaveLength(23);
     for (const { input, amount, currency, direction, ambiguous } of kaelAr) {
       const parsed = parseAmountFromText(input);
-      const withPhrase = allowlisted.test(input) ? input : `Compra ${input}`;
+      const withPhrase = allowlisted.test(input) ? input : `Pagaste ${input}`;
       const exact = parseAmountFromText(withPhrase);
       expect(parsed.amount, input).toBe(amount);
-      expect(parsed.direction, input).toBe(direction ?? 'expense');
-      if (direction === 'income') {
+      if (amount != null) expect(parsed.direction, input).toBe(direction ?? 'expense');
+      if (direction === 'income' || amount == null) {
         expect(parsed.ambiguous, input).toBe(true);
       } else {
         expect(parsed.ambiguous, input).toBe(ambiguous ?? !allowlisted.test(input));
         expect(exact.amount, withPhrase).toBe(amount);
         expect(exact.ambiguous, withPhrase).toBe(false);
       }
-      if (currency) expect(parseWalletText(withPhrase).currency, input).toBe(currency);
+      if (currency && amount != null) expect(parseWalletText(withPhrase).currency, input).toBe(currency);
     }
 
     const round10Park = [
@@ -544,12 +544,15 @@ describe('wallet amount parser (table)', () => {
     }
 
     expect(parseAmountFromText('Compra USD $10').amount).toBe(10);
-    expect(parseAmountFromText('Compra USD $10').ambiguous).toBe(false);
-    expect(parseWalletText('Compra USD $10').currency).toBe('USD');
-    expect(parseWalletText('Compra EUR $10').currency).toBe('EUR');
-    expect(parseWalletText('Compra USD\u00a0$10').currency).toBe('USD');
-    expect(parseWalletText('Compra USD\n$10').currency).toBe('USD');
-    expect(parseWalletText('Compra $ 10 US$ en COTO').currency).toBe('USD');
+    expect(parseAmountFromText('Compra USD $10').ambiguous).toBe(true);
+    expect(parseWalletText('Abonaste USD $10').currency).toBe('USD');
+    expect(parseWalletText('Abonaste EUR $10').currency).toBe('EUR');
+    expect(parseWalletText('Abonaste USD\u00a0$10').currency).toBe('USD');
+    expect(parseWalletText('Abonaste USD\n$10').currency).toBe('USD');
+    expect(parseWalletText('Pagaste $ 10 US$ en COTO').currency).toBe('USD');
+    expect(parseAmountFromText('Abonaste USD $10').ambiguous).toBe(false);
+    expect(parseAmountFromText('Compra aprobada US$ 12.50').amount).toBe(12.5);
+    expect(parseAmountFromText('Compra aprobada US$ 12.50').ambiguous).toBe(false);
     expect(parseAmountFromText('desde $ 1.500').ambiguous).toBe(true);
     expect(parseAmountFromText('Compra $ 1.500 + IVA').ambiguous).toBe(true);
     expect(parseAmountFromText('Compra $ 1.500 c/u').ambiguous).toBe(true);
@@ -575,12 +578,62 @@ describe('wallet amount parser (table)', () => {
     ];
     expect(tokens).toHaveLength(10);
     for (const { token, amount, currency } of tokens) {
-      for (const input of [`Compra ${token}`, `Compra ${token} en COTO`, `Compra ${token}.`]) {
+      for (const input of [`Pagaste ${token}`, `Pagaste ${token} en COTO`, `Pagaste ${token}.`]) {
         const parsed = parseAmountFromText(input);
         expect(parsed.amount, input).toBe(amount);
         expect(parsed.ambiguous, input).toBe(false);
         if (currency) expect(parseWalletText(input).currency, input).toBe(currency);
       }
+    }
+  });
+
+  it('parks round-14 signed markers, soft hyphen, and completed-template misses', () => {
+    for (const input of [
+      'Compra referencia 1234 USD -50',
+      'Compra referencia 1234 USD +50',
+      'Compra referencia 1234 USD (50)',
+      'Compra referencia 1234 USD::50',
+      'Compra referencia 1234 USD/50',
+      'Compra referencia 1234 ARS -1.500',
+      'Compra en terminal 1234 ARS -1.500',
+      'Compra referencia 1234 U$D -50',
+      'Compra referencia 1234 AR$ -50',
+      'Pagaste $ 1\u00AD.500',
+      'Importe reintegrado $ 800',
+      'Total a pagar $ 5.000',
+      'Monto mínimo $ 5.000',
+      'Pago mínimo $ 5.000',
+      'Pago no aprobado $ 800',
+      'Compra en https://x.com $ 500',
+    ]) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.ambiguous, input).toBe(true);
+      expect(parsed.amount, input).not.toBe(1234);
+    }
+    expect(parseAmountFromText('Compra referencia 1234 USD -50').amount).toBeNull();
+    const long = parseWalletPayload({
+      json: {
+        amount: 1500,
+        rawText: `Refund $ 1.500\n${'x'.repeat(4050)}\nComercio: COTO\ncon tarjeta Visa`,
+      },
+    });
+    expect(long.amountAmbiguous).toBe(true);
+    expect(long.merchant).toBeNull();
+    const positives = [
+      { input: 'Pagaste $ 3.500', amount: 3500 },
+      { input: 'Compraste en COTO por $ 1.250,50', amount: 1250.5 },
+      { input: 'Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.', amount: 5000 },
+      { input: 'Transferiste $ 8.000', amount: 8000 },
+      { input: 'Pagaste con saldo $ 1.500 en COTO', amount: 1500 },
+      { input: 'Compra aprobada US$ 12.50', amount: 12.5 },
+      { input: 'Abonaste USD 10', amount: 10 },
+      { input: '25/10 12:30 Pagaste $ 1.250,50', amount: 1250.5 },
+    ];
+    for (const { input, amount } of positives) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.amount, input).toBe(amount);
+      expect(parsed.ambiguous, input).toBe(false);
+      expect(parsed.amount, input).not.toBe(1234);
     }
   });
 

@@ -864,7 +864,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       [ids.a, ids.accountA, ids.categoryA]
     );
     const last4Raw = JSON.stringify({
-      rawText: 'Tarjeta Visa 1234. Monto: $ 1.500',
+      rawText: 'Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.',
       merchant: 'COTO',
       cardName: 'Visa Ejemplo',
       timestamp: '2026-10-25T12:00:00.000Z',
@@ -885,10 +885,10 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     );
     expect(last4Res.status).toBe(201);
     const last4Json = (await last4Res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
-    expect(last4Json.item.amount).toBe(1500);
+    expect(last4Json.item.amount).toBe(5000);
     expect(last4Json.item.amount).not.toBe(1234);
     const last4Pending = await query('SELECT amount FROM pending_inbox_items WHERE id=$1', [last4Json.item.id]);
-    expect(Number(last4Pending.rows[0].amount)).toBe(1500);
+    expect(Number(last4Pending.rows[0].amount)).toBe(5000);
     expect(
       (await query('SELECT id FROM transactions WHERE user_id=$1 AND amount=ANY($2::numeric[])', [ids.a, [1234, 20000]]))
         .rows
