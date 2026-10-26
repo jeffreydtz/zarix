@@ -678,5 +678,75 @@ describe('Codex r9 HTML parser — unfiltered NAV tail, style comments, !importa
     expect(parseInlineStyleDeclarations('display:none /*x*/').get('display')).toBe('none');
     expect(parseInlineStyleDeclarations('display:none!important;display:block').get('display')).toBe('none');
     expect(parseInlineStyleDeclarations('display:none;display:block').get('display')).toBe('block');
+    expect(parseInlineStyleDeclarations('display:none!important;display:invalid!important').get('display')).toBe('none');
+  });
+});
+
+describe('Codex r10 HTML parser — whitespace-split NAV tail, exact Moneda', () => {
+  it.each([
+    ['NNBSP', '<p>Valor por cada cuotaparte: 1.241,954<span>&#x202f;039</span></p>'],
+    ['NBSP', '<p>Valor por cada cuotaparte: 1.241,954<span>\u00A0039</span></p>'],
+    ['thin space', '<p>Valor por cada cuotaparte: 1.241,954<span>\u2009039</span></p>'],
+    ['hidden spacer', '<p><span>Valor por cada cuotaparte: 1.241,954</span><span hidden> </span><span>039</span></p>'],
+    ['display:none spacer', '<p><span>Valor por cada cuotaparte: 1.241,954</span><span style="display:none"> </span><span>039</span></p>'],
+    ['multiple spans', '<p><span>Valor por cada cuotaparte: 1.241,954</span><span>039</span></p>'],
+  ])('skips a whitespace-split NAV tail (%s)', (_name, nav) => {
+    const result = parsed(shell({ nav }));
+    expect(result.parsed).toBeNull();
+    expect(result.parsed?.price).not.toBe(1241.954);
+  });
+
+  it('still parses when the NAV token is followed only by trailing space in the label element', () => {
+    const html = shell({ nav: '<p>Valor por cada cuotaparte: 1.241,954039 </p>' });
+    expect(parsed(html).parsed).toMatchObject({ price: 1241.954039 });
+  });
+
+  it('skips a Moneda value whose hidden descendant changes the unfiltered text', () => {
+    expect(parsed(shell({
+      moneda: '<div id="fichaRight"><span class="label">Moneda: Peso <span hidden>X</span>Argentina</span></div>',
+    })).parsed).toBeNull();
+    expect(parsed(shell({
+      moneda: '<div id="fichaRight"><span class="label">Moneda:</span> Peso <span hidden>Uruguayo </span>Argentina</div>',
+    })).parsed).toBeNull();
+  });
+
+  it('skips an extra Peso Mexicano label on an ARS page', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight">
+        <span class="label">Moneda:</span> Peso Argentina
+        <span class="label">Moneda:</span> Peso Mexicano
+      </div>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips an extra Dolar Canadiense label on a USD page', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight">
+        <span class="label">Moneda:</span> Dolar Estadounidense
+        <span class="label">Moneda:</span> Dolar Canadiense
+      </div>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('still counts identical folded Moneda values as one', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight">
+        <span class="label">Moneda:</span> Peso Argentina
+        <span class="label">Moneda:</span> peso argentina
+      </div>`,
+    });
+    expect(parsed(html).parsed).toMatchObject({
+      price: 1241.954039,
+      monedaLabel: 'Peso Argentina',
+    });
+  });
+
+  it('skips identity hidden by an invalid important display after display:none!important', () => {
+    const html = shell({
+      identity: `<div style="display:none!important;display:invalid!important">${IDENTITY}</div>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
   });
 });

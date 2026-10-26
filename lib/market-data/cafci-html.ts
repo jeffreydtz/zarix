@@ -24,8 +24,10 @@
  * Text values come only from text nodes whose direct parent is allowlisted and
  * visible. Visibility filtering never shortens a NAV: the node-vs-block
  * cross-check concatenates ALL descendant text of the NAV paragraph and of
- * `#cuotaparte` (hidden, aria-hidden, inert, display:none included). Unicode
- * Cf/format characters (ZWSP, BOM/U+FEFF, bidi, soft hyphens) are stripped
+ * `#cuotaparte` (hidden, aria-hidden, inert, display:none included). In the
+ * NAV label element only, after the matched token skip `\s`/`\p{Zs}`/Cf; a
+ * following letter, digit, mark, comma or dot skips. Unicode Cf/format
+ * characters (ZWSP, BOM/U+FEFF, bidi, soft hyphens) are stripped
  * before any whitespace normalization so they never become a space. iframe/
  * raw-text, `<base href>`, `<meta http-equiv=refresh>`, and non-whitespace
  * after `</html>` fail closed (live fichas have none of those except a trailing
@@ -135,6 +137,7 @@ export function parseInlineStyleDeclarations(style: string): Map<string, string>
     value = value.replace(/!\s*important\s*$/i, '').trim().toLowerCase();
     if (!prop) continue;
     if (important.get(prop) && !isImportant) continue;
+    if (!isValidInlineValue(prop, value)) continue;
     decls.set(prop, value);
     important.set(prop, isImportant);
   }
@@ -238,6 +241,22 @@ function normalizeFichaText(text: string): string {
   return stripFormatChars(text).replace(/\s+/g, ' ').trim();
 }
 
+const TAIL_GAP = /[\s\p{Zs}\p{Cf}]/u;
+const VALID_DISPLAY = new Set([
+  'none', 'block', 'inline', 'inline-block', 'flex', 'inline-flex',
+  'grid', 'inline-grid', 'contents', 'table', 'table-row', 'table-cell',
+  'list-item', 'flow-root', 'initial', 'inherit', 'unset', 'revert', 'revert-layer',
+]);
+const VALID_VISIBILITY = new Set([
+  'visible', 'hidden', 'collapse', 'initial', 'inherit', 'unset', 'revert', 'revert-layer',
+]);
+
+function isValidInlineValue(prop: string, value: string): boolean {
+  if (prop === 'display') return VALID_DISPLAY.has(value);
+  if (prop === 'visibility') return VALID_VISIBILITY.has(value);
+  return true;
+}
+
 function countRe(text: string, re: RegExp): number {
   const flags = re.flags.includes('g') ? re.flags : `${re.flags}g`;
   return (text.match(new RegExp(re.source, flags)) || []).length;
@@ -277,11 +296,15 @@ function allowlistedText($: CheerioAPI, root: AnyNode): string {
 
 /** All descendant text nodes, including hidden/aria-hidden/inert/display:none. */
 function descendantTextUnfiltered(root: AnyNode): string {
+  return normalizeFichaText(descendantTextRaw(root));
+}
+
+function descendantTextRaw(root: AnyNode): string {
   const bits: string[] = [];
   walkEveryNode(root, (node) => {
     if (node.type === 'text') bits.push(textData(node));
   });
-  return normalizeFichaText(bits.join(''));
+  return bits.join('');
 }
 
 function directText($: CheerioAPI, el: Element): string {
@@ -390,11 +413,27 @@ function tokenContinues(next: string | undefined): boolean {
   return Boolean(next && BOUNDARY_CONTINUE.test(next));
 }
 
-function monedaKind(label: string): 'ARS' | 'USD' | 'other' {
-  const folded = label
+function skipTailGap(text: string, index: number): number {
+  let i = index;
+  while (i < text.length) {
+    const cp = nextCodePoint(text, i);
+    if (!cp || !TAIL_GAP.test(cp)) break;
+    i += cp.length;
+  }
+  return i;
+}
+
+function foldMoneda(label: string): string {
+  return stripFormatChars(label)
+    .replace(/\s+/g, ' ')
+    .trim()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\p{M}/gu, '')
     .toUpperCase();
+}
+
+function monedaKind(label: string): 'ARS' | 'USD' | 'other' {
+  const folded = foldMoneda(label);
   const usd = /DOLAR|DOLLAR|USD|U\$S|US\$/.test(folded);
   const ars = /PESO|ARS/.test(folded);
   if (usd && !ars) return 'USD';
@@ -435,7 +474,7 @@ function extractMonedaValues(blob: string): string[] {
   for (let i = 0; i < labels.length; i++) {
     const start = (labels[i].index ?? 0) + labels[i][0].length;
     const end = i + 1 < labels.length ? (labels[i + 1].index ?? blob.length) : blob.length;
-    const value = blob.slice(start, end).replace(/\s+/g, ' ').trim();
+    const value = normalizeFichaText(blob.slice(start, end));
     if (value) values.push(value);
   }
   return values;
@@ -545,6 +584,35 @@ function navTokenFromSectionText(text: string): string | null {
   return token[0];
 }
 
+/** Paragraph (or the labelled node) that holds `Valor por cada cuotaparte`, not `#cuotaparte`. */
+function navLabelScope(el: Element, section: Element): Element {
+  let node: AnyNode | null = el;
+  while (node && node !== section) {
+    if (isElement(node) && node.name.toLowerCase() === 'p') return node;
+    node = parentOf(node);
+  }
+  return el;
+}
+
+/**
+ * Unfiltered label-element token. After the match, skip Zs/Cf/`\s`; a following
+ * letter, digit, mark, comma or dot means the visible token was truncated.
+ */
+function navTokenFromLabelRaw(raw: string): string | null {
+  const text = stripFormatChars(raw);
+  const mentions = text.match(/por cada cuotaparte/gi);
+  if (!mentions || mentions.length !== 1) return null;
+  const labelled = text.match(/Valor por cada cuotaparte:\s*/i);
+  if (!labelled || labelled.index == null) return null;
+  const afterLabel = text.slice(labelled.index + labelled[0].length);
+  const rest = afterLabel.slice(skipTailGap(afterLabel, 0));
+  const token = rest.match(NAV_TOKEN_PREFIX);
+  if (!token) return null;
+  const next = nextCodePoint(rest, skipTailGap(rest, token[0].length));
+  if (tokenContinues(next)) return null;
+  return token[0];
+}
+
 function parseNavPrice($: CheerioAPI, section: Element): number | null {
   const nodes = innermostIn($, section, (el) => /Valor por cada cuotaparte:/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
@@ -567,10 +635,10 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
   const nodePrice = parseArgentineNumber(token);
   if (nodePrice == null || !Number.isFinite(nodePrice) || nodePrice <= 0) return null;
 
-  const nodeToken = navTokenFromSectionText(descendantTextUnfiltered(el));
+  const nodeToken = navTokenFromLabelRaw(descendantTextRaw(navLabelScope(el, section)));
   const blockToken = navTokenFromSectionText(descendantTextUnfiltered(section));
+  if (!nodeToken || nodeToken !== token) return null;
   if (!blockToken || blockToken !== token) return null;
-  if (nodeToken && nodeToken !== token) return null;
   const blockPrice = parseArgentineNumber(blockToken);
   if (blockPrice == null || blockPrice !== nodePrice) return null;
   return nodePrice;
@@ -596,14 +664,46 @@ function monedaValueFromLabelEl($: CheerioAPI, el: Element): string | null {
   const own = directText($, el);
   const withValue = own.match(MONEDA_LABEL);
   if (withValue) {
-    const label = withValue[1].trim();
+    const label = normalizeFichaText(withValue[1]);
     if (label) return label;
   }
   if (/^Moneda:\s*$/i.test(own)) {
-    const rest = followingText($, el).replace(/\s+/g, ' ').trim();
+    const rest = normalizeFichaText(followingText($, el));
     return rest || null;
   }
   return null;
+}
+
+function followingUnfiltered($: CheerioAPI, el: Element): string {
+  const parent = parentOf(el);
+  if (!parent || !('children' in parent) || !Array.isArray(parent.children)) return '';
+  const idx = parent.children.indexOf(el);
+  if (idx < 0) return '';
+  const bits: string[] = [];
+  for (let i = idx + 1; i < parent.children.length; i++) {
+    const node = parent.children[i];
+    if (node.type === 'comment') continue;
+    if (node.type === 'text') {
+      bits.push(textData(node));
+      continue;
+    }
+    if (isElement(node) && elementHides($, node)) {
+      bits.push(descendantTextRaw(node));
+      continue;
+    }
+    break;
+  }
+  return bits.join('');
+}
+
+function unfilteredMonedaValue($: CheerioAPI, el: Element): string {
+  const own = descendantTextRaw(el);
+  const labelled = own.match(/Moneda:\s*/i);
+  if (labelled && labelled.index != null) {
+    const rest = normalizeFichaText(own.slice(labelled.index + labelled[0].length));
+    if (rest) return rest;
+  }
+  return normalizeFichaText(followingUnfiltered($, el));
 }
 
 function collectMonedaLabels($: CheerioAPI): string[] {
@@ -623,20 +723,18 @@ function uniqueMonedaLabels(labels: string[]): string[] {
   const seen = new Set<string>();
   const unique: string[] = [];
   for (const label of labels) {
-    const key = label.replace(/\s+/g, ' ').trim();
+    const stored = normalizeFichaText(label);
+    const key = foldMoneda(stored);
     if (!key || seen.has(key)) continue;
     seen.add(key);
-    unique.push(label);
+    unique.push(stored);
   }
   return unique;
 }
 
 function currenciesAgree(chosen: string, mentions: string[]): boolean {
-  const chosenKind = monedaKind(chosen);
-  if (chosenKind === 'other') {
-    return mentions.every((label) => label.replace(/\s+/g, ' ').trim() === chosen.replace(/\s+/g, ' ').trim());
-  }
-  return mentions.every((label) => monedaKind(label) === chosenKind);
+  const key = foldMoneda(chosen);
+  return Boolean(key) && mentions.every((label) => foldMoneda(label) === key);
 }
 
 function hasExactMonedaLabelText($: CheerioAPI, root: Element): boolean {
@@ -694,10 +792,22 @@ export function parseCafciHtmlFichaDetailed(
   if (!hasMonedaInFichaMain($)) {
     return { parsed: null, reason: 'unparseable_ficha' };
   }
+  const monedaEntries: Array<{ el: Element; value: string }> = [];
+  $('*').each((_, el) => {
+    if (!isElement(el) || !usableAncestry($, el)) return;
+    if ($(el).closest(`script, style, noscript, template, #cartera, ${RAW_TEXT_OR_FRAME}`).length > 0) {
+      return;
+    }
+    const value = monedaValueFromLabelEl($, el);
+    if (value) monedaEntries.push({ el, value });
+  });
   const mentions = uniqueMonedaLabels(collectMonedaLabels($));
   if (mentions.length === 0) return { parsed: null, reason: 'unparseable_ficha' };
   const monedaLabel = mentions[0];
   if (!currenciesAgree(monedaLabel, mentions)) {
+    return { parsed: null, reason: 'unparseable_ficha' };
+  }
+  if (monedaEntries.some((row) => foldMoneda(unfilteredMonedaValue($, row.el)) !== foldMoneda(row.value))) {
     return { parsed: null, reason: 'unparseable_ficha' };
   }
 
