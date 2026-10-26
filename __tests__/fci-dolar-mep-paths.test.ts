@@ -88,10 +88,12 @@ const SKIP_LABELS = [
 function stubCafci(moneda: string) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     const href = String(url);
-    if (href.includes('/ficha')) {
+    if (href.includes('/ficha') || /\/fondos\/\d+/.test(href)) {
+      const payload = { data: { valorCuotaparte: CAFCI_PRICE, moneda, fecha: '2026-10-23' } };
       return {
         ok: true,
-        json: async () => ({ data: { valorCuotaparte: CAFCI_PRICE, moneda, fecha: '2026-10-23' } }),
+        json: async () => payload,
+        text: async (): Promise<string> => JSON.stringify(payload),
       };
     }
     return {

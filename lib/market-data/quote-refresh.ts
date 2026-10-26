@@ -139,7 +139,9 @@ export function describeFciFetchError(error: unknown): FciSkipDetail {
   }
   const rec = error && typeof error === 'object' ? error as Record<string, unknown> : null;
   if (rec && typeof rec.status === 'number' && Number.isFinite(rec.status)) detail.status = rec.status;
-  if (rec && (rec.stage === 'catalog' || rec.stage === 'ficha')) detail.stage = rec.stage;
+  if (rec && (rec.stage === 'catalog' || rec.stage === 'ficha' || rec.stage === 'iol' || rec.stage === 'daily')) {
+    detail.stage = rec.stage;
+  }
   if (rec && typeof rec.server === 'string' && rec.server) detail.server = capReason(rec.server).slice(0, 60);
   return detail;
 }
@@ -255,7 +257,7 @@ function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number
 
 /**
  * Precio de mercado en la moneda de cotización de cada posición.
- * data912 (ARG/CEDEAR/bono/ON) → Yahoo `.BA` / US → Stooq; FCI is CAFCI only; crypto via CoinGecko.
+ * data912 (ARG/CEDEAR/bono/ON) → Yahoo `.BA` / US → Stooq; FCI is CAFCI then IOL; crypto via CoinGecko.
  */
 export async function refreshQuotesForInvestments(
   investments: QuoteRefreshPosition[],

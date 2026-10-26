@@ -2,13 +2,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   CAFCI_HEADERS,
   CafciHttpError,
+  cafciClassesFromCatalogForTest,
   fetchFciQuote,
   isCafciForbidden,
   firstCurrencyLabel,
   parseCafciCurrencyLabel,
+  parseCafciDateLabel,
+  parseCafciHtmlFicha,
   resetCafciCatalogCacheForTest,
   resolveCafciCurrencySources,
 } from '@/lib/market-data/cafci-client';
+import { parseArgentineNumber, parseIolFondosPanel } from '@/lib/market-data/iol-fci-panel';
 
 describe('CAFCI client headers and 403', () => {
   beforeEach(() => {
@@ -572,9 +576,17 @@ describe('CAFCI failure diagnostics', () => {
       { id: 1, clases: [{ id: 2, simbolo: 'DUPE' }] },
       { id: 3, clases: [{ id: 4, simbolo: 'DUPE' }] },
     ];
-    vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => [...catalog, ...ambiguous] })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { valorCuotaparte: null } }) }));
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      const u = String(url);
+      const empty = async (): Promise<string> => '';
+      if (u.includes('consulta-de-fondos.json')) {
+        return { ok: true, json: async () => [...catalog, ...ambiguous], text: empty };
+      }
+      if (u.includes('invertironline')) {
+        return { ok: true, text: async (): Promise<string> => '<html><body>no funds</body></html>' };
+      }
+      return { ok: true, json: async () => ({ data: { valorCuotaparte: null } }), text: empty };
+    }));
     const reasons: string[] = [];
     const onMiss = (r: string) => reasons.push(r);
     await expect(fetchFciQuote('NOPE', onMiss)).resolves.toBeNull();
@@ -586,5 +598,216 @@ describe('CAFCI failure diagnostics', () => {
 
   it('ignores a throwing onMiss callback', async () => {
     await expect(fetchFciQuote('', () => { throw new Error('boom'); })).resolves.toBeNull();
+  });
+});
+
+const STATS_CATALOG = {
+  generated_at: '2026-10-23T20:18:34-03:00',
+  fondos: [
+    {
+      id: 227,
+      nombre: 'Premier Renta Variable',
+      moneda: { id: 1, nombre: 'Peso Argentina' },
+      clases: [{
+        id: 784,
+        nombre: 'Premier Renta Variable - Clase B',
+        moneda: { id: 1, nombre: 'Peso Argentina' },
+        ticker_bloomberg: 'PRTAVAB   ',
+      }],
+    },
+    {
+      id: 622,
+      nombre: 'Adcap Acciones',
+      moneda: { id: 1, nombre: 'Peso Argentina' },
+      clases: [{
+        id: 1255,
+        nombre: 'Adcap Acciones - Clase A',
+        moneda: { id: 1, nombre: 'Peso Argentina' },
+        ticker_bloomberg: 'CONIOLA   ',
+      }],
+    },
+    {
+      id: 750,
+      nombre: 'Adcap Renta Dólar',
+      moneda: { id: 2, nombre: 'Dolar Estadounidense' },
+      clases: [{
+        id: 1645,
+        nombre: 'Adcap Renta Dólar - Clase D',
+        moneda: { id: 2, nombre: 'Dolar Estadounidense' },
+        ticker_bloomberg: 'ADCGLOA AR',
+      }],
+    },
+    {
+      id: 1570,
+      nombre: 'IOL Dólar Ahorro Plus',
+      moneda: { id: 2, nombre: 'Dolar Estadounidense' },
+      clases: [{
+        id: 5100,
+        nombre: 'IOL Dólar Ahorro Plus - Clase D',
+        moneda: { id: 2, nombre: 'Dolar Estadounidense' },
+        ticker_bloomberg: null,
+      }],
+    },
+  ],
+};
+
+function htmlFicha(opts: { priceLabel: string; date?: string; moneda?: string }): string {
+  return `<html><body>
+    <h3>Valores al ${opts.date ?? '23/10/2026'}</h3>
+    <p>Valor por cada cuotaparte: ${opts.priceLabel}</p>
+    <p>(Valor por mil: 1.097,744)</p>
+    <span class="label">Moneda:</span> ${opts.moneda ?? 'Dolar Estadounidense'}</li>
+  </body></html>`;
+}
+
+function stubByUrl(handlers: { catalog?: unknown; fichas?: Record<string, string>; iol?: string; status?: Record<string, number> }) {
+  vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+    const u = String(url);
+    const statusFor = (key: string, fallback = 200) => handlers.status?.[key] ?? fallback;
+    if (u.includes('consulta-de-fondos.json')) {
+      const status = statusFor('catalog');
+      return {
+        ok: status >= 200 && status < 300,
+        status,
+        json: async () => handlers.catalog ?? STATS_CATALOG,
+        text: async (): Promise<string> => JSON.stringify(handlers.catalog ?? STATS_CATALOG),
+        headers: new Headers(),
+      };
+    }
+    const ficha = u.match(/\/fondos\/(\d+)\?clase=(\d+)/);
+    if (ficha) {
+      const key = `${ficha[1]}:${ficha[2]}`;
+      const status = statusFor('ficha');
+      const html = handlers.fichas?.[key] ?? '';
+      return {
+        ok: status >= 200 && status < 300,
+        status,
+        text: async (): Promise<string> => html,
+        json: async () => ({}),
+        headers: new Headers(),
+      };
+    }
+    if (u.includes('invertironline.com')) {
+      const status = statusFor('iol');
+      return {
+        ok: status >= 200 && status < 300,
+        status,
+        text: async (): Promise<string> => handlers.iol ?? '<html></html>',
+        json: async () => ({}),
+        headers: new Headers(),
+      };
+    }
+    return { ok: false, status: 404, json: async () => ({}), text: async (): Promise<string> => '', headers: new Headers() };
+  }));
+}
+
+describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
+  beforeEach(() => {
+    resetCafciCatalogCacheForTest();
+    vi.restoreAllMocks();
+  });
+  afterEach(() => {
+    resetCafciCatalogCacheForTest();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('parses Argentine cuotaparte labels from the official HTML ficha', () => {
+    expect(parseCafciHtmlFicha(htmlFicha({ priceLabel: '1,097744', moneda: 'Dolar Estadounidense' }))).toMatchObject({
+      price: 1.097744, currency: 'USD',
+    });
+    expect(parseCafciHtmlFicha(htmlFicha({ priceLabel: '1.241,954039', moneda: 'Peso Argentina' }))).toMatchObject({
+      price: 1241.954039, currency: 'ARS',
+    });
+    expect(parseCafciHtmlFicha(htmlFicha({ priceLabel: '179,598356', moneda: 'Peso Argentina' }))).toMatchObject({
+      price: 179.598356, currency: 'ARS',
+    });
+    expect(parseCafciHtmlFicha(htmlFicha({ priceLabel: '1,348784', moneda: 'Dolar Estadounidense' }))).toMatchObject({
+      price: 1.348784, currency: 'USD',
+    });
+    expect(parseCafciHtmlFicha('<p>Valor por mil: 1.097,744</p>')).toBeNull();
+    expect(parseCafciDateLabel('23/10/2026')).toBe('2026-10-23T03:00:00.000Z');
+  });
+
+  it('matches Bloomberg tickers including an AR suffix and the IOLDOLD alias', () => {
+    const classes = cafciClassesFromCatalogForTest(STATS_CATALOG);
+    expect(classes.find((c) => c.keys.includes('PRTAVAB'))).toMatchObject({ fondoId: '227', claseId: '784', currency: 'ARS' });
+    expect(classes.find((c) => c.keys.includes('CONIOLA'))).toMatchObject({ fondoId: '622', claseId: '1255', currency: 'ARS' });
+    expect(classes.find((c) => c.keys.includes('ADCGLOA'))).toMatchObject({ fondoId: '750', claseId: '1645', currency: 'USD' });
+    expect(classes.find((c) => c.keys.includes('ADCGLOAAR'))).toBeUndefined();
+    expect(classes.find((c) => c.keys.includes('IOLDOLD'))).toMatchObject({ fondoId: '1570', claseId: '5100', currency: 'USD' });
+  });
+
+  it('prices the four user FCIs from the stats HTML ficha', async () => {
+    stubByUrl({
+      fichas: {
+        '227:784': htmlFicha({ priceLabel: '1.241,954039', moneda: 'Peso Argentina' }),
+        '622:1255': htmlFicha({ priceLabel: '179,598356', moneda: 'Peso Argentina' }),
+        '1570:5100': htmlFicha({ priceLabel: '1,097744', moneda: 'Dolar Estadounidense' }),
+        '750:1645': htmlFicha({ priceLabel: '1,348784', moneda: 'Dolar Estadounidense' }),
+      },
+    });
+    await expect(fetchFciQuote('PRTAVAB')).resolves.toMatchObject({
+      ticker: 'PRTAVAB', price: 1241.954039, currency: 'ARS', source: 'cafci',
+    });
+    await expect(fetchFciQuote('CONIOLA')).resolves.toMatchObject({
+      ticker: 'CONIOLA', price: 179.598356, currency: 'ARS', source: 'cafci',
+    });
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      ticker: 'IOLDOLD', price: 1.097744, currency: 'USD', source: 'cafci',
+    });
+    await expect(fetchFciQuote('ADCGLOA')).resolves.toMatchObject({
+      ticker: 'ADCGLOA', price: 1.348784, currency: 'USD', source: 'cafci',
+    });
+  });
+
+  it('falls back to the IOL public panel when CAFCI catalog cannot resolve the ticker', async () => {
+    stubByUrl({
+      catalog: { fondos: [] },
+      iol: `
+        <table>
+          <tr>
+            <td><a data-symbol="IOLDOLD ">IOLDOLD</a></td>
+            <td>Renta Fija Dólares</td>
+            <td class="text-right">US$ 1,10</td>
+            <td>0,15%</td>
+          </tr>
+        </table>
+      `,
+    });
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      ticker: 'IOLDOLD', price: 1.1, currency: 'USD', source: 'iol',
+    });
+  });
+
+  it('rethrows the CAFCI catalog 401 when IOL also fails', async () => {
+    stubByUrl({ status: { catalog: 401, iol: 403 } });
+    const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(CafciHttpError);
+    expect(err).toMatchObject({ status: 401, stage: 'catalog', message: 'CAFCI catalog 401' });
+  });
+});
+
+describe('IOL fondos panel parser', () => {
+  it('reads ticker, Argentine price and currency from a public table row', () => {
+    const html = `
+      <tr>
+        <td class="links up">
+          <a href="/Titulo/Index/144037" data-symbol="IOLDOLD                                           ">IOLDOLD</a>
+        </td>
+        <td>Renta Fija D&#243;lares</td>
+        <td class="text-right">US$ 1,10</td>
+        <td class="up text-right"><span class="tar ml5">0,15</span>%</td>
+      </tr>
+      <tr>
+        <td><a data-symbol="PRTAVAB ">PRTAVAB</a></td>
+        <td>Renta Variable Pesos</td>
+        <td class="text-right">AR$ 1.241,95</td>
+      </tr>
+    `;
+    const panel = parseIolFondosPanel(html);
+    expect(panel.get('IOLDOLD')).toMatchObject({ price: 1.1, currency: 'USD', changePct: 0.15 });
+    expect(panel.get('PRTAVAB')).toMatchObject({ price: 1241.95, currency: 'ARS' });
+    expect(parseArgentineNumber('1.241,95')).toBeCloseTo(1241.95);
   });
 });

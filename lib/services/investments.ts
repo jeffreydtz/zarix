@@ -328,7 +328,7 @@ class InvestmentsService {
 
   /**
    * Pide precios respetando market_currency (rueda D o conversión MEP).
-   * data912 (ARG/CEDEAR/bono/ON) → CAFCI (FCI) → Yahoo `.BA` → Stooq → CoinGecko.
+   * data912 (ARG/CEDEAR/bono/ON) → CAFCI then IOL (FCI) → Yahoo `.BA` → Stooq → CoinGecko.
    */
   private async refreshQuotesForInvestments(
     investments: Investment[]

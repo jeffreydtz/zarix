@@ -1,14 +1,34 @@
 /**
  * Valor cuotaparte de FCI.
  *
- * CAFCI is the only source. An HTTP error, an unusable 200 (empty/{error}
- * catalog, missing valorCuotaparte, parse failure) or a currency mismatch
+ * CAFCI REST (`api.cafci.org.ar/fondo`, `api.pub.cafci.org.ar/fondo/...`)
+ * started returning 401 Bearer / CloudFront 403 "Route not allowed" in 2026.
+ * Official replacements used here:
+ *   1. `estadisticas.cafci.org.ar/consulta-de-fondos.json` (catalog + Bloomberg tickers)
+ *   2. `estadisticas.cafci.org.ar/fondos/{id}?clase={id}` (HTML ficha, unit NAV)
+ * InvertirOnline's public fondos panel is a last-resort fallback when CAFCI
+ * cannot resolve the ticker (newer classes often omit `ticker_bloomberg`).
+ *
+ * An HTTP error on every source, an unusable 200, or a currency mismatch
  * means skip and keep the last stored price — never Yahoo.
  */
 
-const CAFCI_BASE = 'https://api.cafci.org.ar';
+import { fetchIolFciQuote, parseArgentineNumber, resetIolFciPanelCacheForTest } from '@/lib/market-data/iol-fci-panel';
+
+const CAFCI_STATS_BASE = 'https://estadisticas.cafci.org.ar';
+const CAFCI_CATALOG_URL = `${CAFCI_STATS_BASE}/consulta-de-fondos.json`;
 const FETCH_TIMEOUT_MS = 8000;
+const CATALOG_TIMEOUT_MS = 20_000;
 const CATALOG_TTL_MS = 6 * 60 * 60 * 1000;
+
+/**
+ * CAFCI's stats catalog omits Bloomberg tickers on some newer classes.
+ * Only attach these when that fondo/clase row is actually in the catalog.
+ * Verified 2026-10-26 against consulta-de-fondos.json + the HTML ficha.
+ */
+const CAFCI_CLASS_TICKER_ALIASES: Array<{ fondoId: string; claseId: string; ticker: string }> = [
+  { fondoId: '1570', claseId: '5100', ticker: 'IOLDOLD' },
+];
 
 /** Browser-like headers: a bare `Mozilla/5.0` UA is enough for some CAFCI WAFs to 403. */
 export const CAFCI_HEADERS = {
@@ -20,8 +40,8 @@ export const CAFCI_HEADERS = {
   Referer: 'https://www.cafci.org.ar/',
 } as const;
 
-/** Which CAFCI request failed: the fund catalog (`/fondo`) or one class ficha. */
-export type CafciStage = 'catalog' | 'ficha';
+/** Which request failed: stats catalog, HTML ficha, or IOL panel fallback. */
+export type CafciStage = 'catalog' | 'ficha' | 'iol';
 
 /** Why fetchFciQuote returned null without throwing. */
 export type CafciMissReason = 'empty_ticker' | 'no_match' | 'ambiguous_match' | 'unparseable_ficha';
@@ -75,7 +95,7 @@ export interface FciQuote {
   currencySkip?: 'conflict' | 'unsupported';
   changePct: number | null;
   timestamp: string | null;
-  source: 'cafci' | 'yahoo';
+  source: 'cafci' | 'yahoo' | 'iol';
 }
 
 /** ARS/USD, an explicit other label (EUR), mixed fields at one level, or missing. */
@@ -93,6 +113,7 @@ interface CafciClass {
 }
 
 let catalogCache: { ts: number; classes: CafciClass[] } | null = null;
+let catalogInflight: Promise<CafciClass[]> | null = null;
 
 function fold(value: string): string {
   return value
@@ -135,8 +156,15 @@ function asRows(json: unknown): Record<string, unknown>[] {
   return [];
 }
 
+function bloombergTickerToken(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const token = value.trim().split(/\s+/)[0];
+  return token || null;
+}
+
 function classKeys(fondo: Record<string, unknown>, clase: Record<string, unknown>): string[] {
   const names = [
+    bloombergTickerToken(clase.ticker_bloomberg),
     pickText(clase.simbolo, clase.symbol, clase.ticker, clase.codigo, clase.codigoCafci, clase.classCodigo),
     pickText(clase.nombre, clase.name, clase.clase),
     pickText(fondo.simbolo, fondo.symbol, fondo.ticker, fondo.codigo),
@@ -228,10 +256,17 @@ export function parseCafciCurrency(...candidates: unknown[]): 'ARS' | 'USD' | nu
   return asArsUsd(firstCurrencyLabel(...candidates));
 }
 
+/** Stats catalog nests `{ id, nombre: "Peso Argentina" }`; the REST ficha used a string. */
+function currencyField(value: unknown): unknown {
+  const rec = asRecord(value);
+  if (rec && 'nombre' in rec) return rec.nombre;
+  return value;
+}
+
 function rowCurrencyLabel(row: Record<string, unknown> | null): CafciCurrencyLabel {
   if (!row) return null;
   return firstCurrencyLabel(
-    row.moneda,
+    currencyField(row.moneda),
     row.currency,
     row.monedaClase,
     row.tipoMoneda,
@@ -267,12 +302,12 @@ export function resolveCafciCurrencySources(opts: {
   return { currency: seen };
 }
 
-async function fetchJson(url: string, stage: CafciStage): Promise<unknown> {
+async function fetchCafci(url: string, stage: CafciStage, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response> {
   let res: Response;
   try {
     res = await fetch(url, {
       headers: CAFCI_HEADERS,
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
       cache: 'no-store',
     });
   } catch (error) {
@@ -287,6 +322,11 @@ async function fetchJson(url: string, stage: CafciStage): Promise<unknown> {
     }
     throw new CafciHttpError(res.status, stage, server);
   }
+  return res;
+}
+
+async function fetchJson(url: string, stage: CafciStage, timeoutMs = FETCH_TIMEOUT_MS): Promise<unknown> {
+  const res = await fetchCafci(url, stage, timeoutMs);
   try {
     return await res.json();
   } catch (error) {
@@ -306,10 +346,17 @@ function classesFromCatalogPayload(json: unknown): CafciClass[] {
       const claseId = pickId(clase, 'id', 'claseId', 'idClase') || fondoId;
       if (!fondoId || !claseId) continue;
       const classCurrency = rowCurrencyLabel(clase);
+      const keys = classKeys(fondo, clase);
+      for (const alias of CAFCI_CLASS_TICKER_ALIASES) {
+        if (alias.fondoId === fondoId && alias.claseId === claseId) {
+          const aliasKey = fold(alias.ticker);
+          if (aliasKey && !keys.includes(aliasKey)) keys.push(aliasKey);
+        }
+      }
       classes.push({
         fondoId,
         claseId,
-        keys: classKeys(fondo, clase),
+        keys,
         classCurrency,
         fundCurrency,
         currency: asArsUsd(classCurrency),
@@ -319,14 +366,149 @@ function classesFromCatalogPayload(json: unknown): CafciClass[] {
   return classes;
 }
 
+async function loadCatalogNow(): Promise<CafciClass[]> {
+  const json = await fetchJson(CAFCI_CATALOG_URL, 'catalog', CATALOG_TIMEOUT_MS);
+  const classes = classesFromCatalogPayload(json);
+  catalogCache = { ts: Date.now(), classes };
+  return classes;
+}
+
 async function loadCatalog(): Promise<CafciClass[]> {
   if (catalogCache && Date.now() - catalogCache.ts < CATALOG_TTL_MS) {
     return catalogCache.classes;
   }
-  const json = await fetchJson(`${CAFCI_BASE}/fondo`, 'catalog');
-  const classes = classesFromCatalogPayload(json);
-  catalogCache = { ts: Date.now(), classes };
-  return classes;
+  if (catalogInflight) return catalogInflight;
+  catalogInflight = loadCatalogNow().finally(() => {
+    catalogInflight = null;
+  });
+  return catalogInflight;
+}
+
+/** `23/10/2026` or `2026-10-23` → ISO. */
+export function parseCafciDateLabel(value: string): string | null {
+  const trimmed = value.trim();
+  const dmy = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
+  if (dmy) {
+    const day = dmy[1].padStart(2, '0');
+    const month = dmy[2].padStart(2, '0');
+    const year = dmy[3].length === 2 ? `20${dmy[3]}` : dmy[3];
+    const iso = `${year}-${month}-${day}T00:00:00-03:00`;
+    const ms = Date.parse(iso);
+    return Number.isFinite(ms) ? new Date(ms).toISOString() : null;
+  }
+  const ms = Date.parse(trimmed);
+  return Number.isFinite(ms) ? new Date(ms).toISOString() : null;
+}
+
+/**
+ * Official CAFCI stats HTML ficha: "Valor por cada cuotaparte: 1,097744"
+ * (comma decimal / optional thousands dots). Not "Valor por mil".
+ */
+export function parseCafciHtmlFicha(html: string): {
+  price: number;
+  currency: 'ARS' | 'USD' | null;
+  fichaClass: CafciCurrencyLabel;
+  fichaData: CafciCurrencyLabel;
+  timestamp: string | null;
+} | null {
+  if (!html || typeof html !== 'string') return null;
+  const priceMatch = html.match(/Valor por cada cuotaparte:\s*([0-9.]+,[0-9]+|[0-9]+,[0-9]+|[0-9.]+)/i);
+  if (!priceMatch) return null;
+  const price = parseArgentineNumber(priceMatch[1]);
+  if (price == null || !Number.isFinite(price) || price <= 0) return null;
+  const dateMatch = html.match(/Valores al\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
+  const timestamp = dateMatch ? parseCafciDateLabel(dateMatch[1]) : null;
+  const monedaMatch = html.match(/Moneda:<\/span>\s*([^<]+)/i) ?? html.match(/Moneda:\s*([^<]+)/i);
+  const fichaClass = firstCurrencyLabel(monedaMatch?.[1]?.replace(/\s+/g, ' ').trim());
+  return {
+    price,
+    currency: asArsUsd(fichaClass),
+    fichaClass,
+    fichaData: null,
+    timestamp,
+  };
+}
+
+type ParsedFicha = {
+  price: number;
+  currency: 'ARS' | 'USD' | null;
+  fichaClass: CafciCurrencyLabel;
+  fichaData: CafciCurrencyLabel;
+  timestamp: string | null;
+};
+
+async function fetchParsedFicha(match: CafciClass): Promise<ParsedFicha | null> {
+  const url = `${CAFCI_STATS_BASE}/fondos/${encodeURIComponent(match.fondoId)}?clase=${encodeURIComponent(match.claseId)}`;
+  const res = await fetchCafci(url, 'ficha');
+  let text: string | null = null;
+  if (typeof res.text === 'function') {
+    try {
+      text = await res.text();
+    } catch (error) {
+      throw new CafciFetchError('ficha', error);
+    }
+  }
+  if (text) {
+    const htmlParsed = parseCafciHtmlFicha(text);
+    if (htmlParsed) return htmlParsed;
+    try {
+      const jsonParsed = parseFicha(JSON.parse(text));
+      if (jsonParsed) return jsonParsed;
+    } catch {
+      // body was neither the stats HTML nor a JSON ficha
+    }
+  }
+  if (typeof res.json === 'function' && text == null) {
+    try {
+      return parseFicha(await res.json());
+    } catch (error) {
+      throw new CafciFetchError('ficha', error);
+    }
+  }
+  return null;
+}
+
+function quoteFromParsed(
+  symbol: string,
+  match: CafciClass,
+  parsed: ParsedFicha,
+  source: FciQuote['source']
+): FciQuote {
+  const resolved = resolveCafciCurrencySources({
+    catalogClass: match.classCurrency !== undefined ? match.classCurrency : match.currency,
+    fichaClass: parsed.fichaClass,
+    fichaData: parsed.fichaData,
+    catalogFund: match.fundCurrency ?? null,
+  });
+  if (resolved.currency) {
+    return {
+      ticker: symbol,
+      price: parsed.price,
+      currency: resolved.currency,
+      changePct: null,
+      timestamp: parsed.timestamp,
+      source,
+    };
+  }
+  if (resolved.reason === 'unknown') {
+    return {
+      ticker: symbol,
+      price: parsed.price,
+      currency: null,
+      changePct: null,
+      timestamp: parsed.timestamp,
+      source,
+    };
+  }
+  return {
+    ticker: symbol,
+    price: parsed.price,
+    currency: null,
+    currencySkip: resolved.reason,
+    changePct: null,
+    timestamp: parsed.timestamp,
+    source,
+  };
 }
 
 function matchClassDetailed(
@@ -386,6 +568,19 @@ function parseFicha(json: unknown): {
   };
 }
 
+async function fetchIolFallback(symbol: string): Promise<FciQuote | null> {
+  const iol = await fetchIolFciQuote(symbol);
+  if (!iol || !(iol.price > 0)) return null;
+  return {
+    ticker: symbol,
+    price: iol.price,
+    currency: iol.currency,
+    changePct: iol.changePct,
+    timestamp: null,
+    source: 'iol',
+  };
+}
+
 /**
  * `onMiss` is diagnostics only: it is told why the result is null and never
  * changes what is returned or thrown.
@@ -404,48 +599,38 @@ export async function fetchFciQuote(
   };
   const symbol = ticker.trim().toUpperCase();
   if (!symbol) return miss('empty_ticker');
-  const classes = await loadCatalog();
-  const matched = matchClassDetailed(classes, symbol);
-  if (!matched.match) return miss(matched.reason);
-  const match = matched.match;
-  const json = await fetchJson(`${CAFCI_BASE}/fondo/${match.fondoId}/clase/${match.claseId}/ficha`, 'ficha');
-  const parsed = parseFicha(json);
-  if (!parsed) return miss('unparseable_ficha');
-  const resolved = resolveCafciCurrencySources({
-    catalogClass: match.classCurrency !== undefined ? match.classCurrency : match.currency,
-    fichaClass: parsed.fichaClass,
-    fichaData: parsed.fichaData,
-    catalogFund: match.fundCurrency ?? null,
-  });
-  if (resolved.currency) {
-    return {
-      ticker: symbol,
-      price: parsed.price,
-      currency: resolved.currency,
-      changePct: null,
-      timestamp: parsed.timestamp,
-      source: 'cafci',
-    };
+
+  let cafciError: unknown = null;
+  let missReason: CafciMissReason | null = null;
+  try {
+    const classes = await loadCatalog();
+    const matched = matchClassDetailed(classes, symbol);
+    if (matched.match) {
+      const parsed = await fetchParsedFicha(matched.match);
+      if (parsed) return quoteFromParsed(symbol, matched.match, parsed, 'cafci');
+      try {
+        const iol = await fetchIolFallback(symbol);
+        if (iol) return iol;
+      } catch {
+        // keep the CAFCI miss reason when the fallback is also unusable
+      }
+      return miss('unparseable_ficha');
+    }
+    missReason = matched.reason;
+  } catch (error) {
+    cafciError = error;
   }
-  if (resolved.reason === 'unknown') {
-    return {
-      ticker: symbol,
-      price: parsed.price,
-      currency: null,
-      changePct: null,
-      timestamp: parsed.timestamp,
-      source: 'cafci',
-    };
+
+  try {
+    const iol = await fetchIolFallback(symbol);
+    if (iol) return iol;
+  } catch (error) {
+    if (cafciError) throw cafciError;
+    throw error;
   }
-  return {
-    ticker: symbol,
-    price: parsed.price,
-    currency: null,
-    currencySkip: resolved.reason,
-    changePct: null,
-    timestamp: parsed.timestamp,
-    source: 'cafci',
-  };
+
+  if (cafciError) throw cafciError;
+  return miss(missReason ?? 'no_match');
 }
 
 /** Exposed for tests: match a ticker against a synthetic CAFCI catalog. */
@@ -466,4 +651,6 @@ export function cafciClassesFromCatalogForTest(json: unknown): CafciClass[] {
 
 export function resetCafciCatalogCacheForTest(): void {
   catalogCache = null;
+  catalogInflight = null;
+  resetIolFciPanelCacheForTest();
 }

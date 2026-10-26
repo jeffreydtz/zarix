@@ -47,6 +47,17 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('skip CAFCI failure log carries the reason', () => {
+  it('logs IOL panel stage when the CAFCI fallback is what failed', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockRejectedValue(Object.assign(new Error('IOL panel 403'), {
+      name: 'IolFciHttpError', status: 403, stage: 'iol',
+    }));
+    await refreshQuotesForInvestments([IOLDOLD]);
+    expect(skipLogs(warn)).toEqual([{
+      ticker: 'IOLDOLD', reason: 'IOL panel 403', status: 403, stage: 'iol',
+    }]);
+  });
+
   it('logs HTTP status, stage and server for a ficha 401', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     mocks.fci.mockRejectedValue(Object.assign(new Error('CAFCI ficha 401'), {
