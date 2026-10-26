@@ -1018,6 +1018,10 @@ describe('Kael/Codex r11 HTML parser — rendered section text, Moneda whitelist
     expect(result.parsed?.price).not.toBe(1241.954);
   });
 
+  it('does not treat a second br as a single date boundary', () => {
+    expect(parsed(shell({ date: '<h3>Valores al<br><br>23/10/2026</h3>' })).parsed).toBeNull();
+  });
+
   it('rejects a date tail that stays on the same line', () => {
     expect(parsed(shell({ date: '<strong>Valores al 23/10/2026x</strong>' })).parsed).toBeNull();
     expect(parsed(shell({ date: '<span style="display:block">Valores al 23/10/2026 extra</span>' })).parsed).toBeNull();

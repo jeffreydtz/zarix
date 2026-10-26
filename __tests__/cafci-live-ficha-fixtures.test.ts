@@ -280,6 +280,36 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     expect(failures).toEqual([]);
   }, 20_000);
 
+  const BORROWED_DATES: Array<[string, string]> = [
+    ['following p', '<h3>Valores al</h3><p>26/10/2026</p>'],
+    ['footer', '<h3>Valores al</h3><footer><p>26/10/2026</p><p>Fecha de publicación del sitio</p></footer>'],
+    ['later tr', '<table><tr><td>Valores al</td></tr><tr><td>26/10/2026</td></tr></table>'],
+    ['empty td', '<table><tr><td>Valores al</td><td></td><td>26/10/2026</td></tr></table>'],
+    ['empty tr', '<table><tr><td>Valores al</td></tr><tr></tr><tr><td>26/10/2026</td></tr></table>'],
+    ['two cells away', '<table><tr><td>Valores al</td><td>nota</td><td>26/10/2026</td></tr></table>'],
+  ];
+
+  it('does not borrow a date from a later block, row, or empty cell', () => {
+    const failures: string[] = [];
+    let cases = 0;
+    for (const row of LIVE) {
+      const html = readFileSync(join(fixtures, row.file), 'utf8');
+      const heading = '<h3>Valores al 23/10/2026</h3>';
+      for (const [name, replacement] of BORROWED_DATES) {
+        cases += 1;
+        const result = parseCafciHtmlFichaDetailed(html.replace(heading, replacement), {
+          fondoId: row.fondoId,
+          claseId: row.claseId,
+        });
+        if (result.parsed) {
+          failures.push(`${row.file} ${name} parsed ${result.parsed.timestamp}`);
+        }
+      }
+    }
+    expect(cases).toBe(24);
+    expect(failures).toEqual([]);
+  }, 20_000);
+
   it('reads a block-displayed Moneda label from the next line in the same parent', () => {
     const failures: string[] = [];
     for (const row of LIVE) {

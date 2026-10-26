@@ -31,8 +31,10 @@
  * CR, or FF in `#cuotaparte` or the Moneda block skips. After a NAV token skip
  * `[\p{Zs}\s\p{Cf}]*`; a following letter, digit, `.`, `,` or `-` skips. Only
  * `(` or end-of-string is allowed, wrapper-independent. The `Valores al` date
- * keeps that strict tail on its own line; a block boundary or end of line may
- * follow the date. Leftover digits after the date in the section also skip.
+ * is read only from the label's own element (whitespace plus at most one
+ * `<br>` or block child) or from the immediately next `td`/`th` in the same
+ * row. A later `p`, heading, footer, row, or empty cell is not a date source.
+ * Leftover digits after the date in the section also skip.
  * Hidden/non-allowlisted nodes never terminate a token: if one sits inside the
  * token (or between it and further visible digits/letters), skip. The
  * unfiltered descendant-text cross-check must yield the same token. That
@@ -82,7 +84,7 @@ export const CAFCI_HTML_ALLOWLIST = [
   'article', 'aside', 'nav', 'footer',
   'form', 'select', 'optgroup', 'option', 'label',
   'h2', 'h3', 'p', 'span', 'strong', 'b', 'em', 'small', 'a',
-  'table', 'tbody', 'tr', 'td',
+  'table', 'tbody', 'tr', 'td', 'th',
   'ul', 'li',
 ] as const;
 
@@ -863,20 +865,6 @@ function navTokenFromRendered(text: string, skips: number[] = []): string | null
   return token[0];
 }
 
-function skipLabelGap(text: string, index: number, boundaries: Set<number>): number {
-  let i = index;
-  while (i < text.length) {
-    if (boundaries.has(i)) {
-      i += 1;
-      continue;
-    }
-    const cp = nextCodePoint(text, i);
-    if (!cp || !TAIL_GAP.test(cp)) break;
-    i += cp.length;
-  }
-  return i;
-}
-
 /** After the date, whitespace may continue the line. A recorded boundary or `(` ends it. */
 function dateLineEnds(text: string, index: number, boundaries: Set<number>): boolean {
   let i = index;
@@ -890,30 +878,99 @@ function dateLineEnds(text: string, index: number, boundaries: Set<number>): boo
   return true;
 }
 
-function dateFromRendered(
-  text: string,
-  skips: number[],
-  boundaries: number[],
-  tail: 'line-end' | 'no-numeric-continue',
-): string | null {
+/**
+ * Date inside the label element. At most one `<br>` or block-child boundary
+ * may sit between the label and the date. `lookNextCell` is set only when the
+ * element has no date and no other visible remainder.
+ */
+function dateFromLabelRender(rendered: RenderedText): { date: string | null; lookNextCell: boolean } {
+  const text = rendered.text;
   const mentions = text.match(/Valores al/gi);
-  if (!mentions || mentions.length !== 1) return null;
+  if (!mentions || mentions.length !== 1) return { date: null, lookNextCell: false };
   const labelled = /Valores al/i.exec(text);
-  if (!labelled || labelled.index == null) return null;
-  const boundarySet = new Set(boundaries);
-  const dateStart = skipLabelGap(text, labelled.index + labelled[0].length, boundarySet);
-  const dateMatch = text.slice(dateStart).match(/^(\d{2}\/\d{2}\/\d{4})/);
-  if (!dateMatch) return null;
-  const dateEnd = dateStart + dateMatch[1].length;
-  if (skipInsideToken(skips, dateStart, dateEnd)) return null;
-  if (tail === 'line-end') {
-    if (!dateLineEnds(text, dateEnd, boundarySet)) return null;
-  } else {
-    const nextAt = skipTailGap(text, dateEnd);
-    const next = nextCodePoint(text, nextAt);
-    if (next && DATE_TAIL_CONTINUE.test(next)) return null;
+  if (!labelled || labelled.index == null) return { date: null, lookNextCell: false };
+  const bounds = new Set(rendered.boundaries);
+  let i = labelled.index + labelled[0].length;
+  let boundariesUsed = 0;
+  while (i < text.length) {
+    if (bounds.has(i)) {
+      boundariesUsed += 1;
+      if (boundariesUsed > 1) return { date: null, lookNextCell: false };
+      i += 1;
+      continue;
+    }
+    const cp = nextCodePoint(text, i);
+    if (!cp || !TAIL_GAP.test(cp)) break;
+    i += cp.length;
   }
-  return dateMatch[1];
+  if (i >= text.length) return { date: null, lookNextCell: boundariesUsed === 0 };
+  const dateMatch = text.slice(i).match(/^(\d{2}\/\d{2}\/\d{4})/);
+  if (!dateMatch) return { date: null, lookNextCell: false };
+  const dateEnd = i + dateMatch[1].length;
+  if (skipInsideToken(rendered.skips, i, dateEnd)) return { date: null, lookNextCell: false };
+  if (!dateLineEnds(text, dateEnd, bounds)) return { date: null, lookNextCell: false };
+  return { date: dateMatch[1], lookNextCell: false };
+}
+
+function nextElementSibling(el: Element): Element | null {
+  const parent = parentOf(el);
+  if (!parent) return null;
+  const children = elementChildren(parent);
+  const idx = children.indexOf(el);
+  if (idx < 0) return null;
+  for (let i = idx + 1; i < children.length; i++) {
+    const child = children[i];
+    if (isElement(child)) return child;
+  }
+  return null;
+}
+
+function ancestorCell(el: Element): Element | null {
+  let node: AnyNode | null = el;
+  while (node) {
+    if (isElement(node)) {
+      const name = node.name.toLowerCase();
+      if (name === 'td' || name === 'th') return node;
+      if (name === 'tr' || name === 'table' || name === 'tbody') return null;
+    }
+    node = parentOf(node);
+  }
+  return null;
+}
+
+/** The cell's visible text is exactly one date. Boundary spaces are not content. */
+function exactCellDate(rendered: RenderedText): string | null {
+  const bounds = new Set(rendered.boundaries);
+  let kept = '';
+  for (let i = 0; i < rendered.text.length; i++) {
+    if (!bounds.has(i)) kept += rendered.text[i];
+  }
+  const match = normalizeFichaText(kept).match(/^(\d{2}\/\d{2}\/\d{4})$/);
+  return match ? match[1] : null;
+}
+
+function dateFromNextCell($: CheerioAPI, labelEl: Element): string | null {
+  const cell = ancestorCell(labelEl);
+  if (!cell) return null;
+  const row = parentOf(cell);
+  if (!row || !isElement(row) || row.name.toLowerCase() !== 'tr') return null;
+  const next = nextElementSibling(cell);
+  if (!next) return null;
+  const nextName = next.name.toLowerCase();
+  if ((nextName !== 'td' && nextName !== 'th') || parentOf(next) !== row) return null;
+  const visible = exactCellDate(renderedVisible($, next));
+  if (!visible) return null;
+  const unfiltered = exactCellDate(renderedUnfiltered($, next));
+  if (unfiltered !== visible) return null;
+  return visible;
+}
+
+function noNumericDateContinuation(text: string, date: string): boolean {
+  const at = text.indexOf(date);
+  if (at < 0) return false;
+  const nextAt = skipTailGap(text, at + date.length);
+  const next = nextCodePoint(text, nextAt);
+  return !(next && DATE_TAIL_CONTINUE.test(next));
 }
 
 function sectionHasCssContentReplacement($: CheerioAPI, root: Element): boolean {
@@ -977,15 +1034,21 @@ function parseValoresAl($: CheerioAPI, section: Element): string | null {
   if (containsInertCarrier(section) || subtreeHasDisallowedControl(section)) return null;
   const nodes = innermostIn($, section, (el) => /Valores al(?![\p{L}\p{N}])/iu.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
-  const line = renderedVisible($, section);
-  const blockDate = dateFromRendered(line.text, line.skips, line.boundaries, 'line-end');
+  const labelEl = nodes[0];
+  const visibleRead = dateFromLabelRender(renderedVisible($, labelEl));
+  let blockDate: string | null = null;
+  if (visibleRead.date) {
+    const unfilteredRead = dateFromLabelRender(renderedUnfiltered($, labelEl));
+    if (unfilteredRead.date !== visibleRead.date) return null;
+    blockDate = visibleRead.date;
+  } else if (visibleRead.lookNextCell) {
+    blockDate = dateFromNextCell($, labelEl);
+  }
   if (!blockDate) return null;
   const sectionVisible = renderedVisible($, section);
-  const sectionDate = dateFromRendered(sectionVisible.text, sectionVisible.skips, sectionVisible.boundaries, 'no-numeric-continue');
-  if (sectionDate !== blockDate) return null;
-  const unfiltered = renderedUnfiltered($, section);
-  const unfilteredDate = dateFromRendered(unfiltered.text, [], unfiltered.boundaries, 'no-numeric-continue');
-  if (unfilteredDate !== blockDate) return null;
+  const sectionUnfiltered = renderedUnfiltered($, section);
+  if (!noNumericDateContinuation(sectionVisible.text, blockDate)) return null;
+  if (!noNumericDateContinuation(sectionUnfiltered.text, blockDate)) return null;
   const timestamp = parseCafciDateLabel(blockDate);
   if (!timestamp) return null;
 
@@ -1049,14 +1112,21 @@ function adjacentMonedaValues(rendered: RenderedText): string[] {
   return values;
 }
 
-/** Parent block, so a block-level label can see the next line and nothing beyond that parent. */
+/**
+ * The li or tr that holds the label. A value may sit in that row's next
+ * segment, and the scope never climbs to `#fichaRight` or beyond the row.
+ */
 function monedaScope($: CheerioAPI, el: Element): Element {
-  const block = containingBlock($, el);
-  const parent = parentOf(block);
-  if (!parent || !isElement(parent) || !isBlockBox($, parent)) return block;
-  const name = parent.name.toLowerCase();
-  if (name === 'body' || name === 'html') return block;
-  return parent;
+  let node: AnyNode | null = el;
+  while (node) {
+    if (isElement(node)) {
+      const name = node.name.toLowerCase();
+      if (name === 'li' || name === 'tr') return node;
+      if (attrCi($, node, 'id') === 'ficharight') return node;
+    }
+    node = parentOf(node);
+  }
+  return containingBlock($, el);
 }
 
 function collectMonedaBlocks($: CheerioAPI): Element[] {
