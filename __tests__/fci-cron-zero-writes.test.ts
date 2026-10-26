@@ -454,7 +454,7 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
     expect(mocks.updates).toHaveLength(0);
     expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
-      reason: expect.stringMatching(/undated|invalid_date/),
+      reason: 'unparseable_ficha; no_match',
     }));
   });
 

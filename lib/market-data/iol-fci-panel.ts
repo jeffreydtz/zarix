@@ -100,7 +100,9 @@ function parseSignedPercent(text: string): number | null {
 export function parseIolFondosPanel(html: string): Map<string, IolFciQuote> {
   const out = new Map<string, IolFciQuote>();
   const skipped = new Set<string>();
-  const $ = cheerio.load(html);
+  let $ = cheerio.load(html);
+  // Bare <tr> fragments are dropped by the HTML parser unless they sit in a table.
+  if ($('tr').length === 0) $ = cheerio.load(`<table>${html}</table>`);
   $('script, style, noscript, template').remove();
   $('tr').each((_, row) => {
     const symbol = $(row).find('[data-symbol]').first().attr('data-symbol');

@@ -389,6 +389,14 @@ export async function refreshQuotesForInvestments(
       continue;
     }
     if (inv.type === 'fci') {
+      if (!ticker) {
+        console.warn('[quotes] skip CAFCI failure', {
+          ticker: inv.ticker,
+          reason: 'empty_ticker',
+          ...(inv.id ? { id: inv.id } : {}),
+        });
+        continue;
+      }
       fciTickers.push({
         ticker,
         cacheKey: quoteCacheKeyForPosition(inv) ?? cacheKey,
