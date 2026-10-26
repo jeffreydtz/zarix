@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { resetCafciCatalogCacheForTest } from '@/lib/market-data/cafci-client';
+import { freshFciNavIso } from '@/lib/market-data/fci-nav-freshness';
 
 const mocks = vi.hoisted(() => ({
   arg: vi.fn(),
@@ -89,7 +90,7 @@ function stubCafci(moneda: string) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     const href = String(url);
     if (href.includes('/ficha') || /\/fondos\/\d+/.test(href)) {
-      const payload = { data: { valorCuotaparte: CAFCI_PRICE, moneda, fecha: '2026-10-23' } };
+      const payload = { data: { valorCuotaparte: CAFCI_PRICE, moneda, fecha: freshFciNavIso().slice(0, 10) } };
       return {
         ok: true,
         json: async () => payload,

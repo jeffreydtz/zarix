@@ -2,11 +2,24 @@
  * Public InvertirOnline FCI panel. Used when CAFCI cannot resolve a ticker
  * (missing Bloomberg code, catalog HTTP error). Rounded to 2 decimals; not
  * a substitute for CAFCI's unit cuotaparte when the official ficha works.
+ *
+ * The live panel has no NAV date, so quotes are not a persistence source.
  */
 
+import { parseArgentineNumber } from '@/lib/market-data/argentine-number';
+import {
+  FETCH_REDIRECT,
+  readResponseTextCapped,
+  ResponseTooLargeError,
+} from '@/lib/market-data/bounded-fetch';
+
+export { parseArgentineNumber } from '@/lib/market-data/argentine-number';
+
 const IOL_FONDOS_URL = 'https://iol.invertironline.com/mercado/cotizaciones/argentina/fondos';
+const IOL_ALLOWED_HOST = 'iol.invertironline.com';
 const FETCH_TIMEOUT_MS = 10_000;
 const PANEL_TTL_MS = 60 * 60 * 1000;
+const IOL_MAX_BYTES = 2_000_000;
 
 export const IOL_FCI_HEADERS = {
   Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -53,16 +66,17 @@ export interface IolFciQuote {
   price: number;
   currency: 'ARS' | 'USD' | null;
   changePct: number | null;
+  /** Live panel does not publish a NAV date; always null. */
+  timestamp: null;
 }
 
-/** Argentine display number: 1.241,95 → 1241.95; 1,10 → 1.10; 179,60 → 179.60. */
-export function parseArgentineNumber(value: string): number | null {
-  const s = value.replace(/\s/g, '').replace(/^[^\d-]+/, '').replace(/[^\d.,-]+$/g, '');
-  if (!s) return null;
-  const n = s.includes(',')
-    ? Number(s.replace(/\./g, '').replace(',', '.'))
-    : Number(s);
-  return Number.isFinite(n) ? n : null;
+const IOL_TICKER = /^[A-Z0-9]+$/;
+
+/** Trim + uppercase only. Internal whitespace is a different symbol, not a key. */
+export function normalizeIolTicker(raw: string): string | null {
+  const ticker = raw.trim().toUpperCase();
+  if (!ticker || /\s/.test(ticker) || !IOL_TICKER.test(ticker)) return null;
+  return ticker;
 }
 
 function decodeEntities(value: string): string {
@@ -83,35 +97,57 @@ function stripTags(value: string): string {
   return decodeEntities(value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')).trim();
 }
 
+function quotesEqual(a: IolFciQuote, b: IolFciQuote): boolean {
+  return a.price === b.price && a.currency === b.currency && a.changePct === b.changePct;
+}
+
+function parseSignedPercent(text: string): number | null {
+  const match = text.match(/([+-]?)\s*([\d.]+(?:,\d+)?)\s*%/);
+  if (!match) return null;
+  const n = parseArgentineNumber(`${match[1]}${match[2]}`);
+  return n != null && Number.isFinite(n) ? n : null;
+}
+
 /**
  * One row of the public IOL fondos table, keyed by `data-symbol`.
+ * Duplicate symbols with conflicting quotes are omitted (not last-wins).
  */
 export function parseIolFondosPanel(html: string): Map<string, IolFciQuote> {
   const out = new Map<string, IolFciQuote>();
+  const skipped = new Set<string>();
   const rowRe = /<tr\b[^>]*>[\s\S]*?<\/tr>/gi;
   for (const rowMatch of html.matchAll(rowRe)) {
     const row = rowMatch[0];
     const symbolMatch = row.match(/data-symbol="([^"]+)"/i);
     if (!symbolMatch) continue;
-    const ticker = symbolMatch[1].replace(/\s+/g, '').toUpperCase();
-    if (!ticker) continue;
+    const ticker = normalizeIolTicker(symbolMatch[1]);
+    if (!ticker || skipped.has(ticker)) continue;
     const tds = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => stripTags(m[1]));
     const priceCell = tds.find((td) => /(?:US\$|AR\$|USD|ARS)\s*[\d.,]+/i.test(td)) ?? '';
-    const priceMatch = priceCell.match(/(US\$|AR\$|USD|ARS)\s*([\d.,]+)/i);
+    const priceMatch = priceCell.match(/(US\$|AR\$|USD|ARS)\s*([\d.]+(?:,\d+)?)/i);
     if (!priceMatch) continue;
     const price = parseArgentineNumber(priceMatch[2]);
     if (price == null || !(price > 0)) continue;
     const unit = priceMatch[1].toUpperCase();
     const currency: 'ARS' | 'USD' | null = unit.includes('US') ? 'USD' : unit.includes('AR') ? 'ARS' : null;
     const changeCell = tds.find((td) => /%/.test(td) && /[\d.,]+/.test(td));
-    const changeRaw = changeCell?.match(/([\d.,]+)\s*%/);
-    const changePct = changeRaw ? parseArgentineNumber(changeRaw[1]) : null;
-    out.set(ticker, {
+    const changePct = changeCell ? parseSignedPercent(changeCell) : null;
+    const quote: IolFciQuote = {
       ticker,
       price,
       currency,
-      changePct: changePct != null && Number.isFinite(changePct) ? changePct : null,
-    });
+      changePct,
+      timestamp: null,
+    };
+    const existing = out.get(ticker);
+    if (existing) {
+      if (!quotesEqual(existing, quote)) {
+        out.delete(ticker);
+        skipped.add(ticker);
+      }
+      continue;
+    }
+    out.set(ticker, quote);
   }
   return out;
 }
@@ -119,18 +155,32 @@ export function parseIolFondosPanel(html: string): Map<string, IolFciQuote> {
 let panelCache: { ts: number; quotes: Map<string, IolFciQuote> } | null = null;
 let panelInflight: Promise<Map<string, IolFciQuote>> | null = null;
 
+function assertIolUrl(url: string): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch (error) {
+    throw new IolFciFetchError(error);
+  }
+  if (parsed.protocol !== 'https:' || parsed.hostname !== IOL_ALLOWED_HOST) {
+    throw new IolFciFetchError(new Error(`unexpected host ${parsed.hostname}`));
+  }
+}
+
 async function loadPanel(): Promise<Map<string, IolFciQuote>> {
   if (panelCache && Date.now() - panelCache.ts < PANEL_TTL_MS) {
     return panelCache.quotes;
   }
   if (panelInflight) return panelInflight;
   panelInflight = (async () => {
+    assertIolUrl(IOL_FONDOS_URL);
     let res: Response;
     try {
       res = await fetch(IOL_FONDOS_URL, {
         headers: IOL_FCI_HEADERS,
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
         cache: 'no-store',
+        redirect: FETCH_REDIRECT,
       });
     } catch (error) {
       throw new IolFciFetchError(error);
@@ -146,8 +196,13 @@ async function loadPanel(): Promise<Map<string, IolFciQuote>> {
     }
     let html = '';
     try {
-      if (typeof res.text === 'function') html = await res.text();
+      if (typeof res.text !== 'function' && !res.body) {
+        html = '';
+      } else {
+        html = await readResponseTextCapped(res, IOL_MAX_BYTES);
+      }
     } catch (error) {
+      if (error instanceof ResponseTooLargeError) throw new IolFciFetchError(error);
       throw new IolFciFetchError(error);
     }
     const quotes = parseIolFondosPanel(html);
@@ -160,7 +215,7 @@ async function loadPanel(): Promise<Map<string, IolFciQuote>> {
 }
 
 export async function fetchIolFciQuote(ticker: string): Promise<IolFciQuote | null> {
-  const symbol = ticker.trim().toUpperCase();
+  const symbol = normalizeIolTicker(ticker);
   if (!symbol) return null;
   const panel = await loadPanel();
   return panel.get(symbol) ?? null;

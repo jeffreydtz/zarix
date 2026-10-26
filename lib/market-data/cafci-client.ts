@@ -8,18 +8,31 @@
  *   2. `estadisticas.cafci.org.ar/fondos/{id}?clase={id}` (HTML ficha, unit NAV)
  * InvertirOnline's public fondos panel is a last-resort fallback when CAFCI
  * cannot resolve the ticker (newer classes often omit `ticker_bloomberg`).
+ * The live IOL table has no NAV date, so those quotes are preview-only and
+ * are never persisted by the price cron.
  *
  * An HTTP error on every source, an unusable 200, or a currency mismatch
  * means skip and keep the last stored price — never Yahoo.
  */
 
-import { fetchIolFciQuote, parseArgentineNumber, resetIolFciPanelCacheForTest } from '@/lib/market-data/iol-fci-panel';
+import { parseArgentineNumber } from '@/lib/market-data/argentine-number';
+import {
+  FETCH_REDIRECT,
+  readResponseTextCapped,
+  ResponseTooLargeError,
+} from '@/lib/market-data/bounded-fetch';
+import { civilYmdToNavIso } from '@/lib/market-data/fci-nav-freshness';
+import { fetchIolFciQuote, resetIolFciPanelCacheForTest } from '@/lib/market-data/iol-fci-panel';
+import { isCivilYmd } from '@/lib/transaction-date';
 
 const CAFCI_STATS_BASE = 'https://estadisticas.cafci.org.ar';
+const CAFCI_CATALOG_HOST = 'estadisticas.cafci.org.ar';
 const CAFCI_CATALOG_URL = `${CAFCI_STATS_BASE}/consulta-de-fondos.json`;
 const FETCH_TIMEOUT_MS = 8000;
 const CATALOG_TIMEOUT_MS = 20_000;
 const CATALOG_TTL_MS = 6 * 60 * 60 * 1000;
+const CATALOG_MAX_BYTES = 8_000_000;
+const FICHA_MAX_BYTES = 512_000;
 
 /**
  * CAFCI's stats catalog omits Bloomberg tickers on some newer classes.
@@ -44,7 +57,12 @@ export const CAFCI_HEADERS = {
 export type CafciStage = 'catalog' | 'ficha' | 'iol';
 
 /** Why fetchFciQuote returned null without throwing. */
-export type CafciMissReason = 'empty_ticker' | 'no_match' | 'ambiguous_match' | 'unparseable_ficha';
+export type CafciMissReason =
+  | 'empty_ticker'
+  | 'no_match'
+  | 'ambiguous_match'
+  | 'unparseable_ficha'
+  | 'class_mismatch';
 
 /** Max length of any diagnostic string copied from a CAFCI response. */
 const DIAG_MAX = 60;
@@ -83,8 +101,61 @@ export class CafciFetchError extends Error {
   }
 }
 
+function detailFromUnknown(error: unknown, fallbackReason: string): {
+  reason: string;
+  stage?: string;
+  status?: number;
+  server?: string;
+} {
+  if (typeof error === 'string' && error.trim()) {
+    return { reason: capDiag(error) ?? fallbackReason };
+  }
+  if (!error || typeof error !== 'object') return { reason: fallbackReason };
+  const rec = error as { message?: unknown; stage?: unknown; status?: unknown; server?: unknown };
+  const message = typeof rec.message === 'string' ? rec.message : fallbackReason;
+  return {
+    reason: capDiag(message) ?? fallbackReason,
+    stage: typeof rec.stage === 'string' ? rec.stage : undefined,
+    status: typeof rec.status === 'number' && Number.isFinite(rec.status) ? rec.status : undefined,
+    server: typeof rec.server === 'string' ? capDiag(rec.server) : undefined,
+  };
+}
+
+/**
+ * Both CAFCI and IOL failed. Skip logging should keep reason/stage from each.
+ */
+export class FciCombinedError extends Error {
+  readonly cafciReason: string;
+  readonly iolReason: string;
+  readonly cafciStage?: string;
+  readonly iolStage?: string;
+  readonly cafciStatus?: number;
+  readonly iolStatus?: number;
+  readonly stage?: string;
+  readonly status?: number;
+  readonly server?: string;
+
+  constructor(cafci: unknown, iol: unknown, cafciFallback: string) {
+    const cafciDetail = detailFromUnknown(cafci, cafciFallback);
+    const iolDetail = detailFromUnknown(iol, 'IOL failure');
+    const reason = `${cafciDetail.reason}; ${iolDetail.reason}`.slice(0, 200);
+    super(reason);
+    this.name = 'FciCombinedError';
+    this.cafciReason = cafciDetail.reason;
+    this.iolReason = iolDetail.reason;
+    this.cafciStage = cafciDetail.stage;
+    this.iolStage = iolDetail.stage;
+    this.cafciStatus = cafciDetail.status;
+    this.iolStatus = iolDetail.status;
+    this.stage = iolDetail.stage ?? cafciDetail.stage;
+    this.status = iolDetail.status ?? cafciDetail.status;
+    this.server = iolDetail.server ?? cafciDetail.server;
+  }
+}
+
 export function isCafciForbidden(error: unknown): boolean {
-  return error instanceof CafciHttpError && error.status === 403;
+  if (error instanceof CafciHttpError && error.status === 403) return true;
+  return error instanceof FciCombinedError && error.cafciStatus === 403;
 }
 
 export interface FciQuote {
@@ -302,13 +373,32 @@ export function resolveCafciCurrencySources(opts: {
   return { currency: seen };
 }
 
-async function fetchCafci(url: string, stage: CafciStage, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response> {
+function assertCafciUrl(url: string, stage: CafciStage): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch (error) {
+    throw new CafciFetchError(stage, error);
+  }
+  if (parsed.protocol !== 'https:' || parsed.hostname !== CAFCI_CATALOG_HOST) {
+    throw new CafciFetchError(stage, new Error(`unexpected host ${parsed.hostname}`));
+  }
+}
+
+async function fetchCafciText(
+  url: string,
+  stage: CafciStage,
+  timeoutMs = FETCH_TIMEOUT_MS,
+  maxBytes = FICHA_MAX_BYTES
+): Promise<string> {
+  assertCafciUrl(url, stage);
   let res: Response;
   try {
     res = await fetch(url, {
       headers: CAFCI_HEADERS,
       signal: AbortSignal.timeout(timeoutMs),
       cache: 'no-store',
+      redirect: FETCH_REDIRECT,
     });
   } catch (error) {
     throw new CafciFetchError(stage, error);
@@ -322,13 +412,21 @@ async function fetchCafci(url: string, stage: CafciStage, timeoutMs = FETCH_TIME
     }
     throw new CafciHttpError(res.status, stage, server);
   }
-  return res;
+  try {
+    if (typeof res.text !== 'function' && typeof res.json === 'function' && !res.body) {
+      return JSON.stringify(await res.json());
+    }
+    return await readResponseTextCapped(res, maxBytes);
+  } catch (error) {
+    if (error instanceof ResponseTooLargeError) throw new CafciFetchError(stage, error);
+    throw new CafciFetchError(stage, error);
+  }
 }
 
 async function fetchJson(url: string, stage: CafciStage, timeoutMs = FETCH_TIMEOUT_MS): Promise<unknown> {
-  const res = await fetchCafci(url, stage, timeoutMs);
+  const text = await fetchCafciText(url, stage, timeoutMs, CATALOG_MAX_BYTES);
   try {
-    return await res.json();
+    return JSON.parse(text);
   } catch (error) {
     throw new CafciFetchError(stage, error);
   }
@@ -384,7 +482,7 @@ async function loadCatalog(): Promise<CafciClass[]> {
   return catalogInflight;
 }
 
-/** `23/10/2026` or `2026-10-23` → ISO. */
+/** `23/10/2026` or `2026-10-23` → ISO. Rejects impossible calendar dates (31/02). */
 export function parseCafciDateLabel(value: string): string | null {
   const trimmed = value.trim();
   const dmy = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
@@ -392,17 +490,67 @@ export function parseCafciDateLabel(value: string): string | null {
     const day = dmy[1].padStart(2, '0');
     const month = dmy[2].padStart(2, '0');
     const year = dmy[3].length === 2 ? `20${dmy[3]}` : dmy[3];
-    const iso = `${year}-${month}-${day}T00:00:00-03:00`;
-    const ms = Date.parse(iso);
-    return Number.isFinite(ms) ? new Date(ms).toISOString() : null;
+    return civilYmdToNavIso(`${year}-${month}-${day}`);
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return isCivilYmd(trimmed) ? civilYmdToNavIso(trimmed) : null;
   }
   const ms = Date.parse(trimmed);
   return Number.isFinite(ms) ? new Date(ms).toISOString() : null;
 }
 
+function stripHtmlText(html: string): string {
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function parseSelectedClaseId(html: string): string | null {
+  const select = html.match(/<select\b[^>]*name=["']clase["'][^>]*>[\s\S]*?<\/select>/i);
+  if (!select) return null;
+  const selected: string[] = [];
+  for (const opt of select[0].matchAll(/<option\b([^>]*)>/gi)) {
+    const attrs = opt[1];
+    if (!/\bselected\b/i.test(attrs)) continue;
+    const value = attrs.match(/\bvalue=["']([^"']+)["']/i);
+    if (value) selected.push(value[1].trim());
+  }
+  return selected.length === 1 ? selected[0] : null;
+}
+
+function parseFondoIdFromForm(html: string): string | null {
+  const ids = [...html.matchAll(/<form\b[^>]*\baction=["']\/fondos\/(\d+)["']/gi)].map((m) => m[1]);
+  if (ids.length === 0) {
+    const alt = [...html.matchAll(/\baction=["']\/fondos\/(\d+)["']/gi)].map((m) => m[1]);
+    if (new Set(alt).size === 1) return alt[0];
+    return null;
+  }
+  return new Set(ids).size === 1 ? ids[0] : null;
+}
+
+function parseCuotapartePrices(html: string): number[] | null {
+  const cuotaSection = html.match(/id=["']cuotaparte["'][^>]*>[\s\S]*?<\/div>/i)?.[0] ?? html;
+  const text = stripHtmlText(cuotaSection);
+  const labels = [...text.matchAll(/Valor por cada cuotaparte:\s*([0-9][0-9.\s,]*)/gi)];
+  if (labels.length === 0) return null;
+  const prices: number[] = [];
+  for (const label of labels) {
+    const token = label[1].replace(/\s+/g, '').replace(/[^\d.,]+$/g, '');
+    const price = parseArgentineNumber(token);
+    if (price == null || !Number.isFinite(price) || price <= 0) return null;
+    prices.push(price);
+  }
+  return prices;
+}
+
 /**
  * Official CAFCI stats HTML ficha: "Valor por cada cuotaparte: 1,097744"
  * (comma decimal / optional thousands dots). Not "Valor por mil".
+ * Identity comes from `form action="/fondos/{id}"` and the selected class option.
  */
 export function parseCafciHtmlFicha(html: string): {
   price: number;
@@ -410,22 +558,26 @@ export function parseCafciHtmlFicha(html: string): {
   fichaClass: CafciCurrencyLabel;
   fichaData: CafciCurrencyLabel;
   timestamp: string | null;
+  fondoId: string | null;
+  claseId: string | null;
 } | null {
   if (!html || typeof html !== 'string') return null;
-  const priceMatch = html.match(/Valor por cada cuotaparte:\s*([0-9.]+,[0-9]+|[0-9]+,[0-9]+|[0-9.]+)/i);
-  if (!priceMatch) return null;
-  const price = parseArgentineNumber(priceMatch[1]);
-  if (price == null || !Number.isFinite(price) || price <= 0) return null;
-  const dateMatch = html.match(/Valores al\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
+  const prices = parseCuotapartePrices(html);
+  if (!prices || prices.length === 0) return null;
+  if (prices.some((p) => p !== prices[0])) return null;
+  const cuotaSection = html.match(/id=["']cuotaparte["'][^>]*>[\s\S]*?<\/div>/i)?.[0] ?? html;
+  const dateMatch = cuotaSection.match(/Valores al\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
   const timestamp = dateMatch ? parseCafciDateLabel(dateMatch[1]) : null;
   const monedaMatch = html.match(/Moneda:<\/span>\s*([^<]+)/i) ?? html.match(/Moneda:\s*([^<]+)/i);
   const fichaClass = firstCurrencyLabel(monedaMatch?.[1]?.replace(/\s+/g, ' ').trim());
   return {
-    price,
+    price: prices[0],
     currency: asArsUsd(fichaClass),
     fichaClass,
     fichaData: null,
     timestamp,
+    fondoId: parseFondoIdFromForm(html),
+    claseId: parseSelectedClaseId(html),
   };
 }
 
@@ -437,35 +589,39 @@ type ParsedFicha = {
   timestamp: string | null;
 };
 
-async function fetchParsedFicha(match: CafciClass): Promise<ParsedFicha | null> {
+type FichaFetchResult =
+  | { parsed: ParsedFicha }
+  | { parsed: null; reason: 'unparseable_ficha' | 'class_mismatch' };
+
+function htmlIdentityMatches(html: {
+  fondoId: string | null;
+  claseId: string | null;
+}, match: CafciClass): boolean {
+  return Boolean(
+    html.fondoId
+    && html.claseId
+    && html.fondoId === match.fondoId
+    && html.claseId === match.claseId
+  );
+}
+
+async function fetchParsedFicha(match: CafciClass): Promise<FichaFetchResult> {
   const url = `${CAFCI_STATS_BASE}/fondos/${encodeURIComponent(match.fondoId)}?clase=${encodeURIComponent(match.claseId)}`;
-  const res = await fetchCafci(url, 'ficha');
-  let text: string | null = null;
-  if (typeof res.text === 'function') {
-    try {
-      text = await res.text();
-    } catch (error) {
-      throw new CafciFetchError('ficha', error);
+  const text = await fetchCafciText(url, 'ficha', FETCH_TIMEOUT_MS, FICHA_MAX_BYTES);
+  const htmlParsed = parseCafciHtmlFicha(text);
+  if (htmlParsed) {
+    if (!htmlIdentityMatches(htmlParsed, match)) {
+      return { parsed: null, reason: 'class_mismatch' };
     }
+    return { parsed: htmlParsed };
   }
-  if (text) {
-    const htmlParsed = parseCafciHtmlFicha(text);
-    if (htmlParsed) return htmlParsed;
-    try {
-      const jsonParsed = parseFicha(JSON.parse(text));
-      if (jsonParsed) return jsonParsed;
-    } catch {
-      // body was neither the stats HTML nor a JSON ficha
-    }
+  try {
+    const jsonParsed = parseFicha(JSON.parse(text));
+    if (jsonParsed) return { parsed: jsonParsed };
+  } catch {
+    // body was neither the stats HTML nor a JSON ficha
   }
-  if (typeof res.json === 'function' && text == null) {
-    try {
-      return parseFicha(await res.json());
-    } catch (error) {
-      throw new CafciFetchError('ficha', error);
-    }
-  }
-  return null;
+  return { parsed: null, reason: 'unparseable_ficha' };
 }
 
 function quoteFromParsed(
@@ -558,7 +714,7 @@ function parseFicha(json: unknown): {
     data.currency,
   );
   const fecha = pickText(data.fecha, data.date, data.fechaValor, data.timestamp);
-  const timestamp = fecha && Number.isFinite(Date.parse(fecha)) ? new Date(fecha).toISOString() : null;
+  const timestamp = fecha ? parseCafciDateLabel(fecha) : null;
   return {
     price,
     currency: asArsUsd(fichaClass) ?? asArsUsd(fichaData),
@@ -568,15 +724,21 @@ function parseFicha(json: unknown): {
   };
 }
 
-async function fetchIolFallback(symbol: string): Promise<FciQuote | null> {
+async function fetchIolFallback(
+  symbol: string,
+  catalogCurrency?: 'ARS' | 'USD' | null
+): Promise<FciQuote | null> {
   const iol = await fetchIolFciQuote(symbol);
   if (!iol || !(iol.price > 0)) return null;
+  if (catalogCurrency && iol.currency && iol.currency !== catalogCurrency) {
+    return null;
+  }
   return {
     ticker: symbol,
     price: iol.price,
     currency: iol.currency,
     changePct: iol.changePct,
-    timestamp: null,
+    timestamp: iol.timestamp,
     source: 'iol',
   };
 }
@@ -606,18 +768,25 @@ export async function fetchFciQuote(
     const classes = await loadCatalog();
     const matched = matchClassDetailed(classes, symbol);
     if (matched.match) {
-      const parsed = await fetchParsedFicha(matched.match);
-      if (parsed) return quoteFromParsed(symbol, matched.match, parsed, 'cafci');
+      const result = await fetchParsedFicha(matched.match);
+      if (result.parsed) return quoteFromParsed(symbol, matched.match, result.parsed, 'cafci');
+      if (result.reason === 'class_mismatch') return miss('class_mismatch');
       try {
-        const iol = await fetchIolFallback(symbol);
+        const iol = await fetchIolFallback(symbol, asArsUsd(matched.match.classCurrency ?? matched.match.currency));
         if (iol) return iol;
-      } catch {
-        // keep the CAFCI miss reason when the fallback is also unusable
+      } catch (iolError) {
+        throw new FciCombinedError(
+          { message: 'CAFCI unparseable_ficha', stage: 'ficha' },
+          iolError,
+          'unparseable_ficha'
+        );
       }
       return miss('unparseable_ficha');
     }
+    if (matched.reason === 'ambiguous_match') return miss('ambiguous_match');
     missReason = matched.reason;
   } catch (error) {
+    if (error instanceof FciCombinedError) throw error;
     cafciError = error;
   }
 
@@ -625,7 +794,7 @@ export async function fetchFciQuote(
     const iol = await fetchIolFallback(symbol);
     if (iol) return iol;
   } catch (error) {
-    if (cafciError) throw cafciError;
+    if (cafciError) throw new FciCombinedError(cafciError, error, 'CAFCI failure');
     throw error;
   }
 

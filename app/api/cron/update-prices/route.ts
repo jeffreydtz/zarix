@@ -20,6 +20,7 @@ interface PriceRow {
   purchase_currency: string | null;
   purchase_price: number | string | null;
   current_price: number | string | null;
+  current_price_updated_at: string | null;
   is_manual_price: boolean;
 }
 
@@ -45,7 +46,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
   protected async fetchItems(supabase: ServiceClient): Promise<PriceRow[]> {
     const { data: investments, error } = await supabase
       .from('investments')
-      .select('id, type, ticker, market_currency, purchase_currency, purchase_price, current_price, is_manual_price')
+      .select('id, type, ticker, market_currency, purchase_currency, purchase_price, current_price, current_price_updated_at, is_manual_price')
       .eq('is_active', true)
       .eq('is_manual_price', false)
       .in('type', ['crypto', 'stock_us', 'etf', 'cedear', 'stock_arg', 'bond', 'on', 'fci']);
@@ -87,6 +88,14 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
     if (!key) return;
     const q = this.quotes.get(key);
     if (!q || q.price <= 0 || q.fxStale) return;
+    if (inv.type === 'fci' && q.source === 'iol') {
+      console.info('[quotes] fci persist', {
+        ticker: inv.ticker,
+        id: inv.id,
+        source: 'iol',
+        timestamp: q.timestamp,
+      });
+    }
     const { error } = await supabase
       .from('investments')
       .update({

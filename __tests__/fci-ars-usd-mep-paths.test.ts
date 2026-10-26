@@ -37,6 +37,7 @@ vi.mock('@/lib/supabase/server', () => ({
 
 import { GET as quoteGet } from '@/app/api/investments/quote/route';
 import { GET as cronGet } from '@/app/api/cron/update-prices/route';
+import { freshFciNavIso } from '@/lib/market-data/fci-nav-freshness';
 
 const MEP = 1300;
 const CONIOLA_ARS = 179.598;
@@ -116,7 +117,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
       price: CONIOLA_ARS,
       currency: 'ARS',
       changePct: null,
-      timestamp: '2026-10-23T00:00:00.000Z',
+      timestamp: freshFciNavIso(),
       source: 'cafci',
     });
     const response = await quoteGet(quoteRequest('CONIOLA', 'USD'));
@@ -128,7 +129,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
 
   it('keeps the stored quote when CAFCI omits moneda and the quote path has no last USD price', async () => {
     mocks.fci.mockResolvedValue({
-      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await quoteGet(quoteRequest('CONIOLA', 'USD'));
     expect(await response.json()).toMatchObject({ ok: false });
@@ -136,7 +137,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
 
   it('skips unlabeled IOLDOLD on the interactive path when there is no stored price', async () => {
     mocks.fci.mockResolvedValue({
-      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await quoteGet(quoteRequest('IOLDOLD', 'USD'));
     expect(await response.json()).toMatchObject({ ok: false });
@@ -144,7 +145,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
 
   it('prices a new IOLDOLD from purchasePrice 1.00 USD when current_price is absent', async () => {
     mocks.fci.mockResolvedValue({
-      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await quoteGet(quoteRequest('IOLDOLD', 'USD', {
       purchasePrice: '1', purchaseCurrency: 'USD',
@@ -156,7 +157,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
 
   it('skips unlabeled CONIOLA 179.598 vs purchasePrice 0.14 on the interactive path', async () => {
     mocks.fci.mockResolvedValue({
-      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await quoteGet(quoteRequest('CONIOLA', 'USD', {
       purchasePrice: '0.14', purchaseCurrency: 'USD',
@@ -166,7 +167,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
 
   it('returns IOLDOLD 1.098 USD on the interactive path when CAFCI names USD', async () => {
     mocks.fci.mockResolvedValue({
-      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await quoteGet(quoteRequest('IOLDOLD', 'USD'));
     const body = await response.json();
@@ -177,7 +178,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
   it('keeps the stored quote when MEP is unavailable for an ARS FCI booked in USD', async () => {
     mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: MEP, buy: MEP  } });
     mocks.fci.mockResolvedValue({
-      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await quoteGet(quoteRequest('CONIOLA', 'USD'));
     expect(await response.json()).toMatchObject({ ok: false });
@@ -191,7 +192,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
       price: CONIOLA_ARS,
       currency: 'ARS',
       changePct: null,
-      timestamp: '2026-10-23T00:00:00.000Z',
+      timestamp: freshFciNavIso(),
       source: 'cafci',
     });
     const response = await cronGet(cronRequest());
@@ -200,13 +201,13 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
     expect(mocks.updates[0].market_currency).toBe('USD');
     expect(mocks.updates[0].current_price).toBeCloseTo(CONIOLA_ARS / MEP, 8);
     expect(mocks.updates[0].current_price).not.toBeCloseTo(CONIOLA_ARS, 5);
-    expect(mocks.updates[0].current_price_updated_at).toBe('2026-10-23T00:00:00.000Z');
+    expect(mocks.updates[0].current_price_updated_at).toBe(freshFciNavIso());
   });
 
   it('does not overwrite CONIOLA when CAFCI omits moneda and the peso cuotaparte fails the USD ratio guard', async () => {
     mocks.investments[0].current_price = 0.138;
     mocks.fci.mockResolvedValue({
-      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await cronGet(cronRequest());
     const body = await response.json();
@@ -226,7 +227,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
       is_manual_price: false,
     }];
     mocks.fci.mockResolvedValue({
-      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await cronGet(cronRequest());
     expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
@@ -238,7 +239,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
     mocks.investments[0].current_price = null;
     mocks.investments[0].purchase_price = 0.14;
     mocks.fci.mockResolvedValue({
-      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await cronGet(cronRequest());
     const body = await response.json();
@@ -257,7 +258,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
       is_manual_price: false,
     }];
     mocks.fci.mockResolvedValue({
-      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await cronGet(cronRequest());
     expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
@@ -291,7 +292,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
       },
     ];
     mocks.fci.mockResolvedValue({
-      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await cronGet(cronRequest());
     const body = await response.json();
@@ -326,7 +327,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
       },
     ];
     mocks.fci.mockResolvedValue({
-      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await cronGet(cronRequest());
     await response.json();
@@ -339,7 +340,7 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
   it('does not overwrite CONIOLA when MEP is unavailable', async () => {
     mocks.dolar.mockResolvedValue({ blue: { timestamp: new Date(), sell: MEP, buy: MEP  } });
     mocks.fci.mockResolvedValue({
-      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: freshFciNavIso(), source: 'cafci',
     });
     const response = await cronGet(cronRequest());
     const body = await response.json();

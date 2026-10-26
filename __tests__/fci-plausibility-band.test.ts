@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import { refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
+import { freshFciNavIso } from '@/lib/market-data/fci-nav-freshness';
 
 const mocks = vi.hoisted(() => ({
   dolar: vi.fn(), fci: vi.fn(), arg: vi.fn(), yahoo: vi.fn(), stooq: vi.fn(),
@@ -62,7 +63,7 @@ beforeEach(() => {
     blue: { timestamp: new Date(), sell: 1300, buy: 1280  }, mep: { timestamp: new Date(), sell: 1300, buy: 1280  },
   });
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
-  mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: '2026-10-23T12:00:00Z' });
+  mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: freshFciNavIso() });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
   mocks.arg.mockResolvedValue({ byStock: new Map(), byCedear: new Map(), byBond: new Map(), byCorp: new Map() });
@@ -119,7 +120,7 @@ it('M4: skips a typed crypto FX outage without inventing a quote', async () => {
 describe.each(['cron', 'interactive', 'list'] as const)('FCI band on %s', (path) => {
   it.each(cases)('%s %s→%s price %s anchor %s accepted=%s', async (ticker, source, target, price, anchor, accepted) => {
     mocks.positions = [position(ticker, target, anchor)];
-    mocks.fci.mockResolvedValue({ price, currency: source, changePct: 0, timestamp: '2026-10-23T12:00:00Z' });
+    mocks.fci.mockResolvedValue({ price, currency: source, changePct: 0, timestamp: freshFciNavIso() });
     const candidate = source === target ? price : price / 1300;
     if (path === 'interactive') {
       const url = new URL('http://localhost/api/investments/quote');
@@ -165,7 +166,7 @@ it('refreshes same-currency funds when MEP is missing and skips only conversions
   mocks.positions = [position(), { ...position('CONIOLA', 'USD', 0.135), id: 'fixture-needs-mep' }];
   mocks.fci.mockImplementation(async (ticker: string) => ({
     price: ticker === 'IOLDOLD' ? 1.098 : 179.598,
-    currency: ticker === 'IOLDOLD' ? 'USD' : 'ARS', changePct: null, timestamp: null,
+    currency: ticker === 'IOLDOLD' ? 'USD' : 'ARS', changePct: null, timestamp: freshFciNavIso(),
   }));
   const body = await (await cronGet(new NextRequest('http://localhost/api/cron/update-prices', {
     headers: { authorization: 'Bearer fixture-cron-secret' },
@@ -329,7 +330,10 @@ describe.each(['cron', 'list'] as const)('FCI purchase anchors through %s', (pat
     'requires MEP at most 24 hours old for a purchase anchor (age=%s)', async (hours, accepted) => {
       vi.useFakeTimers({ toFake: ['Date'] });
       try {
-        vi.setSystemTime(new Date('2026-10-25T12:00:00Z'));
+        vi.setSystemTime(new Date('2026-10-26T15:00:00Z'));
+        mocks.fci.mockResolvedValue({
+          price: 1241.954, currency: 'ARS', changePct: 0, timestamp: freshFciNavIso(),
+        });
         mocks.dolar.mockResolvedValue({
           blue: { sell: 1300, buy: 1280, timestamp: new Date() },
           mep: { sell: 1300, buy: 1280, timestamp: new Date(Date.now() - hours * 3600_000), stale: false },

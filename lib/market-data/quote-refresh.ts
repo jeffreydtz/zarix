@@ -15,6 +15,10 @@ import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { fetchFciQuote } from '@/lib/market-data/cafci-client';
 import {
+  evaluateFciNavFreshness,
+  FCI_NAV_MAX_BUSINESS_DAYS,
+} from '@/lib/market-data/fci-nav-freshness';
+import {
   isArgentineListedType,
   yahooSymbolFor,
 } from '@/lib/investments/type-meta';
@@ -26,6 +30,7 @@ export interface QuoteResult {
   timestamp: string | null;
   fxStale?: boolean;
   fxAsOf?: string | null;
+  source?: string;
 }
 
 export class InvestmentQuoteMap extends Map<string, QuoteResult> {
@@ -45,6 +50,8 @@ export interface QuoteRefreshPosition {
   /** Last stored cuotaparte in market_currency, used as the plausibility anchor. */
   current_price?: number | string | null;
   purchase_price?: number | string | null;
+  /** Last persisted NAV observation; FCI writes must not go backwards. */
+  current_price_updated_at?: string | null;
   /** When set, FCI results are keyed per position so plausibility is not shared. */
   id?: string | null;
 }
@@ -121,6 +128,9 @@ export interface FciSkipDetail {
   status?: number;
   stage?: string;
   server?: string;
+  source?: string;
+  cafciStage?: string;
+  iolStage?: string;
 }
 
 const FCI_SKIP_REASON_MAX = 200;
@@ -143,6 +153,16 @@ export function describeFciFetchError(error: unknown): FciSkipDetail {
     detail.stage = rec.stage;
   }
   if (rec && typeof rec.server === 'string' && rec.server) detail.server = capReason(rec.server).slice(0, 60);
+  if (rec && typeof rec.source === 'string' && rec.source) detail.source = capReason(rec.source).slice(0, 16);
+  if (rec && typeof rec.cafciStage === 'string' && rec.cafciStage) detail.cafciStage = rec.cafciStage;
+  if (rec && typeof rec.iolStage === 'string' && rec.iolStage) detail.iolStage = rec.iolStage;
+  if (rec && rec.name === 'FciCombinedError') {
+    const cafciReason = typeof rec.cafciReason === 'string' ? rec.cafciReason : '';
+    const iolReason = typeof rec.iolReason === 'string' ? rec.iolReason : '';
+    if (cafciReason && iolReason) {
+      detail.reason = capReason(`${cafciReason}; ${iolReason}`);
+    }
+  }
   return detail;
 }
 
@@ -309,6 +329,7 @@ export async function refreshQuotesForInvestments(
     currentPrice: number | string | null | undefined;
     purchasePrice: number | string | null | undefined;
     purchaseCurrency: string | null;
+    currentPriceUpdatedAt: string | null;
     id: string | null;
   }> = [];
   const argPositions: Array<{
@@ -335,6 +356,7 @@ export async function refreshQuotesForInvestments(
         currentPrice: inv.current_price,
         purchasePrice: inv.purchase_price,
         purchaseCurrency: inv.purchase_currency,
+        currentPriceUpdatedAt: inv.current_price_updated_at ?? null,
         id: inv.id ?? null,
       });
       continue;
@@ -458,11 +480,21 @@ export async function refreshQuotesForInvestments(
           : q && q !== 'error'
             ? { reason: 'non_positive_price' }
             : { reason: 'unknown' });
-      console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker, ...detail });
+      const skipSource = (q && q !== 'error' ? q.source : undefined)
+        ?? detail.source
+        ?? (detail.stage === 'iol' ? 'iol' : undefined);
+      console.warn('[quotes] skip CAFCI failure', {
+        ticker: fci.ticker,
+        ...detail,
+        ...(fci.id ? { id: fci.id } : {}),
+        ...(skipSource ? { source: skipSource } : {}),
+      });
     } else if (q.currencySkip) {
       console.warn('[quotes] skip FCI currency', {
         ticker: fci.ticker,
+        id: fci.id,
         reason: q.currencySkip,
+        source: q.source,
         cafci: q.currency,
         stored: fci.currency,
       });
@@ -471,6 +503,7 @@ export async function refreshQuotesForInvestments(
         reason: 'no_anchor',
         ticker: fci.ticker,
         id: fci.id,
+        source: q.source,
         candidate: q.price,
         anchor: null,
         currency: effectiveCurrency,
@@ -487,6 +520,7 @@ export async function refreshQuotesForInvestments(
           ticker: fci.ticker,
           reason: fci.currency === 'USD' && storedPrice != null ? 'fci_implausible' : resolved.reason,
           id: fci.id,
+          source: q.source,
           cafci: q.currency,
           stored: fci.currency,
         });
@@ -504,7 +538,9 @@ export async function refreshQuotesForInvestments(
         if (!adapted) {
           console.warn('[quotes] skip FCI currency', {
             ticker: fci.ticker,
+            id: fci.id,
             reason: 'mep',
+            source: q.source,
             cafci: q.currency,
             stored: fci.currency,
           });
@@ -513,12 +549,69 @@ export async function refreshQuotesForInvestments(
             reason: 'fci_implausible',
             ticker: fci.ticker,
             id: fci.id,
+            source: q.source,
             candidate: adapted.price,
             anchor: storedPrice,
             currency: adapted.currency,
           });
         } else {
-          stamped = stamp(adapted);
+          const persist = !options?.allowUnanchoredFciPreview;
+          const sourceTs = quoteSourceTimestamp(q);
+          const freshness = evaluateFciNavFreshness(sourceTs);
+          if (!freshness.ok) {
+            if (persist || freshness.reason !== 'undated') {
+              console.warn('[quotes] skip CAFCI failure', {
+                ticker: fci.ticker,
+                reason: freshness.reason,
+                source: q.source,
+                stage: q.source === 'iol' ? 'iol' : 'ficha',
+                ageBusinessDays: freshness.ageBusinessDays,
+                maxBusinessDays: FCI_NAV_MAX_BUSINESS_DAYS,
+                ...(fci.id ? { id: fci.id } : {}),
+              });
+            } else {
+              stamped = {
+                price: adapted.price,
+                changePct: adapted.changePct,
+                currency: adapted.currency,
+                timestamp: null,
+                fxStale: adapted.fxStale,
+                fxAsOf: adapted.fxAsOf,
+                source: q.source,
+              };
+            }
+          } else {
+            const storedTs = quoteSourceTimestamp({ timestamp: fci.currentPriceUpdatedAt });
+            const sourceMs = Date.parse(sourceTs as string);
+            const storedMs = storedTs ? Date.parse(storedTs) : Number.NaN;
+            if (Number.isFinite(storedMs) && sourceMs < storedMs) {
+              console.warn('[quotes] skip CAFCI failure', {
+                ticker: fci.ticker,
+                reason: 'older_than_stored',
+                source: q.source,
+                stage: q.source === 'iol' ? 'iol' : 'ficha',
+                ...(fci.id ? { id: fci.id } : {}),
+              });
+            } else {
+              stamped = {
+                price: adapted.price,
+                changePct: adapted.changePct,
+                currency: adapted.currency,
+                timestamp: sourceTs,
+                fxStale: adapted.fxStale,
+                fxAsOf: adapted.fxAsOf,
+                source: q.source,
+              };
+              if (persist && q.source === 'iol') {
+                console.info('[quotes] fci write', {
+                  ticker: fci.ticker,
+                  id: fci.id,
+                  source: 'iol',
+                  timestamp: sourceTs,
+                });
+              }
+            }
+          }
         }
       }
     }

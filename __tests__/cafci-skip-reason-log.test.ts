@@ -22,6 +22,8 @@ import {
   quoteCacheKey,
   refreshQuotesForInvestments,
 } from '@/lib/market-data/quote-refresh';
+import { civilYmdToNavIso, freshFciNavIso, shiftBusinessDays } from '@/lib/market-data/fci-nav-freshness';
+import { civilTodayYmd } from '@/lib/transaction-date';
 
 const IOLDOLD = { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' } as const;
 
@@ -54,7 +56,7 @@ describe('skip CAFCI failure log carries the reason', () => {
     }));
     await refreshQuotesForInvestments([IOLDOLD]);
     expect(skipLogs(warn)).toEqual([{
-      ticker: 'IOLDOLD', reason: 'IOL panel 403', status: 403, stage: 'iol',
+      ticker: 'IOLDOLD', reason: 'IOL panel 403', status: 403, stage: 'iol', source: 'iol',
     }]);
   });
 
@@ -97,7 +99,92 @@ describe('skip CAFCI failure log carries the reason', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     mocks.fci.mockResolvedValue({ ticker: 'IOLDOLD', price: 0, currency: 'USD', changePct: null, timestamp: null, source: 'cafci' });
     await refreshQuotesForInvestments([IOLDOLD]);
-    expect(skipLogs(warn)).toEqual([{ ticker: 'IOLDOLD', reason: 'non_positive_price' }]);
+    expect(skipLogs(warn)).toEqual([{ ticker: 'IOLDOLD', reason: 'non_positive_price', source: 'cafci' }]);
+  });
+
+  it('logs undated IOL instead of stamping fetch time', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.1, currency: 'USD', changePct: 0.15, timestamp: null, source: 'iol',
+    });
+    const map = await refreshQuotesForInvestments([{ ...IOLDOLD, current_price: 1.09 }]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    expect(skipLogs(warn)).toEqual([expect.objectContaining({
+      ticker: 'IOLDOLD', reason: 'undated', source: 'iol', stage: 'iol',
+    })]);
+  });
+
+  it('logs stale_nav for an old CAFCI Valores al date', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null,
+      timestamp: '2025-01-06T03:00:00.000Z', source: 'cafci',
+    });
+    await refreshQuotesForInvestments([{ ...IOLDOLD, current_price: 1.09 }]);
+    expect(skipLogs(warn)).toEqual([expect.objectContaining({
+      ticker: 'IOLDOLD', reason: 'stale_nav', source: 'cafci',
+    })]);
+  });
+
+  it('keeps CAFCI and IOL stages on a combined failure', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockRejectedValue(Object.assign(new Error('CAFCI unparseable_ficha; IOL panel 403'), {
+      name: 'FciCombinedError',
+      cafciReason: 'CAFCI unparseable_ficha',
+      iolReason: 'IOL panel 403',
+      cafciStage: 'ficha',
+      iolStage: 'iol',
+      iolStatus: 403,
+      stage: 'iol',
+      status: 403,
+    }));
+    await refreshQuotesForInvestments([IOLDOLD]);
+    expect(skipLogs(warn)).toEqual([expect.objectContaining({
+      ticker: 'IOLDOLD',
+      reason: 'CAFCI unparseable_ficha; IOL panel 403',
+      stage: 'iol',
+      status: 403,
+      cafciStage: 'ficha',
+      iolStage: 'iol',
+      source: 'iol',
+    })]);
+  });
+});
+
+describe('IOL quotes never persist through the band or a newer CAFCI store', () => {
+  it('skips an IOL price 1000x the stored NAV', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1090, currency: 'USD', changePct: null,
+      timestamp: freshFciNavIso(), source: 'iol',
+    });
+    const map = await refreshQuotesForInvestments([{ ...IOLDOLD, current_price: 1.09 }]);
+    expect(map.size).toBe(0);
+    expect(warn).toHaveBeenCalledWith('[quotes] skip FCI price', expect.objectContaining({
+      reason: 'fci_implausible',
+      source: 'iol',
+      candidate: 1090,
+    }));
+  });
+
+  it('does not let dated IOL replace a newer stored CAFCI timestamp', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const stored = freshFciNavIso();
+    const older = civilYmdToNavIso(
+      shiftBusinessDays(civilTodayYmd('America/Argentina/Buenos_Aires'), -2)
+    );
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.10, currency: 'USD', changePct: null,
+      timestamp: older, source: 'iol',
+    });
+    const map = await refreshQuotesForInvestments([{
+      ...IOLDOLD, current_price: 1.09, current_price_updated_at: stored,
+    }]);
+    expect(map.size).toBe(0);
+    expect(skipLogs(warn)).toEqual([expect.objectContaining({
+      reason: 'older_than_stored',
+      source: 'iol',
+    })]);
   });
 });
 
@@ -112,5 +199,23 @@ describe('describeFciFetchError', () => {
     expect(describeFciFetchError('boom')).toEqual({ reason: 'boom' });
     expect(describeFciFetchError(undefined)).toEqual({ reason: 'error' });
     expect(describeFciFetchError({ status: 503 })).toEqual({ reason: 'error', status: 503 });
+  });
+
+  it('keeps CAFCI and IOL diagnostics from a combined error', () => {
+    expect(describeFciFetchError(Object.assign(new Error('CAFCI catalog 401; IOL panel 403'), {
+      name: 'FciCombinedError',
+      cafciReason: 'CAFCI catalog 401',
+      iolReason: 'IOL panel 403',
+      cafciStage: 'catalog',
+      iolStage: 'iol',
+      status: 403,
+      stage: 'iol',
+    }))).toMatchObject({
+      reason: 'CAFCI catalog 401; IOL panel 403',
+      stage: 'iol',
+      status: 403,
+      cafciStage: 'catalog',
+      iolStage: 'iol',
+    });
   });
 });

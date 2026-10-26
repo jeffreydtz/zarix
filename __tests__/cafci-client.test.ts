@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   CAFCI_HEADERS,
   CafciHttpError,
+  FciCombinedError,
   cafciClassesFromCatalogForTest,
   fetchFciQuote,
   isCafciForbidden,
@@ -12,6 +13,7 @@ import {
   resetCafciCatalogCacheForTest,
   resolveCafciCurrencySources,
 } from '@/lib/market-data/cafci-client';
+import { cafciValoresAlLabel } from '@/lib/market-data/fci-nav-freshness';
 import { parseArgentineNumber, parseIolFondosPanel } from '@/lib/market-data/iol-fci-panel';
 
 describe('CAFCI client headers and 403', () => {
@@ -46,15 +48,17 @@ describe('CAFCI client headers and 403', () => {
     const init = fetchMock.mock.calls[0][1] as {
       headers: Record<string, string>;
       cache?: RequestCache;
+      redirect?: RequestRedirect;
       next?: { revalidate?: number };
     };
     expect(init.headers['User-Agent']).toBe(CAFCI_HEADERS['User-Agent']);
     expect(init.headers['Accept-Language']).toBe(CAFCI_HEADERS['Accept-Language']);
     expect(init.cache).toBe('no-store');
+    expect(init.redirect).toBe('error');
     expect(init.next?.revalidate).toBeUndefined();
     const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
-    expect(err).toBeInstanceOf(CafciHttpError);
-    expect((err as CafciHttpError).status).toBe(403);
+    expect(err).toBeInstanceOf(FciCombinedError);
+    expect(err).toMatchObject({ cafciStatus: 403, cafciStage: 'catalog', iolStatus: 403, iolStage: 'iol' });
   });
 
   it('propagates CAFCI 500 so the refresh can skip without a Yahoo fallback', async () => {
@@ -64,7 +68,11 @@ describe('CAFCI client headers and 403', () => {
       json: async () => ({}),
     });
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ status: 500, name: 'CafciHttpError' });
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
+      name: 'FciCombinedError',
+      cafciStatus: 500,
+      cafciStage: 'catalog',
+    });
   });
 
   it('returns null when the catalog 200 is an error payload', async () => {
@@ -90,7 +98,8 @@ describe('CAFCI client headers and 403', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({ data: { valorCuotaparte: null, fecha: '2026-10-23' } }),
-      });
+      })
+      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) });
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
   });
@@ -110,7 +119,8 @@ describe('CAFCI client headers and 403', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({ foo: 1 }),
-      });
+      })
+      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) });
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
   });
@@ -529,18 +539,48 @@ describe('CAFCI failure diagnostics', () => {
       json: async () => ({}),
     }));
     const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
-    expect(err).toBeInstanceOf(CafciHttpError);
-    expect(err).toMatchObject({ status: 403, stage: 'catalog', server: 'awselb/2.0', message: 'CAFCI catalog 403' });
+    expect(err).toBeInstanceOf(FciCombinedError);
+    expect(err).toMatchObject({
+      cafciStatus: 403, cafciStage: 'catalog', cafciReason: 'CAFCI catalog 403',
+      iolStatus: 403, iolStage: 'iol',
+    });
     expect(isCafciForbidden(err)).toBe(true);
   });
 
   it('tags a ficha 401 after a good catalog', async () => {
     vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => catalog })
-      .mockResolvedValueOnce({ ok: false, status: 401, headers: new Headers(), json: async () => ({}) }));
+      .mockResolvedValueOnce({ ok: true, json: async () => catalog, text: async () => JSON.stringify(catalog) })
+      .mockResolvedValueOnce({ ok: false, status: 401, headers: new Headers(), json: async () => ({}) })
+      .mockResolvedValue({ ok: false, status: 403, json: async () => ({}), text: async () => '' }));
     const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
-    expect(err).toMatchObject({ name: 'CafciHttpError', status: 401, stage: 'ficha', message: 'CAFCI ficha 401' });
-    expect((err as CafciHttpError).server).toBeUndefined();
+    expect(err).toMatchObject({
+      name: 'FciCombinedError',
+      cafciStatus: 401,
+      cafciStage: 'ficha',
+      cafciReason: 'CAFCI ficha 401',
+      iolStatus: 403,
+      iolStage: 'iol',
+    });
+  });
+
+  it('rejects an oversized ficha body', async () => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => catalog,
+        text: async () => JSON.stringify(catalog),
+        headers: new Headers(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () => 'x'.repeat(600_000),
+        headers: new Headers({ 'content-length': '600000' }),
+      })
+      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) }));
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
+      name: 'CafciFetchError',
+      stage: 'ficha',
+    });
   });
 
   it('caps a hostile Server header and strips control characters', async () => {
@@ -550,7 +590,7 @@ describe('CAFCI failure diagnostics', () => {
       headers: { get: () => `bad\r\n${'x'.repeat(500)}` },
       json: async () => ({}),
     }));
-    const err = (await fetchFciQuote('IOLDOLD').catch((e: unknown) => e)) as CafciHttpError;
+    const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e) as FciCombinedError;
     expect(err.server?.length).toBeLessThanOrEqual(60);
     expect(err.server).not.toMatch(/[\r\n]/);
   });
@@ -558,16 +598,18 @@ describe('CAFCI failure diagnostics', () => {
   it('wraps a network failure with the stage', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('fetch failed')));
     await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
-      name: 'CafciFetchError',
-      stage: 'catalog',
-      message: 'CAFCI catalog TypeError: fetch failed',
+      name: 'FciCombinedError',
+      cafciStage: 'catalog',
+      iolStage: 'iol',
+      cafciReason: 'CAFCI catalog TypeError: fetch failed',
     });
   });
 
   it('wraps an invalid JSON ficha with the stage', async () => {
     vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => catalog })
-      .mockResolvedValueOnce({ ok: true, json: async () => { throw new SyntaxError('Unexpected token <'); } }));
+      .mockResolvedValueOnce({ ok: true, json: async () => catalog, text: async () => JSON.stringify(catalog) })
+      .mockResolvedValueOnce({ ok: true, json: async () => { throw new SyntaxError('Unexpected token <'); } })
+      .mockResolvedValue({ ok: true, text: async () => '<html></html>', json: async () => ({}) }));
     await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ name: 'CafciFetchError', stage: 'ficha' });
   });
 
@@ -578,14 +620,18 @@ describe('CAFCI failure diagnostics', () => {
     ];
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       const u = String(url);
-      const empty = async (): Promise<string> => '';
       if (u.includes('consulta-de-fondos.json')) {
-        return { ok: true, json: async () => [...catalog, ...ambiguous], text: empty };
+        const body = [...catalog, ...ambiguous];
+        return { ok: true, json: async () => body, text: async () => JSON.stringify(body) };
       }
       if (u.includes('invertironline')) {
         return { ok: true, text: async (): Promise<string> => '<html><body>no funds</body></html>' };
       }
-      return { ok: true, json: async () => ({ data: { valorCuotaparte: null } }), text: empty };
+      return {
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: null } }),
+        text: async () => JSON.stringify({ data: { valorCuotaparte: null } }),
+      };
     }));
     const reasons: string[] = [];
     const onMiss = (r: string) => reasons.push(r);
@@ -651,11 +697,41 @@ const STATS_CATALOG = {
   ],
 };
 
-function htmlFicha(opts: { priceLabel: string; date?: string; moneda?: string }): string {
+function htmlFicha(opts: {
+  priceLabel: string;
+  date?: string;
+  moneda?: string;
+  fondoId?: string;
+  claseId?: string;
+  selectedClaseId?: string;
+  extraNavLabel?: string;
+}): string {
+  const fondoId = opts.fondoId ?? '1570';
+  const claseId = opts.claseId ?? '5100';
+  const selected = opts.selectedClaseId ?? claseId;
+  const options = new Map<string, string>([
+    [fondoId, 'Default class'],
+    [claseId, 'Requested class'],
+  ]);
+  options.set(selected, options.get(selected) ?? 'Selected class');
+  const optionHtml = [...options.entries()].map(([id, label]) => (
+    `<option value="${id}"${id === selected ? ' selected' : ''}>${label}</option>`
+  )).join('\n');
   return `<html><body>
-    <h3>Valores al ${opts.date ?? '23/10/2026'}</h3>
-    <p>Valor por cada cuotaparte: ${opts.priceLabel}</p>
-    <p>(Valor por mil: 1.097,744)</p>
+    <form method="get" action="/fondos/${fondoId}">
+      <label>Clase:
+        <select name="clase" onchange="this.form.submit()">
+          ${optionHtml}
+        </select>
+      </label>
+    </form>
+    <div id="cuotaparte" class="divContent">
+      <h3>Valores al ${opts.date ?? cafciValoresAlLabel()}</h3>
+      <p>Patrimonio bajo administración: 6.988.482.241,29</p>
+      <p>Valor por cada cuotaparte: ${opts.priceLabel}</p>
+      ${opts.extraNavLabel ? `<p>Valor por cada cuotaparte: ${opts.extraNavLabel}</p>` : ''}
+      <p>(Valor por mil: 1.097,744)</p>
+    </div>
     <span class="label">Moneda:</span> ${opts.moneda ?? 'Dolar Estadounidense'}</li>
   </body></html>`;
 }
@@ -727,6 +803,57 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
     });
     expect(parseCafciHtmlFicha('<p>Valor por mil: 1.097,744</p>')).toBeNull();
     expect(parseCafciDateLabel('23/10/2026')).toBe('2026-10-23T03:00:00.000Z');
+    expect(parseCafciDateLabel('31/02/2026')).toBeNull();
+    expect(parseCafciDateLabel('2026-02-31')).toBeNull();
+  });
+
+  it('reads fund/class identity from the stats HTML form', () => {
+    const parsed = parseCafciHtmlFicha(htmlFicha({
+      priceLabel: '1.241,954039',
+      moneda: 'Peso Argentina',
+      fondoId: '227',
+      claseId: '784',
+    }));
+    expect(parsed).toMatchObject({
+      price: 1241.954039,
+      fondoId: '227',
+      claseId: '784',
+    });
+  });
+
+  it('rejects a default-class page whose selected option is not the requested class', async () => {
+    stubByUrl({
+      fichas: {
+        '227:784': htmlFicha({
+          priceLabel: '1.451,064642',
+          moneda: 'Peso Argentina',
+          fondoId: '227',
+          claseId: '784',
+          selectedClaseId: '227',
+        }),
+      },
+    });
+    const reasons: string[] = [];
+    await expect(fetchFciQuote('PRTAVAB', (r) => reasons.push(r))).resolves.toBeNull();
+    expect(reasons).toEqual(['class_mismatch']);
+  });
+
+  it('rejects duplicate NAV labels that disagree', () => {
+    expect(parseCafciHtmlFicha(htmlFicha({
+      priceLabel: '1,097744',
+      extraNavLabel: '1.100,00',
+      fondoId: '1570',
+      claseId: '5100',
+    }))).toBeNull();
+  });
+
+  it('does not treat markup inside the NAV as a truncated prefix', () => {
+    expect(parseCafciHtmlFicha(htmlFicha({
+      priceLabel: '1<span>,097744</span>',
+      moneda: 'Dolar Estadounidense',
+      fondoId: '1570',
+      claseId: '5100',
+    }))).toMatchObject({ price: 1.097744 });
   });
 
   it('matches Bloomberg tickers including an AR suffix and the IOLDOLD alias', () => {
@@ -741,10 +868,18 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
   it('prices the four user FCIs from the stats HTML ficha', async () => {
     stubByUrl({
       fichas: {
-        '227:784': htmlFicha({ priceLabel: '1.241,954039', moneda: 'Peso Argentina' }),
-        '622:1255': htmlFicha({ priceLabel: '179,598356', moneda: 'Peso Argentina' }),
-        '1570:5100': htmlFicha({ priceLabel: '1,097744', moneda: 'Dolar Estadounidense' }),
-        '750:1645': htmlFicha({ priceLabel: '1,348784', moneda: 'Dolar Estadounidense' }),
+        '227:784': htmlFicha({
+          priceLabel: '1.241,954039', moneda: 'Peso Argentina', fondoId: '227', claseId: '784',
+        }),
+        '622:1255': htmlFicha({
+          priceLabel: '179,598356', moneda: 'Peso Argentina', fondoId: '622', claseId: '1255',
+        }),
+        '1570:5100': htmlFicha({
+          priceLabel: '1,097744', moneda: 'Dolar Estadounidense', fondoId: '1570', claseId: '5100',
+        }),
+        '750:1645': htmlFicha({
+          priceLabel: '1,348784', moneda: 'Dolar Estadounidense', fondoId: '750', claseId: '1645',
+        }),
       },
     });
     await expect(fetchFciQuote('PRTAVAB')).resolves.toMatchObject({
@@ -780,11 +915,56 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
     });
   });
 
-  it('rethrows the CAFCI catalog 401 when IOL also fails', async () => {
+  it('rethrows the CAFCI catalog 401 when IOL also fails, keeping both stages', async () => {
     stubByUrl({ status: { catalog: 401, iol: 403 } });
     const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
-    expect(err).toBeInstanceOf(CafciHttpError);
-    expect(err).toMatchObject({ status: 401, stage: 'catalog', message: 'CAFCI catalog 401' });
+    expect(err).toBeInstanceOf(FciCombinedError);
+    expect(err).toMatchObject({
+      cafciStage: 'catalog',
+      cafciStatus: 401,
+      iolStage: 'iol',
+      iolStatus: 403,
+      cafciReason: 'CAFCI catalog 401',
+      iolReason: 'IOL panel 403',
+    });
+  });
+
+  it('does not fall through to IOL on an ambiguous CAFCI catalog match', async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      const u = String(url);
+      if (u.includes('consulta-de-fondos.json')) {
+        const body = {
+          fondos: [
+            { id: 1, clases: [{ id: 2, simbolo: 'AAA', moneda: { nombre: 'USD' } }] },
+            { id: 3, clases: [{ id: 4, simbolo: 'AAA', moneda: { nombre: 'ARS' } }] },
+          ],
+        };
+        return {
+          ok: true,
+          json: async () => body,
+          text: async () => JSON.stringify(body),
+          headers: new Headers(),
+        };
+      }
+      if (u.includes('invertironline')) {
+        return {
+          ok: true,
+          text: async () => `
+            <table><tr>
+              <td><a data-symbol="AAA">AAA</a></td>
+              <td class="text-right">US$ 1,10</td>
+            </tr></table>`,
+          json: async () => ({}),
+          headers: new Headers(),
+        };
+      }
+      return { ok: false, status: 404, json: async () => ({}), text: async () => '', headers: new Headers() };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const reasons: string[] = [];
+    await expect(fetchFciQuote('AAA', (r) => reasons.push(r))).resolves.toBeNull();
+    expect(reasons).toEqual(['ambiguous_match']);
+    expect(fetchMock.mock.calls.some((call) => String(call[0]).includes('invertironline'))).toBe(false);
   });
 });
 
@@ -809,5 +989,37 @@ describe('IOL fondos panel parser', () => {
     expect(panel.get('IOLDOLD')).toMatchObject({ price: 1.1, currency: 'USD', changePct: 0.15 });
     expect(panel.get('PRTAVAB')).toMatchObject({ price: 1241.95, currency: 'ARS' });
     expect(parseArgentineNumber('1.241,95')).toBeCloseTo(1241.95);
+  });
+
+  it('keeps the sign on negative daily changes and rejects whitespace collisions', () => {
+    const html = `
+      <tr>
+        <td><a data-symbol="PRGLBDB">PRGLBDB</a></td>
+        <td class="text-right">US$ 1,10</td>
+        <td class="text-right">-0,15%</td>
+      </tr>
+      <tr>
+        <td><a data-symbol="AB C">AB C</a></td>
+        <td class="text-right">US$ 2,00</td>
+      </tr>
+      <tr>
+        <td><a data-symbol="ABC">ABC</a></td>
+        <td class="text-right">US$ 3,00</td>
+      </tr>
+      <tr>
+        <td><a data-symbol="AAA">AAA</a></td>
+        <td class="text-right">US$ 1,10</td>
+      </tr>
+      <tr>
+        <td><a data-symbol="AAA">AAA</a></td>
+        <td class="text-right">AR$ 1.100,00</td>
+      </tr>
+    `;
+    const panel = parseIolFondosPanel(html);
+    expect(panel.get('PRGLBDB')).toMatchObject({ changePct: -0.15 });
+    expect(panel.get('ABC')).toMatchObject({ price: 3 });
+    expect(panel.has('AB C')).toBe(false);
+    expect(panel.has('ABC ')).toBe(false);
+    expect(panel.has('AAA')).toBe(false);
   });
 });
