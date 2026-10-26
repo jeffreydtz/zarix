@@ -38,6 +38,7 @@ import {
   QuickCreateCategoryPanel,
 } from '@/components/expenses/InlineQuickCreate';
 import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
+import { moneyAmountFromToken } from '@/lib/money-amount';
 import { CategoryIcon } from '@/lib/category-icons';
 import type { AccountType } from '@/types/database';
 
@@ -231,8 +232,8 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
       setError('Elegí la cuenta destino');
       return;
     }
-    const parsedAmount = parseFloat(amount.replace(',', '.'));
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+    const parsedAmount = moneyAmountFromToken(amount);
+    if (parsedAmount == null || parsedAmount <= 0) {
       setError('Ingresá un monto válido');
       return;
     }
@@ -412,7 +413,10 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
                       autoFocus
                       className="flex-1 min-w-0 px-4 py-3 rounded-xl border border-border bg-card text-foreground text-2xl font-semibold tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
                     />
-                    <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
+                    <MiniAmountCalculatorButton
+                      currentAmount={amount}
+                      onApply={(value) => setAmount(sanitizeAmountInput(value))}
+                    />
                     <select
                       value={amountCurrency}
                       onChange={(e) => {

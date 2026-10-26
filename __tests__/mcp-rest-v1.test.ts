@@ -385,6 +385,36 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
     expect(ids.filter((id: string | undefined) => id === key)).toHaveLength(2);
   });
 
+  it('rejects exponent and hex amounts on REST before invoking the registry', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
+        revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
+      },
+      error: null,
+    }));
+    const exponent = await callTool(new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+      body: '{"type":"expense","amount":1e3,"currency":"ARS"}',
+    }), { params: Promise.resolve({ name: 'create_transaction' }) });
+    expect(exponent.status).toBe(400);
+    const tiny = await callTool(new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+      body: '{"type":"expense","amount":1e-2,"currency":"ARS"}',
+    }), { params: Promise.resolve({ name: 'create_transaction' }) });
+    expect(tiny.status).toBe(400);
+    const hex = await callTool(new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+      body: '{"type":"expense","amount":"0x10","currency":"ARS"}',
+    }), { params: Promise.resolve({ name: 'create_transaction' }) });
+    expect(hex.status).toBe(400);
+    expect(mocks.invoke).not.toHaveBeenCalled();
+  });
+
   it('returns 429 (not 401) when the v1 GET bucket is exhausted', async () => {
     const generated = generatePersonalAccessToken();
     mocks.from.mockImplementation(() => chain({

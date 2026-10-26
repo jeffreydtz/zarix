@@ -6449,3 +6449,215 @@ REVOKE ALL ON FUNCTION public.create_installment_transactions(UUID, UUID, NUMERI
 GRANT EXECUTE ON FUNCTION public.create_installment_transactions(UUID, UUID, NUMERIC, TEXT, INTEGER, UUID, TEXT, TIMESTAMPTZ, TEXT)
   TO service_role;
 -- END supabase/migrations/20261024240000_installments_cordoba_calendar.sql
+
+-- BEGIN supabase/migrations/20261025010000_inbox_claim_category_search_path.sql
+-- SHA256 040ad0dc86fbb8941aac61bc61c84ca44713e5a07c97dbca52ac3a21c319a8ba
+-- Forward-only follow-up after 20261024180000–240000 (already applied in prod).
+-- 1) Inbox category ownership (system or same user; NULL category allowed).
+-- 2) Atomic batch claim: all requested non-confirmed items, or none.
+-- 3) search_path on inbox_canonical_tool_payload (security advisor WARN).
+
+DROP TRIGGER IF EXISTS check_pending_inbox_category_owner ON public.pending_inbox_items;
+CREATE TRIGGER check_pending_inbox_category_owner
+  BEFORE INSERT OR UPDATE OF user_id, category_id
+  ON public.pending_inbox_items
+  FOR EACH ROW EXECUTE FUNCTION public.check_category_ownership();
+
+CREATE OR REPLACE FUNCTION public.claim_pending_inbox_items(
+  p_user_id UUID,
+  p_item_ids UUID[]
+) RETURNS SETOF public.pending_inbox_items
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  ids UUID[];
+  n_need INTEGER;
+  n_claimed INTEGER;
+BEGIN
+  IF p_user_id IS NULL OR p_item_ids IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+  IF auth.uid() IS NOT NULL AND auth.uid() <> p_user_id THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+
+  SELECT COALESCE(array_agg(x ORDER BY x), ARRAY[]::uuid[])
+    INTO ids
+    FROM (SELECT DISTINCT x FROM unnest(p_item_ids) AS t(x) WHERE x IS NOT NULL) s;
+
+  IF cardinality(ids) = 0 THEN
+    RETURN;
+  END IF;
+
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_user_id::text || ':inbox:' || item_id::text, 0))
+  FROM unnest(ids) AS item_id
+  ORDER BY item_id;
+
+  PERFORM 1 FROM (
+    SELECT id
+      FROM public.pending_inbox_items
+     WHERE user_id = p_user_id
+       AND id = ANY(ids)
+     ORDER BY id
+       FOR UPDATE
+  ) locked;
+
+  SELECT count(*)::integer
+    INTO n_need
+    FROM unnest(ids) AS requested(id)
+   WHERE NOT EXISTS (
+     SELECT 1
+       FROM public.pending_inbox_items p
+      WHERE p.id = requested.id
+        AND p.user_id = p_user_id
+        AND p.status = 'confirmed'
+   );
+
+  UPDATE public.pending_inbox_items
+     SET status = 'confirming',
+         claim_id = pg_catalog.gen_random_uuid(),
+         updated_at = pg_catalog.now()
+   WHERE user_id = p_user_id
+     AND id = ANY(ids)
+     AND status IN ('pending', 'uncertain');
+
+  GET DIAGNOSTICS n_claimed = ROW_COUNT;
+
+  IF n_claimed IS DISTINCT FROM n_need THEN
+    RAISE EXCEPTION 'Este pendiente se está confirmando.' USING ERRCODE = 'P0001';
+  END IF;
+
+  RETURN QUERY
+  SELECT *
+    FROM public.pending_inbox_items
+   WHERE user_id = p_user_id
+     AND id = ANY(ids)
+     AND status = 'confirming'
+   ORDER BY id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.claim_pending_inbox_items(UUID, UUID[]) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_items(UUID, UUID[]) TO authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION public.inbox_canonical_tool_payload(p JSONB)
+RETURNS JSONB
+LANGUAGE sql
+IMMUTABLE
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT CASE
+    WHEN p IS NULL OR pg_catalog.jsonb_typeof(p) = 'null' THEN NULL
+    ELSE pg_catalog.jsonb_build_object(
+      'type', p->>'type',
+      'amount', p->'amount',
+      'currency', p->>'currency',
+      'description', p->>'description',
+      'account', p->>'account',
+      'accountId', p->>'accountId',
+      'category', p->>'category',
+      'categoryId', p->>'categoryId',
+      'destinationAccount', p->>'destinationAccount',
+      'destinationAccountId', p->>'destinationAccountId',
+      'transactionDate', COALESCE(p->>'transactionDate', p->>'date'),
+      'installments', p->'installments'
+    )
+  END;
+$$;
+
+REVOKE ALL ON FUNCTION public.inbox_canonical_tool_payload(JSONB) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.inbox_canonical_tool_payload(JSONB) TO service_role;
+-- END supabase/migrations/20261025010000_inbox_claim_category_search_path.sql
+
+-- BEGIN supabase/migrations/20261025020000_budget_status_cordoba.sql
+-- SHA256 0404596b561cc3d434e1a4165218b07ac5aac7ebfbf1bbaf0c322b26f6d2ea07
+-- Forward-only: budget spent totals use explicit Córdoba civil-month bounds
+-- (UTC−03), matching transactions/summary. DATE_TRUNC('month', timestamptz)
+-- followed the session TimeZone and dropped 31 Oct 23:30-03 under UTC.
+
+CREATE OR REPLACE FUNCTION public.get_budget_status(
+  p_user_id UUID,
+  p_month DATE DEFAULT (pg_catalog.date_trunc('month', timezone('America/Argentina/Cordoba', pg_catalog.now())))::date
+)
+RETURNS TABLE (
+  category_id UUID,
+  category_name TEXT,
+  budget_amount NUMERIC,
+  spent_amount NUMERIC,
+  remaining_amount NUMERIC,
+  percent_used NUMERIC
+)
+LANGUAGE plpgsql
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+DECLARE
+  month_start timestamptz := ((p_month::text) || ' 00:00:00-03')::timestamptz;
+  month_end timestamptz := ((((p_month + interval '1 month')::date)::text) || ' 00:00:00-03')::timestamptz;
+BEGIN
+  RETURN QUERY
+  SELECT
+    b.category_id,
+    COALESCE(c.name, 'Sin categoría'),
+    b.amount,
+    COALESCE(SUM(t.amount_in_account_currency), 0) AS spent,
+    b.amount - COALESCE(SUM(t.amount_in_account_currency), 0) AS remaining,
+    ROUND((COALESCE(SUM(t.amount_in_account_currency), 0) / NULLIF(b.amount, 0) * 100)::NUMERIC, 2) AS percent
+  FROM public.budgets b
+  LEFT JOIN public.categories c ON c.id = b.category_id
+  LEFT JOIN public.transactions t ON
+    t.user_id = p_user_id
+    AND t.type = 'expense'
+    AND t.transaction_date >= month_start
+    AND t.transaction_date < month_end
+    AND (
+      (b.category_id IS NOT NULL AND t.category_id = b.category_id)
+      OR (b.category_id IS NULL AND t.category_id IS NULL)
+    )
+    AND EXISTS (
+      SELECT 1 FROM public.accounts a
+      WHERE a.id = t.account_id
+        AND a.user_id = p_user_id
+        AND a.is_active = TRUE
+        AND upper(trim(a.currency)) = upper(trim(b.currency))
+    )
+  WHERE b.user_id = p_user_id AND b.month = p_month
+  GROUP BY b.category_id, c.name, b.amount;
+END;
+$$;
+-- END supabase/migrations/20261025020000_budget_status_cordoba.sql
+
+-- BEGIN supabase/migrations/20261025030000_category_system_select.sql
+-- SHA256 cad8a9672ce7881721f88a50a31424c5b94579c7c6877716372f998135fcf5a3
+-- FOR KEY SHARE on categories applies the UPDATE policy, which excludes
+-- NULL-owner system rows. Authenticated parking/writes then fail even though
+-- SELECT is allowed. System categories are globally readable: EXISTS without
+-- a lock. KEY SHARE stays on the caller's own categories.
+
+CREATE OR REPLACE FUNCTION public.check_category_ownership()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF NEW.category_id IS NOT NULL THEN
+    IF EXISTS (
+      SELECT 1 FROM public.categories c
+      WHERE c.id = NEW.category_id AND c.is_system IS TRUE
+    ) THEN
+      RETURN NEW;
+    END IF;
+    PERFORM 1 FROM public.categories c
+      WHERE c.id = NEW.category_id AND c.user_id = NEW.user_id
+      FOR KEY SHARE;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'La categoría no pertenece al usuario.' USING ERRCODE = '23503';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+-- END supabase/migrations/20261025030000_category_system_select.sql

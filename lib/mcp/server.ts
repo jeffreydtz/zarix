@@ -12,6 +12,7 @@ import { FxUnavailableError } from '@/lib/executable-fx';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 import { hashClientIp } from '@/lib/integrations/audit';
 import { MAX_JSONRPC_BATCH, canonicalAppOrigin, readLimitedText, rejectJsonRpcBatch } from '@/lib/http/body-limit';
+import { rawJsonHasInvalidMoney } from '@/lib/money-amount';
 
 const authStore = new AsyncLocalStorage<AuthInfo>();
 const requestStore = new AsyncLocalStorage<Request>();
@@ -186,7 +187,11 @@ export async function mcpHandler(req: Request): Promise<Response> {
       const raw = await readLimitedText(req);
       if (raw.trim()) {
         try {
-          rejectJsonRpcBatch(JSON.parse(raw) as unknown, MAX_JSONRPC_BATCH);
+          const parsed = JSON.parse(raw) as unknown;
+          rejectJsonRpcBatch(parsed, MAX_JSONRPC_BATCH);
+          if (rawJsonHasInvalidMoney(raw)) {
+            return Response.json({ error: 'Monto inválido.' }, { status: 400 });
+          }
         } catch (error) {
           if (error instanceof ApiError) {
             return Response.json({ error: error.message }, { status: error.status });

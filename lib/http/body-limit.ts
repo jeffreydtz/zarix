@@ -1,4 +1,5 @@
 import { ApiError } from '@/lib/api-handler';
+import { rawJsonHasInvalidMoney } from '@/lib/money-amount';
 
 export const MAX_INTEGRATION_BODY_BYTES = 64 * 1024;
 export const MAX_JSONRPC_BATCH = 12;
@@ -41,13 +42,26 @@ export async function readLimitedJsonBody(
   req: Request,
   maxBytes = MAX_INTEGRATION_BODY_BYTES
 ): Promise<unknown> {
+  const { value } = await readLimitedJsonBodyWithRaw(req, maxBytes);
+  return value;
+}
+
+export async function readLimitedJsonBodyWithRaw(
+  req: Request,
+  maxBytes = MAX_INTEGRATION_BODY_BYTES
+): Promise<{ value: unknown; raw: string }> {
   const raw = await readLimitedText(req, maxBytes);
-  if (!raw.trim()) return {};
+  if (!raw.trim()) return { value: {}, raw: '' };
+  let value: unknown;
   try {
-    return JSON.parse(raw) as unknown;
+    value = JSON.parse(raw) as unknown;
   } catch {
     throw new ApiError('JSON inválido.', 400);
   }
+  if (rawJsonHasInvalidMoney(raw)) {
+    throw new ApiError('Monto inválido.', 400);
+  }
+  return { value, raw };
 }
 
 export function rejectJsonRpcBatch(body: unknown, max = MAX_JSONRPC_BATCH): void {

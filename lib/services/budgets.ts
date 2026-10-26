@@ -2,6 +2,7 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
 import type { Budget, BudgetStatus } from '@/types/database';
 import { enqueueNotification } from '@/lib/services/notification-outbox';
+import { APP_CIVIL_TIMEZONE, civilTodayYmd, isCivilYmd, startOfMonthYmd } from '@/lib/transaction-date';
 
 export interface CreateBudgetInput {
   userId: string;
@@ -54,10 +55,15 @@ class BudgetsService {
     return data;
   }
 
-  async getStatus(userId: string, month: Date): Promise<BudgetStatus[]> {
+  async getStatus(userId: string, month: Date | string): Promise<BudgetStatus[]> {
     const supabase = createServiceClientSync();
 
-    const monthStr = month.toISOString().split('T')[0].substring(0, 7) + '-01';
+    const monthStr =
+      typeof month === 'string' && isCivilYmd(month)
+        ? startOfMonthYmd(month)
+        : startOfMonthYmd(
+            civilTodayYmd(APP_CIVIL_TIMEZONE, month instanceof Date ? month : new Date())
+          );
 
     const { data, error } = await supabase.rpc('get_budget_status', {
       p_user_id: userId,
@@ -71,7 +77,7 @@ class BudgetsService {
   async checkAndSendAlerts(userId: string, categoryId: string | null, month: string): Promise<void> {
     const supabase = createServiceClientSync();
 
-    const budgetStatus = await this.getStatus(userId, new Date(month));
+    const budgetStatus = await this.getStatus(userId, month);
     const status = budgetStatus.find((s) => s.category_id === categoryId);
 
     if (!status) return;

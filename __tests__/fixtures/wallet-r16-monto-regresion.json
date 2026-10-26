@@ -1,0 +1,1844 @@
+[
+  {
+    "id": "orch-559-json / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "-1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-562-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "-1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-565-json / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "-1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-568-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "-1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1855-json / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1858-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1861-json / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1864-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1894-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1.500 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1900-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Compra 1.500 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1903-json / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1906-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1909-json / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-1912-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2110-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra ARS1.500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2116-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Compra ARS1.500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2371-json / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra USD10",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2374-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra USD10",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2377-json / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra USD10",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2380-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Compra USD10",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2407-json / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra aprobada -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2410-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra aprobada -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2413-json / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra aprobada -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2416-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Compra aprobada -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2734-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-2740-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-4294-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Importe: 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-4300-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Importe: 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-4915-json / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-4918-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-4921-json / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-4924-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Pagaste -1500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-5278-json / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste Importe: 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "orch-5284-json / json",
+    "json": {
+      "monto": 15000,
+      "rawText": "Pagaste Importe: 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-5941 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-5942 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-5943 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-5944 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-5945 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-5946 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-5947 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-5949 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-5950 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-5951 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-5953 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-5954 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-5955 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1.500,50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6005 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6006 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6007 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6008 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6009 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6010 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6011 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6013 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6014 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6015 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6017 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6018 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6019 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Compra 1,500.50 en COTO",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6069 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6070 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6071 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6072 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6073 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6074 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6075 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Compra aprobada Importe: 1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6132 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6133 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6134 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6135 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6136 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6137 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6138 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6139 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6196 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6197 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6198 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6199 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6200 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6201 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6202 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6203 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6204 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6205 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6206 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6207 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6208 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6209 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6210 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6211 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -1.500,00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6260 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6261 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6262 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6263 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6264 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6265 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6266 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6267 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6268 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6269 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6270 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6271 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6272 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6273 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6274 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6275 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 0",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6324 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6325 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6326 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6327 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6328 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6329 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6330 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6331 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6332 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6333 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6334 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6335 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6336 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6337 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6338 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6339 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste -15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6396 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6397 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6398 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6399 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6400 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6401 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6402 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6403 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste (15)",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6460 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6461 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6462 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6463 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6464 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6465 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6466 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6467 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15-",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6524 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6525 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6526 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6527 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6528 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6529 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6530 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6531 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15CR",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6588 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6589 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6590 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6591 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-6592 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-6593 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-6594 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-6595 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-7932 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste €15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-7933 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste €15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-7934 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste €15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-7935 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste €15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-7936 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste €15",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-7937 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste €15",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-7938 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste €15",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-7939 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste €15",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-7996 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-7997 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-7998 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-7999 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-8000 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-8001 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-8002 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-8003 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15 €",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-8636 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste quince",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-8637 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste quince",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-8638 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste quince",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-8639 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste quince",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-8640 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste quince",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-8641 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste quince",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-8642 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste quince",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-8643 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste quince",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-8692 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500,00 pesos",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-8693 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500,00 pesos",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-8696 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500,00 pesos",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-8697 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500,00 pesos",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-8766 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15 dólares",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-8770 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15 dólares",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-8831 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15 euros",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-8835 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15 euros",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-9020 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-9021 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-9022 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-9023 / json",
+    "json": {
+      "monto": 1500,
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-9024 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-9025 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-9026 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-9027 / json",
+    "json": {
+      "monto": "1500",
+      "rawText": "Pagaste 15.00",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-9076 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-9077 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-9078 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-9079 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-9080 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-9081 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-9082 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-9083 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1.500",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-9140 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-9141 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-9142 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-9143 / json",
+    "json": {
+      "monto": 15,
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "new-9144 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO"
+    }
+  },
+  {
+    "id": "new-9145 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO",
+      "currency": "ARS"
+    }
+  },
+  {
+    "id": "new-9146 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO",
+      "currency": "USD"
+    }
+  },
+  {
+    "id": "new-9147 / json",
+    "json": {
+      "monto": "15",
+      "rawText": "Pagaste 1,500",
+      "merchant": "COTO",
+      "currency": "EUR"
+    }
+  },
+  {
+    "id": "control-9236 / json",
+    "json": {
+      "monto": 1500.5,
+      "merchant": "COTO",
+      "rawText": "Compra aprobada Importe: 1.500,00"
+    }
+  },
+  {
+    "id": "control-9239 / json",
+    "json": {
+      "monto": "1.500,50",
+      "merchant": "COTO",
+      "rawText": "Compra aprobada Importe: 1.500,00"
+    }
+  }
+]

@@ -17,6 +17,7 @@ import {
 } from '@/lib/constants/transaction-currencies';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
+import { moneyAmountFromToken } from '@/lib/money-amount';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface EditTransactionModalProps {
@@ -80,9 +81,15 @@ export default function EditTransactionModal({
     setLoading(true);
 
     try {
+      const parsedAmount = moneyAmountFromToken(formData.amount);
+      if (parsedAmount == null || parsedAmount <= 0) {
+        setError('Ingresá un monto válido');
+        setLoading(false);
+        return;
+      }
       const payload: Record<string, unknown> = {
         ...formData,
-        amount: parseFloat(formData.amount.replace(',', '.')),
+        amount: parsedAmount,
         transaction_date: calendarDateToUtcNoonIso(formData.transaction_date),
       };
 
@@ -100,7 +107,7 @@ export default function EditTransactionModal({
               accountId: formData.account_id,
               destinationAccountId:
                 formData.type === 'transfer' ? formData.destination_account_id || undefined : undefined,
-              amount: parseFloat(formData.amount.replace(',', '.')),
+              amount: parsedAmount,
               currency: formData.currency,
               categoryId: formData.category_id || undefined,
               description: formData.description || undefined,
@@ -245,7 +252,7 @@ export default function EditTransactionModal({
                 />
                 <MiniAmountCalculatorButton
                   currentAmount={formData.amount}
-                  onApply={(v) => setFormData({ ...formData, amount: v })}
+                  onApply={(v) => setFormData({ ...formData, amount: sanitizeAmountInput(v) })}
                 />
               </div>
             </div>

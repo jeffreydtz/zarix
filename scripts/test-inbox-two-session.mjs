@@ -232,12 +232,41 @@ const result = await withTwoSessionPostgres(async ({ query, parallelSql }) => {
     'negative control: without the advisory lock both overlapping rows stay unflagged'
   );
 
+  const claimA = randomUUID();
+  const claimB = randomUUID();
+  query(`
+    INSERT INTO pending_inbox_items(
+      id, user_id, amount, currency, merchant, account_id, status, fingerprint, source, direction, request_canonical
+    ) VALUES
+      ('${claimA}', '${ids.a}', 18, 'ARS', 'Batch A', '${ids.accountA}', 'pending', 'fp-batch-a', 'wallet', 'expense', ''),
+      ('${claimB}', '${ids.a}', 18, 'ARS', 'Batch B', '${ids.accountA}', 'pending', 'fp-batch-b', 'wallet', 'expense', '')
+  `);
+  const claimSql = `SELECT id FROM claim_pending_inbox_items('${ids.a}', ARRAY['${claimA}','${claimB}']::uuid[]);`;
+  const holder = parallelSql(`${servicePreamble()} BEGIN; ${claimSql} SELECT pg_sleep(1.5); COMMIT;`);
+  await sleep(250);
+  const waiter = parallelSql(`${servicePreamble()} ${claimSql}`);
+  const [winner, loser] = await Promise.all([holder, waiter]);
+  const okCount = [winner.status, loser.status].filter((status) => status === 0).length;
+  const failCount = [winner.status, loser.status].filter((status) => status !== 0).length;
+  assert.equal(okCount, 1, `exactly one concurrent batch claim must succeed, got ${JSON.stringify({
+    winner: { status: winner.status, stderr: winner.stderr, stdout: winner.stdout },
+    loser: { status: loser.status, stderr: loser.stderr, stdout: loser.stdout },
+  })}`);
+  assert.equal(failCount, 1);
+  const claimed = query(
+    `SELECT status FROM pending_inbox_items WHERE id IN ('${claimA}','${claimB}') ORDER BY id`
+  )
+    .split('\n')
+    .filter(Boolean);
+  assert.deepEqual(claimed, ['confirming', 'confirming']);
+
   return {
     accountWaited: accountOnly.waited,
     merchantWaited: merchantOnly.waited,
     accountFlagged: accountOnly.rows.find((row) => row.flagged)?.merchant,
     merchantFlagged: merchantOnly.rows.find((row) => row.flagged)?.merchant,
     mutantUnflagged,
+    batchClaimWinner: winner.status === 0 ? 'holder' : 'waiter',
   };
 });
 
@@ -245,8 +274,8 @@ console.log(
   JSON.stringify(
     {
       status: 'PASS',
-      passed: 3,
-      total: 3,
+      passed: 4,
+      total: 4,
       suite: 'inbox-two-session',
       lockKeySource: 'lib/inbox-dedupe-lock-key.ts',
       ...result,

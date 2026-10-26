@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { formatAmountForInput } from '@/lib/evaluate-simple-amount-expression';
+import { moneyAmountFromToken } from '@/lib/money-amount';
 import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
 
 describe('sanitizeAmountInput', () => {
@@ -17,8 +19,9 @@ describe('sanitizeAmountInput', () => {
     ['1.234,', '1234,', 'trailing comma kept as (empty) decimal part'],
     [',', ',', 'lone comma: nothing before, comma kept'],
     ['.', '.', 'lone dot kept'],
-    ['-50', '50', 'minus sign is stripped (not in allowlist)'],
-    ['1e3', '13', 'exponent letter stripped, digits concatenated'],
+    ['-50', '-50', 'minus sign is preserved so submit can reject it'],
+    ['1e3', '1e3', 'exponent kept so the money parser can reject it'],
+    ['0x10', '0x10', 'hex kept so the money parser can reject it'],
     ['  1 000,25 ', '1000,25', 'spaces stripped'],
   ];
 
@@ -31,5 +34,12 @@ describe('sanitizeAmountInput', () => {
   it('is idempotent on already-normalized values', () => {
     const once = sanitizeAmountInput('1.234,56');
     expect(sanitizeAmountInput(once)).toBe(once);
+  });
+
+  it('keeps calculator 10−60 as -50 so submit shows a validation error', () => {
+    const applied = sanitizeAmountInput(formatAmountForInput(10 - 60));
+    expect(applied).toBe('-50');
+    expect(moneyAmountFromToken(applied)).toBe(-50);
+    expect(moneyAmountFromToken(applied)).not.toBe(50);
   });
 });

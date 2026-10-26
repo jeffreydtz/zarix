@@ -781,7 +781,7 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     );
   });
 
-  it('Wallet HTTP 40.129 parks and never writes the ledger', async () => {
+  it('Wallet HTTP 40.129 returns 400 and never writes the ledger', async () => {
     const query = (sql: string, params: unknown[] = []) =>
       asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
         tx.query(sql, params)
@@ -800,6 +800,36 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
         body: raw,
       })
     );
+    expect(res.status).toBe(400);
+    const json = (await res.json()) as { error?: string };
+    expect(json.error).toMatch(/decimales/i);
+    expect(
+      (await query('SELECT count(*)::int AS n FROM pending_inbox_items WHERE merchant=$1', ['Excess café'])).rows[0].n
+    ).toBe(0);
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      before
+    );
+  });
+
+  it('Wallet HTTP 1e2 parks null instead of 1.00 and never writes the ledger', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const raw =
+      '{"amount":1e2,"currency":"ARS","merchant":"Exponent café","cardName":"Visa Ejemplo","timestamp":"2026-10-25T12:00:00.000Z"}';
+    const res = await walletPost(
+      new NextRequest('http://localhost/api/ingest/wallet', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'wallet-http-1e2',
+        },
+        body: raw,
+      })
+    );
     expect(res.status).toBe(201);
     const json = (await res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
     expect(json.autoConfirmed).toBe(false);
@@ -808,11 +838,243 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
       json.item.id,
     ]);
     expect(row.rows[0].amount).toBeNull();
+    expect(row.rows[0].amount).not.toBe(1);
     expect(row.rows[0].amount_ambiguous).toBe(true);
     expect(row.rows[0].status).toBe('pending');
     expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
       before
     );
+  });
+
+  it('Wallet HTTP auto-confirm never writes the round-11 High wrong amounts', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    await query('UPDATE users SET wallet_auto_confirm=true WHERE id=$1', [ids.a]);
+    await query(
+      `INSERT INTO wallet_card_account_maps(user_id,card_name_normalized,account_id)
+       VALUES ($1,'visa ejemplo',$2)
+       ON CONFLICT (user_id, card_name_normalized) DO UPDATE SET account_id=EXCLUDED.account_id`,
+      [ids.a, ids.accountA]
+    );
+    await query(
+      `INSERT INTO transactions(user_id,type,account_id,category_id,amount,currency,amount_in_account_currency,description)
+       VALUES ($1,'expense',$2,$3,80,'ARS',80,'COTO')`,
+      [ids.a, ids.accountA, ids.categoryA]
+    );
+    const last4Raw = JSON.stringify({
+      rawText: 'Pagaste con Visa terminada en 1234 por $ 5.000,00 en COTO S.A.',
+      merchant: 'COTO',
+      cardName: 'Visa Ejemplo',
+      timestamp: '2026-10-25T12:00:00.000Z',
+      currency: 'ARS',
+    });
+    const last4Before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0]
+      .n;
+    const last4Res = await walletPost(
+      new NextRequest('http://localhost/api/ingest/wallet', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'wallet-r11-high-last4',
+        },
+        body: last4Raw,
+      })
+    );
+    expect(last4Res.status).toBe(201);
+    const last4Json = (await last4Res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
+    expect(last4Json.item.amount).toBe(5000);
+    expect(last4Json.item.amount).not.toBe(1234);
+    const last4Pending = await query('SELECT amount FROM pending_inbox_items WHERE id=$1', [last4Json.item.id]);
+    expect(Number(last4Pending.rows[0].amount)).toBe(5000);
+    expect(
+      (await query('SELECT id FROM transactions WHERE user_id=$1 AND amount=ANY($2::numeric[])', [ids.a, [1234, 20000]]))
+        .rows
+    ).toHaveLength(0);
+    if (last4Json.autoConfirmed) {
+      expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+        Number(last4Before) + 1
+      );
+    }
+
+    // Full park table is in wallet-ingest-http-decimals (handler + mocked limiter).
+    // Keep this list under the ingest-token bucket (30/min) so later REST tests are not 429.
+    const parkCases: Array<{ rawText: string; forbidden: number[]; key: string }> = [
+      {
+        rawText: 'Monto: $ 1.500 en COTO. Saldo disponible $ 20.000',
+        forbidden: [1500, 20000],
+        key: 'wallet-r12-two-amount-saldo',
+      },
+      {
+        rawText: 'Saldo a favor $ 200 aplicado. Compra $ 1.500. Restan $ 1.300',
+        forbidden: [200, 1500, 1300],
+        key: 'wallet-r12-alto-restan',
+      },
+      {
+        rawText: 'Mercado Pago: Pagaste con saldo $ 1.500 en COTO. Gracias por tu compra. Cashback $ 150',
+        forbidden: [1500, 150],
+        key: 'wallet-r12-alto-cashback',
+      },
+      {
+        rawText: 'Ualá: Pagaste con saldo $ 1.500 en COTO. Consultá todos los detalles en la aplicación. Comisión $ 50',
+        forbidden: [1500, 50],
+        key: 'wallet-r12-alto-comision',
+      },
+      {
+        rawText: 'Naranja X: Pagaste con saldo $ 1.500 en COTO. Gracias por elegir nuestra cuenta. Cargo $ 20',
+        forbidden: [1500, 20],
+        key: 'wallet-r12-alto-cargo',
+      },
+      {
+        rawText: 'Brubank: Pagaste con saldo $ 1.500 en COTO. Tu comprobante ya está disponible. Propina $ 100',
+        forbidden: [1500, 100],
+        key: 'wallet-r12-alto-propina',
+      },
+      {
+        rawText: 'Carga de saldo SUBE $ 2.000. La operación se completó correctamente desde tu cuenta. Cargo $ 20',
+        forbidden: [2000, 20],
+        key: 'wallet-r12-alto-sube',
+      },
+      {
+        rawText: 'Disponible: $ 20.000. Compra $ 1.500 en COTO. Comprobante emitido. Cargo $ 20',
+        forbidden: [20000, 1500, 20],
+        key: 'wallet-r12-alto-disponible',
+      },
+      {
+        rawText: 'Compra ARS 1500 en COTO. Saldo USD 200',
+        forbidden: [1500, 200],
+        key: 'wallet-r12-alto-mixed-fx',
+      },
+      { rawText: 'Compra $ 12:30 en COTO', forbidden: [12, 30], key: 'wallet-r12-alto-clock' },
+      { rawText: 'Compra $ 12:30:45 en COTO', forbidden: [12], key: 'wallet-r12-alto-hms' },
+      { rawText: 'Compra $ 2026/10/25 en COTO', forbidden: [2026, 10, 25], key: 'wallet-r12-alto-date' },
+    ];
+    for (const { rawText, forbidden, key } of parkCases) {
+      const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0]
+        .n;
+      const raw = JSON.stringify({
+        rawText,
+        merchant: 'COTO',
+        cardName: 'Visa Ejemplo',
+        timestamp: '2026-10-25T12:00:00.000Z',
+        currency: 'ARS',
+      });
+      const res = await walletPost(
+        new NextRequest('http://localhost/api/ingest/wallet', {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${tokenA}`,
+            'content-type': 'application/json',
+            'idempotency-key': key,
+          },
+          body: raw,
+        })
+      );
+      expect(res.status, rawText).toBe(201);
+      const json = (await res.json()) as { autoConfirmed: boolean; item: { amount: number | null; id: string } };
+      expect(json.autoConfirmed, rawText).toBe(false);
+      expect(json.item.amount, rawText).toBeNull();
+      for (const n of forbidden) expect(json.item.amount, rawText).not.toBe(n);
+      const pending = await query('SELECT amount, amount_ambiguous, status FROM pending_inbox_items WHERE id=$1', [
+        json.item.id,
+      ]);
+      expect(pending.rows[0].amount, rawText).toBeNull();
+      expect(pending.rows[0].amount_ambiguous, rawText).toBe(true);
+      expect(pending.rows[0].status, rawText).toBe('pending');
+      expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+        before
+      );
+      const wrong = await query('SELECT id FROM transactions WHERE user_id=$1 AND amount=ANY($2::numeric[])', [
+        ids.a,
+        forbidden,
+      ]);
+      expect(wrong.rows, rawText).toHaveLength(0);
+    }
+
+    const singleRaw = JSON.stringify({
+      rawText: 'Pagaste con saldo $ 1.500 en COTO',
+      merchant: 'COTO',
+      cardName: 'Visa Ejemplo',
+      timestamp: '2026-10-25T12:00:00.000Z',
+      currency: 'ARS',
+    });
+    const singleRes = await walletPost(
+      new NextRequest('http://localhost/api/ingest/wallet', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'wallet-r12-single-saldo',
+        },
+        body: singleRaw,
+      })
+    );
+    expect(singleRes.status).toBe(201);
+    const singleJson = (await singleRes.json()) as { item: { amount: number | null } };
+    expect(singleJson.item.amount).toBe(1500);
+  });
+
+  it('two concurrent MCP confirms write a single ledger row', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const itemId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee9';
+    await query(
+      `INSERT INTO pending_inbox_items(
+         id, user_id, amount, currency, merchant, account_id, status, fingerprint, source, direction, occurred_at, tool_payload
+       ) VALUES ($1,$2,42,'ARS','Concurrent Café',$3,'pending','fp-mcp-http-concurrent','mcp','expense',NULL,$4::jsonb)`,
+      [
+        itemId,
+        ids.a,
+        ids.accountA,
+        JSON.stringify({
+          type: 'expense',
+          amount: 42,
+          currency: 'ARS',
+          accountId: ids.accountA,
+          description: 'Concurrent Café',
+          _tool: 'create_transaction',
+        }),
+      ]
+    );
+    const before = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1 AND description=$2', [
+      ids.a,
+      'Concurrent Café',
+    ])).rows[0].n;
+    const headers = {
+      authorization: `Bearer ${tokenA}`,
+      'content-type': 'application/json',
+      accept: 'application/json, text/event-stream',
+    };
+    const callBody = (id: number) =>
+      JSON.stringify({
+        jsonrpc: '2.0',
+        id,
+        method: 'tools/call',
+        params: {
+          name: 'create_transaction',
+          arguments: { confirm: true, pendingId: itemId },
+        },
+      });
+    const [first, second] = await Promise.all([
+      mcpPost(new NextRequest('http://localhost/api/mcp', { method: 'POST', headers, body: callBody(21) })),
+      mcpPost(new NextRequest('http://localhost/api/mcp', { method: 'POST', headers, body: callBody(22) })),
+    ]);
+    expect(first.status).toBeLessThan(500);
+    expect(second.status).toBeLessThan(500);
+    const results = [toolText(await readMcpJson(first)), toolText(await readMcpJson(second))];
+    const successes = results.filter((body) => body.success === true);
+    expect(successes.length).toBeGreaterThanOrEqual(1);
+    const inbox = await query('SELECT status FROM pending_inbox_items WHERE id=$1', [itemId]);
+    expect(inbox.rows[0].status).toBe('confirmed');
+    const ledger = await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1 AND description=$2', [
+      ids.a,
+      'Concurrent Café',
+    ]);
+    expect(ledger.rows[0].n).toBe(Number(before) + 1);
   });
 
   it('REST accepts 1048576.37 into the inbox and rejects 40.129 without a ledger write', async () => {
@@ -856,6 +1118,63 @@ describe('MCP-over-HTTP confirm against PGlite (real transactionsService)', () =
     expect(excess.status).toBe(400);
     expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
       before
+    );
+
+    const exponent = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-exponent-1e3',
+        },
+        body: '{"type":"expense","amount":1e3,"currency":"ARS","accountId":"' + ids.accountA + '","description":"No exponent"}',
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(exponent.status).toBe(400);
+    const hex = await restPost(
+      new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          'idempotency-key': 'rest-hex-0x10',
+        },
+        body: '{"type":"expense","amount":"0x10","currency":"ARS","accountId":"' + ids.accountA + '","description":"No hex"}',
+      }),
+      { params: Promise.resolve({ name: 'create_transaction' }) }
+    );
+    expect(hex.status).toBe(400);
+  });
+
+  it('MCP rejects exponent amounts before parking or writing the ledger', async () => {
+    const query = (sql: string, params: unknown[] = []) =>
+      asRole(db, 'service_role', null, (tx: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> }) =>
+        tx.query(sql, params)
+      );
+    const beforeInbox = (await query('SELECT count(*)::int AS n FROM pending_inbox_items WHERE user_id=$1', [ids.a])).rows[0].n;
+    const beforeLedger = (await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n;
+    const call = await mcpPost(
+      new NextRequest('http://localhost/api/mcp', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${tokenA}`,
+          'content-type': 'application/json',
+          accept: 'application/json, text/event-stream',
+        },
+        body:
+          '{"jsonrpc":"2.0","id":91,"method":"tools/call","params":{"name":"create_transaction","arguments":{"type":"expense","amount":1e3,"currency":"ARS","accountId":"' +
+          ids.accountA +
+          '","description":"MCP exponent"}}}',
+      })
+    );
+    expect(call.status).toBe(400);
+    expect((await query('SELECT count(*)::int AS n FROM pending_inbox_items WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      beforeInbox
+    );
+    expect((await query('SELECT count(*)::int AS n FROM transactions WHERE user_id=$1', [ids.a])).rows[0].n).toBe(
+      beforeLedger
     );
   });
 

@@ -1,0 +1,2318 @@
+[
+  {
+    "id": "r18-sweep-08934",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500 tres veces"
+  },
+  {
+    "id": "r18-sweep-08935",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500 tres veces"
+    }
+  },
+  {
+    "id": "r18-sweep-08946",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500 tres veces"
+  },
+  {
+    "id": "r18-sweep-08947",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500 tres veces"
+    }
+  },
+  {
+    "id": "r18-sweep-08958",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500 tres veces"
+  },
+  {
+    "id": "r18-sweep-08959",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500 tres veces"
+    }
+  },
+  {
+    "id": "r18-sweep-08982",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500 tres veces"
+  },
+  {
+    "id": "r18-sweep-08983",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500 tres veces"
+    }
+  },
+  {
+    "id": "r18-sweep-08994",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500 tres veces"
+  },
+  {
+    "id": "r18-sweep-08995",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500 tres veces"
+    }
+  },
+  {
+    "id": "r18-sweep-09126",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-09127",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-09138",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de USD: 1500"
+  },
+  {
+    "id": "r18-sweep-09139",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-09150",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-09151",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-09174",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-09175",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-09186",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de US$: 1500"
+  },
+  {
+    "id": "r18-sweep-09187",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de US$: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-09990",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-09991",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10002",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste USD: 1500"
+  },
+  {
+    "id": "r18-sweep-10003",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10014",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-10015",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10038",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-10039",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10050",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste US$: 1500"
+  },
+  {
+    "id": "r18-sweep-10051",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nSi hubieses comprado, pagaste US$: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10086",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-10087",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10098",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste USD: 1500"
+  },
+  {
+    "id": "r18-sweep-10099",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10110",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-10111",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10134",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-10135",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10146",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste US$: 1500"
+  },
+  {
+    "id": "r18-sweep-10147",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de que pagaste US$: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10182",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-10183",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNi pagaste ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10194",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste USD: 1500"
+  },
+  {
+    "id": "r18-sweep-10195",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNi pagaste USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10206",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-10207",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNi pagaste EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10230",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-10231",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNi pagaste U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10242",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste US$: 1500"
+  },
+  {
+    "id": "r18-sweep-10243",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNi pagaste US$: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10278",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-10279",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10290",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste USD: 1500"
+  },
+  {
+    "id": "r18-sweep-10291",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10302",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-10303",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10326",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-10327",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10338",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste US$: 1500"
+  },
+  {
+    "id": "r18-sweep-10339",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste US$: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10470",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; no se pagó realmente"
+  },
+  {
+    "id": "r18-sweep-10471",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; no se pagó realmente"
+    }
+  },
+  {
+    "id": "r18-sweep-10482",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; no se pagó realmente"
+  },
+  {
+    "id": "r18-sweep-10483",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; no se pagó realmente"
+    }
+  },
+  {
+    "id": "r18-sweep-10494",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; no se pagó realmente"
+  },
+  {
+    "id": "r18-sweep-10495",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; no se pagó realmente"
+    }
+  },
+  {
+    "id": "r18-sweep-10518",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; no se pagó realmente"
+  },
+  {
+    "id": "r18-sweep-10519",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; no se pagó realmente"
+    }
+  },
+  {
+    "id": "r18-sweep-10530",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; no se pagó realmente"
+  },
+  {
+    "id": "r18-sweep-10531",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; no se pagó realmente"
+    }
+  },
+  {
+    "id": "r18-sweep-10566",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; total final 15000"
+  },
+  {
+    "id": "r18-sweep-10567",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; total final 15000"
+    }
+  },
+  {
+    "id": "r18-sweep-10578",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; total final 15000"
+  },
+  {
+    "id": "r18-sweep-10579",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; total final 15000"
+    }
+  },
+  {
+    "id": "r18-sweep-10590",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; total final 15000"
+  },
+  {
+    "id": "r18-sweep-10591",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; total final 15000"
+    }
+  },
+  {
+    "id": "r18-sweep-10614",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; total final 15000"
+  },
+  {
+    "id": "r18-sweep-10615",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; total final 15000"
+    }
+  },
+  {
+    "id": "r18-sweep-10626",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; total final 15000"
+  },
+  {
+    "id": "r18-sweep-10627",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; total final 15000"
+    }
+  },
+  {
+    "id": "r18-sweep-10662",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-10663",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10674",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de USD: 1500"
+  },
+  {
+    "id": "r18-sweep-10675",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10686",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-10687",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10710",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-10711",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10722",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de US$: 1500"
+  },
+  {
+    "id": "r18-sweep-10723",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste 15000 en COTO, cargo de US$: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-10758",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; (15000)"
+  },
+  {
+    "id": "r18-sweep-10759",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; (15000)"
+    }
+  },
+  {
+    "id": "r18-sweep-10770",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; (15000)"
+  },
+  {
+    "id": "r18-sweep-10771",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; (15000)"
+    }
+  },
+  {
+    "id": "r18-sweep-10782",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; (15000)"
+  },
+  {
+    "id": "r18-sweep-10783",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; (15000)"
+    }
+  },
+  {
+    "id": "r18-sweep-10806",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; (15000)"
+  },
+  {
+    "id": "r18-sweep-10807",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; (15000)"
+    }
+  },
+  {
+    "id": "r18-sweep-10818",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; (15000)"
+  },
+  {
+    "id": "r18-sweep-10819",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; (15000)"
+    }
+  },
+  {
+    "id": "r18-sweep-11238",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; por pagar"
+  },
+  {
+    "id": "r18-sweep-11239",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500; por pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11250",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; por pagar"
+  },
+  {
+    "id": "r18-sweep-11251",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500; por pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11262",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; por pagar"
+  },
+  {
+    "id": "r18-sweep-11263",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500; por pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11286",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; por pagar"
+  },
+  {
+    "id": "r18-sweep-11287",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500; por pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11298",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; por pagar"
+  },
+  {
+    "id": "r18-sweep-11299",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500; por pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11334",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500 antes de pagar"
+  },
+  {
+    "id": "r18-sweep-11335",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste ARS: 1500 antes de pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11346",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500 antes de pagar"
+  },
+  {
+    "id": "r18-sweep-11347",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste USD: 1500 antes de pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11358",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500 antes de pagar"
+  },
+  {
+    "id": "r18-sweep-11359",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste EUR: 1500 antes de pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11382",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500 antes de pagar"
+  },
+  {
+    "id": "r18-sweep-11383",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste U$S: 1500 antes de pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11394",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500 antes de pagar"
+  },
+  {
+    "id": "r18-sweep-11395",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nPagaste US$: 1500 antes de pagar"
+    }
+  },
+  {
+    "id": "r18-sweep-11430",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-11431",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11442",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: USD: 1500"
+  },
+  {
+    "id": "r18-sweep-11443",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11454",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-11455",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11478",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-11479",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11490",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: US$: 1500"
+  },
+  {
+    "id": "r18-sweep-11491",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nNo lo pagaste: US$: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11814",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste ARS: 1500"
+  },
+  {
+    "id": "r18-sweep-11815",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste ARS: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11826",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste USD: 1500"
+  },
+  {
+    "id": "r18-sweep-11827",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste USD: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11838",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste EUR: 1500"
+  },
+  {
+    "id": "r18-sweep-11839",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste EUR: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11862",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste U$S: 1500"
+  },
+  {
+    "id": "r18-sweep-11863",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste U$S: 1500"
+    }
+  },
+  {
+    "id": "r18-sweep-11874",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste US$: 1500"
+  },
+  {
+    "id": "r18-sweep-11875",
+    "json": {
+      "rawText": "Comercio: COTO\ntarjeta Visa\nEn caso de: pagaste US$: 1500"
+    }
+  },
+  {
+    "id": "colon-00098",
+    "json": {
+      "rawText": "Tampoco pagaste ARS:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00099",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste ARS:1500"
+  },
+  {
+    "id": "colon-00100",
+    "json": {
+      "rawText": "Tampoco pagaste ARS: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00102",
+    "json": {
+      "rawText": "Tampoco pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00103",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00104",
+    "json": {
+      "rawText": "Tampoco pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00105",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00110",
+    "json": {
+      "rawText": "Tampoco pagaste USD:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00111",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste USD:1500"
+  },
+  {
+    "id": "colon-00112",
+    "json": {
+      "rawText": "Tampoco pagaste USD: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00114",
+    "json": {
+      "rawText": "Tampoco pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00115",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00116",
+    "json": {
+      "rawText": "Tampoco pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00117",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00122",
+    "json": {
+      "rawText": "Tampoco pagaste EUR:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00123",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste EUR:1500"
+  },
+  {
+    "id": "colon-00124",
+    "json": {
+      "rawText": "Tampoco pagaste EUR: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00126",
+    "json": {
+      "rawText": "Tampoco pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00127",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00128",
+    "json": {
+      "rawText": "Tampoco pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00129",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00134",
+    "json": {
+      "rawText": "Tampoco pagaste U$S:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00135",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste U$S:1500"
+  },
+  {
+    "id": "colon-00136",
+    "json": {
+      "rawText": "Tampoco pagaste U$S: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00138",
+    "json": {
+      "rawText": "Tampoco pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00139",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00140",
+    "json": {
+      "rawText": "Tampoco pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00141",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00146",
+    "json": {
+      "rawText": "Tampoco pagaste US$:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00147",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste US$:1500"
+  },
+  {
+    "id": "colon-00148",
+    "json": {
+      "rawText": "Tampoco pagaste US$: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00150",
+    "json": {
+      "rawText": "Tampoco pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00151",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste US$ : 1500"
+  },
+  {
+    "id": "colon-00152",
+    "json": {
+      "rawText": "Tampoco pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00153",
+    "text": "Comercio: COTO\ntarjeta Visa\nTampoco pagaste US$ : 1500"
+  },
+  {
+    "id": "colon-00194",
+    "json": {
+      "rawText": "Ni pagaste ARS:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00195",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste ARS:1500"
+  },
+  {
+    "id": "colon-00196",
+    "json": {
+      "rawText": "Ni pagaste ARS: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00198",
+    "json": {
+      "rawText": "Ni pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00199",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00200",
+    "json": {
+      "rawText": "Ni pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00201",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00206",
+    "json": {
+      "rawText": "Ni pagaste USD:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00207",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste USD:1500"
+  },
+  {
+    "id": "colon-00208",
+    "json": {
+      "rawText": "Ni pagaste USD: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00210",
+    "json": {
+      "rawText": "Ni pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00211",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00212",
+    "json": {
+      "rawText": "Ni pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00213",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00218",
+    "json": {
+      "rawText": "Ni pagaste EUR:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00219",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste EUR:1500"
+  },
+  {
+    "id": "colon-00220",
+    "json": {
+      "rawText": "Ni pagaste EUR: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00222",
+    "json": {
+      "rawText": "Ni pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00223",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00224",
+    "json": {
+      "rawText": "Ni pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00225",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00230",
+    "json": {
+      "rawText": "Ni pagaste U$S:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00231",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste U$S:1500"
+  },
+  {
+    "id": "colon-00232",
+    "json": {
+      "rawText": "Ni pagaste U$S: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00234",
+    "json": {
+      "rawText": "Ni pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00235",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00236",
+    "json": {
+      "rawText": "Ni pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00237",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00242",
+    "json": {
+      "rawText": "Ni pagaste US$:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00243",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste US$:1500"
+  },
+  {
+    "id": "colon-00244",
+    "json": {
+      "rawText": "Ni pagaste US$: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00246",
+    "json": {
+      "rawText": "Ni pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00247",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste US$ : 1500"
+  },
+  {
+    "id": "colon-00248",
+    "json": {
+      "rawText": "Ni pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00249",
+    "text": "Comercio: COTO\ntarjeta Visa\nNi pagaste US$ : 1500"
+  },
+  {
+    "id": "colon-00290",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por ARS:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00291",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por ARS:1500"
+  },
+  {
+    "id": "colon-00292",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por ARS: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00293",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por ARS: 1500"
+  },
+  {
+    "id": "colon-00294",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00295",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por ARS : 1500"
+  },
+  {
+    "id": "colon-00296",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00297",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por ARS : 1500"
+  },
+  {
+    "id": "colon-00302",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por USD:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00303",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por USD:1500"
+  },
+  {
+    "id": "colon-00304",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por USD: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00305",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por USD: 1500"
+  },
+  {
+    "id": "colon-00306",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00307",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por USD : 1500"
+  },
+  {
+    "id": "colon-00308",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00309",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por USD : 1500"
+  },
+  {
+    "id": "colon-00314",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por EUR:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00315",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por EUR:1500"
+  },
+  {
+    "id": "colon-00316",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por EUR: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00317",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por EUR: 1500"
+  },
+  {
+    "id": "colon-00318",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00319",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por EUR : 1500"
+  },
+  {
+    "id": "colon-00320",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00321",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por EUR : 1500"
+  },
+  {
+    "id": "colon-00326",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por U$S:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00327",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por U$S:1500"
+  },
+  {
+    "id": "colon-00328",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por U$S: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00329",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por U$S: 1500"
+  },
+  {
+    "id": "colon-00330",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00331",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por U$S : 1500"
+  },
+  {
+    "id": "colon-00332",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00333",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por U$S : 1500"
+  },
+  {
+    "id": "colon-00338",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por US$:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00339",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por US$:1500"
+  },
+  {
+    "id": "colon-00340",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por US$: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00341",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por US$: 1500"
+  },
+  {
+    "id": "colon-00342",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00343",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por US$ : 1500"
+  },
+  {
+    "id": "colon-00344",
+    "json": {
+      "rawText": "No se pagó: compra aprobada por US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00345",
+    "text": "Comercio: COTO\ntarjeta Visa\nNo se pagó: compra aprobada por US$ : 1500"
+  },
+  {
+    "id": "colon-00386",
+    "json": {
+      "rawText": "Pagaste ARS:1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00387",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS:1500 tres veces"
+  },
+  {
+    "id": "colon-00388",
+    "json": {
+      "rawText": "Pagaste ARS: 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00390",
+    "json": {
+      "rawText": "Pagaste ARS : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00391",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS : 1500 tres veces"
+  },
+  {
+    "id": "colon-00392",
+    "json": {
+      "rawText": "Pagaste ARS : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00393",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste ARS : 1500 tres veces"
+  },
+  {
+    "id": "colon-00398",
+    "json": {
+      "rawText": "Pagaste USD:1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00399",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD:1500 tres veces"
+  },
+  {
+    "id": "colon-00400",
+    "json": {
+      "rawText": "Pagaste USD: 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00402",
+    "json": {
+      "rawText": "Pagaste USD : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00403",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD : 1500 tres veces"
+  },
+  {
+    "id": "colon-00404",
+    "json": {
+      "rawText": "Pagaste USD : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00405",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste USD : 1500 tres veces"
+  },
+  {
+    "id": "colon-00410",
+    "json": {
+      "rawText": "Pagaste EUR:1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00411",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR:1500 tres veces"
+  },
+  {
+    "id": "colon-00412",
+    "json": {
+      "rawText": "Pagaste EUR: 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00414",
+    "json": {
+      "rawText": "Pagaste EUR : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00415",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR : 1500 tres veces"
+  },
+  {
+    "id": "colon-00416",
+    "json": {
+      "rawText": "Pagaste EUR : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00417",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste EUR : 1500 tres veces"
+  },
+  {
+    "id": "colon-00422",
+    "json": {
+      "rawText": "Pagaste U$S:1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00423",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S:1500 tres veces"
+  },
+  {
+    "id": "colon-00424",
+    "json": {
+      "rawText": "Pagaste U$S: 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00426",
+    "json": {
+      "rawText": "Pagaste U$S : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00427",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S : 1500 tres veces"
+  },
+  {
+    "id": "colon-00428",
+    "json": {
+      "rawText": "Pagaste U$S : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00429",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste U$S : 1500 tres veces"
+  },
+  {
+    "id": "colon-00434",
+    "json": {
+      "rawText": "Pagaste US$:1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00435",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$:1500 tres veces"
+  },
+  {
+    "id": "colon-00436",
+    "json": {
+      "rawText": "Pagaste US$: 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00438",
+    "json": {
+      "rawText": "Pagaste US$ : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00439",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$ : 1500 tres veces"
+  },
+  {
+    "id": "colon-00440",
+    "json": {
+      "rawText": "Pagaste US$ : 1500 tres veces",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00441",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste US$ : 1500 tres veces"
+  },
+  {
+    "id": "colon-00482",
+    "json": {
+      "rawText": "Pagaste un tercio de ARS:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00483",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de ARS:1500"
+  },
+  {
+    "id": "colon-00484",
+    "json": {
+      "rawText": "Pagaste un tercio de ARS: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00486",
+    "json": {
+      "rawText": "Pagaste un tercio de ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00487",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de ARS : 1500"
+  },
+  {
+    "id": "colon-00488",
+    "json": {
+      "rawText": "Pagaste un tercio de ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00489",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de ARS : 1500"
+  },
+  {
+    "id": "colon-00494",
+    "json": {
+      "rawText": "Pagaste un tercio de USD:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00495",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de USD:1500"
+  },
+  {
+    "id": "colon-00496",
+    "json": {
+      "rawText": "Pagaste un tercio de USD: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00498",
+    "json": {
+      "rawText": "Pagaste un tercio de USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00499",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de USD : 1500"
+  },
+  {
+    "id": "colon-00500",
+    "json": {
+      "rawText": "Pagaste un tercio de USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00501",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de USD : 1500"
+  },
+  {
+    "id": "colon-00506",
+    "json": {
+      "rawText": "Pagaste un tercio de EUR:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00507",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de EUR:1500"
+  },
+  {
+    "id": "colon-00508",
+    "json": {
+      "rawText": "Pagaste un tercio de EUR: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00510",
+    "json": {
+      "rawText": "Pagaste un tercio de EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00511",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de EUR : 1500"
+  },
+  {
+    "id": "colon-00512",
+    "json": {
+      "rawText": "Pagaste un tercio de EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00513",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de EUR : 1500"
+  },
+  {
+    "id": "colon-00518",
+    "json": {
+      "rawText": "Pagaste un tercio de U$S:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00519",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de U$S:1500"
+  },
+  {
+    "id": "colon-00520",
+    "json": {
+      "rawText": "Pagaste un tercio de U$S: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00522",
+    "json": {
+      "rawText": "Pagaste un tercio de U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00523",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de U$S : 1500"
+  },
+  {
+    "id": "colon-00524",
+    "json": {
+      "rawText": "Pagaste un tercio de U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00525",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de U$S : 1500"
+  },
+  {
+    "id": "colon-00530",
+    "json": {
+      "rawText": "Pagaste un tercio de US$:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00531",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de US$:1500"
+  },
+  {
+    "id": "colon-00532",
+    "json": {
+      "rawText": "Pagaste un tercio de US$: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00534",
+    "json": {
+      "rawText": "Pagaste un tercio de US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00535",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de US$ : 1500"
+  },
+  {
+    "id": "colon-00536",
+    "json": {
+      "rawText": "Pagaste un tercio de US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00537",
+    "text": "Comercio: COTO\ntarjeta Visa\nPagaste un tercio de US$ : 1500"
+  },
+  {
+    "id": "colon-00578",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste ARS:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00579",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste ARS:1500"
+  },
+  {
+    "id": "colon-00580",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste ARS: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00581",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste ARS: 1500"
+  },
+  {
+    "id": "colon-00582",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00583",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00584",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00585",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00590",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste USD:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00591",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste USD:1500"
+  },
+  {
+    "id": "colon-00592",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste USD: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00593",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste USD: 1500"
+  },
+  {
+    "id": "colon-00594",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00595",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00596",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00597",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00602",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste EUR:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00603",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste EUR:1500"
+  },
+  {
+    "id": "colon-00604",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste EUR: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00605",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste EUR: 1500"
+  },
+  {
+    "id": "colon-00606",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00607",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00608",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00609",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00614",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste U$S:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00615",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste U$S:1500"
+  },
+  {
+    "id": "colon-00616",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste U$S: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00617",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste U$S: 1500"
+  },
+  {
+    "id": "colon-00618",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00619",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00620",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00621",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00626",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste US$:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00627",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste US$:1500"
+  },
+  {
+    "id": "colon-00628",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste US$: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00629",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste US$: 1500"
+  },
+  {
+    "id": "colon-00630",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00631",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste US$ : 1500"
+  },
+  {
+    "id": "colon-00632",
+    "json": {
+      "rawText": "Si hubieses confirmado, te habrían dicho: pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00633",
+    "text": "Comercio: COTO\ntarjeta Visa\nSi hubieses confirmado, te habrían dicho: pagaste US$ : 1500"
+  },
+  {
+    "id": "colon-00674",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste ARS:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00675",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste ARS:1500"
+  },
+  {
+    "id": "colon-00676",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste ARS: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00677",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste ARS: 1500"
+  },
+  {
+    "id": "colon-00678",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00679",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00680",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste ARS : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00681",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste ARS : 1500"
+  },
+  {
+    "id": "colon-00686",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste USD:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00687",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste USD:1500"
+  },
+  {
+    "id": "colon-00688",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste USD: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00689",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste USD: 1500"
+  },
+  {
+    "id": "colon-00690",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00691",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00692",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste USD : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00693",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste USD : 1500"
+  },
+  {
+    "id": "colon-00698",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste EUR:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00699",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste EUR:1500"
+  },
+  {
+    "id": "colon-00700",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste EUR: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00701",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste EUR: 1500"
+  },
+  {
+    "id": "colon-00702",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00703",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00704",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste EUR : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00705",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste EUR : 1500"
+  },
+  {
+    "id": "colon-00710",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste U$S:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00711",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste U$S:1500"
+  },
+  {
+    "id": "colon-00712",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste U$S: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00713",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste U$S: 1500"
+  },
+  {
+    "id": "colon-00714",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00715",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00716",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste U$S : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00717",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste U$S : 1500"
+  },
+  {
+    "id": "colon-00722",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste US$:1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00723",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste US$:1500"
+  },
+  {
+    "id": "colon-00724",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste US$: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00725",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste US$: 1500"
+  },
+  {
+    "id": "colon-00726",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00727",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste US$ : 1500"
+  },
+  {
+    "id": "colon-00728",
+    "json": {
+      "rawText": "En caso de que lo veas, no significa que pagaste US$ : 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "colon-00729",
+    "text": "Comercio: COTO\ntarjeta Visa\nEn caso de que lo veas, no significa que pagaste US$ : 1500"
+  },
+  {
+    "id": "proof-4-rawText",
+    "json": {
+      "rawText": "Pagaste ARS: 1500; total final 15000",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  },
+  {
+    "id": "proof-5-rawText",
+    "json": {
+      "rawText": "Pagaste 15000 en COTO, cargo de ARS: 1500",
+      "merchant": "COTO",
+      "cardName": "tarjeta Visa"
+    }
+  }
+]

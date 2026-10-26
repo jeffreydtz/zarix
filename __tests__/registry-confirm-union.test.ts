@@ -5,17 +5,38 @@ const PENDING_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9';
 const FIXTURE_A = '11111111-1111-4111-8111-111111111111';
 const FIXTURE_B = '22222222-2222-4222-8222-222222222222';
 
-const mocks = vi.hoisted(() => ({
-  confirm: vi.fn(),
-  confirmMany: vi.fn(),
-  park: vi.fn(),
-  executeBot: vi.fn(),
-}));
+const mocks = vi.hoisted(() => {
+  class PendingBatchConfirmError extends Error {
+    items: Array<{ pendingId: string; status: string; error?: string }>;
+    executedCount: number;
+    status: number;
+    constructor(
+      items: Array<{ pendingId: string; status: string; error?: string }>,
+      _cause?: unknown,
+      executedCount = 0
+    ) {
+      const failed = items.find((item) => item.status === 'failed');
+      super(failed?.error || 'No se pudo confirmar el lote.');
+      this.name = 'PendingBatchConfirmError';
+      this.items = items;
+      this.executedCount = executedCount;
+      this.status = 400;
+    }
+  }
+  return {
+    confirm: vi.fn(),
+    confirmMany: vi.fn(),
+    park: vi.fn(),
+    executeBot: vi.fn(),
+    PendingBatchConfirmError,
+  };
+});
 
 vi.mock('@/lib/services/pending-inbox', () => ({
   confirmPendingItem: (input: Record<string, unknown>) => mocks.confirm(input),
   confirmPendingItems: (input: Record<string, unknown>) => mocks.confirmMany(input),
   parkRegistryWrite: (input: Record<string, unknown>) => mocks.park(input),
+  PendingBatchConfirmError: mocks.PendingBatchConfirmError,
   canonicalPendingInboxIds: (raw: string[]) => {
     const seen = new Set<string>();
     const out: string[] = [];
@@ -237,6 +258,40 @@ describe('create_transaction accepts a new write or a frozen confirm', () => {
       )
     ).rejects.toMatchObject({ status: 400 });
     expect(mocks.confirmMany).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns per-item results and executedCount when a batch confirm partially fails', async () => {
+    const failedId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9';
+    const revertedId = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc9';
+    mocks.confirmMany.mockRejectedValue(
+      new mocks.PendingBatchConfirmError(
+        [
+          { pendingId: PENDING_ID, status: 'confirmed' },
+          { pendingId: failedId, status: 'failed', error: 'ledger insert failed' },
+          { pendingId: revertedId, status: 'reverted' },
+        ],
+        undefined,
+        1
+      )
+    );
+    const result = await executeRegistryTool(
+      'create_transactions',
+      { confirm: true, pendingIds: [PENDING_ID, failedId, revertedId] },
+      {
+        userId: FIXTURE_A,
+        financialContext: { user: { default_currency: 'ARS' }, accounts: [], categories: [] } as never,
+        source: 'mcp',
+        canConfirmRemote: true,
+      }
+    );
+    expect(result.response.success).toBe(false);
+    expect(result.response.executedCount).toBe(1);
+    expect(result.response.pendingIds).toEqual([PENDING_ID]);
+    expect(result.response.items).toEqual([
+      { pendingId: PENDING_ID, status: 'confirmed' },
+      { pendingId: failedId, status: 'failed', error: 'ledger insert failed' },
+      { pendingId: revertedId, status: 'reverted' },
+    ]);
   });
 
   it('propagates FxUnavailableError from executeBotTransaction on the wallet confirm path', async () => {

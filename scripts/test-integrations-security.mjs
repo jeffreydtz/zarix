@@ -146,6 +146,14 @@ try {
     assert.match(row.def, /auth\.uid\(\)/);
   });
 
+  await test('inbox_canonical_tool_payload sets pg_catalog search_path', async () => {
+    const row = (await db.query(`SELECT pg_get_functiondef(p.oid) AS def, p.proconfig AS settings
+      FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+      WHERE n.nspname='public' AND p.proname='inbox_canonical_tool_payload'`)).rows[0];
+    assert.match(row.def, /search_path\s*(?:=|TO)\s*'?pg_catalog'?\s*,\s*'?pg_temp'?/i);
+    assert.match(String(row.settings || ''), /pg_catalog/);
+  });
+
   await test('secret functions are not executable by clients', async () => {
     await rejects(() => owner(db, "SELECT zarix_vault.encrypt_secret('x')"));
     await rejects(() => queryAs(db, 'anon', null, "SELECT zarix_vault.decrypt_secret('x')"));

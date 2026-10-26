@@ -219,10 +219,14 @@ describe('crypto and stock source freshness', () => {
 
 it('derived FX cannot extend an expiring source quote by the memory cache TTL', async () => {
   vi.stubEnv('EXCHANGE_RATE_MAX_AGE_SECONDS','60');
-  vi.mocked(fetch).mockResolvedValueOnce(json({chart:{result:[{meta:{regularMarketPrice:1.1,regularMarketTime:(Date.now()-59000)/1000}}]}}));
+  const { EXECUTABLE_FX_MAX_AGE_MS } = await import('@/lib/executable-fx');
+  vi.mocked(fetch).mockResolvedValueOnce(json({chart:{result:[{meta:{
+    regularMarketPrice:1.1,
+    regularMarketTime:(Date.now() - EXECUTABLE_FX_MAX_AGE_MS + 2000)/1000,
+  }}]}}));
   const {cotizacionesService}=await import('@/lib/services/cotizaciones');
   expect(await cotizacionesService.getExchangeRate('EUR','USD')).toBe(1.1);
-  vi.setSystemTime(new Date('2026-10-09T12:00:02Z'));
+  vi.setSystemTime(new Date(Date.now() + 3000));
   vi.mocked(fetch).mockRejectedValue(new Error('synthetic outage'));
   await expect(cotizacionesService.getExchangeRate('EUR','USD')).rejects.toThrow('Cotización EUR→USD no disponible, inválida o vencida');
 });

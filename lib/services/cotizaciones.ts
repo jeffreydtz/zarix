@@ -56,9 +56,14 @@ const FRESH_RATE_AGE_MS = Math.min(MAX_RATE_AGE_MS, EXECUTABLE_FX_MAX_AGE_MS);
 const MARKET_TIMEOUT_MS = positiveConfig(process.env.MARKET_DATA_TIMEOUT_MS, 8000);
 const DOLAR_SOURCES = ['blue', 'oficial', 'mep', 'ccl'] as const;
 
-function assertFreshQuote(timestamp: Date, prices: number[], pair?: string): void {
+function assertFreshQuote(
+  timestamp: Date,
+  prices: number[],
+  pair?: string,
+  maxAgeMs: number = MAX_RATE_AGE_MS
+): void {
   const time = timestamp.getTime();
-  if (!Number.isFinite(time) || Date.now() - time > MAX_RATE_AGE_MS || time > Date.now() + 300000 ||
+  if (!Number.isFinite(time) || Date.now() - time > maxAgeMs || time > Date.now() + 300000 ||
       prices.some(price => !Number.isFinite(price) || price <= 0)) {
     if (pair) throw new FxUnavailableError(pair);
     throw new Error('Cotización no disponible, inválida o vencida');
@@ -528,12 +533,15 @@ class CotizacionesService {
   /**
    * EUR/USD spot (cuántos USD por 1 EUR), vía Yahoo. Solo para pares fiat de transacciones.
    */
-  private async getEurUsdRate(): Promise<number> {
+  private async getEurUsdRate(opts?: { executable?: boolean }): Promise<number> {
+    const maxAgeMs = opts?.executable ? EXECUTABLE_FX_MAX_AGE_MS : MAX_RATE_AGE_MS;
     const cacheKey = this.getCacheKey('yahoo', 'EURUSD', 'spot');
     const cached = this.getFromCache<{ rate: number; timestamp: Date }>(cacheKey);
     if (cached) {
-      try { assertFreshQuote(cached.timestamp, [cached.rate]); return cached.rate; }
-      catch { delete cache[cacheKey]; }
+      try {
+        assertFreshQuote(cached.timestamp, [cached.rate], opts?.executable ? 'EUR/USD' : undefined, maxAgeMs);
+        return cached.rate;
+      } catch { delete cache[cacheKey]; }
     }
 
     const data = await fetchFxJson(
@@ -546,7 +554,7 @@ class CotizacionesService {
       throw new FxUnavailableError('EUR/USD');
     }
     const timestamp = sourceTimestamp(data?.chart?.result?.[0]?.meta?.regularMarketTime);
-    assertFreshQuote(timestamp, [price], 'EUR/USD');
+    assertFreshQuote(timestamp, [price], 'EUR/USD', maxAgeMs);
     this.setCache(cacheKey, { rate: price, timestamp });
     return price;
   }
@@ -609,7 +617,7 @@ class CotizacionesService {
     }
 
     if (fromU === 'EUR' && toU === 'ARS') {
-      const eurUsd = await this.getEurUsdRate();
+      const eurUsd = await this.getEurUsdRate({ executable: true });
       const dolar = await this.getDolarQuotes({ require: ['blue'], executable: true });
       const sell = requireExecutableDolarQuote(dolar.blue, 'EUR→ARS', 'blue').sell;
       const rate = eurUsd * sell;
@@ -623,12 +631,12 @@ class CotizacionesService {
     }
 
     if (fromU === 'EUR' && toU === 'USD') {
-      const rate = await this.getEurUsdRate();
+      const rate = await this.getEurUsdRate({ executable: true });
       return rate;
     }
 
     if (fromU === 'USD' && toU === 'EUR') {
-      const eurUsd = await this.getEurUsdRate();
+      const eurUsd = await this.getEurUsdRate({ executable: true });
       const rate = 1 / eurUsd;
       return rate;
     }

@@ -57,6 +57,13 @@ describe('account valuation failures remain isolated from native balances', () =
     expect(await accountsService.getTotalBalance('fixture-user')).toMatchObject({ totalUSD: null, totalARSBlue: null, fxUnavailable: true });
   });
 
+  it('does not request secondary FX for a non-multicurrency leftover currency', async () => {
+    mocks.rows = [{ ...account('bank', 'ARS', 130000), secondary_currency: 'EUR', is_multicurrency: false }];
+    const rows = await accountsService.list('fixture-user');
+    expect(rows[0]).toMatchObject({ balance: 130000, currency: 'ARS', fxUnavailable: false });
+    expect(mocks.exchange).not.toHaveBeenCalled();
+  });
+
   it('propagates account query errors before attempting FX', async () => {
     mocks.dbError = new Error('Fixture account DB failure');
     await expect(accountsService.list('fixture-user')).rejects.toBe(mocks.dbError);

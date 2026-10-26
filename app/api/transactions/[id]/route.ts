@@ -3,6 +3,7 @@ import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService, computeTransferAmounts } from '@/lib/services/transactions';
 import { ApiError, errorResponse, requireUser } from '@/lib/api-handler';
+import { positiveMoneyAmount, rawJsonHasInvalidMoney } from '@/lib/money-amount';
 
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -29,7 +30,19 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
+    const raw = await req.text();
+    if (rawJsonHasInvalidMoney(raw)) {
+      return NextResponse.json(
+        { error: 'El monto en ARS, USD o EUR admite hasta dos decimales.' },
+        { status: 400 }
+      );
+    }
+    let body: Record<string, unknown>;
+    try {
+      body = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      return NextResponse.json({ error: 'JSON inválido.' }, { status: 400 });
+    }
 
     if (!body.account_id) {
       return NextResponse.json(
@@ -46,8 +59,8 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       );
     }
 
-    const amount = Number(body.amount);
-    if (!Number.isFinite(amount) || amount <= 0) {
+    const amount = positiveMoneyAmount(body.amount);
+    if (amount == null) {
       return NextResponse.json(
         { error: 'El monto debe ser un número mayor a 0' },
         { status: 400 }

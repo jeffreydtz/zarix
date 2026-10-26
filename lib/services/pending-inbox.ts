@@ -19,7 +19,12 @@ import { withFinancialRequestContext } from '@/lib/financial-request-context';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { FxUnavailableError } from '@/lib/executable-fx';
 import type { ToolArgs, WriteChannel } from '@/lib/ai/registry/types';
-import { formatCents, integerCentsFromToken, numberToDecimalString } from '@/lib/money-amount';
+import {
+  extractTopLevelJsonAmount,
+  formatCents,
+  integerCentsFromToken,
+  numberToDecimalString,
+} from '@/lib/money-amount';
 
 export { inboxDedupeLockKey };
 
@@ -386,6 +391,13 @@ async function ingestWalletItemUnlocked(input: {
   if (payload.currencyUnsupported || !isTransactionCurrency(payload.currency)) {
     throw new ApiError('Moneda no admitida. Usá ARS, USD o EUR.', 400);
   }
+  if (payload.excessDecimals) {
+    const token = input.rawJson ? extractTopLevelJsonAmount(input.rawJson).token : null;
+    const sciOrHex = Boolean(token && (/[eE]/.test(token) || /[xX]/.test(token)));
+    if (!sciOrHex) {
+      throw new ApiError('El monto no puede tener más de dos decimales.', 400);
+    }
+  }
   const occurredAt = occurredAtForStorage(payload.occurredAt);
   const clientKey = input.idempotencyKey?.trim() || null;
   if (clientKey && !validTransactionRequestId(clientKey) && !/^[A-Za-z0-9._:-]{8,200}$/.test(clientKey)) {
@@ -717,7 +729,7 @@ async function loadPriorLedger(
   return response?.id ? response : null;
 }
 
-export async function confirmPendingItem(input: {
+type ConfirmPendingItemInput = {
   userId: string;
   itemId: string;
   amount?: number | null;
@@ -728,7 +740,11 @@ export async function confirmPendingItem(input: {
   occurredAt?: string;
   source?: WriteChannel;
   req?: Request;
-}): Promise<PendingInboxItem> {
+  claimedRow?: PendingInboxItem;
+  priorStatus?: PendingInboxItem['status'];
+};
+
+export async function confirmPendingItem(input: ConfirmPendingItemInput): Promise<PendingInboxItem> {
   const itemId = canonicalPendingInboxId(input.itemId);
   const next = { ...input, itemId };
   return withPatUserScope(next.userId, () =>
@@ -738,9 +754,27 @@ export async function confirmPendingItem(input: {
 
 export type PendingBatchItemStatus = {
   pendingId: string;
-  status: string;
+  status: 'confirmed' | 'failed' | 'reverted';
   error?: string;
 };
+
+export class PendingBatchConfirmError extends ApiError {
+  readonly items: PendingBatchItemStatus[];
+  readonly executedCount: number;
+  constructor(items: PendingBatchItemStatus[], cause?: unknown, executedCount = 0) {
+    const failed = items.find((item) => item.status === 'failed');
+    const status =
+      cause instanceof ApiError
+        ? cause.status
+        : cause instanceof FxUnavailableError
+          ? 503
+          : 400;
+    super(failed?.error || 'No se pudo confirmar el lote.', status);
+    this.name = 'PendingBatchConfirmError';
+    this.items = items;
+    this.executedCount = executedCount;
+  }
+}
 
 function confirmableInboxStatus(status: string): boolean {
   return status === 'pending' || status === 'uncertain' || status === 'confirming';
@@ -755,7 +789,11 @@ function parkedConfirmFields(row: PendingInboxItem) {
     (typeof parked?.accountId === 'string' ? parked.accountId : null) ?? row.account_id;
   const type = String(parked?.type || (row.direction === 'income' ? 'income' : 'expense'));
   const accountName = typeof parked?.account === 'string' ? parked.account : null;
-  return { amount, accountId, type, accountName };
+  const destinationAccountId =
+    typeof parked?.destinationAccountId === 'string' ? parked.destinationAccountId : null;
+  const destinationAccountName =
+    typeof parked?.destinationAccount === 'string' ? parked.destinationAccount : null;
+  return { amount, accountId, type, accountName, destinationAccountId, destinationAccountName };
 }
 
 function preflightConfirmItem(row: PendingInboxItem | undefined): { error: string; status: number } | null {
@@ -782,14 +820,81 @@ function preflightConfirmItem(row: PendingInboxItem | undefined): { error: strin
   return null;
 }
 
+function parkedCategoryId(row: PendingInboxItem): string | null {
+  const parked = row.tool_payload;
+  if (typeof parked?.categoryId === 'string' && parked.categoryId) return parked.categoryId;
+  return row.category_id;
+}
+
+async function resolveOwnedAccount(
+  userId: string,
+  known: Set<string>,
+  accountId: string | null,
+  accountName: string | null,
+  currency?: string
+): Promise<void> {
+  if (accountId) {
+    if (!known.has(accountId)) throw new ApiError('La cuenta no existe.', 400);
+    return;
+  }
+  if (!accountName) return;
+  const fuzzy = await accountsService.findByNameFuzzy(userId, accountName, currency ? { currency } : undefined);
+  if (fuzzy.confidence !== 'exact' && fuzzy.confidence !== 'high') {
+    throw new ApiError('La cuenta no existe.', 400);
+  }
+}
+
+async function assertBatchAccountsResolvable(userId: string, rows: PendingInboxItem[]): Promise<void> {
+  const accounts = await accountsService.list(userId);
+  const known = new Set(accounts.map((account) => account.id));
+  for (const row of rows) {
+    if (row.status === 'confirmed') continue;
+    const { accountId, type, accountName, destinationAccountId, destinationAccountName } =
+      parkedConfirmFields(row);
+    if (accountId) {
+      await resolveOwnedAccount(userId, known, accountId, null);
+    } else if (type !== 'transfer' && accountName) {
+      await resolveOwnedAccount(userId, known, null, accountName, row.currency);
+    }
+    if (type === 'transfer') {
+      await resolveOwnedAccount(userId, known, destinationAccountId, destinationAccountName);
+    }
+  }
+}
+
+async function assertBatchCategoriesOwned(userId: string, rows: PendingInboxItem[]): Promise<void> {
+  const needed = [
+    ...new Set(rows.flatMap((row) => (row.status === 'confirmed' ? [] : parkedCategoryId(row) ? [parkedCategoryId(row)!] : []))),
+  ];
+  if (needed.length === 0) return;
+  const supabase = createServiceClientSync();
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, user_id, is_system')
+    .in('id', needed);
+  if (error) throw error;
+  const byId = new Map((data ?? []).map((row) => [row.id as string, row]));
+  for (const id of needed) {
+    const cat = byId.get(id);
+    if (!cat || (cat.is_system !== true && cat.user_id !== userId)) {
+      throw new ApiError('La categoría no pertenece al usuario.', 400);
+    }
+  }
+}
+
+export type PendingBatchConfirmResult = PendingInboxItem[] & { executedCount: number };
+
 export async function confirmPendingItems(input: {
   userId: string;
   itemIds: string[];
   source?: WriteChannel;
   req?: Request;
-}): Promise<PendingInboxItem[]> {
+}): Promise<PendingBatchConfirmResult> {
   const ids = canonicalPendingInboxIds(input.itemIds);
-  if (ids.length === 0) return [];
+  if (ids.length === 0) {
+    const empty = Object.assign([] as PendingInboxItem[], { executedCount: 0 });
+    return empty;
+  }
   const supabase = createServiceClientSync();
   const { data, error } = await supabase
     .from('pending_inbox_items')
@@ -804,47 +909,159 @@ export async function confirmPendingItems(input: {
   if (blocked?.err) {
     throw new ApiError(blocked.err.error, blocked.err.status);
   }
-  const neededAccountIds = [
-    ...new Set(
-      ids.flatMap((id) => {
-        const row = byId.get(id);
-        if (!row || row.status === 'confirmed') return [];
-        const { accountId } = parkedConfirmFields(row);
-        return accountId ? [accountId] : [];
-      })
-    ),
-  ];
-  if (neededAccountIds.length > 0) {
-    const accounts = await accountsService.list(input.userId);
-    const known = new Set(accounts.map((account) => account.id));
-    if (neededAccountIds.some((accountId) => !known.has(accountId))) {
-      throw new ApiError('La cuenta no existe.', 400);
+  const pendingRows = ids.map((id) => byId.get(id)).filter((row): row is PendingInboxItem => Boolean(row));
+  // Same-request snapshot for leftover release. Not a live prior status from
+  // claim_pending_inbox_items (that would need a migration). Restore of each
+  // leftover is still scoped to that row's claim_id.
+  const priorStatusById = new Map(pendingRows.map((row) => [row.id, row.status]));
+  await assertBatchAccountsResolvable(input.userId, pendingRows);
+  await assertBatchCategoriesOwned(input.userId, pendingRows);
+
+  const stale = pendingRows.filter((row) => isStaleConfirming(row));
+  if (stale.length > 0) {
+    const staleRelease = await releaseClaimedPendingItems(input.userId, stale, priorStatusById);
+    if (staleRelease.length > 0) {
+      throw new ApiError(staleRelease[0]!.error, 409);
+    }
+    for (const row of stale) {
+      byId.set(row.id, { ...row, status: 'pending', claim_id: null });
+    }
+  }
+
+  const alreadyConfirmed = new Set(ids.filter((id) => byId.get(id)?.status === 'confirmed'));
+  const needClaim = ids.filter((id) => byId.get(id)?.status !== 'confirmed');
+  const claimedById = new Map<string, PendingInboxItem>();
+  if (needClaim.length > 0) {
+    const { data: claimed, error: claimErr } = await supabase.rpc('claim_pending_inbox_items', {
+      p_user_id: input.userId,
+      p_item_ids: needClaim,
+    });
+    if (claimErr) {
+      const message = String(claimErr.message || '');
+      if (/No autorizado/i.test(message)) throw new ApiError('No autorizado.', 403);
+      throw new ApiError('Este pendiente se está confirmando.', 409);
+    }
+    const rows = (Array.isArray(claimed) ? claimed : claimed ? [claimed] : []) as PendingInboxItem[];
+    for (const row of rows) claimedById.set(row.id, row);
+    const missing = needClaim.filter((id) => !claimedById.has(id));
+    if (missing.length > 0) {
+      const { data: latest } = await supabase
+        .from('pending_inbox_items')
+        .select('*')
+        .eq('user_id', input.userId)
+        .in('id', missing);
+      const latestById = new Map(((latest ?? []) as PendingInboxItem[]).map((row) => [row.id, row]));
+      const unclaimed: string[] = [];
+      for (const id of missing) {
+        const row = latestById.get(id);
+        if (row?.status === 'confirmed') {
+          byId.set(id, row);
+          alreadyConfirmed.add(id);
+        } else {
+          unclaimed.push(id);
+        }
+      }
+      if (unclaimed.length > 0) {
+        const released = await releaseClaimedPendingItems(input.userId, [...claimedById.values()]);
+        if (released.length > 0) {
+          throw new ApiError(released[0]!.error, 409);
+        }
+        throw new ApiError('Este pendiente se está confirmando.', 409);
+      }
     }
   }
   const out: PendingInboxItem[] = [];
+  const report: PendingBatchItemStatus[] = [];
+  let failed: unknown = null;
+  const leftoverIds: string[] = [];
+  let executedCount = 0;
   for (const id of ids) {
     const row = byId.get(id);
     if (row?.status === 'confirmed') {
       out.push(row);
+      report.push({ pendingId: id, status: 'confirmed' });
       continue;
     }
-    out.push(await confirmPendingItem({ userId: input.userId, itemId: id, source: input.source, req: input.req }));
+    if (failed) {
+      leftoverIds.push(id);
+      continue;
+    }
+    const claimedRow = claimedById.get(id);
+    if (!claimedRow) throw new ApiError('Este pendiente se está confirmando.', 409);
+    try {
+      const priorLedger = await loadPriorLedger(input.userId, pendingInboxRequestId(id));
+      const confirmed = await confirmPendingItem({
+        userId: input.userId,
+        itemId: id,
+        source: input.source,
+        req: input.req,
+        claimedRow,
+        priorStatus: priorStatusById.get(id),
+      });
+      out.push(confirmed);
+      report.push({ pendingId: id, status: 'confirmed' });
+      if (!priorLedger) executedCount += 1;
+    } catch (error) {
+      failed = error;
+      report.push({
+        pendingId: id,
+        status: 'failed',
+        error: error instanceof Error ? error.message : 'No se pudo confirmar el pendiente.',
+      });
+    }
   }
-  return out;
+  if (failed) {
+    const releaseFailures = await releaseClaimedPendingItems(
+      input.userId,
+      leftoverIds.map((id) => claimedById.get(id)).filter((row): row is PendingInboxItem => Boolean(row)),
+      priorStatusById
+    );
+    const releaseById = new Map(releaseFailures.map((item) => [item.id, item.error]));
+    for (const id of leftoverIds) {
+      const releaseError = releaseById.get(id);
+      report.push(
+        releaseError
+          ? { pendingId: id, status: 'failed', error: releaseError }
+          : { pendingId: id, status: 'reverted' }
+      );
+    }
+    throw new PendingBatchConfirmError(report, failed, executedCount);
+  }
+  const result = out as PendingBatchConfirmResult;
+  result.executedCount = executedCount;
+  return result;
 }
 
-async function confirmPendingItemUnlocked(input: {
-  userId: string;
-  itemId: string;
-  amount?: number | null;
-  currency?: string;
-  merchant?: string;
-  accountId?: string;
-  categoryId?: string;
-  occurredAt?: string;
-  source?: WriteChannel;
-  req?: Request;
-}): Promise<PendingInboxItem> {
+type ClaimReleaseFailure = { id: string; error: string };
+
+async function releaseClaimedPendingItems(
+  userId: string,
+  rows: PendingInboxItem[],
+  priorStatusById?: Map<string, string>
+): Promise<ClaimReleaseFailure[]> {
+  const supabase = createServiceClientSync();
+  const failures: ClaimReleaseFailure[] = [];
+  for (const row of rows) {
+    if (row.status === 'confirmed') continue;
+    const restore = priorStatusById?.get(row.id) === 'uncertain' ? 'uncertain' : 'pending';
+    let query = supabase
+      .from('pending_inbox_items')
+      .update({ status: restore, claim_id: null })
+      .eq('id', row.id)
+      .eq('user_id', userId)
+      .eq('status', 'confirming');
+    query = row.claim_id ? query.eq('claim_id', row.claim_id) : query.is('claim_id', null);
+    const { data, error } = await query.select('id');
+    if (error || (Array.isArray(data) && data.length === 0)) {
+      const message = error?.message?.trim() || 'No se pudo liberar el pendiente.';
+      console.error('[inbox] leftover claim release failed', { itemId: row.id, message });
+      failures.push({ id: row.id, error: message });
+    }
+  }
+  return failures;
+}
+
+async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promise<PendingInboxItem> {
   const supabase = createServiceClientSync();
   const requestId = pendingInboxRequestId(input.itemId);
   const claim = async () =>
@@ -853,7 +1070,26 @@ async function confirmPendingItemUnlocked(input: {
       p_item_id: input.itemId,
     });
 
-  let { data: claimed, error: claimErr } = await claim();
+  let claimed: unknown = input.claimedRow ?? null;
+  let claimErr: { message?: string } | null = null;
+  // claim_pending_inbox_item RETURNS the post-update row (status=confirming).
+  // Returning the previous status atomically would need a new SQL migration;
+  // we do not add one. Callers that already snapshotted the row in this
+  // request (batch) may pass priorStatus. A pre-claim SELECT is racy under
+  // concurrent confirms and is not used. Restore is scoped to this claim_id
+  // so only the claim owner writes; a concurrent owner is not overwritten.
+  // Residual: if priorStatus is omitted we default to pending.
+  // Auto-confirm (ingest) always claims a freshly reserved `pending` row, so
+  // it cannot hit uncertain→pending. Manual confirm of an existing uncertain
+  // item without priorStatus can. Returning prior status from the claim RPC
+  // needs a SQL migration and is out of scope.
+  let restoreStatus: 'pending' | 'uncertain' =
+    input.priorStatus === 'uncertain' ? 'uncertain' : 'pending';
+  if (!input.claimedRow) {
+    const result = await claim();
+    claimed = result.data;
+    claimErr = result.error;
+  }
   if (claimErr) throw claimErr;
   let claimedRow = Array.isArray(claimed) ? claimed[0] : claimed;
 
@@ -887,7 +1123,7 @@ async function confirmPendingItemUnlocked(input: {
       }
       let release = supabase
         .from('pending_inbox_items')
-        .update({ status: 'pending', claim_id: null })
+        .update({ status: restoreStatus, claim_id: null })
         .eq('id', input.itemId)
         .eq('user_id', input.userId)
         .eq('status', 'confirming');
@@ -910,9 +1146,11 @@ async function confirmPendingItemUnlocked(input: {
 
   const revertClaim = async () => {
     if (!myClaimId) return;
+    // Conditional on claim_id so a concurrent confirm that already owns the
+    // row cannot be restored with this request's (possibly stale) status.
     await supabase
       .from('pending_inbox_items')
-      .update({ status: 'pending', claim_id: null })
+      .update({ status: restoreStatus, claim_id: null })
       .eq('id', input.itemId)
       .eq('user_id', input.userId)
       .eq('status', 'confirming')
@@ -990,6 +1228,23 @@ async function confirmPendingItemUnlocked(input: {
     }
 
     const financialContext = await loadFinancialContext(input.userId);
+    const requestedCategoryId =
+      input.categoryId ??
+      (typeof parked.categoryId === 'string' ? parked.categoryId : null) ??
+      row.category_id;
+    let resolvedCategoryId: string | null = null;
+    if (requestedCategoryId) {
+      const { data: cat, error: catErr } = await supabase
+        .from('categories')
+        .select('id, user_id, is_system')
+        .eq('id', requestedCategoryId)
+        .maybeSingle();
+      if (catErr) throw catErr;
+      if (!cat || (cat.is_system !== true && cat.user_id !== input.userId)) {
+        throw new ApiError('La categoría no pertenece al usuario.', 400);
+      }
+      resolvedCategoryId = requestedCategoryId;
+    }
     const rawOccurred =
       input.occurredAt ??
       (typeof parked.transactionDate === 'string' ? parked.transactionDate : null) ??
@@ -1005,7 +1260,7 @@ async function confirmPendingItemUnlocked(input: {
       args.account = parked.account || account?.name;
       args.accountId = accountId ?? parked.accountId;
       args.category = parked.category;
-      args.categoryId = input.categoryId ?? row.category_id ?? parked.categoryId;
+      args.categoryId = resolvedCategoryId;
       args.destinationAccount = parked.destinationAccount;
       args.destinationAccountId = parked.destinationAccountId;
       args.description =
@@ -1065,7 +1320,7 @@ async function confirmPendingItemUnlocked(input: {
         currency: currencyRaw,
         merchant: input.merchant ?? row.merchant,
         account_id: accountId,
-        category_id: input.categoryId ?? row.category_id,
+        category_id: resolvedCategoryId,
         occurred_at: occurred,
         confirmed_transaction_id: result.executed?.[0]?.id ?? prior?.id ?? null,
         idempotency_key: row.idempotency_key || requestId,
