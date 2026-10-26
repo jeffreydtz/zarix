@@ -73,7 +73,7 @@ const updates: Array<{ table: string; value: Record<string, unknown> }> = [];
 const CLAIM_ID = 'dddddddd-dddd-4ddd-8ddd-ddddddddddd1';
 const SYSTEM_CATEGORY_ID = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
 
-function itemRow(status: PendingInboxItem['status'], extras: Partial<PendingInboxItem> = {}) {
+function itemRow(status: PendingInboxItem['status'], extras: Partial<PendingInboxItem> = {}): PendingInboxItem {
   return {
     id: FIXTURE_ITEM,
     user_id: FIXTURE_USER,
@@ -87,6 +87,7 @@ function itemRow(status: PendingInboxItem['status'], extras: Partial<PendingInbo
     tool_payload: null,
     updated_at: '2026-10-24T20:00:00.000Z',
     status,
+    suggestion_source: null,
     direction: 'expense',
     amount_ambiguous: false,
     ingest_key: `wallet:${FIXTURE_ITEM}`,
@@ -96,7 +97,7 @@ function itemRow(status: PendingInboxItem['status'], extras: Partial<PendingInbo
     created_at: '2026-10-24T20:00:00.000Z',
     claim_id: status === 'confirming' ? CLAIM_ID : null,
     ...extras,
-  };
+  } as PendingInboxItem;
 }
 
 describe('pending inbox confirm idempotency', () => {
