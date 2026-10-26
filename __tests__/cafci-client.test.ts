@@ -888,7 +888,7 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
     });
   });
 
-  it('ignores a form and selected class hidden in comments or script', () => {
+  it('skips when a conflicting form or class is present in comments or script', () => {
     const html = `<!-- <form action="/fondos/999"><select name="clase"><option value="888" selected></option></select></form> -->
       <script>document.write('<form action="/fondos/111"><select name="clase"><option value="222" selected></option></select></form>');</script>
       ${htmlFicha({
@@ -897,9 +897,7 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
         fondoId: '227',
         claseId: '784',
       })}`;
-    expect(parseCafciHtmlFicha(html)).toMatchObject({
-      price: 1241.954039, fondoId: '227', claseId: '784',
-    });
+    expect(parseCafciHtmlFicha(html)).toBeNull();
   });
 
   it('rejects conflicting selected class options', () => {
