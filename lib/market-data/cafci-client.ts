@@ -15,20 +15,16 @@
  * means skip and keep the last stored price — never Yahoo.
  */
 
-import { parseArgentineNumber } from '@/lib/market-data/argentine-number';
 import {
   FETCH_REDIRECT,
   readResponseTextCapped,
   ResponseTooLargeError,
 } from '@/lib/market-data/bounded-fetch';
-import { civilYmdToNavIso } from '@/lib/market-data/fci-nav-freshness';
-import {
-  extractElementById,
-  htmlToVisibleText,
-  stripInactiveHtml,
-} from '@/lib/market-data/html-text';
+import { parseCafciHtmlFichaDetailed } from '@/lib/market-data/cafci-html';
+import { parseCafciDateLabel } from '@/lib/market-data/fci-nav-freshness';
 import { fetchIolFciQuote, resetIolFciPanelCacheForTest } from '@/lib/market-data/iol-fci-panel';
-import { isCivilYmd } from '@/lib/transaction-date';
+
+export { parseCafciDateLabel };
 
 const CAFCI_STATS_BASE = 'https://estadisticas.cafci.org.ar';
 const CAFCI_CATALOG_HOST = 'estadisticas.cafci.org.ar';
@@ -487,64 +483,10 @@ async function loadCatalog(): Promise<CafciClass[]> {
   return catalogInflight;
 }
 
-/** `23/10/2026` → ISO. Only dd/mm/yyyy that round-trips; no Date.parse fallback. */
-export function parseCafciDateLabel(value: string): string | null {
-  const trimmed = value.trim();
-  const dmy = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (!dmy) return null;
-  const day = dmy[1].padStart(2, '0');
-  const month = dmy[2].padStart(2, '0');
-  const year = dmy[3];
-  const ymd = `${year}-${month}-${day}`;
-  if (!isCivilYmd(ymd)) return null;
-  const [y, mo, d] = ymd.split('-');
-  if (Number(d) !== Number(dmy[1]) || Number(mo) !== Number(dmy[2]) || y !== year) return null;
-  return civilYmdToNavIso(ymd);
-}
-
-function parseSelectedClaseId(html: string): string | null {
-  const selects = [...html.matchAll(/<select\b[^>]*name=["']clase["'][^>]*>[\s\S]*?<\/select>/gi)];
-  if (selects.length === 0) return null;
-  const selectedIds: string[] = [];
-  for (const select of selects) {
-    const selected: string[] = [];
-    for (const opt of select[0].matchAll(/<option\b([^>]*)>/gi)) {
-      if (!/\bselected\b/i.test(opt[1])) continue;
-      const value = opt[1].match(/\bvalue=["']([^"']+)["']/i);
-      if (value) selected.push(value[1].trim());
-    }
-    if (selected.length !== 1) return null;
-    selectedIds.push(selected[0]);
-  }
-  return new Set(selectedIds).size === 1 ? selectedIds[0] : null;
-}
-
-function parseFondoIdFromForm(html: string): string | null {
-  const ids = [...html.matchAll(/<form\b[^>]*\baction=["']\/fondos\/(\d+)["']/gi)].map((m) => m[1]);
-  if (ids.length === 0) return null;
-  return new Set(ids).size === 1 ? ids[0] : null;
-}
-
-function parseCuotapartePrices(html: string): number[] | null {
-  const cuotaSection = extractElementById(html, 'cuotaparte') ?? html;
-  const text = htmlToVisibleText(cuotaSection);
-  const labels = [...text.matchAll(/Valor por cada cuotaparte:\s*(\S+)/gi)];
-  if (labels.length === 0) return null;
-  const prices: number[] = [];
-  for (const label of labels) {
-    const price = parseArgentineNumber(label[1]);
-    if (price == null || !Number.isFinite(price) || price <= 0) return null;
-    prices.push(price);
-  }
-  return prices;
-}
-
 /**
- * Official CAFCI stats HTML ficha: "Valor por cada cuotaparte: 1,097744"
- * (comma decimal / optional thousands dots). Not "Valor por mil".
- * Identity comes from `form action="/fondos/{id}"` and the selected class option.
+ * Official CAFCI stats HTML ficha. Identity and NAV come from the DOM tree.
  */
-export function parseCafciHtmlFicha(html: string): {
+export function parseCafciHtmlFicha(html: string, expected?: { fondoId: string; claseId: string }): {
   price: number;
   currency: 'ARS' | 'USD' | null;
   fichaClass: CafciCurrencyLabel;
@@ -553,24 +495,17 @@ export function parseCafciHtmlFicha(html: string): {
   fondoId: string | null;
   claseId: string | null;
 } | null {
-  if (!html || typeof html !== 'string') return null;
-  const visible = stripInactiveHtml(html);
-  const prices = parseCuotapartePrices(visible);
-  if (!prices || prices.length === 0) return null;
-  if (prices.some((p) => p !== prices[0])) return null;
-  const cuotaSection = extractElementById(visible, 'cuotaparte') ?? visible;
-  const dateMatch = htmlToVisibleText(cuotaSection).match(/Valores al\s+(\d{1,2}\/\d{1,2}\/\d{4})/i);
-  const timestamp = dateMatch ? parseCafciDateLabel(dateMatch[1]) : null;
-  const monedaMatch = visible.match(/Moneda:<\/span>\s*([^<]+)/i) ?? visible.match(/Moneda:\s*([^<]+)/i);
-  const fichaClass = firstCurrencyLabel(monedaMatch?.[1]?.replace(/\s+/g, ' ').trim());
+  const result = parseCafciHtmlFichaDetailed(html, expected);
+  if (!result.parsed) return null;
+  const fichaClass = firstCurrencyLabel(result.parsed.monedaLabel);
   return {
-    price: prices[0],
+    price: result.parsed.price,
     currency: asArsUsd(fichaClass),
     fichaClass,
     fichaData: null,
-    timestamp,
-    fondoId: parseFondoIdFromForm(visible),
-    claseId: parseSelectedClaseId(visible),
+    timestamp: result.parsed.timestamp,
+    fondoId: result.parsed.fondoId,
+    claseId: result.parsed.claseId,
   };
 }
 
@@ -586,27 +521,21 @@ type FichaFetchResult =
   | { parsed: ParsedFicha }
   | { parsed: null; reason: 'unparseable_ficha' | 'class_mismatch' };
 
-function htmlIdentityMatches(html: {
-  fondoId: string | null;
-  claseId: string | null;
-}, match: CafciClass): boolean {
-  return Boolean(
-    html.fondoId
-    && html.claseId
-    && html.fondoId === match.fondoId
-    && html.claseId === match.claseId
-  );
-}
-
 async function fetchParsedFicha(match: CafciClass): Promise<FichaFetchResult> {
   const url = `${CAFCI_STATS_BASE}/fondos/${encodeURIComponent(match.fondoId)}?clase=${encodeURIComponent(match.claseId)}`;
   const text = await fetchCafciText(url, 'ficha', FETCH_TIMEOUT_MS, FICHA_MAX_BYTES);
-  const htmlParsed = parseCafciHtmlFicha(text);
-  if (!htmlParsed) return { parsed: null, reason: 'unparseable_ficha' };
-  if (!htmlIdentityMatches(htmlParsed, match)) {
-    return { parsed: null, reason: 'class_mismatch' };
-  }
-  return { parsed: htmlParsed };
+  const result = parseCafciHtmlFichaDetailed(text, { fondoId: match.fondoId, claseId: match.claseId });
+  if (!result.parsed) return { parsed: null, reason: result.reason };
+  const fichaClass = firstCurrencyLabel(result.parsed.monedaLabel);
+  return {
+    parsed: {
+      price: result.parsed.price,
+      currency: asArsUsd(fichaClass),
+      fichaClass,
+      fichaData: null,
+      timestamp: result.parsed.timestamp,
+    },
+  };
 }
 
 function quoteFromParsed(
@@ -761,12 +690,16 @@ export async function fetchFciQuote(
         if (iol) return iol;
       } catch (iolError) {
         throw new FciCombinedError(
-          { message: 'CAFCI unparseable_ficha', stage: 'ficha' },
+          { message: 'unparseable_ficha', stage: 'ficha' },
           iolError,
           'unparseable_ficha'
         );
       }
-      return miss('unparseable_ficha');
+      throw new FciCombinedError(
+        { message: 'unparseable_ficha', stage: 'ficha' },
+        { message: 'no_match', stage: 'iol' },
+        'unparseable_ficha'
+      );
     }
     if (matched.reason === 'ambiguous_match') return miss('ambiguous_match');
     missReason = matched.reason;
@@ -793,7 +726,14 @@ export async function fetchFciQuote(
   if (cafciError) {
     throw new FciCombinedError(cafciError, { message: 'no_match', stage: 'iol' }, 'CAFCI failure');
   }
-  return miss(missReason ?? 'no_match');
+  if (missReason) {
+    throw new FciCombinedError(
+      { message: missReason, stage: 'catalog' },
+      { message: 'no_match', stage: 'iol' },
+      missReason
+    );
+  }
+  return miss('no_match');
 }
 
 /** Exposed for tests: match a ticker against a synthetic CAFCI catalog. */

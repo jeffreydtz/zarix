@@ -19,8 +19,10 @@ vi.mock('@/lib/market-data/cafci-client', () => ({ fetchFciQuote: mocks.fci }));
 
 import {
   describeFciFetchError,
+  monotonicCurrentPriceFilter,
   quoteCacheKey,
   refreshQuotesForInvestments,
+  shouldPersistFciQuote,
 } from '@/lib/market-data/quote-refresh';
 import { civilYmdToNavIso, freshFciNavIso, shiftBusinessDays } from '@/lib/market-data/fci-nav-freshness';
 import { civilTodayYmd } from '@/lib/transaction-date';
@@ -230,5 +232,24 @@ describe('describeFciFetchError', () => {
       cafciStage: 'catalog',
       iolStage: 'iol',
     });
+  });
+});
+
+describe('FCI persist allowlist and monotonic filter', () => {
+  it('persists only CAFCI quotes that carry a NAV timestamp', () => {
+    expect(shouldPersistFciQuote({ source: 'cafci', timestamp: '2026-10-23T03:00:00.000Z' })).toBe(true);
+    expect(shouldPersistFciQuote({ source: 'iol', timestamp: '2026-10-23T03:00:00.000Z' })).toBe(false);
+    expect(shouldPersistFciQuote({ source: 'cafci', timestamp: null })).toBe(false);
+    expect(shouldPersistFciQuote({ source: 'cafci', timestamp: '' })).toBe(false);
+  });
+
+  it('lets an anomalous future stored timestamp match the UPDATE filter', () => {
+    const now = new Date('2026-10-26T15:00:00.000Z');
+    const filter = monotonicCurrentPriceFilter('2026-10-23T03:00:00.000Z', now);
+    expect(filter).toBe([
+      'current_price_updated_at.is.null',
+      'current_price_updated_at.lt."2026-10-23T03:00:00.000Z"',
+      'current_price_updated_at.gt."2026-10-27T15:00:00.000Z"',
+    ].join(','));
   });
 });

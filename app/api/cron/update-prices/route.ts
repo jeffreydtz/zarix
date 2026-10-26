@@ -3,6 +3,7 @@ import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
+  isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
@@ -110,11 +111,30 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
       })
       .eq('id', inv.id);
     if (inv.type === 'fci' && sourceTs) {
+      const now = new Date();
+      const anomalous = isAnomalousFutureTimestamp(inv.current_price_updated_at, now.getTime());
       const { data, error } = await query
-        .or(monotonicCurrentPriceFilter(sourceTs))
+        .or(monotonicCurrentPriceFilter(sourceTs, now))
         .select('id');
       if (error) throw error;
-      return Array.isArray(data) && data.length > 0;
+      if (!Array.isArray(data) || data.length === 0) {
+        console.warn('[quotes] skip CAFCI failure', {
+          ticker: inv.ticker,
+          id: inv.id,
+          reason: 'older_than_stored',
+          source: q.source,
+        });
+        return false;
+      }
+      if (anomalous) {
+        console.warn('[quotes] overwrite anomalous stored timestamp', {
+          ticker: inv.ticker,
+          id: inv.id,
+          source: q.source,
+          stored: inv.current_price_updated_at,
+        });
+      }
+      return true;
     }
     const { error } = await query;
     if (error) throw error;

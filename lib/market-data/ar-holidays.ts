@@ -39,7 +39,7 @@ function weekdayUtc(dateYmd: string): number {
 }
 
 /**
- * Ley 27.399 art. 2: Tuesday/Wednesday → previous Monday;
+ * Ley 27.399 article 6: Tuesday/Wednesday → previous Monday;
  * Thursday/Friday → following Monday. Monday/weekend stay put.
  */
 export function transferLey27399Holiday(dateYmd: string): string {
@@ -70,8 +70,21 @@ export function argentinePublicHolidayYmds(year: number): Set<string> {
     transferLey27399Holiday(ymd(year, 10, 12)),
     transferLey27399Holiday(ymd(year, 11, 20)),
   ]);
+  for (const extra of ANNUAL_MARKET_EXCEPTIONS[year] ?? []) holidays.add(extra);
   return holidays;
 }
+
+/** Versioned BCRA / DNU / turismo exceptions that Ley 27.399 does not generate. */
+const ANNUAL_MARKET_EXCEPTIONS: Record<number, string[]> = {
+  2026: [
+    '2026-03-23',
+    '2026-07-10',
+    '2026-11-09',
+    '2026-11-10',
+    '2026-12-07',
+    '2026-12-24',
+  ],
+};
 
 const holidayCache = new Map<number, Set<string>>();
 

@@ -59,7 +59,7 @@ describe('FCI NAV freshness', () => {
     expect(evaluateFciNavFreshness('2025-01-06T03:00:00.000Z', { now: monday })).toMatchObject({
       reason: 'stale_nav',
     });
-    expect(FCI_NAV_MAX_BUSINESS_DAYS).toBe(5);
+    expect(FCI_NAV_MAX_BUSINESS_DAYS).toBe(7);
   });
 
   it('shifts weekdays without landing on a weekend', () => {
@@ -75,6 +75,22 @@ describe('FCI NAV freshness', () => {
     expect(isArgentineMarketHoliday('2026-04-03')).toBe(true);
     expect(businessDaysBetween('2026-03-30', '2026-04-07')).toBe(4);
     expect(shiftBusinessDays('2026-10-13', -1)).toBe('2026-10-09');
+  });
+
+  it('layers 2026 BCRA / DNU / turismo exceptions on Ley 27.399', () => {
+    expect(isArgentineMarketHoliday('2026-03-23')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-07-10')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-11-09')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-11-10')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-12-07')).toBe(true);
+    expect(isArgentineMarketHoliday('2026-12-24')).toBe(true);
+    expect(businessDaysBetween('2026-03-17', '2026-03-26')).toBe(5);
+    expect(businessDaysBetween('2026-07-03', '2026-07-14')).toBe(5);
+    expect(businessDaysBetween('2026-12-01', '2026-12-10')).toBe(5);
+    expect(businessDaysBetween('2026-11-02', '2026-11-10')).toBe(4);
+    expect(evaluateFciNavFreshness('2026-03-17T03:00:00.000Z', {
+      now: new Date('2026-03-26T15:00:00.000Z'),
+    })).toMatchObject({ ok: true, ageBusinessDays: 5 });
   });
 
   it('rejects an impossible ISO timestamp instead of Date.parse rollover', () => {
@@ -100,6 +116,8 @@ describe('CAFCI calendar dates', () => {
     expect(parseCafciDateLabel('29/02/2026')).toBeNull();
     expect(parseCafciDateLabel('29/02/2024')).toBe('2024-02-29T03:00:00.000Z');
     expect(parseCafciDateLabel('2026-10-23')).toBeNull();
+    expect(parseCafciDateLabel('3/4/2026')).toBeNull();
+    expect(parseCafciDateLabel('23/10/2026x')).toBeNull();
     expect(parseCafciDateLabel('October 23, 2026')).toBeNull();
   });
 });

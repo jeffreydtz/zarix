@@ -8,8 +8,8 @@ import { addDaysYmd, civilTodayYmd, isCivilYmd } from '@/lib/transaction-date';
 
 export const AR_MARKET_TZ = 'America/Argentina/Buenos_Aires';
 
-/** Skip a NAV whose Argentina civil date is more than this many weekdays old. */
-export const FCI_NAV_MAX_BUSINESS_DAYS = 5;
+/** Skip a NAV whose Argentina civil date is more than this many banking days old. */
+export const FCI_NAV_MAX_BUSINESS_DAYS = 7;
 
 export type FciNavFreshnessReason =
   | 'undated'
@@ -73,6 +73,17 @@ export function civilYmdToNavIso(ymd: string): string | null {
   return Number.isFinite(ms) ? new Date(ms).toISOString() : null;
 }
 
+/** `23/10/2026` → ISO. Only dd/mm/yyyy (two-digit day and month) that round-trips. */
+export function parseCafciDateLabel(value: string): string | null {
+  const trimmed = value.trim();
+  const dmy = trimmed.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!dmy) return null;
+  const ymd = `${dmy[3]}-${dmy[2]}-${dmy[1]}`;
+  if (!isCivilYmd(ymd)) return null;
+  if (ymd !== `${dmy[3]}-${dmy[2]}-${dmy[1]}`) return null;
+  return civilYmdToNavIso(ymd);
+}
+
 /** Argentina civil YYYY-MM-DD for an observation timestamp. */
 export function navTimestampToCivilYmd(timestamp: string): string | null {
   const trimmed = timestamp.trim();
@@ -122,12 +133,12 @@ export function cafciValoresAlLabel(now: Date = new Date()): string {
   const today = civilTodayYmd(AR_MARKET_TZ, now);
   const ymd = shiftBusinessDays(today, -1);
   const [year, month, day] = ymd.split('-');
-  return `${Number(day)}/${month}/${year}`;
+  return `${day}/${month}/${year}`;
 }
 
 export function civilYmdToDmyLabel(ymd: string): string {
   const [year, month, day] = ymd.split('-');
-  return `${Number(day)}/${month}/${year}`;
+  return `${day}/${month}/${year}`;
 }
 
 export function padCivilPart(n: number): string {

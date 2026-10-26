@@ -27,8 +27,9 @@ function quoteHtml(opts: {
   const claseId = opts.claseId ?? '2';
   const price = opts.price ?? '1,098';
   const date = opts.date ?? cafciValoresAlLabel();
-  const monedaLine = opts.moneda != null && opts.moneda !== ''
-    ? `<span class="label">Moneda:</span> ${opts.moneda}`
+  const moneda = opts.moneda === null ? '' : (opts.moneda ?? 'Dolar Estadounidense');
+  const monedaLine = moneda
+    ? `<span class="label">Moneda:</span> ${moneda}`
     : '';
   return `<html><body>
     <form method="get" action="/fondos/${fondoId}">
@@ -118,15 +119,21 @@ describe('CAFCI client headers and 403', () => {
     });
   });
 
-  it('returns null when the catalog 200 is an error payload', async () => {
+  it('keeps both no-quote reasons when the catalog 200 is an error payload', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ error: 'denied' }),
     }));
-    await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
+      name: 'FciCombinedError',
+      cafciReason: 'no_match',
+      cafciStage: 'catalog',
+      iolReason: 'no_match',
+      iolStage: 'iol',
+    });
   });
 
-  it('returns null when valorCuotaparte is missing', async () => {
+  it('keeps both no-quote reasons when valorCuotaparte is missing', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(catalogRes({
         data: [{
@@ -138,10 +145,16 @@ describe('CAFCI client headers and 403', () => {
       .mockResolvedValueOnce(htmlRes('<html><body>no nav</body></html>'))
       .mockResolvedValue(htmlRes('<html></html>'));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
+      name: 'FciCombinedError',
+      cafciReason: 'unparseable_ficha',
+      cafciStage: 'ficha',
+      iolReason: 'no_match',
+      iolStage: 'iol',
+    });
   });
 
-  it('returns null when the ficha 200 cannot be parsed', async () => {
+  it('keeps both no-quote reasons when the ficha 200 cannot be parsed', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(catalogRes({
         data: [{
@@ -153,7 +166,13 @@ describe('CAFCI client headers and 403', () => {
       .mockResolvedValueOnce(htmlRes('<html><body>foo</body></html>'))
       .mockResolvedValue(htmlRes('<html></html>'));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
+      name: 'FciCombinedError',
+      cafciReason: 'unparseable_ficha',
+      cafciStage: 'ficha',
+      iolReason: 'no_match',
+      iolStage: 'iol',
+    });
   });
 
   it('uses the class moneda when the ficha payload has no currency', async () => {
@@ -571,12 +590,16 @@ describe('CAFCI failure diagnostics', () => {
         data: { valorCuotaparte: 1.098, fecha: '2026-10-23', moneda: 'USD' },
       })))
       .mockResolvedValue(htmlRes('<html></html>')));
-    const reasons: string[] = [];
-    await expect(fetchFciQuote('IOLDOLD', (r) => reasons.push(r))).resolves.toBeNull();
-    expect(reasons).toEqual(['unparseable_ficha']);
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({
+      name: 'FciCombinedError',
+      cafciReason: 'unparseable_ficha',
+      cafciStage: 'ficha',
+      iolReason: 'no_match',
+      iolStage: 'iol',
+    });
   });
 
-  it('reports no_match, ambiguous_match and unparseable_ficha without changing the null result', async () => {
+  it('reports no_match, ambiguous_match, unparseable_ficha and empty_ticker with both stages when IOL is empty', async () => {
     const ambiguous = [
       { id: 1, clases: [{ id: 2, simbolo: 'DUPE' }] },
       { id: 3, clases: [{ id: 4, simbolo: 'DUPE' }] },
@@ -594,11 +617,23 @@ describe('CAFCI failure diagnostics', () => {
     }));
     const reasons: string[] = [];
     const onMiss = (r: string) => reasons.push(r);
-    await expect(fetchFciQuote('NOPE', onMiss)).resolves.toBeNull();
+    await expect(fetchFciQuote('NOPE', onMiss)).rejects.toMatchObject({
+      name: 'FciCombinedError',
+      cafciReason: 'no_match',
+      cafciStage: 'catalog',
+      iolReason: 'no_match',
+      iolStage: 'iol',
+    });
     await expect(fetchFciQuote('DUPE', onMiss)).resolves.toBeNull();
-    await expect(fetchFciQuote('IOLDOLD', onMiss)).resolves.toBeNull();
+    await expect(fetchFciQuote('IOLDOLD', onMiss)).rejects.toMatchObject({
+      name: 'FciCombinedError',
+      cafciReason: 'unparseable_ficha',
+      cafciStage: 'ficha',
+      iolReason: 'no_match',
+      iolStage: 'iol',
+    });
     await expect(fetchFciQuote('  ', onMiss)).resolves.toBeNull();
-    expect(reasons).toEqual(['no_match', 'ambiguous_match', 'unparseable_ficha', 'empty_ticker']);
+    expect(reasons).toEqual(['ambiguous_match', 'empty_ticker']);
   });
 
   it('ignores a throwing onMiss callback', async () => {

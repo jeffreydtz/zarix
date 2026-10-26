@@ -69,15 +69,34 @@ export function quoteTimestampOrFetchedAt(quote: unknown, fetchedAtIso: string):
   return quoteSourceTimestamp(quote) ?? fetchedAtIso;
 }
 
-/** IOL is preview-only. Automatic FCI writes need a source NAV timestamp. */
+/** IOL is preview-only. Automatic FCI writes are CAFCI observations with a NAV timestamp. */
 export function shouldPersistFciQuote(quote: Pick<QuoteResult, 'source' | 'timestamp'>): boolean {
-  return quote.source !== 'iol' && typeof quote.timestamp === 'string' && quote.timestamp.length > 0;
+  return quote.source === 'cafci' && typeof quote.timestamp === 'string' && quote.timestamp.length > 0;
+}
+
+export const FCI_ANOMALOUS_FUTURE_MS = 24 * 60 * 60 * 1000;
+
+export function isAnomalousFutureTimestamp(
+  iso: string | null | undefined,
+  nowMs: number = Date.now()
+): boolean {
+  if (!iso) return false;
+  const ms = Date.parse(iso);
+  return Number.isFinite(ms) && ms > nowMs + FCI_ANOMALOUS_FUTURE_MS;
+}
+
+function postgrestTimestamp(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
 /** PostgREST `.or()` so a concurrent newer observation is not overwritten. */
-export function monotonicCurrentPriceFilter(sourceTs: string): string {
-  const escaped = sourceTs.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-  return `current_price_updated_at.is.null,current_price_updated_at.lt."${escaped}"`;
+export function monotonicCurrentPriceFilter(sourceTs: string, now: Date = new Date()): string {
+  const horizon = new Date(now.getTime() + FCI_ANOMALOUS_FUTURE_MS).toISOString();
+  return [
+    'current_price_updated_at.is.null',
+    `current_price_updated_at.lt."${postgrestTimestamp(sourceTs)}"`,
+    `current_price_updated_at.gt."${postgrestTimestamp(horizon)}"`,
+  ].join(',');
 }
 
 /** Stored observation is usable as a monotonic floor (not future/garbage). */
@@ -622,13 +641,8 @@ export async function refreshQuotesForInvestments(
                 fxAsOf: adapted.fxAsOf,
                 source: q.source,
               };
-              if (persist && q.source === 'iol') {
-                console.info('[quotes] fci write', {
-                  ticker: fci.ticker,
-                  id: fci.id,
-                  source: 'iol',
-                  timestamp: sourceTs,
-                });
+              if (persist && !shouldPersistFciQuote(stamped)) {
+                stamped = null;
               }
             }
           }

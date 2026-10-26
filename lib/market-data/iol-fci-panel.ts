@@ -6,13 +6,14 @@
  * The live panel has no NAV date, so quotes are not a persistence source.
  */
 
+import * as cheerio from 'cheerio';
 import { parseArgentineNumber } from '@/lib/market-data/argentine-number';
 import {
   FETCH_REDIRECT,
   readResponseTextCapped,
   ResponseTooLargeError,
 } from '@/lib/market-data/bounded-fetch';
-import { decodeHtmlEntities } from '@/lib/market-data/html-text';
+import { CAFCI_NAV_TOKEN } from '@/lib/market-data/cafci-html';
 
 export { parseArgentineNumber } from '@/lib/market-data/argentine-number';
 
@@ -80,17 +81,13 @@ export function normalizeIolTicker(raw: string): string | null {
   return ticker;
 }
 
-function stripTags(value: string): string {
-  return decodeHtmlEntities(value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')).trim();
-}
-
 function quotesEqual(a: IolFciQuote, b: IolFciQuote): boolean {
   return a.price === b.price && a.currency === b.currency && a.changePct === b.changePct;
 }
 
 function parseSignedPercent(text: string): number | null {
-  const normalized = text.replace(/\u2212/g, '-');
-  const match = normalized.match(/([+-]?)\s*(\S+?)\s*%/);
+  const normalized = text.replace(/\u2212/g, '-').replace(/\s+/g, '');
+  const match = normalized.match(/^([+-]?)(.+)%$/);
   if (!match) return null;
   const n = parseArgentineNumber(`${match[1]}${match[2]}`);
   return n != null && Number.isFinite(n) ? n : null;
@@ -103,22 +100,24 @@ function parseSignedPercent(text: string): number | null {
 export function parseIolFondosPanel(html: string): Map<string, IolFciQuote> {
   const out = new Map<string, IolFciQuote>();
   const skipped = new Set<string>();
-  const rowRe = /<tr\b[^>]*>[\s\S]*?<\/tr>/gi;
-  for (const rowMatch of html.matchAll(rowRe)) {
-    const row = rowMatch[0];
-    const symbolMatch = row.match(/data-symbol="([^"]+)"/i);
-    if (!symbolMatch) continue;
-    const ticker = normalizeIolTicker(symbolMatch[1]);
-    if (!ticker || skipped.has(ticker)) continue;
-    const tds = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => stripTags(m[1]));
-    const priceCell = tds.find((td) => /(?:US\$|AR\$|USD|ARS)\s*\S+/i.test(td)) ?? '';
-    const priceMatch = priceCell.match(/(US\$|AR\$|USD|ARS)\s*(\S+)/i);
-    if (!priceMatch) continue;
-    const price = parseArgentineNumber(priceMatch[2]);
-    if (price == null || !(price > 0)) continue;
+  const $ = cheerio.load(html);
+  $('script, style, noscript, template').remove();
+  $('tr').each((_, row) => {
+    const symbol = $(row).find('[data-symbol]').first().attr('data-symbol');
+    if (symbol == null) return;
+    const ticker = normalizeIolTicker(symbol);
+    if (!ticker || skipped.has(ticker)) return;
+    const tds = $(row).find('td').toArray().map((td) => $(td).text().replace(/\s+/g, ' ').trim());
+    const priceCell = tds.find((td) => /^(US\$|AR\$|USD|ARS)\s+/i.test(td)) ?? '';
+    const priceMatch = priceCell.match(/^(US\$|AR\$|USD|ARS)\s+(.+)$/i);
+    if (!priceMatch) return;
+    const token = priceMatch[2].trim();
+    if (!CAFCI_NAV_TOKEN.test(token)) return;
+    const price = parseArgentineNumber(token);
+    if (price == null || !(price > 0)) return;
     const unit = priceMatch[1].toUpperCase();
     const currency: 'ARS' | 'USD' | null = unit.includes('US') ? 'USD' : unit.includes('AR') ? 'ARS' : null;
-    const changeCell = tds.find((td) => /%/.test(td) && /[\d.,]+/.test(td));
+    const changeCell = tds.find((td) => /%/.test(td));
     const changePct = changeCell ? parseSignedPercent(changeCell) : null;
     const quote: IolFciQuote = {
       ticker,
@@ -133,10 +132,10 @@ export function parseIolFondosPanel(html: string): Map<string, IolFciQuote> {
         out.delete(ticker);
         skipped.add(ticker);
       }
-      continue;
+      return;
     }
     out.set(ticker, quote);
-  }
+  });
   return out;
 }
 

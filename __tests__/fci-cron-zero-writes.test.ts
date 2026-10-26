@@ -21,6 +21,8 @@ const mocks = vi.hoisted(() => ({
   alert: vi.fn(),
   investments: [] as Array<Record<string, unknown>>,
   updates: [] as Array<Record<string, unknown>>,
+  orFilters: [] as string[],
+  selectData: [{ id: 'ok' }] as Array<{ id: string }>,
 }));
 
 vi.mock('@/lib/market-data/data912-client', () => ({ loadArgentineQuotes: mocks.arg }));
@@ -171,6 +173,8 @@ function setPosition(overrides: Record<string, unknown> = {}) {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.updates = [];
+  mocks.orFilters = [];
+  mocks.selectData = [{ id: 'ok' }];
   resetCafciCatalogCacheForTest();
   vi.stubEnv('CRON_SECRET', 'synthetic-cron-secret');
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -203,8 +207,11 @@ beforeEach(() => {
       then: (resolve, reject) => Promise.resolve({ error: null, data: [{ id: 'ok' }] }).then(resolve, reject),
     };
     chain.eq.mockReturnValue(chain);
-    chain.or.mockReturnValue(chain);
-    chain.select.mockResolvedValue({ error: null, data: [{ id: 'ok' }] });
+    chain.or.mockImplementation((filter: string) => {
+      mocks.orFilters.push(filter);
+      return chain;
+    });
+    chain.select.mockImplementation(async () => ({ error: null, data: mocks.selectData }));
     return chain;
   });
   mocks.from.mockImplementation((table: string) => {
@@ -462,7 +469,9 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
     expect(mocks.updates).toHaveLength(0);
     expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
-      reason: 'no_match',
+      reason: 'no_match; no_match',
+      cafciStage: 'catalog',
+      iolStage: 'iol',
     }));
   });
 
@@ -495,5 +504,117 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     });
     expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
     expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('does not write an empty ticker', async () => {
+    setPosition({ ticker: '   ' });
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({ priceLabel: '1.241,954039', fondoId: '227', claseId: '784' }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'empty_ticker',
+    }));
+  });
+
+  it('does not write when the FCI budget is exhausted', async () => {
+    const base = Date.now();
+    let cursor = base;
+    vi.spyOn(Date, 'now').mockImplementation(() => {
+      cursor += 21_000;
+      return cursor;
+    });
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({ priceLabel: '1.241,954039', fondoId: '227', claseId: '784' }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'budget_exhausted',
+    }));
+  });
+
+  it('does not write without a plausibility anchor', async () => {
+    setPosition({ current_price: null, purchase_price: null });
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({ priceLabel: '1.241,954039', fondoId: '227', claseId: '784' }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+      reason: 'no_anchor',
+      ticker: 'PRTAVAB',
+    }));
+  });
+
+  it('does not write an ARS CAFCI quote onto a USD book when MEP is missing', async () => {
+    setPosition({
+      market_currency: 'USD',
+      purchase_currency: 'USD',
+      current_price: 0.95,
+      purchase_price: 0.95,
+    });
+    mocks.dolar.mockResolvedValue({ status: 'unavailable' });
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({
+          priceLabel: '1.241,954039',
+          moneda: 'Peso Argentina',
+          fondoId: '227',
+          claseId: '784',
+        }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip FCI currency', expect.objectContaining({
+      reason: 'mep',
+      ticker: 'PRTAVAB',
+    }));
+  });
+
+  it('logs older_than_stored when a conditional UPDATE matches zero rows', async () => {
+    mocks.selectData = [];
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({ priceLabel: '1.241,954039', fondoId: '227', claseId: '784' }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'older_than_stored',
+      id: 'fixture-prtava-b',
+      source: 'cafci',
+    }));
+  });
+
+  it('overwrites an anomalous future stored timestamp', async () => {
+    setPosition({
+      current_price: 1240,
+      current_price_updated_at: '2099-01-01T03:00:00.000Z',
+    });
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({ priceLabel: '1.241,954039', fondoId: '227', claseId: '784' }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(1);
+    expect(mocks.updates[0].current_price).toBeCloseTo(1241.954039, 8);
+    expect(mocks.orFilters[0]).toContain('current_price_updated_at.gt.');
+    expect(console.warn).toHaveBeenCalledWith(
+      '[quotes] overwrite anomalous stored timestamp',
+      expect.objectContaining({
+        id: 'fixture-prtava-b',
+        source: 'cafci',
+        stored: '2099-01-01T03:00:00.000Z',
+      }),
+    );
   });
 });

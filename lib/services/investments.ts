@@ -14,6 +14,7 @@ import {
 } from '@/lib/investments/type-meta';
 import {
   InvestmentQuoteMap,
+  isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
@@ -403,12 +404,14 @@ class InvestmentsService {
     }
 
     const now = Date.now();
+    const nowDate = new Date(now);
     const needsRefresh = !options?.skipQuoteRefresh;
     const candidatesForRefresh = needsRefresh
       ? investments.filter((inv) => {
           if (!inv.ticker) return false;
           if (inv.is_manual_price) return false;
           if (options?.forceRefreshQuotes) return true;
+          if (isAnomalousFutureTimestamp(inv.current_price_updated_at, now)) return true;
           const lastUpdatedAt = inv.current_price_updated_at
             ? new Date(inv.current_price_updated_at).getTime()
             : 0;
@@ -419,6 +422,46 @@ class InvestmentsService {
     const quoteMap = candidatesForRefresh.length
       ? await this.refreshQuotesForInvestments(candidatesForRefresh)
       : new InvestmentQuoteMap();
+
+    for (const inv of investments) {
+      if (inv.type !== 'fci' || inv.is_manual_price || !inv.ticker) continue;
+      const cacheKey = quoteCacheKeyForPosition(inv);
+      const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
+      if (!fresh || !(fresh.price > 0) || fresh.fxStale || !shouldPersistFciQuote(fresh) || !fresh.timestamp) {
+        continue;
+      }
+      const anomalous = isAnomalousFutureTimestamp(inv.current_price_updated_at, now);
+      const { data, error: fciUpdateError } = await supabase
+        .from('investments')
+        .update({
+          current_price: fresh.price,
+          current_price_updated_at: fresh.timestamp,
+          current_price_change_pct: fresh.changePct,
+          market_currency: fresh.currency.trim().toUpperCase(),
+        })
+        .eq('id', inv.id)
+        .or(monotonicCurrentPriceFilter(fresh.timestamp, nowDate))
+        .select('id');
+      if (fciUpdateError) throw fciUpdateError;
+      if (!Array.isArray(data) || data.length === 0) {
+        console.warn('[quotes] skip CAFCI failure', {
+          ticker: inv.ticker,
+          id: inv.id,
+          reason: 'older_than_stored',
+          source: fresh.source,
+        });
+        if (cacheKey) quoteMap.delete(cacheKey);
+        continue;
+      }
+      if (anomalous) {
+        console.warn('[quotes] overwrite anomalous stored timestamp', {
+          ticker: inv.ticker,
+          id: inv.id,
+          source: fresh.source,
+          stored: inv.current_price_updated_at,
+        });
+      }
+    }
 
     const updates: Array<QuoteResult & { id: string }> = [];
 
@@ -445,7 +488,9 @@ class InvestmentsService {
           positionFxStale ||= Boolean(fresh.fxStale);
           if (fresh.fxAsOf && (!positionFxAsOf || fresh.fxAsOf < positionFxAsOf)) positionFxAsOf = fresh.fxAsOf;
           priceUpdatedAt = fresh.timestamp;
-          updates.push({ id: inv.id, ...fresh });
+          if (!(inv.type === 'fci' && shouldPersistFciQuote(fresh))) {
+            updates.push({ id: inv.id, ...fresh });
+          }
         }
       }
 
@@ -516,7 +561,7 @@ class InvestmentsService {
           // Display estimates must not lose their FX provenance in stored prices.
           if (u.fxStale) return;
           const invType = investments.find((row) => row.id === u.id)?.type;
-          if (invType === 'fci' && !shouldPersistFciQuote(u)) return;
+          if (invType === 'fci') return;
           let query = supabase
             .from('investments')
             .update({
@@ -526,13 +571,6 @@ class InvestmentsService {
               market_currency: u.currency.trim().toUpperCase(),
             })
             .eq('id', u.id);
-          if (invType === 'fci' && u.timestamp) {
-            const { error: updateError } = await query
-              .or(monotonicCurrentPriceFilter(u.timestamp))
-              .select('id');
-            if (updateError) throw updateError;
-            return;
-          }
           const { error: updateError } = await query;
           if (updateError) throw updateError;
         })
