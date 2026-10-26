@@ -19,16 +19,15 @@ vi.mock('@/lib/market-data/cafci-client', () => ({ fetchFciQuote: mocks.fci }));
 
 import {
   applyObservedRowMatch,
+  applyObservedTimestampMatch,
   classifyAutomaticPriceZeroRows,
   describeFciFetchError,
   evaluateFciDailyJump,
   FCI_DAILY_JUMP_EPS,
   isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
-  planFciTimestampWrite,
   quoteCacheKey,
   refreshQuotesForInvestments,
-  resolveExternalClock,
   shouldPersistFciQuote,
 } from '@/lib/market-data/quote-refresh';
 import { fciJumpMaxAbs } from '@/lib/market-data/fci-daily-jump';
@@ -177,17 +176,24 @@ describe('IOL quotes never persist through the band or a newer CAFCI store', () 
     }));
   });
 
-  it('does not let a future stored timestamp block a fresh CAFCI write', async () => {
+  it('does not stamp a candidate over a future stored timestamp', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const candidate = freshFciNavIso();
     mocks.fci.mockResolvedValue({
       ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null,
-      timestamp: freshFciNavIso(), source: 'cafci',
+      timestamp: candidate, source: 'cafci',
     });
     const map = await refreshQuotesForInvestments([{
       ...IOLDOLD, current_price: 1.09, current_price_updated_at: '2099-01-01T03:00:00.000Z',
     }]);
-    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toMatchObject({
-      price: 1.098, source: 'cafci',
-    });
+    expect(map.size).toBe(0);
+    expect(skipLogs(warn)).toEqual([expect.objectContaining({
+      reason: 'future_stored',
+      stored: '2099-01-01T03:00:00.000Z',
+      candidate,
+      source: 'cafci',
+    })]);
+    expect(skipLogs(warn)[0].appClock).toEqual(expect.any(String));
   });
 
   it('does not let dated IOL replace a newer stored CAFCI timestamp', async () => {
@@ -251,7 +257,7 @@ describe('FCI persist allowlist and monotonic filter', () => {
     expect(shouldPersistFciQuote({ source: 'cafci', timestamp: '' })).toBe(false);
   });
 
-  it('lets an anomalous future stored timestamp match the UPDATE filter', () => {
+  it('keeps the monotonic UPDATE filter on current_price_updated_at', () => {
     const filter = monotonicCurrentPriceFilter('2026-10-23T03:00:00.000Z');
     expect(filter).toBe([
       'current_price_updated_at.is.null',
@@ -339,6 +345,10 @@ describe('FCI daily_jump per catalog fund type', () => {
       candidate: 0.92, storedPrice: 1, storedTs: stored, nowMs, maxAbs: 0.08,
     }).ok).toBe(true);
     expect(evaluateFciDailyJump({
+      candidate: 1 + 0.08 + 1e-9,
+      storedPrice: 1, storedTs: stored, nowMs, maxAbs: 0.08,
+    }).ok).toBe(true);
+    expect(evaluateFciDailyJump({
       candidate: 1 + 0.08 + FCI_DAILY_JUMP_EPS * 2,
       storedPrice: 1, storedTs: stored, nowMs, maxAbs: 0.08,
     }).ok).toBe(false);
@@ -373,23 +383,27 @@ describe('out_of_band freeze is logged, never auto-unfrozen', () => {
   });
 });
 
-describe('future-timestamp CAS clock gate', () => {
-  it('skips CAS repair when the app clock is 2 days behind the CAFCI Date', () => {
-    const stored = '2026-10-26T03:00:00.000Z';
-    const appNowMs = Date.parse('2026-10-24T12:00:00.000Z');
-    const httpDate = 'Mon, 26 Oct 2026 12:00:00 GMT';
-    expect(resolveExternalClock(httpDate, appNowMs)).toEqual({ ok: false, reason: 'clock_skew' });
-    expect(planFciTimestampWrite({ storedTs: stored, httpDate, appNowMs })).toEqual({
-      action: 'skip', reason: 'clock_skew',
+describe('future stored timestamps are never overwritten', () => {
+  it('treats a 26/10 store as future when the app clock is 24/10, ignoring any Date header', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-24T12:00:00.000Z'));
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.11, currency: 'USD', changePct: null,
+      timestamp: '2026-10-22T03:00:00.000Z', source: 'cafci',
+      httpDate: 'Mon, 26 Oct 2026 12:00:00 GMT',
     });
-  });
-
-  it('skips CAS repair when the CAFCI Date header is missing', () => {
-    expect(planFciTimestampWrite({
-      storedTs: '2099-01-01T03:00:00.000Z',
-      httpDate: null,
-      appNowMs: Date.parse('2026-10-26T15:00:00.000Z'),
-    })).toEqual({ action: 'skip', reason: 'clock_skew' });
+    const map = await refreshQuotesForInvestments([{
+      ...IOLDOLD, current_price: 1.12, current_price_updated_at: '2026-10-26T03:00:00.000Z',
+    }]);
+    expect(map.size).toBe(0);
+    expect(skipLogs(warn)).toEqual([expect.objectContaining({
+      reason: 'future_stored',
+      stored: '2026-10-26T03:00:00.000Z',
+      candidate: '2026-10-22T03:00:00.000Z',
+      appClock: '2026-10-24T12:00:00.000Z',
+    })]);
+    vi.useRealTimers();
   });
 });
 
@@ -411,27 +425,79 @@ describe('automatic writer row match', () => {
     });
     expect(calls).toEqual([
       ['type', 'fci'],
-      ['ticker', 'PRTAVAB'],
       ['is_manual_price', false],
+      ['ticker', 'PRTAVAB'],
       ['market_currency', 'ARS'],
+    ]);
+  });
+
+  it('matches the raw observed ticker and currency, including blank and spaced values', () => {
+    const calls: Array<[string, unknown]> = [];
+    const query = {
+      eq(column: string, value: unknown) {
+        calls.push([column, value]);
+        return this;
+      },
+      is(column: string, value: null) {
+        calls.push([column, value]);
+        return this;
+      },
+    };
+    applyObservedTimestampMatch(
+      applyObservedRowMatch(query, {
+        type: 'stock_arg', ticker: 'ggal', market_currency: ' USD ',
+      }),
+      '2026-10-23T03:00:00.000Z',
+    );
+    expect(calls).toEqual([
+      ['type', 'stock_arg'],
+      ['is_manual_price', false],
+      ['ticker', 'ggal'],
+      ['market_currency', ' USD '],
+      ['current_price_updated_at', '2026-10-23T03:00:00.000Z'],
+    ]);
+    calls.length = 0;
+    applyObservedTimestampMatch(
+      applyObservedRowMatch(query, {
+        type: 'crypto', ticker: null, market_currency: '',
+      }),
+      null,
+    );
+    expect(calls).toEqual([
+      ['type', 'crypto'],
+      ['is_manual_price', false],
+      ['ticker', null],
+      ['market_currency', ''],
+      ['current_price_updated_at', null],
+    ]);
+    calls.length = 0;
+    applyObservedRowMatch(query, {
+      type: 'bond', ticker: 'AL30', market_currency: null,
+    });
+    expect(calls).toEqual([
+      ['type', 'bond'],
+      ['is_manual_price', false],
+      ['ticker', 'AL30'],
+      ['market_currency', null],
     ]);
   });
 
   it('classifies an identity mismatch as row_changed instead of older_than_stored', () => {
     expect(classifyAutomaticPriceZeroRows({
-      anomalous: false,
       observed: { type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS' },
       winning: { type: 'bond', ticker: 'PRTAVAB', market_currency: 'ARS', is_manual_price: false },
     })).toBe('row_changed');
     expect(classifyAutomaticPriceZeroRows({
-      anomalous: false,
       observed: { type: 'stock_arg', ticker: 'GGAL', market_currency: 'ARS' },
       winning: { type: 'fci', ticker: 'GGAL', market_currency: 'ARS', is_manual_price: false },
     })).toBe('row_changed');
     expect(classifyAutomaticPriceZeroRows({
-      anomalous: false,
       observed: { type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS' },
       winning: { type: 'fci', ticker: 'PRTAVAB', market_currency: 'ARS', is_manual_price: false },
     })).toBe('older_than_stored');
+    expect(classifyAutomaticPriceZeroRows({
+      observed: { type: 'stock_arg', ticker: 'GGAL', market_currency: 'usd' },
+      winning: { type: 'stock_arg', ticker: 'GGAL', market_currency: 'USD', is_manual_price: false },
+    })).toBe('row_changed');
   });
 });

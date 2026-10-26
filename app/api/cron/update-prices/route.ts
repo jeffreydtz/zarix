@@ -4,9 +4,9 @@ import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executabl
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
   applyObservedRowMatch,
+  applyObservedTimestampMatch,
   classifyAutomaticPriceZeroRows,
   monotonicCurrentPriceFilter,
-  planFciTimestampWrite,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
   shouldPersistFciQuote,
@@ -103,21 +103,6 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
       return false;
     }
     const sourceTs = q.timestamp;
-    const casPlan = inv.type === 'fci' && sourceTs
-      ? planFciTimestampWrite({
-          storedTs: inv.current_price_updated_at,
-          httpDate: q.httpDate,
-        })
-      : null;
-    if (casPlan?.action === 'skip') {
-      console.warn('[quotes] skip CAFCI failure', {
-        ticker: inv.ticker,
-        id: inv.id,
-        reason: 'clock_skew',
-        source: q.source,
-      });
-      return false;
-    }
     let query = applyObservedRowMatch(
       supabase
         .from('investments')
@@ -130,20 +115,8 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
         .eq('id', inv.id),
       inv,
     );
-    if (inv.type === 'fci' && sourceTs && casPlan) {
-      const anomalous = casPlan.action === 'cas';
-      if (anomalous) {
-        console.warn('[quotes] future stored timestamp', {
-          ticker: inv.ticker,
-          id: inv.id,
-          source: q.source,
-          stored: inv.current_price_updated_at,
-        });
-      }
-      const filtered = anomalous && inv.current_price_updated_at
-        ? query.eq('current_price_updated_at', inv.current_price_updated_at)
-        : query.or(monotonicCurrentPriceFilter(sourceTs));
-      const { data, error } = await filtered.select('id');
+    if (inv.type === 'fci' && sourceTs) {
+      const { data, error } = await query.or(monotonicCurrentPriceFilter(sourceTs)).select('id');
       if (error) throw error;
       if (!Array.isArray(data) || data.length === 0) {
         const { data: winningRows, error: rereadError } = await supabase
@@ -155,7 +128,6 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
           ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
           : null;
         const reason = classifyAutomaticPriceZeroRows({
-          anomalous,
           observed: inv,
           winning,
         });
@@ -167,16 +139,9 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
         });
         return false;
       }
-      if (anomalous) {
-        console.warn('[quotes] overwrite anomalous stored timestamp', {
-          ticker: inv.ticker,
-          id: inv.id,
-          source: q.source,
-          stored: inv.current_price_updated_at,
-        });
-      }
       return true;
     }
+    query = applyObservedTimestampMatch(query, inv.current_price_updated_at);
     const { data, error } = await query.select('id');
     if (error) throw error;
     if (!Array.isArray(data) || data.length === 0) {

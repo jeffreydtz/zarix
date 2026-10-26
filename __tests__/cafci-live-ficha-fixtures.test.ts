@@ -50,4 +50,19 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     });
     expect(parseCafciHtmlFicha(html)?.price).toBeCloseTo(row.price, 8);
   });
+
+  it('skips live HTML whose form or #cuotaparte is wrapped in <template>', () => {
+    const html = readFileSync(join(fixtures, '227-784.html'), 'utf8');
+    expect(parseCafciHtmlFichaDetailed(`<html><body><template>${html}</template></body></html>`, {
+      fondoId: '227', claseId: '784',
+    }).parsed).toBeNull();
+    expect(parseCafciHtmlFichaDetailed(
+      html.replace('<form', '<template><form').replace('</form>', '</form></template>'),
+      { fondoId: '227', claseId: '784' },
+    ).parsed).toBeNull();
+    expect(parseCafciHtmlFichaDetailed(
+      html.replace('<div id="cuotaparte"', '<template><div id="cuotaparte"'),
+      { fondoId: '227', claseId: '784' },
+    ).parsed).toBeNull();
+  });
 });

@@ -71,7 +71,6 @@ beforeEach(() => {
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
   mocks.fci.mockResolvedValue({
     price: 1.098, currency: 'USD', changePct: 0, timestamp: freshFciNavIso(), source: 'cafci',
-    httpDate: new Date().toUTCString(),
   });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
@@ -529,7 +528,7 @@ it('cron does not write a non-positive CAFCI price', async () => {
   }));
 });
 
-it('selects a future stored timestamp for refresh without forceRefreshQuotes', async () => {
+it('selects a future stored timestamp for refresh without forceRefreshQuotes and does not write', async () => {
   mocks.positions = [{
     ...position(),
     current_price: 1.09,
@@ -538,22 +537,15 @@ it('selects a future stored timestamp for refresh without forceRefreshQuotes', a
   const rows = await investmentsService.list('fixture-user');
   expect(mocks.fci).toHaveBeenCalled();
   expect(rows[0]).toMatchObject({
-    current_price: 1.098,
-    valuation_price_source: 'live',
+    current_price: 1.09,
+    valuation_price_source: 'cache',
   });
-  expect(mocks.orFilters).toEqual([]);
+  expect(mocks.updates).toEqual([]);
   expect(console.warn).toHaveBeenCalledWith(
-    '[quotes] future stored timestamp',
+    '[quotes] skip CAFCI failure',
     expect.objectContaining({
+      reason: 'future_stored',
       id: 'fixture-position',
-      stored: '2099-01-01T03:00:00.000Z',
-    }),
-  );
-  expect(console.warn).toHaveBeenCalledWith(
-    '[quotes] overwrite anomalous stored timestamp',
-    expect.objectContaining({
-      id: 'fixture-position',
-      source: 'cafci',
       stored: '2099-01-01T03:00:00.000Z',
     }),
   );
@@ -581,9 +573,20 @@ it('does not return a losing FCI quote as live when the conditional UPDATE match
 it('logs row_changed when the FCI row is a bond before the UPDATE lands', async () => {
   mocks.selectData = [];
   mocks.positions = [position()];
-  mocks.rereadData = [{ ...position(), type: 'bond' }];
+  mocks.rereadData = [{
+    ...position(),
+    type: 'bond',
+    ticker: 'AL30',
+    market_currency: 'USD',
+    current_price: 77.5,
+  }];
   const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
-  expect(rows[0].current_price).toBe(1.09);
+  expect(rows[0]).toMatchObject({
+    type: 'bond',
+    ticker: 'AL30',
+    market_currency: 'USD',
+    current_price: 77.5,
+  });
   expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
     reason: 'row_changed',
     id: 'fixture-position',

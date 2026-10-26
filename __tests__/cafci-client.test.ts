@@ -29,7 +29,7 @@ function quoteHtml(opts: {
   const date = opts.date ?? cafciValoresAlLabel();
   const moneda = opts.moneda === null ? '' : (opts.moneda ?? 'Dolar Estadounidense');
   const monedaLine = moneda
-    ? `<span class="label">Moneda:</span> ${moneda}`
+    ? `<div id="fichaRight"><span class="label">Moneda:</span> ${moneda}</div>`
     : '';
   return `<html><body>
     <form method="get" action="/fondos/${fondoId}">
@@ -726,7 +726,7 @@ function htmlFicha(opts: {
       ${opts.extraNavLabel ? `<p>Valor por cada cuotaparte: ${opts.extraNavLabel}</p>` : ''}
       <p>(Valor por mil: 1.097,744)</p>
     </div>
-    <span class="label">Moneda:</span> ${opts.moneda ?? 'Dolar Estadounidense'}</li>
+    <div id="fichaRight"><span class="label">Moneda:</span> ${opts.moneda ?? 'Dolar Estadounidense'}</div>
   </body></html>`;
 }
 
@@ -881,7 +881,7 @@ describe('CAFCI stats catalog + HTML ficha (2026 public endpoints)', () => {
         <p>Valor por cada cuotaparte: 1,097744</p>
       </div>
       <div id="cartera"><div class="valores">Valores al 02/10/2026</div></div>
-      <span class="label">Moneda:</span> Dolar Estadounidense
+      <div id="fichaRight"><span class="label">Moneda:</span> Dolar Estadounidense</div>
     </body></html>`;
     expect(parseCafciHtmlFicha(html)).toMatchObject({
       price: 1.097744, fondoId: '1570', claseId: '5100',

@@ -101,7 +101,7 @@ describe('FCI NAV freshness', () => {
     expect(navTimestampToCivilYmd('2026-10-23')).toBe('2026-10-23');
   });
 
-  it('does not let a future stored timestamp block writes', () => {
+  it('does not treat a future stored timestamp as a monotonic floor', () => {
     expect(storedFciTimestampMs('2099-01-01T03:00:00.000Z')).toBeNaN();
     expect(storedFciTimestampMs('not-a-date')).toBeNaN();
     expect(storedFciTimestampMs('2026-10-23T03:00:00.000Z')).toBe(

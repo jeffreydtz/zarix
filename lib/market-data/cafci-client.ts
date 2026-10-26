@@ -175,8 +175,6 @@ export interface FciQuote {
   fundType?: string | null;
   /** Max |new/stored - 1| for a stored price ≤10 days old. */
   jumpMaxAbs?: number;
-  /** HTTP `Date` from the CAFCI response, used to gate future-timestamp CAS. */
-  httpDate?: string | null;
 }
 
 /** ARS/USD, an explicit other label (EUR), mixed fields at one level, or missing. */
@@ -197,7 +195,7 @@ interface CafciClass {
   diasLiquidacion?: number | null;
 }
 
-let catalogCache: { ts: number; classes: CafciClass[]; dateHeader: string | null } | null = null;
+let catalogCache: { ts: number; classes: CafciClass[] } | null = null;
 let catalogInflight: Promise<CafciClass[]> | null = null;
 
 function fold(value: string): string {
@@ -425,21 +423,12 @@ function assertCafciUrl(url: string, stage: CafciStage): void {
   }
 }
 
-function httpDateHeader(res: Response): string | null {
-  try {
-    const value = res.headers?.get?.('date') ?? res.headers?.get?.('Date') ?? null;
-    return value && value.trim() ? value.trim() : null;
-  } catch {
-    return null;
-  }
-}
-
 async function fetchCafciResponse(
   url: string,
   stage: CafciStage,
   timeoutMs = FETCH_TIMEOUT_MS,
   maxBytes = FICHA_MAX_BYTES
-): Promise<{ text: string; dateHeader: string | null }> {
+): Promise<string> {
   assertCafciUrl(url, stage);
   let res: Response;
   try {
@@ -461,31 +450,21 @@ async function fetchCafciResponse(
     }
     throw new CafciHttpError(res.status, stage, server);
   }
-  const dateHeader = httpDateHeader(res);
   try {
     if (typeof res.text !== 'function' && typeof res.json === 'function' && !res.body) {
-      return { text: JSON.stringify(await res.json()), dateHeader };
+      return JSON.stringify(await res.json());
     }
-    return { text: await readResponseTextCapped(res, maxBytes), dateHeader };
+    return await readResponseTextCapped(res, maxBytes);
   } catch (error) {
     if (error instanceof ResponseTooLargeError) throw new CafciFetchError(stage, error);
     throw new CafciFetchError(stage, error);
   }
 }
 
-async function fetchCafciText(
-  url: string,
-  stage: CafciStage,
-  timeoutMs = FETCH_TIMEOUT_MS,
-  maxBytes = FICHA_MAX_BYTES
-): Promise<string> {
-  return (await fetchCafciResponse(url, stage, timeoutMs, maxBytes)).text;
-}
-
-async function fetchJson(url: string, stage: CafciStage, timeoutMs = FETCH_TIMEOUT_MS): Promise<{ json: unknown; dateHeader: string | null }> {
-  const { text, dateHeader } = await fetchCafciResponse(url, stage, timeoutMs, CATALOG_MAX_BYTES);
+async function fetchJson(url: string, stage: CafciStage, timeoutMs = FETCH_TIMEOUT_MS): Promise<unknown> {
+  const text = await fetchCafciResponse(url, stage, timeoutMs, CATALOG_MAX_BYTES);
   try {
-    return { json: JSON.parse(text), dateHeader };
+    return JSON.parse(text);
   } catch (error) {
     throw new CafciFetchError(stage, error);
   }
@@ -527,9 +506,9 @@ function classesFromCatalogPayload(json: unknown): CafciClass[] {
 }
 
 async function loadCatalogNow(): Promise<CafciClass[]> {
-  const { json, dateHeader } = await fetchJson(CAFCI_CATALOG_URL, 'catalog', CATALOG_TIMEOUT_MS);
+  const json = await fetchJson(CAFCI_CATALOG_URL, 'catalog', CATALOG_TIMEOUT_MS);
   const classes = classesFromCatalogPayload(json);
-  catalogCache = { ts: Date.now(), classes, dateHeader };
+  catalogCache = { ts: Date.now(), classes };
   return classes;
 }
 
@@ -576,7 +555,6 @@ type ParsedFicha = {
   fichaClass: CafciCurrencyLabel;
   fichaData: CafciCurrencyLabel;
   timestamp: string | null;
-  httpDate?: string | null;
 };
 
 type FichaFetchResult =
@@ -585,7 +563,7 @@ type FichaFetchResult =
 
 async function fetchParsedFicha(match: CafciClass): Promise<FichaFetchResult> {
   const url = `${CAFCI_STATS_BASE}/fondos/${encodeURIComponent(match.fondoId)}?clase=${encodeURIComponent(match.claseId)}`;
-  const { text, dateHeader } = await fetchCafciResponse(url, 'ficha', FETCH_TIMEOUT_MS, FICHA_MAX_BYTES);
+  const text = await fetchCafciResponse(url, 'ficha', FETCH_TIMEOUT_MS, FICHA_MAX_BYTES);
   const result = parseCafciHtmlFichaDetailed(text, { fondoId: match.fondoId, claseId: match.claseId });
   if (!result.parsed) return { parsed: null, reason: result.reason };
   const fichaClass = firstCurrencyLabel(result.parsed.monedaLabel);
@@ -596,7 +574,6 @@ async function fetchParsedFicha(match: CafciClass): Promise<FichaFetchResult> {
       fichaClass,
       fichaData: null,
       timestamp: result.parsed.timestamp,
-      httpDate: dateHeader ?? catalogCache?.dateHeader ?? null,
     },
   };
 }
@@ -621,7 +598,6 @@ function quoteFromParsed(
     catalogFund: match.fundCurrency ?? null,
   });
   const jump = jumpFields(match);
-  const httpDate = parsed.httpDate ?? null;
   if (resolved.currency) {
     return {
       ticker: symbol,
@@ -630,7 +606,6 @@ function quoteFromParsed(
       changePct: null,
       timestamp: parsed.timestamp,
       source,
-      httpDate,
       ...jump,
     };
   }
@@ -642,7 +617,6 @@ function quoteFromParsed(
       changePct: null,
       timestamp: parsed.timestamp,
       source,
-      httpDate,
       ...jump,
     };
   }
@@ -654,7 +628,6 @@ function quoteFromParsed(
     changePct: null,
     timestamp: parsed.timestamp,
     source,
-    httpDate,
     ...jump,
   };
 }

@@ -20,7 +20,7 @@ function shell(opts: {
   </form>`;
   const date = opts.date ?? `<h3>Valores al ${DATE}</h3>`;
   const nav = opts.nav ?? '<p>Valor por cada cuotaparte: 1.241,954039</p>';
-  const moneda = opts.moneda ?? '<span class="label">Moneda:</span> Peso Argentina';
+  const moneda = opts.moneda ?? '<div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div>';
   return `<html><body>
     ${identity}
     <div id="cuotaparte">${date}${nav}</div>
@@ -114,7 +114,7 @@ describe('Codex r3 HTML parser probes — fail closed', () => {
 
   it('11. ARS currency label followed by USD', () => {
     const html = shell({
-      moneda: '<span class="label">Moneda:</span> Peso Argentina<span class="label">Moneda:</span> Dolar Estadounidense',
+      moneda: '<div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina<span class="label">Moneda:</span> Dolar Estadounidense</div>',
     });
     expect(parsed(html).parsed).toBeNull();
   });
@@ -256,9 +256,9 @@ describe('Codex r5 HTML parser — parse5 fail-closed identity and cross-checks'
 
   it('skips when an ancestor Moneda: USD disagrees with chosen ARS', () => {
     const html = shell({
-      moneda: `<div>Moneda: Dolar Estadounidense
+      moneda: `<div id="fichaRight"><div>Moneda: Dolar Estadounidense
         <span class="label">Moneda:</span> Peso Argentina
-      </div>`,
+      </div></div>`,
     });
     expect(parsed(html).parsed).toBeNull();
   });
@@ -305,5 +305,92 @@ describe('Codex r5 HTML parser — parse5 fail-closed identity and cross-checks'
       </fieldset>`,
     });
     expect(parsed(html).parsed).toBeNull();
+  });
+});
+
+describe('Codex r6 / Kael HTML parser — template, NAV boundary, #fichaRight, legend', () => {
+  it('skips identity that exists only inside <template>', () => {
+    const html = shell({
+      identity: `<template>
+        <form method="get" action="/fondos/227">
+          <select name="clase">
+            <option value="227">A</option>
+            <option value="784" selected>B</option>
+          </select>
+        </form>
+      </template>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips #cuotaparte that exists only inside <template>', () => {
+    const html = `<html><body>
+      <form method="get" action="/fondos/227">
+        <select name="clase">
+          <option value="227">A</option>
+          <option value="784" selected>B</option>
+        </select>
+      </form>
+      <template>
+        <div id="cuotaparte"><h3>Valores al ${DATE}</h3><p>Valor por cada cuotaparte: 1.241,954039</p></div>
+      </template>
+      <div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div>
+    </body></html>`;
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips when form and #cuotaparte are inside <template>', () => {
+    const html = `<html><body>
+      <template>
+        <form method="get" action="/fondos/227">
+          <select name="clase">
+            <option value="227">A</option>
+            <option value="784" selected>B</option>
+          </select>
+        </form>
+        <div id="cuotaparte"><h3>Valores al ${DATE}</h3><p>Valor por cada cuotaparte: 1.241,954039</p></div>
+      </template>
+      <div id="fichaRight"><span class="label">Moneda:</span> Peso Argentina</div>
+    </body></html>`;
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a live-shaped ficha wrapped in <template>', () => {
+    const html = `<html><body><template>${shell({})}</template></body></html>`;
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a split NAV whose next whole-block character is alphanumeric', () => {
+    const html = shell({
+      nav: '<span>Valor por cada cuotaparte: 1,09</span><span>x7744</span>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips when Moneda is only outside #fichaRight', () => {
+    const html = shell({
+      moneda: '<span class="label">Moneda:</span> Peso Argentina',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('follows the HTML first-legend exception on a disabled fieldset', () => {
+    const html = shell({
+      identity: `<fieldset disabled>
+        <legend>
+          <form method="get" action="/fondos/227">
+            <select name="clase">
+              <option value="227">A</option>
+              <option value="784" selected>B</option>
+            </select>
+          </form>
+        </legend>
+      </fieldset>`,
+    });
+    expect(parsed(html).parsed).toMatchObject({
+      price: 1241.954039,
+      fondoId: '227',
+      claseId: '784',
+    });
   });
 });

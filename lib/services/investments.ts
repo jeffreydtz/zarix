@@ -14,11 +14,11 @@ import {
 } from '@/lib/investments/type-meta';
 import {
   applyObservedRowMatch,
+  applyObservedTimestampMatch,
   classifyAutomaticPriceZeroRows,
   InvestmentQuoteMap,
   isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
-  planFciTimestampWrite,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
   shouldPersistFciQuote,
@@ -432,31 +432,7 @@ class InvestmentsService {
       if (!fresh || !(fresh.price > 0) || fresh.fxStale || !shouldPersistFciQuote(fresh) || !fresh.timestamp) {
         continue;
       }
-      const casPlan = planFciTimestampWrite({
-        storedTs: inv.current_price_updated_at,
-        httpDate: fresh.httpDate,
-        appNowMs: now,
-      });
-      if (casPlan.action === 'skip') {
-        console.warn('[quotes] skip CAFCI failure', {
-          ticker: inv.ticker,
-          id: inv.id,
-          reason: 'clock_skew',
-          source: fresh.source,
-        });
-        if (cacheKey) quoteMap.delete(cacheKey);
-        continue;
-      }
-      const anomalous = casPlan.action === 'cas';
-      if (anomalous) {
-        console.warn('[quotes] future stored timestamp', {
-          ticker: inv.ticker,
-          id: inv.id,
-          source: fresh.source,
-          stored: inv.current_price_updated_at,
-        });
-      }
-      let fciQuery = applyObservedRowMatch(
+      const fciQuery = applyObservedRowMatch(
         supabase
           .from('investments')
           .update({
@@ -467,10 +443,7 @@ class InvestmentsService {
           })
           .eq('id', inv.id),
         inv,
-      );
-      fciQuery = anomalous && inv.current_price_updated_at
-        ? fciQuery.eq('current_price_updated_at', inv.current_price_updated_at)
-        : fciQuery.or(monotonicCurrentPriceFilter(fresh.timestamp));
+      ).or(monotonicCurrentPriceFilter(fresh.timestamp));
       const { data, error: fciUpdateError } = await fciQuery.select('id');
       if (fciUpdateError) throw fciUpdateError;
       if (!Array.isArray(data) || data.length === 0) {
@@ -483,7 +456,6 @@ class InvestmentsService {
           ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
           : null;
         const reason = classifyAutomaticPriceZeroRows({
-          anomalous,
           observed: inv,
           winning,
         });
@@ -500,17 +472,10 @@ class InvestmentsService {
           inv.market_currency = winning.market_currency;
           inv.ticker = winning.ticker;
           inv.is_manual_price = winning.is_manual_price;
+          if (winning.type) inv.type = winning.type;
         }
         if (cacheKey) quoteMap.delete(cacheKey);
         continue;
-      }
-      if (anomalous) {
-        console.warn('[quotes] overwrite anomalous stored timestamp', {
-          ticker: inv.ticker,
-          id: inv.id,
-          source: fresh.source,
-          stored: inv.current_price_updated_at,
-        });
       }
     }
 
@@ -613,17 +578,20 @@ class InvestmentsService {
           if (u.fxStale) return;
           const inv = investments.find((row) => row.id === u.id);
           if (!inv || inv.type === 'fci') return;
-          const query = applyObservedRowMatch(
-            supabase
-              .from('investments')
-              .update({
-                current_price: u.price,
-                current_price_updated_at: u.timestamp,
-                current_price_change_pct: u.changePct,
-                market_currency: u.currency.trim().toUpperCase(),
-              })
-              .eq('id', inv.id),
-            inv,
+          const query = applyObservedTimestampMatch(
+            applyObservedRowMatch(
+              supabase
+                .from('investments')
+                .update({
+                  current_price: u.price,
+                  current_price_updated_at: u.timestamp,
+                  current_price_change_pct: u.changePct,
+                  market_currency: u.currency.trim().toUpperCase(),
+                })
+                .eq('id', inv.id),
+              inv,
+            ),
+            inv.current_price_updated_at,
           );
           const { data, error: updateError } = await query.select('id');
           if (updateError) throw updateError;

@@ -89,7 +89,7 @@ function htmlFicha(opts: {
       <h3>Valores al ${opts.date ?? cafciValoresAlLabel()}</h3>
       <p>Valor por cada cuotaparte: ${opts.priceLabel}</p>
     </div>
-    <span class="label">Moneda:</span> ${opts.moneda ?? 'Peso Argentina'}
+    <div id="fichaRight"><span class="label">Moneda:</span> ${opts.moneda ?? 'Peso Argentina'}</div>
   </body></html>`;
 }
 
@@ -606,7 +606,7 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     }));
   });
 
-  it('does not CAS-repair a 26/10 store when the app clock is 24/10', async () => {
+  it('does not write a 22/10 candidate over a 26/10 store when the app clock is 24/10', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-10-24T12:00:00.000Z'));
     setPosition({
@@ -627,7 +627,37 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
     expect(mocks.updates).toHaveLength(0);
     expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
-      reason: 'clock_skew',
+      reason: 'future_stored',
+      id: 'fixture-prtava-b',
+      stored: '2026-10-26T03:00:00.000Z',
+      candidate: '2026-10-22T03:00:00.000Z',
+      appClock: '2026-10-24T12:00:00.000Z',
+    }));
+    vi.useRealTimers();
+  });
+
+  it('does not write a 22/10 candidate over a 26/10 store on a 26/10 clock', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-26T15:00:00.000Z'));
+    setPosition({
+      current_price: 1.12,
+      current_price_updated_at: '2026-10-26T03:00:00.000Z',
+    });
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({
+          priceLabel: '1,11',
+          date: '22/10/2026',
+          fondoId: '227',
+          claseId: '784',
+        }),
+      },
+      fichaHeaders: new Headers({ Date: 'Thu, 22 Oct 2026 12:00:00 GMT' }),
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'older_than_stored',
       id: 'fixture-prtava-b',
     }));
     vi.useRealTimers();
@@ -679,7 +709,7 @@ describe('cron FCI writes stay at zero for bad source data', () => {
     }));
   });
 
-  it('overwrites an anomalous future stored timestamp', async () => {
+  it('does not overwrite a future stored timestamp', async () => {
     setPosition({
       current_price: 1240,
       current_price_updated_at: '2099-01-01T03:00:00.000Z',
@@ -689,22 +719,15 @@ describe('cron FCI writes stay at zero for bad source data', () => {
         '227:784': htmlFicha({ priceLabel: '1.241,954039', fondoId: '227', claseId: '784' }),
       },
     });
-    expect((await (await cronGet(cronRequest())).json()).processed).toBe(1);
-    expect(mocks.updates[0].current_price).toBeCloseTo(1241.954039, 8);
-    expect(mocks.orFilters).toEqual([]);
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
     expect(console.warn).toHaveBeenCalledWith(
-      '[quotes] future stored timestamp',
+      '[quotes] skip CAFCI failure',
       expect.objectContaining({
+        reason: 'future_stored',
         id: 'fixture-prtava-b',
         stored: '2099-01-01T03:00:00.000Z',
-      }),
-    );
-    expect(console.warn).toHaveBeenCalledWith(
-      '[quotes] overwrite anomalous stored timestamp',
-      expect.objectContaining({
-        id: 'fixture-prtava-b',
         source: 'cafci',
-        stored: '2099-01-01T03:00:00.000Z',
       }),
     );
   });

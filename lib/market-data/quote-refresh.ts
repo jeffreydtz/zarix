@@ -39,8 +39,6 @@ export interface QuoteResult {
   fxStale?: boolean;
   fxAsOf?: string | null;
   source?: string;
-  /** HTTP `Date` from the CAFCI (or catalog) response; gates future-timestamp CAS. */
-  httpDate?: string | null;
 }
 
 export class InvestmentQuoteMap extends Map<string, QuoteResult> {
@@ -86,16 +84,12 @@ export function shouldPersistFciQuote(quote: Pick<QuoteResult, 'source' | 'times
 
 export { FCI_DAILY_JUMP_MAX_AGE_MS } from '@/lib/market-data/fci-daily-jump';
 
-/** Inclusive ±8%/±25% daily_jump endpoints; absorbs IEEE rounding so +8% and −8% match. */
-export const FCI_DAILY_JUMP_EPS = 1e-9;
-
-/** Skip future-timestamp CAS when the app clock disagrees with the HTTP Date by more than this. */
-export const FCI_CLOCK_SKEW_MAX_MS = 10 * 60 * 1000;
+/** Inclusive ±8%/±25% daily_jump endpoints; relative epsilon so +8% and +8%+1e-9 stay inside. */
+export const FCI_DAILY_JUMP_EPS = 1e-6;
 
 /**
- * Stored NAV date is after today's Argentina civil date.
- * Clock-horizon (now+24h) is not used: a slow clock would treat a legitimate
- * newer observation as "future" and overwrite it.
+ * Stored NAV date is after today's Argentina civil date (app clock).
+ * Future stored timestamps are never overwritten automatically.
  */
 export function isAnomalousFutureTimestamp(
   iso: string | null | undefined,
@@ -105,50 +99,6 @@ export function isAnomalousFutureTimestamp(
   const ymd = navTimestampToCivilYmd(iso);
   if (!ymd) return false;
   return ymd > civilTodayYmd(AR_MARKET_TZ, new Date(nowMs));
-}
-
-export type ExternalClock =
-  | { ok: true; nowMs: number }
-  | { ok: false; reason: 'clock_skew' };
-
-/** App clock vs an HTTP `Date` header. Missing/unparseable counts as skew. */
-export function resolveExternalClock(
-  httpDate: string | null | undefined,
-  appNowMs: number = Date.now()
-): ExternalClock {
-  if (!httpDate || !String(httpDate).trim()) return { ok: false, reason: 'clock_skew' };
-  const externalMs = Date.parse(httpDate);
-  if (!Number.isFinite(externalMs)) return { ok: false, reason: 'clock_skew' };
-  if (Math.abs(appNowMs - externalMs) > FCI_CLOCK_SKEW_MAX_MS) {
-    return { ok: false, reason: 'clock_skew' };
-  }
-  return { ok: true, nowMs: externalMs };
-}
-
-export type FciCasPlan =
-  | { action: 'skip'; reason: 'clock_skew' }
-  | { action: 'cas'; nowMs: number }
-  | { action: 'monotonic'; nowMs: number };
-
-/**
- * Future-timestamp CAS is only allowed when the app clock agrees with the
- * CAFCI (or catalog) HTTP Date. AR "today" then comes from that external clock.
- */
-export function planFciTimestampWrite(opts: {
-  storedTs: string | null | undefined;
-  httpDate?: string | null;
-  appNowMs?: number;
-}): FciCasPlan {
-  const appNowMs = opts.appNowMs ?? Date.now();
-  const clock = resolveExternalClock(opts.httpDate, appNowMs);
-  const trustedNowMs = clock.ok ? clock.nowMs : appNowMs;
-  const futureVsApp = isAnomalousFutureTimestamp(opts.storedTs, appNowMs);
-  const futureVsTrusted = isAnomalousFutureTimestamp(opts.storedTs, trustedNowMs);
-  if (!clock.ok && (futureVsApp || futureVsTrusted)) {
-    return { action: 'skip', reason: 'clock_skew' };
-  }
-  if (futureVsTrusted) return { action: 'cas', nowMs: trustedNowMs };
-  return { action: 'monotonic', nowMs: trustedNowMs };
 }
 
 function postgrestTimestamp(value: string): string {
@@ -172,20 +122,43 @@ export type ObservedRowMatch = {
 /** @deprecated Use ObservedRowMatch; kept so existing FCI call sites type-check. */
 export type FciRowMatch = ObservedRowMatch;
 
+function applyRawTextMatch<Q extends {
+  eq: (column: string, value: unknown) => Q;
+  is: (column: string, value: null) => Q;
+}>(query: Q, column: string, value: string | null): Q {
+  return value == null ? query.is(column, null) : query.eq(column, value);
+}
+
+function rawTextEquals(observed: string | null, winning: unknown): boolean {
+  if (observed == null) return winning == null;
+  return winning === observed;
+}
+
 /**
  * Concurrent edits of type, ticker, currency, or price mode must not be overwritten.
- * `is()` is used when the observed currency was null.
+ * Match the RAW observed ticker and market_currency (including `''` and `' USD '`);
+ * `is()` only when the observed value was null. Business logic still normalizes.
  */
 export function applyObservedRowMatch<Q extends {
   eq: (column: string, value: unknown) => Q;
   is: (column: string, value: null) => Q;
 }>(query: Q, row: ObservedRowMatch): Q {
-  let next = query
+  const next = query
     .eq('type', row.type)
-    .eq('ticker', row.ticker)
     .eq('is_manual_price', false);
-  const ccy = (row.market_currency ?? '').trim().toUpperCase();
-  return ccy ? next.eq('market_currency', ccy) : next.is('market_currency', null);
+  return applyRawTextMatch(
+    applyRawTextMatch(next, 'ticker', row.ticker),
+    'market_currency',
+    row.market_currency,
+  );
+}
+
+/** CAS so a slower writer cannot overwrite a newer `current_price_updated_at`. */
+export function applyObservedTimestampMatch<Q extends {
+  eq: (column: string, value: unknown) => Q;
+  is: (column: string, value: null) => Q;
+}>(query: Q, observedTs: string | null | undefined): Q {
+  return applyRawTextMatch(query, 'current_price_updated_at', observedTs ?? null);
 }
 
 /** @deprecated Use applyObservedRowMatch. */
@@ -193,7 +166,6 @@ export const applyFciRowMatch = applyObservedRowMatch;
 
 export type AutomaticPriceZeroRowReason =
   | 'row_changed'
-  | 'future_timestamp_cas_miss'
   | 'older_than_stored';
 
 export function observedRowStillMatches(
@@ -206,18 +178,13 @@ export function observedRowStillMatches(
   } | null | undefined
 ): boolean {
   if (!winning) return false;
-  const obsCcy = (observed.market_currency ?? '').trim().toUpperCase();
-  const winCcy = (typeof winning.market_currency === 'string' ? winning.market_currency : '')
-    .trim()
-    .toUpperCase();
   return winning.type === observed.type
-    && (winning.ticker ?? null) === (observed.ticker ?? null)
-    && obsCcy === winCcy
+    && rawTextEquals(observed.ticker, winning.ticker ?? null)
+    && rawTextEquals(observed.market_currency, winning.market_currency ?? null)
     && winning.is_manual_price === false;
 }
 
 export function classifyAutomaticPriceZeroRows(opts: {
-  anomalous: boolean;
   observed: ObservedRowMatch;
   winning?: {
     type?: unknown;
@@ -227,7 +194,6 @@ export function classifyAutomaticPriceZeroRows(opts: {
   } | null;
 }): AutomaticPriceZeroRowReason {
   if (!observedRowStillMatches(opts.observed, opts.winning)) return 'row_changed';
-  if (opts.anomalous) return 'future_timestamp_cas_miss';
   return 'older_than_stored';
 }
 
@@ -257,7 +223,7 @@ export function evaluateFciDailyJump(opts: {
   if (!Number.isFinite(storedMs) || nowMs - storedMs > FCI_DAILY_JUMP_MAX_AGE_MS) {
     return { ok: true, ratio, maxAbs, applied: false };
   }
-  if (Math.abs(ratio - 1) > maxAbs + FCI_DAILY_JUMP_EPS) {
+  if (Math.abs(ratio - 1) > maxAbs * (1 + FCI_DAILY_JUMP_EPS)) {
     return { ok: false, reason: 'daily_jump', ratio, maxAbs };
   }
   return { ok: true, ratio, maxAbs, applied: true };
@@ -685,7 +651,18 @@ export async function refreshQuotesForInvestments(
       mepArsPerUsd: anchorMepArsPerUsd,
     });
     let stamped: QuoteResult | null = null;
-    if (q === 'error' || !q || !(q.price > 0)) {
+    const appNowMs = Date.now();
+    if (isAnomalousFutureTimestamp(fci.currentPriceUpdatedAt, appNowMs)) {
+      console.warn('[quotes] skip CAFCI failure', {
+        ticker: fci.ticker,
+        reason: 'future_stored',
+        stored: fci.currentPriceUpdatedAt,
+        candidate: q && q !== 'error' ? quoteSourceTimestamp(q) : null,
+        appClock: new Date(appNowMs).toISOString(),
+        ...(fci.id ? { id: fci.id } : {}),
+        ...(q && q !== 'error' && q.source ? { source: q.source } : {}),
+      });
+    } else if (q === 'error' || !q || !(q.price > 0)) {
       const detail: FciSkipDetail = fciSkipReasons.get(fci.ticker)
         ?? (q === undefined
           ? { reason: 'budget_exhausted' }
@@ -826,7 +803,6 @@ export async function refreshQuotesForInvestments(
                   fxStale: adapted.fxStale,
                   fxAsOf: adapted.fxAsOf,
                   source: q.source,
-                  httpDate: q.httpDate ?? null,
                 };
               }
             } else {
@@ -849,7 +825,6 @@ export async function refreshQuotesForInvestments(
                   fxStale: adapted.fxStale,
                   fxAsOf: adapted.fxAsOf,
                   source: q.source,
-                  httpDate: q.httpDate ?? null,
                 };
               }
             }
