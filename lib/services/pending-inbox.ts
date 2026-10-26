@@ -1079,6 +1079,10 @@ async function confirmPendingItemUnlocked(input: ConfirmPendingItemInput): Promi
   // concurrent confirms and is not used. Restore is scoped to this claim_id
   // so only the claim owner writes; a concurrent owner is not overwritten.
   // Residual: if priorStatus is omitted we default to pending.
+  // Auto-confirm (ingest) always claims a freshly reserved `pending` row, so
+  // it cannot hit uncertain→pending. Manual confirm of an existing uncertain
+  // item without priorStatus can. Returning prior status from the claim RPC
+  // needs a SQL migration and is out of scope.
   let restoreStatus: 'pending' | 'uncertain' =
     input.priorStatus === 'uncertain' ? 'uncertain' : 'pending';
   if (!input.claimedRow) {

@@ -399,7 +399,7 @@ describe('Wallet HTTP ingest decimal precision', () => {
     expect(single.captured.row?.amount).toBe(1500);
     expect(single.captured.row?.amount_ambiguous).toBe(false);
 
-    const park = [
+    const invalidPark = [
       { rawText: 'Compra $12:30 en COTO', forbidden: [12], key: 'wallet-r12-kael-clock-tight' },
       { rawText: 'Compra $ 12:30 en COTO', forbidden: [12], key: 'wallet-r12-kael-clock-space' },
       { rawText: 'Compra 25-10-2026 en COTO', forbidden: [25, 10, 2026], key: 'wallet-r12-date-dmy' },
@@ -411,13 +411,9 @@ describe('Wallet HTTP ingest decimal precision', () => {
       { rawText: 'Compra 3x $500 en COTO', forbidden: [500, 3], key: 'wallet-r12-3x' },
       { rawText: 'Compra $ −50 en COTO', forbidden: [50], key: 'wallet-r12-unicode-minus' },
       { rawText: '$ 1.500 , 50', forbidden: [1500, 50], key: 'wallet-r12-split-cents' },
-      { rawText: 'Compra rechazada $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-rechazada' },
-      { rawText: 'Compra denegada $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-denegada' },
-      { rawText: 'Pago fallido $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-fallido' },
-      { rawText: 'Anulación de compra $ 1.500 en COTO', forbidden: [1500], key: 'wallet-r12-anulacion' },
       { rawText: 'Compra USD 10 ($ 10) en COTO', forbidden: [10], key: 'wallet-r12-mixed-usd-dollar' },
     ];
-    for (const { rawText, forbidden, key } of park) {
+    for (const { rawText, forbidden, key } of invalidPark) {
       vi.clearAllMocks();
       const result = await postWalletWithAutoConfirm({ rawText, key });
       expect(result.status, rawText).toBe(201);
@@ -426,6 +422,148 @@ describe('Wallet HTTP ingest decimal precision', () => {
       expect(result.captured.row?.amount, rawText).toBeNull();
       for (const n of forbidden) expect(result.body.item.amount, rawText).not.toBe(n);
       expect(mocks.execute, rawText).not.toHaveBeenCalled();
+    }
+    for (const { rawText, key } of [
+      { rawText: 'Compra rechazada $ 1.500 en COTO', key: 'wallet-r12-rechazada' },
+      { rawText: 'Compra denegada $ 1.500 en COTO', key: 'wallet-r12-denegada' },
+      { rawText: 'Pago fallido $ 1.500 en COTO', key: 'wallet-r12-fallido' },
+      { rawText: 'Anulación de compra $ 1.500 en COTO', key: 'wallet-r12-anulacion' },
+    ]) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({ rawText, key });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.autoConfirmed, rawText).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(true);
+      expect(mocks.execute, rawText).not.toHaveBeenCalled();
+    }
+  });
+
+  it('parks round-13 refund, reference-as-amount, USD $ markers, and prod-preexisting contexts', async () => {
+    const park = [
+      'Refund $ 50 de Amazon',
+      'Reversa de compra $ 1.500',
+      'Contracargo $ 1.500',
+      'Crédito en tu cuenta $ 1.500',
+      'Reverso $ 1.500',
+      'Ticket 1234 ARS 1.500',
+      'Referencia 1234 USD 50',
+      'Operación 456 ARS 1.500,50',
+      'Referencia: 321 USD 12.50',
+      'Factura 1234 EUR 50',
+      'Ticket 1234 U$S 10',
+      'Ticket 1234 ARS: 1.500',
+      'Saldo disponible $ 1.500',
+      'Tu límite es $ 1.500',
+      'Available balance $ 1.500',
+      'Refund $ 1.500',
+      'Contracargo $ 1.500 en COTO',
+      'Reverso $ 1.500 en COTO',
+      'Crédito $ 1.500',
+      '$ 1.250 50',
+      '$1.250¹50',
+      'Compra $ 1\u200b.500',
+      `${'x'.repeat(4001)} Compra $ 1.500`,
+      'Compra －$ 1.500',
+      'Compra $ 1.500 + IVA',
+      'Compra $ 1.500 c/u',
+      'desde $ 1.500',
+      'hasta $ 1.500',
+      'Preautorización $ 1.500',
+      'Reserva $ 1.500',
+      'Retención $ 1.500',
+      'Intento de compra $ 1.500',
+      'Compra no aprobada $ 1.500',
+      'Comprobante https://coto.example/$123',
+      'Email $123@example.test',
+      'Código AB-$123',
+      'Compra $ 1,5 mil',
+      'Compra $ 1M',
+      'Compra $ 1500 dólares',
+      'Recibiste $ 1.500 de Juan',
+      'Te transfirieron $ 1.500',
+      'Cobraste $ 1.500',
+      '$ 12.345.678,90',
+      '$12.345.678,90',
+      '1.250,50 ARS',
+      'ARS 1.250,50',
+      'US$ 10',
+      'US$ 12.50',
+      'USD 12,50',
+      '$ 0,99',
+      '$ 1.000.000',
+      '$ 1.234,5',
+      '$ 1.500.-',
+      '$ 12.500',
+      'U$S 10',
+      '$1.250,00',
+      'ARS 99',
+      '$ 1.250,50.',
+      'Débito automático $ 2.450,30',
+      '-$ 500',
+      '-$1.234,56',
+    ];
+    for (const [i, rawText] of park.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r13-park-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.autoConfirmed, rawText).toBe(false);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(true);
+      expect(mocks.execute, rawText).not.toHaveBeenCalled();
+      if (/Ticket 1234|Referencia|Factura 1234|Operación 456/.test(rawText)) {
+        expect(result.body.item.amount, rawText).not.toBe(1234);
+        expect(result.body.item.amount, rawText).not.toBe(456);
+        expect(result.body.item.amount, rawText).not.toBe(321);
+      }
+    }
+
+    const usdPrefix = [
+      { rawText: 'Compra USD $10', currency: 'USD' },
+      { rawText: 'Compra USD $ 10', currency: 'USD' },
+      { rawText: 'Compra EUR $10', currency: 'EUR' },
+      { rawText: 'Compra USD\u00a0$10', currency: 'USD' },
+      { rawText: 'Compra USD\n$10', currency: 'USD' },
+      { rawText: 'Compra $10 US$', currency: 'USD' },
+      { rawText: 'Compra $ 10 US$.', currency: 'USD' },
+      { rawText: 'Compra $ 10 US$ en COTO', currency: 'USD' },
+    ];
+    const kaelKeepAuto = [
+      { rawText: 'Pagaste $ 3.500', amount: 3500, currency: 'ARS' },
+      { rawText: 'Compra $ 1.250 en COTO', amount: 1250, currency: 'ARS' },
+      { rawText: '25/10 12:30 Pagaste $ 1.250,50', amount: 1250.5, currency: 'ARS' },
+      { rawText: 'Transferiste $ 8.000', amount: 8000, currency: 'ARS' },
+    ];
+    for (const [i, { rawText, currency }] of usdPrefix.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r13-usd-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.item.amount, rawText).toBe(10);
+      expect(result.captured.row?.amount, rawText).toBe(10);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(false);
+      expect(result.captured.row?.currency, rawText).toBe(currency);
+    }
+    for (const [i, { rawText, amount, currency }] of kaelKeepAuto.entries()) {
+      vi.clearAllMocks();
+      const result = await postWalletWithAutoConfirm({
+        rawText,
+        key: `wallet-r13-kael-keep-${i}`,
+        contentType: 'text/plain',
+        body: rawText,
+      });
+      expect(result.status, rawText).toBe(201);
+      expect(result.body.item.amount, rawText).toBe(amount);
+      expect(result.captured.row?.amount, rawText).toBe(amount);
+      expect(result.captured.row?.amount_ambiguous, rawText).toBe(false);
+      expect(result.captured.row?.currency, rawText).toBe(currency);
     }
   });
 });

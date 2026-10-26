@@ -8,25 +8,25 @@ import {
 } from '@/lib/integrations/wallet-parse';
 
 const CASES: Array<{ input: string; amount: number | null; ambiguous?: boolean; direction?: 'expense' | 'income' }> = [
-  { input: '$ 12.500', amount: 12500 },
-  { input: '$12.500', amount: 12500 },
-  { input: 'ARS 1.250', amount: 1250 },
-  { input: '$1,234.56', amount: 1234.56 },
-  { input: 'US$ 1,234.56', amount: 1234.56 },
-  { input: 'Compra de $1.250,50 en Ejemplo Café', amount: 1250.5 },
-  { input: '-$1.234,56', amount: 1234.56, direction: 'income' },
-  { input: 'Devolución $1.250,00', amount: null, ambiguous: true },
-  { input: 'tarjeta terminada en 4321 por $ 5.000,00 en COTO', amount: 5000 },
-  { input: 'Visa terminada en 1111 $ 12.500', amount: 12500 },
-  { input: 'USD 10.50', amount: 10.5 },
+  { input: '$ 12.500', amount: 12500, ambiguous: true },
+  { input: '$12.500', amount: 12500, ambiguous: true },
+  { input: 'ARS 1.250', amount: 1250, ambiguous: true },
+  { input: '$1,234.56', amount: 1234.56, ambiguous: true },
+  { input: 'US$ 1,234.56', amount: 1234.56, ambiguous: true },
+  { input: 'Compra de $1.250,50 en Ejemplo Café', amount: 1250.5, ambiguous: false },
+  { input: '-$1.234,56', amount: 1234.56, direction: 'income', ambiguous: true },
+  { input: 'Devolución $1.250,00', amount: 1250, ambiguous: true },
+  { input: 'tarjeta terminada en 4321 por $ 5.000,00 en COTO', amount: 5000, ambiguous: true },
+  { input: 'Visa terminada en 1111 $ 12.500', amount: 12500, ambiguous: true },
+  { input: 'USD 10.50', amount: 10.5, ambiguous: true },
   { input: '1.250.000', amount: null, ambiguous: true },
   { input: '12,50', amount: null, ambiguous: true },
   { input: '12.50', amount: null, ambiguous: true },
-  { input: 'ARS 99', amount: 99 },
-  { input: 'reintegro ARS 800', amount: null, ambiguous: true },
+  { input: 'ARS 99', amount: 99, ambiguous: true },
+  { input: 'reintegro ARS 800', amount: 800, ambiguous: true },
   { input: 'sin monto', amount: null },
   { input: '1.250', amount: null, ambiguous: true },
-  { input: 'EUR 1.234,56', amount: 1234.56 },
+  { input: 'EUR 1.234,56', amount: 1234.56, ambiguous: true },
   { input: '$ 0', amount: null },
 ];
 
@@ -74,18 +74,21 @@ describe('wallet amount parser (table)', () => {
     const parsed = parseAmountFromText('Compra con tarjeta de crédito $5.000 COTO');
     expect(parsed.direction).toBe('expense');
     expect(parsed.amount).toBe(5000);
+    expect(parsed.ambiguous).toBe(false);
     const long = parseWalletText('Compra con tarjeta de crédito por $5.000,00 en COTO');
     expect(long.direction).toBe('expense');
     expect(long.amount).toBe(5000);
+    expect(long.amountAmbiguous).toBe(false);
   });
 
   it('parks refund wording instead of auto-picking an income amount', () => {
     const parsed = parseAmountFromText('crédito $1.000 devolución');
-    expect(parsed.amount).toBeNull();
     expect(parsed.ambiguous).toBe(true);
+    expect(parsed.amount).not.toBeNull();
     const ascii = parseAmountFromText('-$ 500');
     expect(ascii.amount).toBe(500);
     expect(ascii.direction).toBe('income');
+    expect(ascii.ambiguous).toBe(true);
   });
 
   it('marks explicit GBP unsupported instead of coercing to ARS', () => {
@@ -325,10 +328,13 @@ describe('wallet amount parser (table)', () => {
       { input: 'Compra US$ 12.50,', amount: 12.5, currency: 'USD' },
       { input: 'Compra $1250,50. en COTO', amount: 1250.5 },
     ];
+    const allowlisted = /pagaste|compraste|\bcompra\b|\bpago\b|transferiste|\bmonto\b|\btotal\b|\bimporte\b/i;
     for (const { input, amount, ambiguous, currency, direction } of round11) {
       const parsed = parseAmountFromText(input);
       expect(parsed.amount, input).toBe(amount);
-      if (amount != null) expect(parsed.ambiguous, input).toBe(ambiguous ?? false);
+      if (amount != null) {
+        expect(parsed.ambiguous, input).toBe(ambiguous ?? !allowlisted.test(input));
+      }
       if (ambiguous != null) expect(parsed.ambiguous, input).toBe(ambiguous);
       if (direction) expect(parsed.direction, input).toBe(direction);
       if (currency) expect(parseWalletText(input).currency, input).toBe(currency);
@@ -375,10 +381,18 @@ describe('wallet amount parser (table)', () => {
     expect(kaelAr).toHaveLength(23);
     for (const { input, amount, currency, direction, ambiguous } of kaelAr) {
       const parsed = parseAmountFromText(input);
+      const withPhrase = allowlisted.test(input) ? input : `Compra ${input}`;
+      const exact = parseAmountFromText(withPhrase);
       expect(parsed.amount, input).toBe(amount);
-      expect(parsed.ambiguous, input).toBe(ambiguous ?? false);
       expect(parsed.direction, input).toBe(direction ?? 'expense');
-      if (currency) expect(parseWalletText(input).currency, input).toBe(currency);
+      if (direction === 'income') {
+        expect(parsed.ambiguous, input).toBe(true);
+      } else {
+        expect(parsed.ambiguous, input).toBe(ambiguous ?? !allowlisted.test(input));
+        expect(exact.amount, withPhrase).toBe(amount);
+        expect(exact.ambiguous, withPhrase).toBe(false);
+      }
+      if (currency) expect(parseWalletText(withPhrase).currency, input).toBe(currency);
     }
 
     const round10Park = [
@@ -433,7 +447,7 @@ describe('wallet amount parser (table)', () => {
     expect(parseAmountFromText('$12:30').amount).not.toBe(12);
     expect(parseAmountFromText('$ 12:30').amount).not.toBe(12);
 
-    const preexistingPark = [
+    const preexistingInvalid = [
       'Compra 25-10-2026 en COTO',
       'Compra 2026-10-25 en COTO',
       'Ticket 00123 COTO',
@@ -446,21 +460,26 @@ describe('wallet amount parser (table)', () => {
       '$ 1.500 , 50',
       '$ 1.500, 50',
       '$ 1.500 ,50',
-      'Compra rechazada $ 1.500 en COTO',
-      'Compra denegada $ 1.500 en COTO',
-      'Pago fallido $ 1.500 en COTO',
-      'Anulación de compra $ 1.500 en COTO',
       'Compra USD 10 ($ 10) en COTO',
       'Compra $ 10 (USD 10) en COTO',
       'Operación 00123456 en COTO',
       '12 cuotas sin interés de $ 1.000',
     ];
     const forbiddenPre = [25, 10, 2026, 123, 14, 500, 50, 1500, 1000, 123456];
-    for (const input of preexistingPark) {
+    for (const input of preexistingInvalid) {
       const parsed = parseAmountFromText(input);
       expect(parsed.amount, input).toBeNull();
       expect(parsed.ambiguous, input).toBe(true);
       for (const n of forbiddenPre) expect(parsed.amount, input).not.toBe(n);
+    }
+    for (const input of [
+      'Compra rechazada $ 1.500 en COTO',
+      'Compra denegada $ 1.500 en COTO',
+      'Pago fallido $ 1.500 en COTO',
+      'Anulación de compra $ 1.500 en COTO',
+    ]) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.ambiguous, input).toBe(true);
     }
 
     expect(parseAmountFromText('$ 1.50').amount).toBeNull();
@@ -468,6 +487,75 @@ describe('wallet amount parser (table)', () => {
     expect(parseAmountFromText('$ 1.50').amount).not.toBe(150);
     expect(parseAmountFromText('$ 5,').amount).toBe(5);
     expect(parseAmountFromText('$ 5.').amount).toBe(5);
+  });
+
+  it('parks round-13 refund, reference-suffix, hygiene, and non-purchase contexts', () => {
+    const suggestPark = [
+      'Refund $ 50 de Amazon',
+      'Reversa de compra $ 1.500',
+      'Contracargo $ 1.500',
+      'Crédito en tu cuenta $ 1.500',
+      'Reverso $ 1.500',
+      'Ticket 1234 ARS 1.500',
+      'Referencia 1234 USD 50',
+      'Operación 456 ARS 1.500,50',
+      'Referencia: 321 USD 12.50',
+      'Factura 1234 EUR 50',
+      'Ticket 1234 U$S 10',
+      'Ticket 1234 ARS: 1.500',
+      'Saldo disponible $ 1.500',
+      'Tu límite es $ 1.500',
+      'Available balance $ 1.500',
+      'Recibiste $ 1.500 de Juan',
+      'Te transfirieron $ 1.500',
+      'Cobraste $ 1.500',
+      'Compra $ 1500 dólares',
+    ];
+    for (const input of suggestPark) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.ambiguous, input).toBe(true);
+      expect(parsed.amount, input).not.toBe(1234);
+      expect(parsed.amount, input).not.toBe(456);
+      expect(parsed.amount, input).not.toBe(321);
+    }
+    expect(parseAmountFromText('Ticket 1234 ARS 1.500').amount).toBe(1500);
+    expect(parseWalletText('Referencia 1234 USD 50').currency).toBe('USD');
+    expect(parseWalletText('Factura 1234 EUR 50').currency).toBe('EUR');
+
+    const nullPark = [
+      '$ 1.250 50',
+      '$1.250¹50',
+      'Compra $ 1\u200b.500',
+      `${'x'.repeat(4001)} Compra $ 1.500`,
+      'Compra －$ 1.500',
+      'Compra $ 1,5 mil',
+      'Compra $ 1M',
+      'Comprobante https://coto.example/$123',
+      'Email $123@example.test',
+      'Código AB-$123',
+    ];
+    for (const input of nullPark) {
+      const parsed = parseAmountFromText(input);
+      expect(parsed.amount, input).toBeNull();
+      expect(parsed.ambiguous, input).toBe(true);
+      expect(parsed.amount, input).not.toBe(1);
+      expect(parsed.amount, input).not.toBe(123);
+      expect(parsed.amount, input).not.toBe(1250);
+    }
+
+    expect(parseAmountFromText('Compra USD $10').amount).toBe(10);
+    expect(parseAmountFromText('Compra USD $10').ambiguous).toBe(false);
+    expect(parseWalletText('Compra USD $10').currency).toBe('USD');
+    expect(parseWalletText('Compra EUR $10').currency).toBe('EUR');
+    expect(parseWalletText('Compra USD\u00a0$10').currency).toBe('USD');
+    expect(parseWalletText('Compra USD\n$10').currency).toBe('USD');
+    expect(parseWalletText('Compra $ 10 US$ en COTO').currency).toBe('USD');
+    expect(parseAmountFromText('desde $ 1.500').ambiguous).toBe(true);
+    expect(parseAmountFromText('Compra $ 1.500 + IVA').ambiguous).toBe(true);
+    expect(parseAmountFromText('Compra $ 1.500 c/u').ambiguous).toBe(true);
+    expect(parseAmountFromText('Preautorización $ 1.500').ambiguous).toBe(true);
+    expect(parseAmountFromText('Intento de compra $ 1.500').ambiguous).toBe(true);
+    expect(parseAmountFromText('Compra no aprobada $ 1.500').ambiguous).toBe(true);
   });
 
   it('keeps the 30-format table exact cents on Compra / en COTO / trailing-dot variants', () => {
