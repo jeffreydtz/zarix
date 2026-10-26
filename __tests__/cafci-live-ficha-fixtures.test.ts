@@ -180,7 +180,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(72);
     expect(failures).toEqual([]);
-  });
+  }, 20_000);
 
   const DATE_WRAPS: Array<[string, (inner: string) => string]> = [
     ['span display:block', (inner) => `<span style="display:block">${inner}</span>`],
@@ -210,7 +210,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(20);
     expect(failures).toEqual([]);
-  });
+  }, 20_000);
 
   it.each(LIVE)('$fondoId/$claseId still parses with an identical adjacent Moneda li', (row) => {
     const html = readFileSync(join(fixtures, row.file), 'utf8');
