@@ -774,14 +774,14 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
     if (node.type === 'script' || node.type === 'style') {
       const raw = textData(node) || $(node).text();
       navDom += countRe(raw, /por cada cuotaparte/gi);
-      valoresDom += countRe(raw, /Valores al(?![\p{L}\p{N}])/gi);
+      valoresDom += countRe(raw, /Valores al(?![\p{L}\p{N}])/giu);
       return 'skip-children';
     }
     if (node.type !== 'text' && node.type !== 'comment') return;
     const raw = textData(node);
     if (!raw) return;
     navDom += countRe(raw, /por cada cuotaparte/gi);
-    valoresDom += countRe(raw, /Valores al(?![\p{L}\p{N}])/gi);
+    valoresDom += countRe(raw, /Valores al(?![\p{L}\p{N}])/giu);
   });
   if (navDom !== 1 || countRaw(html, /por cada cuotaparte/gi) !== 1) return false;
   if (valoresDom !== 1) return false;
@@ -975,7 +975,7 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
 
 function parseValoresAl($: CheerioAPI, section: Element): string | null {
   if (containsInertCarrier(section) || subtreeHasDisallowedControl(section)) return null;
-  const nodes = innermostIn($, section, (el) => /Valores al(?![\p{L}\p{N}])/i.test(allowlistedText($, el)));
+  const nodes = innermostIn($, section, (el) => /Valores al(?![\p{L}\p{N}])/iu.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
   const line = renderedVisible($, section);
   const blockDate = dateFromRendered(line.text, line.skips, line.boundaries, 'line-end');
