@@ -30,11 +30,15 @@ function collapsedText($: cheerio.CheerioAPI, el: AnyNode): string {
   return $(el).text().replace(/\s+/g, ' ').trim();
 }
 
+function isElement(node: AnyNode): node is Element {
+  return node.type === 'tag';
+}
+
 function innermost($: cheerio.CheerioAPI, predicate: (el: Element) => boolean): Element[] {
   const hits: Element[] = [];
   $('*').each((_, el) => {
-    if (!predicate(el)) return;
-    const nested = $(el).find('*').toArray().some((child) => predicate(child));
+    if (!isElement(el) || !predicate(el)) return;
+    const nested = $(el).find('*').toArray().some((child) => isElement(child) && predicate(child));
     if (!nested) hits.push(el);
   });
   return hits;
