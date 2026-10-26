@@ -5,7 +5,11 @@ const mocks = vi.hoisted(() => ({
   rpc: vi.fn(),
   from: vi.fn(),
   execute: vi.fn(),
-  suggest: vi.fn(async () => ({ categoryId: null, categoryName: null, source: 'none' })),
+  suggest: vi.fn(async (): Promise<{
+    categoryId: string | null;
+    categoryName: string | null;
+    source: string;
+  }> => ({ categoryId: null, categoryName: null, source: 'none' })),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
