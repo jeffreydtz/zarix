@@ -1033,6 +1033,29 @@ describe('Kael/Codex r11 HTML parser — rendered section text, Moneda whitelist
     });
   });
 
+  it('does not let a later non-adjacent Billete complete Dolar Estadounidense', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight"><ul>
+        <li><span class="label">Moneda:</span> Dolar Estadounidense</li>
+        <li>Código CNV: 279</li>
+        <li>Billete</li>
+      </ul></div>`,
+    });
+    expect(parsed(html).parsed).toMatchObject({ monedaLabel: 'Dolar Estadounidense' });
+  });
+
+  it('reads a block Moneda label from the following lines in that parent', () => {
+    const html = shell({
+      moneda: `<div id="fichaRight"><ul><li>
+        <span class="label" style="display:block">Moneda:</span>
+        <span style="display:block">Dolar</span>
+        <span style="display:block">Estadounidense</span>
+        <span style="display:block">Billete</span>
+      </li></ul></div>`,
+    });
+    expect(parsed(html).parsed).toMatchObject({ monedaLabel: 'Dolar Estadounidense Billete' });
+  });
+
   it('reads Dolar Estadounidense Billete across nested blocks in one li', () => {
     const html = shell({
       moneda: `<div id="fichaRight"><ul><li>

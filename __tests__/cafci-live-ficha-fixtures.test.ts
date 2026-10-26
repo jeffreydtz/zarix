@@ -212,6 +212,99 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     expect(failures).toEqual([]);
   }, 20_000);
 
+  const CONTROL_DATES = [
+    ['literal U+0001', 'Valores al 23/10/2026\u00011'],
+    ['decimal entity', 'Valores al 23/10/2026&#1;1'],
+    ['hex entity', 'Valores al 23/10/2026&#x1;1'],
+    ['U+0002', 'Valores al 23/10/2026\u00021'],
+  ] as const;
+
+  it('rejects a source control character in the date instead of saving the prefix', () => {
+    const failures: string[] = [];
+    let cases = 0;
+    for (const row of LIVE) {
+      const html = readFileSync(join(fixtures, row.file), 'utf8');
+      const heading = '<h3>Valores al 23/10/2026</h3>';
+      expect(html).toContain(heading);
+      for (const [name, inner] of CONTROL_DATES) {
+        cases += 1;
+        const result = parseCafciHtmlFichaDetailed(html.replace(heading, `<h3>${inner}</h3>`), {
+          fondoId: row.fondoId,
+          claseId: row.claseId,
+        });
+        if (result.parsed) {
+          failures.push(`${row.file} ${name} parsed ${result.parsed.price} ${result.parsed.timestamp}`);
+        }
+      }
+      cases += 1;
+      const controlInSection = html.replace(
+        '<p>Patrimonio bajo administración:',
+        '<p>Patrimonio bajo administración:\u0002',
+      );
+      const sectionResult = parseCafciHtmlFichaDetailed(controlInSection, {
+        fondoId: row.fondoId,
+        claseId: row.claseId,
+      });
+      if (sectionResult.parsed) failures.push(`${row.file} U+0002 in section parsed`);
+    }
+    expect(cases).toBe(20);
+    expect(failures).toEqual([]);
+  }, 20_000);
+
+  const DATE_SPLITS: Array<[string, string]> = [
+    ['br', '<h3>Valores al <br>23/10/2026</h3>'],
+    ['span display:block', '<h3>Valores al <span style="display:block">23/10/2026</span></h3>'],
+    ['span display:flex', '<h3>Valores al <span style="display:flex">23/10/2026</span></h3>'],
+    ['adjacent td', '<table><tr><td>Valores al</td><td>23/10/2026</td></tr></table>'],
+  ];
+
+  it('parses a date when only a boundary separates the label from the date', () => {
+    const failures: string[] = [];
+    let cases = 0;
+    for (const row of LIVE) {
+      const html = readFileSync(join(fixtures, row.file), 'utf8');
+      const heading = '<h3>Valores al 23/10/2026</h3>';
+      expect(html).toContain(heading);
+      for (const [name, replacement] of DATE_SPLITS) {
+        cases += 1;
+        const result = parseCafciHtmlFichaDetailed(html.replace(heading, replacement), {
+          fondoId: row.fondoId,
+          claseId: row.claseId,
+        });
+        if (result.parsed?.price !== row.price || result.parsed.timestamp !== '2026-10-23T03:00:00.000Z') {
+          failures.push(`${row.file} ${name} ${result.parsed ? result.parsed.timestamp : result.reason}`);
+        }
+      }
+    }
+    expect(cases).toBe(16);
+    expect(failures).toEqual([]);
+  }, 20_000);
+
+  it('reads a block-displayed Moneda label from the next line in the same parent', () => {
+    const failures: string[] = [];
+    for (const row of LIVE) {
+      const html = readFileSync(join(fixtures, row.file), 'utf8');
+      const needle = `<li><span class="label">Moneda:</span>         ${row.monedaLabel}</li>`;
+      expect(html).toContain(needle);
+      const blocked = html.replace(
+        needle,
+        `<li><span class="label" style="display:block">Moneda:</span> ${row.monedaLabel}</li>`,
+      );
+      const result = parseCafciHtmlFichaDetailed(blocked, { fondoId: row.fondoId, claseId: row.claseId });
+      if (result.parsed?.monedaLabel !== row.monedaLabel || result.parsed.price !== row.price) {
+        failures.push(`${row.file} ${result.parsed ? result.parsed.monedaLabel : 'skip'}`);
+      }
+      const control = html.replace(
+        needle,
+        `<li><span class="label">Moneda:</span>         ${row.monedaLabel}\u0002</li>`,
+      );
+      if (parseCafciHtmlFichaDetailed(control, { fondoId: row.fondoId, claseId: row.claseId }).parsed) {
+        failures.push(`${row.file} U+0002 in Moneda parsed`);
+      }
+    }
+    expect(failures).toEqual([]);
+  }, 20_000);
+
   it.each(LIVE)('$fondoId/$claseId still parses with an identical adjacent Moneda li', (row) => {
     const html = readFileSync(join(fixtures, row.file), 'utf8');
     const needle = `<li><span class="label">Moneda:</span>         ${row.monedaLabel}</li>`;

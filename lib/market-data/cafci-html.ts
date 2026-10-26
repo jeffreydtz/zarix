@@ -24,9 +24,11 @@
  * Text values come only from text nodes whose direct parent is allowlisted and
  * visible. One rendered visible-text string is built for `#cuotaparte` (and for
  * each Moneda block): the same visibility rules, with block boundaries and
- * `<br>` as whitespace. A boundary is a block tag or an element whose inline
+ * `<br>` as whitespace. Boundaries are recorded beside the text, not as a
+ * source character. A boundary is a block tag or an element whose inline
  * display has a non-inline outer value (block, flex, grid, table, list-item,
- * flow-root, including two-value syntax). After a NAV token skip
+ * flow-root, including two-value syntax). A C0/C1 control other than tab, LF,
+ * CR, or FF in `#cuotaparte` or the Moneda block skips. After a NAV token skip
  * `[\p{Zs}\s\p{Cf}]*`; a following letter, digit, `.`, `,` or `-` skips. Only
  * `(` or end-of-string is allowed, wrapper-independent. The `Valores al` date
  * keeps that strict tail on its own line; a block boundary or end of line may
@@ -257,8 +259,8 @@ function normalizeFichaText(text: string): string {
 }
 
 const TAIL_GAP = /[\s\p{Zs}\p{Cf}]/u;
-/** Marks a block/`<br>` boundary in the date-line render. Not whitespace. */
-const LINE_END = '\u0001';
+/** C0/C1 controls other than tab, LF, CR, and FF. These are never line boundaries. */
+const DISALLOWED_CONTROL = /[\u0000-\u0008\u000B\u000E-\u001F\u0080-\u009F]/;
 const DISPLAY_OUTSIDE = new Set(['block', 'inline', 'run-in']);
 const DISPLAY_INSIDE = new Set(['flow', 'flow-root', 'table', 'flex', 'grid', 'ruby']);
 const DISPLAY_LIST_FLOW = new Set(['flow', 'flow-root']);
@@ -383,7 +385,7 @@ function allowlistedText($: CheerioAPI, root: AnyNode): string {
   return normalizeFichaText(bits.join(''));
 }
 
-type RenderedText = { text: string; skips: number[] };
+type RenderedText = { text: string; skips: number[]; boundaries: number[] };
 
 function isBlockTag(name: string): boolean {
   return BLOCK_TAGS.has(name);
@@ -423,23 +425,29 @@ function elementChildren(node: AnyNode): AnyNode[] {
 
 /**
  * Document-order visible (or unfiltered) text. Block boundaries and `<br>`
- * become a space. Cf is stripped on emit. `skips` are visible-string offsets
- * where a hidden or non-allowlisted subtree sat.
+ * become a space, and their offsets are recorded out of band so a source
+ * control character cannot impersonate a boundary. Cf is stripped on emit.
+ * `skips` are visible-string offsets where a hidden or non-allowlisted subtree sat.
  */
 function renderedText(
   $: CheerioAPI,
   root: AnyNode,
   mode: 'visible' | 'unfiltered',
-  boundary = ' ',
 ): RenderedText {
   const bits: string[] = [];
   const skips: number[] = [];
+  const boundaries: number[] = [];
   let length = 0;
 
   const emit = (chunk: string): void => {
     if (!chunk) return;
     bits.push(chunk);
     length += chunk.length;
+  };
+
+  const markBoundary = (): void => {
+    boundaries.push(length);
+    emit(' ');
   };
 
   const walk = (node: AnyNode): void => {
@@ -466,7 +474,7 @@ function renderedText(
     }
     const name = node.name.toLowerCase();
     if (name === 'br') {
-      emit(boundary);
+      markBoundary();
       return;
     }
     if (mode === 'visible' && (!isAllowedElement(node) || hiddenChain($, node))) {
@@ -478,21 +486,32 @@ function renderedText(
       return;
     }
     const block = node !== root && isBlockBox($, node);
-    if (block) emit(boundary);
+    if (block) markBoundary();
     for (const child of elementChildren(node)) walk(child);
-    if (block) emit(boundary);
+    if (block) markBoundary();
   };
 
   walk(root);
-  return { text: bits.join(''), skips };
+  return { text: bits.join(''), skips, boundaries };
 }
 
-function renderedVisible($: CheerioAPI, root: AnyNode, boundary = ' '): RenderedText {
-  return renderedText($, root, 'visible', boundary);
+function renderedVisible($: CheerioAPI, root: AnyNode): RenderedText {
+  return renderedText($, root, 'visible');
 }
 
-function renderedUnfiltered($: CheerioAPI, root: AnyNode, boundary = ' '): RenderedText {
-  return renderedText($, root, 'unfiltered', boundary);
+function renderedUnfiltered($: CheerioAPI, root: AnyNode): RenderedText {
+  return renderedText($, root, 'unfiltered');
+}
+
+function subtreeHasDisallowedControl(root: AnyNode): boolean {
+  let found = false;
+  walkEveryNode(root, (node) => {
+    if (found) return;
+    if ((node.type === 'text' || node.type === 'comment') && DISALLOWED_CONTROL.test(textData(node))) {
+      found = true;
+    }
+  });
+  return found;
 }
 
 function tailIsParenOrEof(text: string, index: number): boolean {
@@ -728,10 +747,10 @@ function documentMonedaValues($: CheerioAPI): string[] {
       values.push(...extractMonedaValues(raw));
       return;
     }
-    const block = preferredMonedaBlock($, parent);
+    const block = monedaScope($, parent);
     if (seen.has(block)) return;
     seen.add(block);
-    values.push(...extractMonedaValues(descendantTextRaw(block)));
+    values.push(...adjacentMonedaValues(renderedUnfiltered($, block)));
   });
   return values;
 }
@@ -755,14 +774,14 @@ function documentUniquenessOk($: CheerioAPI, html: string): boolean {
     if (node.type === 'script' || node.type === 'style') {
       const raw = textData(node) || $(node).text();
       navDom += countRe(raw, /por cada cuotaparte/gi);
-      valoresDom += countRe(raw, /Valores al\s+/gi);
+      valoresDom += countRe(raw, /Valores al(?![\p{L}\p{N}])/gi);
       return 'skip-children';
     }
     if (node.type !== 'text' && node.type !== 'comment') return;
     const raw = textData(node);
     if (!raw) return;
     navDom += countRe(raw, /por cada cuotaparte/gi);
-    valoresDom += countRe(raw, /Valores al\s+/gi);
+    valoresDom += countRe(raw, /Valores al(?![\p{L}\p{N}])/gi);
   });
   if (navDom !== 1 || countRaw(html, /por cada cuotaparte/gi) !== 1) return false;
   if (valoresDom !== 1) return false;
@@ -844,28 +863,57 @@ function navTokenFromRendered(text: string, skips: number[] = []): string | null
   return token[0];
 }
 
+function skipLabelGap(text: string, index: number, boundaries: Set<number>): number {
+  let i = index;
+  while (i < text.length) {
+    if (boundaries.has(i)) {
+      i += 1;
+      continue;
+    }
+    const cp = nextCodePoint(text, i);
+    if (!cp || !TAIL_GAP.test(cp)) break;
+    i += cp.length;
+  }
+  return i;
+}
+
+/** After the date, whitespace may continue the line. A recorded boundary or `(` ends it. */
+function dateLineEnds(text: string, index: number, boundaries: Set<number>): boolean {
+  let i = index;
+  while (i < text.length) {
+    if (boundaries.has(i)) return true;
+    const cp = nextCodePoint(text, i);
+    if (!cp) return true;
+    if (!TAIL_GAP.test(cp)) return cp === '(';
+    i += cp.length;
+  }
+  return true;
+}
+
 function dateFromRendered(
   text: string,
   skips: number[],
-  tail: 'paren-or-eof' | 'line-end' | 'no-numeric-continue',
+  boundaries: number[],
+  tail: 'line-end' | 'no-numeric-continue',
 ): string | null {
-  const stripped = stripFormatChars(text);
-  const mentions = stripped.match(/Valores al\s+/gi);
+  const mentions = text.match(/Valores al/gi);
   if (!mentions || mentions.length !== 1) return null;
-  const labelled = stripped.match(/Valores al\s+(\d{2}\/\d{2}\/\d{4})/i);
+  const labelled = /Valores al/i.exec(text);
   if (!labelled || labelled.index == null) return null;
-  const date = labelled[1];
-  const dateStart = labelled.index + labelled[0].length - date.length;
-  const dateEnd = labelled.index + labelled[0].length;
+  const boundarySet = new Set(boundaries);
+  const dateStart = skipLabelGap(text, labelled.index + labelled[0].length, boundarySet);
+  const dateMatch = text.slice(dateStart).match(/^(\d{2}\/\d{2}\/\d{4})/);
+  if (!dateMatch) return null;
+  const dateEnd = dateStart + dateMatch[1].length;
   if (skipInsideToken(skips, dateStart, dateEnd)) return null;
-  const nextAt = skipTailGap(stripped, dateEnd);
-  const next = nextCodePoint(stripped, nextAt);
-  if (tail === 'paren-or-eof' || tail === 'line-end') {
-    if (next != null && next !== '(' && !(tail === 'line-end' && next === LINE_END)) return null;
-  } else if (next && DATE_TAIL_CONTINUE.test(next)) {
-    return null;
+  if (tail === 'line-end') {
+    if (!dateLineEnds(text, dateEnd, boundarySet)) return null;
+  } else {
+    const nextAt = skipTailGap(text, dateEnd);
+    const next = nextCodePoint(text, nextAt);
+    if (next && DATE_TAIL_CONTINUE.test(next)) return null;
   }
-  return date;
+  return dateMatch[1];
 }
 
 function sectionHasCssContentReplacement($: CheerioAPI, root: Element): boolean {
@@ -926,16 +974,17 @@ function parseNavPrice($: CheerioAPI, section: Element): number | null {
 }
 
 function parseValoresAl($: CheerioAPI, section: Element): string | null {
-  if (containsInertCarrier(section)) return null;
-  const nodes = innermostIn($, section, (el) => /Valores al\s+/i.test(allowlistedText($, el)));
+  if (containsInertCarrier(section) || subtreeHasDisallowedControl(section)) return null;
+  const nodes = innermostIn($, section, (el) => /Valores al(?![\p{L}\p{N}])/i.test(allowlistedText($, el)));
   if (nodes.length !== 1) return null;
-  const line = renderedVisible($, section, LINE_END);
-  const blockDate = dateFromRendered(line.text, line.skips, 'line-end');
+  const line = renderedVisible($, section);
+  const blockDate = dateFromRendered(line.text, line.skips, line.boundaries, 'line-end');
   if (!blockDate) return null;
   const sectionVisible = renderedVisible($, section);
-  const sectionDate = dateFromRendered(sectionVisible.text, sectionVisible.skips, 'no-numeric-continue');
+  const sectionDate = dateFromRendered(sectionVisible.text, sectionVisible.skips, sectionVisible.boundaries, 'no-numeric-continue');
   if (sectionDate !== blockDate) return null;
-  const unfilteredDate = dateFromRendered(renderedUnfiltered($, section).text, [], 'no-numeric-continue');
+  const unfiltered = renderedUnfiltered($, section);
+  const unfilteredDate = dateFromRendered(unfiltered.text, [], unfiltered.boundaries, 'no-numeric-continue');
   if (unfilteredDate !== blockDate) return null;
   const timestamp = parseCafciDateLabel(blockDate);
   if (!timestamp) return null;
@@ -948,27 +997,66 @@ function parseValoresAl($: CheerioAPI, section: Element): string | null {
   return timestamp;
 }
 
-function monedaValuesFromBlock($: CheerioAPI, block: Element, mode: 'visible' | 'unfiltered'): string[] {
-  const rendered = renderedText($, block, mode);
-  return extractMonedaValues(rendered.text, mode === 'visible' ? rendered.skips : []);
+function renderedLines(rendered: RenderedText): string[] {
+  const cuts = [...new Set(rendered.boundaries)].sort((a, b) => a - b);
+  const parts: string[] = [];
+  let cursor = 0;
+  for (const cut of cuts) {
+    if (cut > cursor) parts.push(rendered.text.slice(cursor, cut));
+    cursor = Math.max(cursor, cut + 1);
+  }
+  if (cursor < rendered.text.length) parts.push(rendered.text.slice(cursor));
+  return parts.map((part) => normalizeFichaText(part)).filter((part) => part.length > 0);
 }
 
-function exactWhitelistMoneda($: CheerioAPI, block: Element): string | null {
-  const values = monedaValuesFromBlock($, block, 'visible').filter((value) => value !== '\u0000');
-  if (values.length !== 1 || !isWhitelistedMoneda(values[0])) return null;
-  return values[0];
+/** Longest adjacent run that is a whitelist value. A non-matching segment stops the run. */
+function longestAdjacentWhitelist(parts: string[]): string | null {
+  let best: string | null = null;
+  let acc = '';
+  for (const part of parts) {
+    acc = normalizeFichaText(`${acc} ${part}`);
+    if (!acc) continue;
+    if (isWhitelistedMoneda(acc)) {
+      best = acc;
+      continue;
+    }
+    if (best) break;
+  }
+  return best;
 }
 
-/** Prefer the parent block when it completes a longer whitelist Moneda value. */
-function preferredMonedaBlock($: CheerioAPI, el: Element): Element {
-  const start = containingBlock($, el);
-  const inner = foldMoneda(exactWhitelistMoneda($, start) ?? '');
-  const parent = parentOf(start);
-  if (!inner || !parent || !isElement(parent) || !isBlockBox($, parent)) return start;
+function adjacentMonedaValues(rendered: RenderedText): string[] {
+  const lines = renderedLines(rendered);
+  const values: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const pieces = lines[i].split(/Moneda:/i);
+    if (pieces.length < 2) continue;
+    for (let piece = 1; piece < pieces.length; piece++) {
+      const parts: string[] = [];
+      const head = normalizeFichaText(pieces[piece]);
+      if (head) parts.push(head);
+      if (piece === pieces.length - 1) {
+        for (let next = i + 1; next < lines.length; next++) {
+          if (/Moneda:/i.test(lines[next])) break;
+          parts.push(lines[next]);
+        }
+      }
+      const chosen = longestAdjacentWhitelist(parts);
+      if (chosen) values.push(chosen);
+      else if (head) values.push(head);
+    }
+  }
+  return values;
+}
+
+/** Parent block, so a block-level label can see the next line and nothing beyond that parent. */
+function monedaScope($: CheerioAPI, el: Element): Element {
+  const block = containingBlock($, el);
+  const parent = parentOf(block);
+  if (!parent || !isElement(parent) || !isBlockBox($, parent)) return block;
   const name = parent.name.toLowerCase();
-  if (name === 'body' || name === 'html') return start;
-  const outer = foldMoneda(exactWhitelistMoneda($, parent) ?? '');
-  return outer.startsWith(`${inner} `) ? parent : start;
+  if (name === 'body' || name === 'html') return block;
+  return parent;
 }
 
 function collectMonedaBlocks($: CheerioAPI): Element[] {
@@ -980,7 +1068,7 @@ function collectMonedaBlocks($: CheerioAPI): Element[] {
     if ($(el).closest(`script, style, noscript, template, #cartera, ${RAW_TEXT_OR_FRAME}`).length > 0) {
       continue;
     }
-    const block = preferredMonedaBlock($, el);
+    const block = monedaScope($, el);
     if (seen.has(block)) continue;
     seen.add(block);
     blocks.push(block);
@@ -1051,6 +1139,7 @@ export function parseCafciHtmlFichaDetailed(
     .filter((el) => attrCi($, el, 'id') === 'cuotaparte' && usableAncestry($, el));
   if (sections.length !== 1) return { parsed: null, reason: 'unparseable_ficha' };
   const section = sections[0];
+  if (subtreeHasDisallowedControl(section)) return { parsed: null, reason: 'unparseable_ficha' };
   if (aroundOrInsideRawTextOrFrame($, section)) return { parsed: null, reason: 'unparseable_ficha' };
   if (subtreeHasComment(section)) return { parsed: null, reason: 'unparseable_ficha' };
 
@@ -1064,9 +1153,11 @@ export function parseCafciHtmlFichaDetailed(
   const monedaBlocks = collectMonedaBlocks($);
   const visibleValues: string[] = [];
   for (const block of monedaBlocks) {
-    if (containsInertCarrier(block)) return { parsed: null, reason: 'unparseable_ficha' };
-    const visible = monedaValuesFromBlock($, block, 'visible');
-    const unfiltered = monedaValuesFromBlock($, block, 'unfiltered');
+    if (containsInertCarrier(block) || subtreeHasDisallowedControl(block)) {
+      return { parsed: null, reason: 'unparseable_ficha' };
+    }
+    const visible = adjacentMonedaValues(renderedVisible($, block));
+    const unfiltered = adjacentMonedaValues(renderedUnfiltered($, block));
     if (visible.length === 0 || visible.length !== unfiltered.length) {
       return { parsed: null, reason: 'unparseable_ficha' };
     }
