@@ -3,9 +3,10 @@ import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { FxUnavailableError, requireExecutableDolarQuote } from '@/lib/executable-fx';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import {
-  applyFciRowMatch,
-  isAnomalousFutureTimestamp,
+  applyObservedRowMatch,
+  classifyAutomaticPriceZeroRows,
   monotonicCurrentPriceFilter,
+  planFciTimestampWrite,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
   shouldPersistFciQuote,
@@ -102,17 +103,35 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
       return false;
     }
     const sourceTs = q.timestamp;
-    let query = supabase
-      .from('investments')
-      .update({
-        current_price: q.price,
-        current_price_updated_at: q.timestamp,
-        current_price_change_pct: q.changePct,
-        market_currency: q.currency.trim().toUpperCase(),
-      })
-      .eq('id', inv.id);
-    if (inv.type === 'fci' && sourceTs) {
-      const anomalous = isAnomalousFutureTimestamp(inv.current_price_updated_at);
+    const casPlan = inv.type === 'fci' && sourceTs
+      ? planFciTimestampWrite({
+          storedTs: inv.current_price_updated_at,
+          httpDate: q.httpDate,
+        })
+      : null;
+    if (casPlan?.action === 'skip') {
+      console.warn('[quotes] skip CAFCI failure', {
+        ticker: inv.ticker,
+        id: inv.id,
+        reason: 'clock_skew',
+        source: q.source,
+      });
+      return false;
+    }
+    let query = applyObservedRowMatch(
+      supabase
+        .from('investments')
+        .update({
+          current_price: q.price,
+          current_price_updated_at: q.timestamp,
+          current_price_change_pct: q.changePct,
+          market_currency: q.currency.trim().toUpperCase(),
+        })
+        .eq('id', inv.id),
+      inv,
+    );
+    if (inv.type === 'fci' && sourceTs && casPlan) {
+      const anomalous = casPlan.action === 'cas';
       if (anomalous) {
         console.warn('[quotes] future stored timestamp', {
           ticker: inv.ticker,
@@ -121,17 +140,29 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
           stored: inv.current_price_updated_at,
         });
       }
-      query = applyFciRowMatch(query, inv);
       const filtered = anomalous && inv.current_price_updated_at
         ? query.eq('current_price_updated_at', inv.current_price_updated_at)
         : query.or(monotonicCurrentPriceFilter(sourceTs));
       const { data, error } = await filtered.select('id');
       if (error) throw error;
       if (!Array.isArray(data) || data.length === 0) {
+        const { data: winningRows, error: rereadError } = await supabase
+          .from('investments')
+          .select('id, type, ticker, market_currency, is_manual_price')
+          .eq('id', inv.id);
+        if (rereadError) throw rereadError;
+        const winning = Array.isArray(winningRows)
+          ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
+          : null;
+        const reason = classifyAutomaticPriceZeroRows({
+          anomalous,
+          observed: inv,
+          winning,
+        });
         console.warn('[quotes] skip CAFCI failure', {
           ticker: inv.ticker,
           id: inv.id,
-          reason: anomalous ? 'future_timestamp_cas_miss' : 'older_than_stored',
+          reason,
           source: q.source,
         });
         return false;
@@ -146,8 +177,17 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
       }
       return true;
     }
-    const { error } = await query;
+    const { data, error } = await query.select('id');
     if (error) throw error;
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('[quotes] skip price update', {
+        reason: 'row_changed',
+        ticker: inv.ticker,
+        id: inv.id,
+        type: inv.type,
+      });
+      return false;
+    }
   }
 
   protected async afterAll(supabase: ServiceClient, _items: PriceRow[]): Promise<void> {

@@ -217,3 +217,93 @@ describe('Codex r4 HTML parser — #cuotaparte scope and fail-closed NAV', () =>
     expect(parsed(html).parsed).toBeNull();
   });
 });
+
+describe('Codex r5 HTML parser — parse5 fail-closed identity and cross-checks', () => {
+  it('skips identity that exists only inside an iframe', () => {
+    const html = shell({
+      identity: `<iframe>
+        <form method="get" action="/fondos/227">
+          <select name="clase">
+            <option value="227">A</option>
+            <option value="784" selected>B</option>
+          </select>
+        </form>
+      </iframe>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a NAV whose whole-block text concatenates a split span', () => {
+    const html = shell({
+      nav: '<span>Valor por cada cuotaparte: 1,09</span><span>7744</span>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips an ancestor NAV 1,20 over a child 1,09', () => {
+    const html = shell({
+      nav: '<div>Valor por cada cuotaparte: 1,20<p>Valor por cada cuotaparte: 1,09</p></div>',
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a conflicting 01/01/2020 date anywhere in #cuotaparte', () => {
+    const html = shell({
+      date: `<h3>Valores al ${DATE}</h3><p>al 01/01/2020</p>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips when an ancestor Moneda: USD disagrees with chosen ARS', () => {
+    const html = shell({
+      moneda: `<div>Moneda: Dolar Estadounidense
+        <span class="label">Moneda:</span> Peso Argentina
+      </div>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('skips a script node that completes the NAV token', () => {
+    expect(parsed(shell({
+      nav: '<p>Valor por cada cuotaparte: 1<script>,097744</script></p>',
+    })).parsed).toBeNull();
+  });
+
+  it('rejects a disabled selected option', () => {
+    const html = shell({
+      identity: `<form method="get" action="/fondos/227">
+        <select name="clase">
+          <option value="227">A</option>
+          <option value="784" selected disabled>B</option>
+        </select>
+      </form>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('rejects a disabled class select', () => {
+    const html = shell({
+      identity: `<form method="get" action="/fondos/227">
+        <select name="clase" disabled>
+          <option value="227">A</option>
+          <option value="784" selected>B</option>
+        </select>
+      </form>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+
+  it('rejects a disabled fieldset around the identity form', () => {
+    const html = shell({
+      identity: `<fieldset disabled>
+        <form method="get" action="/fondos/227">
+          <select name="clase">
+            <option value="227">A</option>
+            <option value="784" selected>B</option>
+          </select>
+        </form>
+      </fieldset>`,
+    });
+    expect(parsed(html).parsed).toBeNull();
+  });
+});

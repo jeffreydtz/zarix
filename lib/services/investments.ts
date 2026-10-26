@@ -13,10 +13,12 @@ import {
   priceFactorForType,
 } from '@/lib/investments/type-meta';
 import {
-  applyFciRowMatch,
+  applyObservedRowMatch,
+  classifyAutomaticPriceZeroRows,
   InvestmentQuoteMap,
   isAnomalousFutureTimestamp,
   monotonicCurrentPriceFilter,
+  planFciTimestampWrite,
   quoteCacheKeyForPosition,
   refreshQuotesForInvestments,
   shouldPersistFciQuote,
@@ -430,7 +432,22 @@ class InvestmentsService {
       if (!fresh || !(fresh.price > 0) || fresh.fxStale || !shouldPersistFciQuote(fresh) || !fresh.timestamp) {
         continue;
       }
-      const anomalous = isAnomalousFutureTimestamp(inv.current_price_updated_at, now);
+      const casPlan = planFciTimestampWrite({
+        storedTs: inv.current_price_updated_at,
+        httpDate: fresh.httpDate,
+        appNowMs: now,
+      });
+      if (casPlan.action === 'skip') {
+        console.warn('[quotes] skip CAFCI failure', {
+          ticker: inv.ticker,
+          id: inv.id,
+          reason: 'clock_skew',
+          source: fresh.source,
+        });
+        if (cacheKey) quoteMap.delete(cacheKey);
+        continue;
+      }
+      const anomalous = casPlan.action === 'cas';
       if (anomalous) {
         console.warn('[quotes] future stored timestamp', {
           ticker: inv.ticker,
@@ -439,7 +456,7 @@ class InvestmentsService {
           stored: inv.current_price_updated_at,
         });
       }
-      let fciQuery = applyFciRowMatch(
+      let fciQuery = applyObservedRowMatch(
         supabase
           .from('investments')
           .update({
@@ -457,12 +474,6 @@ class InvestmentsService {
       const { data, error: fciUpdateError } = await fciQuery.select('id');
       if (fciUpdateError) throw fciUpdateError;
       if (!Array.isArray(data) || data.length === 0) {
-        console.warn('[quotes] skip CAFCI failure', {
-          ticker: inv.ticker,
-          id: inv.id,
-          reason: anomalous ? 'future_timestamp_cas_miss' : 'older_than_stored',
-          source: fresh.source,
-        });
         const { data: winningRows, error: rereadError } = await supabase
           .from('investments')
           .select('*')
@@ -471,6 +482,17 @@ class InvestmentsService {
         const winning = Array.isArray(winningRows)
           ? winningRows.find((row) => row.id === inv.id) ?? winningRows[0]
           : null;
+        const reason = classifyAutomaticPriceZeroRows({
+          anomalous,
+          observed: inv,
+          winning,
+        });
+        console.warn('[quotes] skip CAFCI failure', {
+          ticker: inv.ticker,
+          id: inv.id,
+          reason,
+          source: fresh.source,
+        });
         if (winning) {
           inv.current_price = winning.current_price;
           inv.current_price_updated_at = winning.current_price_updated_at;
@@ -589,19 +611,30 @@ class InvestmentsService {
         updates.map(async (u) => {
           // Display estimates must not lose their FX provenance in stored prices.
           if (u.fxStale) return;
-          const invType = investments.find((row) => row.id === u.id)?.type;
-          if (invType === 'fci') return;
-          let query = supabase
-            .from('investments')
-            .update({
-              current_price: u.price,
-              current_price_updated_at: u.timestamp,
-              current_price_change_pct: u.changePct,
-              market_currency: u.currency.trim().toUpperCase(),
-            })
-            .eq('id', u.id);
-          const { error: updateError } = await query;
+          const inv = investments.find((row) => row.id === u.id);
+          if (!inv || inv.type === 'fci') return;
+          const query = applyObservedRowMatch(
+            supabase
+              .from('investments')
+              .update({
+                current_price: u.price,
+                current_price_updated_at: u.timestamp,
+                current_price_change_pct: u.changePct,
+                market_currency: u.currency.trim().toUpperCase(),
+              })
+              .eq('id', inv.id),
+            inv,
+          );
+          const { data, error: updateError } = await query.select('id');
           if (updateError) throw updateError;
+          if (!Array.isArray(data) || data.length === 0) {
+            console.warn('[quotes] skip price update', {
+              reason: 'row_changed',
+              ticker: inv.ticker,
+              id: inv.id,
+              type: inv.type,
+            });
+          }
         })
       );
     }

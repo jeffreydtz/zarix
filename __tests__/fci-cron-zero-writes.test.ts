@@ -23,6 +23,7 @@ const mocks = vi.hoisted(() => ({
   updates: [] as Array<Record<string, unknown>>,
   orFilters: [] as string[],
   selectData: [{ id: 'ok' }] as Array<{ id: string }>,
+  rereadData: null as Array<Record<string, unknown>> | null,
 }));
 
 vi.mock('@/lib/market-data/data912-client', () => ({ loadArgentineQuotes: mocks.arg }));
@@ -120,7 +121,7 @@ function stubFetch(handlers: {
         status,
         json: async () => body,
         text: async () => JSON.stringify(body),
-        headers: new Headers(),
+        headers: new Headers({ Date: new Date().toUTCString() }),
       };
     }
     const ficha = u.match(/\/fondos\/(\d+)\?clase=(\d+)/);
@@ -134,7 +135,7 @@ function stubFetch(handlers: {
         status,
         text: async () => html,
         json: async () => ({}),
-        headers: handlers.fichaHeaders ?? new Headers(),
+        headers: handlers.fichaHeaders ?? new Headers({ Date: new Date().toUTCString() }),
       };
     }
     if (u.includes('invertironline.com')) {
@@ -175,6 +176,7 @@ beforeEach(() => {
   mocks.updates = [];
   mocks.orFilters = [];
   mocks.selectData = [{ id: 'ok' }];
+  mocks.rereadData = null;
   resetCafciCatalogCacheForTest();
   vi.stubEnv('CRON_SECRET', 'synthetic-cron-secret');
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -226,6 +228,11 @@ beforeEach(() => {
       eq: () => query,
       in: async () => ({ data: mocks.investments, error: null }),
       update: mocks.update,
+      then: (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) =>
+        Promise.resolve({
+          data: mocks.rereadData ?? mocks.investments,
+          error: null,
+        }).then(resolve, reject),
     };
     return query;
   });
@@ -235,6 +242,7 @@ afterEach(() => {
   resetCafciCatalogCacheForTest();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
@@ -595,6 +603,79 @@ describe('cron FCI writes stay at zero for bad source data', () => {
       reason: 'older_than_stored',
       id: 'fixture-prtava-b',
       source: 'cafci',
+    }));
+  });
+
+  it('does not CAS-repair a 26/10 store when the app clock is 24/10', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-24T12:00:00.000Z'));
+    setPosition({
+      current_price: 1.12,
+      current_price_updated_at: '2026-10-26T03:00:00.000Z',
+    });
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({
+          priceLabel: '1,11',
+          date: '22/10/2026',
+          fondoId: '227',
+          claseId: '784',
+        }),
+      },
+      fichaHeaders: new Headers({ Date: 'Mon, 26 Oct 2026 12:00:00 GMT' }),
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'clock_skew',
+      id: 'fixture-prtava-b',
+    }));
+    vi.useRealTimers();
+  });
+
+  it('logs row_changed and writes 0 rows when the FCI is a bond mid-refresh', async () => {
+    mocks.selectData = [];
+    mocks.rereadData = [{
+      id: 'fixture-prtava-b',
+      type: 'bond',
+      ticker: 'PRTAVAB',
+      market_currency: 'ARS',
+      is_manual_price: false,
+    }];
+    stubFetch({
+      fichas: {
+        '227:784': htmlFicha({ priceLabel: '1.241,954039', fondoId: '227', claseId: '784' }),
+      },
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+      reason: 'row_changed',
+      id: 'fixture-prtava-b',
+    }));
+  });
+
+  it('logs row_changed and writes 0 rows when a stock becomes an FCI mid-refresh', async () => {
+    mocks.selectData = [];
+    setPosition({
+      type: 'stock_arg',
+      ticker: 'GGAL',
+      market_currency: 'ARS',
+      purchase_currency: 'ARS',
+      current_price: 100,
+      purchase_price: 100,
+      current_price_updated_at: null,
+    });
+    mocks.arg.mockResolvedValue({
+      byStock: new Map([['GGAL', {
+        symbol: 'GGAL', price: 110, currency: 'ARS', changePct: 1, timestamp: new Date().toISOString(),
+      }]]),
+      byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
+    });
+    expect((await (await cronGet(cronRequest())).json()).processed).toBe(0);
+    expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+      reason: 'row_changed',
+      ticker: 'GGAL',
+      type: 'stock_arg',
     }));
   });
 

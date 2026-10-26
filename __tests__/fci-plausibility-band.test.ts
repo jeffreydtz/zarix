@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   snapshots: vi.fn(),
   selectData: [{ id: 'ok' }] as Array<{ id: string }>,
   orFilters: [] as string[],
+  rereadData: null as Array<Record<string, unknown>> | null,
 }));
 vi.mock('@/lib/market-data/data912-client', () => ({ loadArgentineQuotes: mocks.arg }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
@@ -62,19 +63,40 @@ beforeEach(() => {
   mocks.updates = [];
   mocks.selectData = [{ id: 'ok' }];
   mocks.orFilters = [];
+  mocks.rereadData = null;
   mocks.positions = [position()];
   mocks.dolar.mockResolvedValue({
     blue: { timestamp: new Date(), sell: 1300, buy: 1280  }, mep: { timestamp: new Date(), sell: 1300, buy: 1280  },
   });
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
-  mocks.fci.mockResolvedValue({ price: 1.098, currency: 'USD', changePct: 0, timestamp: freshFciNavIso(), source: 'cafci' });
+  mocks.fci.mockResolvedValue({
+    price: 1.098, currency: 'USD', changePct: 0, timestamp: freshFciNavIso(), source: 'cafci',
+    httpDate: new Date().toUTCString(),
+  });
   mocks.yahoo.mockResolvedValue(new Map());
   mocks.stooq.mockResolvedValue(null);
   mocks.arg.mockResolvedValue({ byStock: new Map(), byCedear: new Map(), byBond: new Map(), byCorp: new Map() });
   mocks.from.mockImplementation((table: string) => {
-    const builder = {
-      select: () => builder, eq: () => builder, in: () => builder,
-      order: () => builder, gte: () => builder,
+    const builder: {
+      _byId: boolean;
+      select: () => typeof builder;
+      eq: (column?: string, value?: unknown) => typeof builder;
+      in: () => typeof builder;
+      order: () => typeof builder;
+      gte: () => typeof builder;
+      upsert: unknown;
+      update: (payload: Record<string, unknown>) => unknown;
+      then: (resolve: (value: unknown) => unknown) => unknown;
+    } = {
+      _byId: false,
+      select: () => builder,
+      eq: (column?: string) => {
+        if (column === 'id') builder._byId = true;
+        return builder;
+      },
+      in: () => builder,
+      order: () => builder,
+      gte: () => builder,
       upsert: mocks.snapshots.mockResolvedValue({ error: null }),
       update: (payload: Record<string, unknown>) => {
         const chain: {
@@ -99,7 +121,10 @@ beforeEach(() => {
         return chain;
       },
       then: (resolve: (value: unknown) => unknown) => Promise.resolve(resolve({
-        data: table === 'investments' ? mocks.positions : [], error: null,
+        data: table === 'investments'
+          ? (builder._byId && mocks.rereadData ? mocks.rereadData : mocks.positions)
+          : [],
+        error: null,
       })),
     };
     return builder;
@@ -550,5 +575,39 @@ it('does not return a losing FCI quote as live when the conditional UPDATE match
     reason: 'older_than_stored',
     id: 'fixture-position',
     source: 'cafci',
+  }));
+});
+
+it('logs row_changed when the FCI row is a bond before the UPDATE lands', async () => {
+  mocks.selectData = [];
+  mocks.positions = [position()];
+  mocks.rereadData = [{ ...position(), type: 'bond' }];
+  const rows = await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(rows[0].current_price).toBe(1.09);
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip CAFCI failure', expect.objectContaining({
+    reason: 'row_changed',
+    id: 'fixture-position',
+  }));
+});
+
+it('logs row_changed when a stock becomes an FCI mid-refresh', async () => {
+  mocks.selectData = [];
+  mocks.positions = [{
+    ...position('GGAL', 'ARS', 100),
+    type: 'stock_arg',
+    ticker: 'GGAL',
+  }];
+  mocks.arg.mockResolvedValue({
+    byStock: new Map([['GGAL', {
+      symbol: 'GGAL', price: 110, currency: 'ARS', changePct: 1, timestamp: new Date().toISOString(),
+    }]]),
+    byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
+  });
+  await investmentsService.list('fixture-user', { forceRefreshQuotes: true });
+  expect(mocks.updates).toHaveLength(1);
+  expect(console.warn).toHaveBeenCalledWith('[quotes] skip price update', expect.objectContaining({
+    reason: 'row_changed',
+    ticker: 'GGAL',
+    type: 'stock_arg',
   }));
 });
