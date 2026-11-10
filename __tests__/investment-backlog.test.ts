@@ -26,7 +26,11 @@ import {
   quoteCacheKey,
   quoteCacheKeyForPosition,
 } from '@/lib/market-data/quote-refresh';
-import { findDuplicateCategory } from '@/lib/categories/synonyms';
+import {
+  findDuplicateCategory,
+  findOwnExactCategory,
+  findSimilarSystemCategory,
+} from '@/lib/categories/synonyms';
 import { accountCanHoldPosition, priceFactorForType, yahooSymbolFor } from '@/lib/investments/type-meta';
 import {
   composeComposition,
@@ -193,6 +197,22 @@ describe('liquid net worth excludes positions and broker cash', () => {
     expect(accountCanHoldPosition('investment', 'cedear')).toBe(true);
     expect(accountCanHoldPosition('crypto', 'cedear')).toBe(false);
     expect(accountCanHoldPosition('bank', 'crypto')).toBe(false);
+  });
+
+  it('subtracts credit-card debt even when include_in_total is false', () => {
+    const card: AccountWithBalance = {
+      ...bank('visa', -30),
+      type: 'credit_card',
+      name: 'Visa',
+      is_debt: true,
+      include_in_total: false,
+      credit_limit: 100,
+    };
+    const totals = accountsService.aggregateAccountTotals([bank('cash', 100), card]);
+    expect(totals.liquidUSD).toBe(70);
+    expect(totals.totalUSD).toBe(70);
+    expect(totals.creditCardDebtUSD).toBe(30);
+    expect(totals.creditCards).toHaveLength(1);
   });
 
   it('keeps a negative liquid total instead of clamping', () => {
@@ -464,10 +484,21 @@ describe('IOL Mi Portafolio CSV', () => {
 });
 
 describe('category synonyms for new data', () => {
-  it('detects Other/Otros as the same identity without mutating existing rows', () => {
-    const existing = [{ id: '1', name: 'Otros', type: 'expense' }];
-    expect(findDuplicateCategory('Other', 'expense', existing)?.id).toBe('1');
+  it('blocks only an exact own-category name, ignoring case and accents', () => {
+    const existing = [{ id: '1', name: 'Otros', type: 'expense', is_system: false }];
+    expect(findDuplicateCategory('otros', 'expense', existing)?.id).toBe('1');
+    expect(findDuplicateCategory('OTROS', 'expense', existing)?.id).toBe('1');
+    expect(findDuplicateCategory('Other', 'expense', existing)).toBeNull();
     expect(findDuplicateCategory('Food', 'expense', existing)).toBeNull();
+  });
+
+  it('does not treat a system synonym as a duplicate of a new user name', () => {
+    const existing = [{ id: 'comida', name: 'Comida', type: 'expense', is_system: true }];
+    expect(findOwnExactCategory('Supermercado', 'expense', existing)).toBeNull();
+    expect(findOwnExactCategory('Comida', 'expense', existing)).toBeNull();
+    expect(findDuplicateCategory('Supermercado', 'expense', existing)).toBeNull();
+    expect(findSimilarSystemCategory('Supermercado', 'expense', existing)?.id).toBe('comida');
+    expect(findSimilarSystemCategory('Comida', 'expense', existing)?.id).toBe('comida');
   });
 });
 

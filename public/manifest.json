@@ -1,13 +1,17 @@
 {
+  "id": "/",
   "name": "Zarix - Finanzas Personales",
   "short_name": "Zarix",
   "description": "App financiera personal para Argentina",
-  "start_url": "/dashboard",
+  "lang": "es-AR",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#22C55E",
   "orientation": "portrait",
   "scope": "/",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/logo-formats/android-chrome-192x192.png",
@@ -38,6 +42,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/wide-1280x720.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Zarix en escritorio"
+    },
+    {
+      "src": "/screenshots/narrow-1080x1920.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Zarix en el teléfono"
     }
   ],
   "categories": ["finance", "productivity"],

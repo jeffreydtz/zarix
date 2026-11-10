@@ -54,6 +54,10 @@ export function effectiveInboxItem<T extends object>(item: T, edits?: Partial<T>
   return { ...item, ...(edits || {}) };
 }
 
+export function inboxDraftAccountId(effective: InboxDraft): string | null {
+  return effective.account_id || effective.tool_payload?.accountId || null;
+}
+
 export function confirmRequestFromDraft(effective: InboxDraft): {
   action: 'confirm';
   amount: number | null;
@@ -65,7 +69,7 @@ export function confirmRequestFromDraft(effective: InboxDraft): {
     action: 'confirm',
     amount: effective.amount == null ? null : Number(effective.amount),
     merchant: effective.merchant,
-    accountId: effective.account_id,
+    accountId: inboxDraftAccountId(effective),
     currency: effective.currency,
   };
 }
@@ -75,7 +79,7 @@ export function confirmPreviewFromDraft(effective: InboxDraft, accounts: InboxAc
   const type = parked.type || (effective.direction === 'income' ? 'income' : 'expense');
   // Cleared amount stays cleared — never restore parked/original silently.
   const amount = effective.amount;
-  const accountId = effective.account_id || parked.accountId || null;
+  const accountId = inboxDraftAccountId(effective);
   const accountName =
     accounts.find((a) => a.id === accountId)?.name || parked.account || 'cuenta sin elegir';
   const installments = parked.installments && parked.installments > 1 ? parked.installments : 1;

@@ -46,6 +46,35 @@ function sha256Hex(bytes: Uint8Array | string): string {
   return h.digest('hex');
 }
 
+function nfcFold(value: string | null | undefined): string {
+  return String(value ?? '')
+    .normalize('NFC')
+    .trim()
+    .toLowerCase();
+}
+
+function movementContentFingerprint(source: string, movement: ExtractedMovement): string {
+  return [
+    source,
+    movement.date ?? '',
+    Number(movement.amount).toFixed(2),
+    String(movement.currency || 'ARS').toUpperCase(),
+    nfcFold(movement.merchant),
+    movement.type,
+    String(movement.installments ?? 1),
+    movement.installmentNumber == null ? '' : String(movement.installmentNumber),
+  ].join('|');
+}
+
+/** Stable per-movement key so PDF then CSV of the same extract does not double-park. */
+export function statementMovementIngestKey(
+  source: string,
+  movement: ExtractedMovement,
+  occurrence: number
+): string {
+  return `${source}:mv:${sha256Hex(`${movementContentFingerprint(source, movement)}|${occurrence}`)}`;
+}
+
 function occurredAtIso(date: string | null): string | null {
   if (!date || !isCivilYmd(date)) return null;
   return calendarDateToUtcNoonIso(date);
@@ -146,11 +175,15 @@ async function parkMovements(input: {
   let duplicates = 0;
   let installments = 0;
   let parked = 0;
-  for (const [index, movement] of input.movements.slice(0, MAX_EXTRACTED_MOVEMENTS).entries()) {
+  const occurrenceByContent = new Map<string, number>();
+  for (const movement of input.movements.slice(0, MAX_EXTRACTED_MOVEMENTS)) {
     const match = reconcileExtractedMovement(movement, ledger);
     if (match.kind === 'duplicate') duplicates += 1;
     if (match.kind === 'installment') installments += 1;
-    const ingestKey = `${input.source}:${input.batchKey}:${index}`;
+    const content = movementContentFingerprint(input.source, movement);
+    const occurrence = occurrenceByContent.get(content) ?? 0;
+    occurrenceByContent.set(content, occurrence + 1);
+    const ingestKey = statementMovementIngestKey(input.source, movement, occurrence);
     const row = await parkRegistryWrite({
       userId: input.userId,
       amount: movement.amount,
@@ -179,7 +212,11 @@ async function parkMovements(input: {
       currency: row.currency,
       match: match.kind,
     });
-    parked += 1;
+    if (row.duplicate) {
+      if (match.kind !== 'duplicate') duplicates += 1;
+    } else {
+      parked += 1;
+    }
   }
   return {
     parked,

@@ -72,7 +72,7 @@ export default function CreateAccountButton() {
         color: selectedTypeData?.color || '#3B82F6',
         isDebt: isCreditCard || isDebt,
         initialBalance: parseFloat(initialBalance.replace(',', '.')) || 0,
-        includeInTotal: !isCreditCard,
+        includeInTotal: true,
         includeInLiquid: isInvestment ? true : includeInLiquid,
       };
 

@@ -8,7 +8,10 @@ export async function GET() {
   try {
     const { user } = await requireUser();
     const items = await listPendingItems(user.id, 'pending');
-    return NextResponse.json({ items });
+    return NextResponse.json(
+      { items },
+      { headers: { 'Cache-Control': 'private, no-store' } }
+    );
   } catch (error) {
     return errorResponse(error);
   }

@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const category = await categoriesService.create({
+    const { category, reused, similarSystem } = await categoriesService.create({
       userId: user.id,
       name: body.name,
       type: body.type,
@@ -56,7 +56,25 @@ export async function POST(req: NextRequest) {
       parentId: body.parentId,
     });
 
-    return NextResponse.json(category, { status: 201 });
+    if (reused) {
+      return NextResponse.json({
+        ...category,
+        reused: true,
+        message: `Ya existe la categoría «${category.name}». La reutilizamos en lugar de crear otra.`,
+      });
+    }
+
+    return NextResponse.json(
+      {
+        ...category,
+        ...(similarSystem
+          ? {
+              hint: `También existe la categoría del sistema «${similarSystem.name}».`,
+            }
+          : {}),
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error('Categories POST error:', error);
     return errorResponse(error);

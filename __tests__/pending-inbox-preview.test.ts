@@ -73,6 +73,15 @@ describe('pending inbox preview matches the confirm request', () => {
     expect(inboxOriginalStatusLabel('discarded')).toBe('descartado');
   });
 
+  it('falls back to the parked accountId when the draft has no account_id', () => {
+    const draft = effectiveInboxItem({ ...ITEM, account_id: null });
+    const preview = confirmPreviewFromDraft(draft, ACCOUNTS);
+    const request = confirmRequestFromDraft(draft);
+    expect(preview.accountId).toBe(ITEM.tool_payload?.accountId);
+    expect(request.accountId).toBe(ITEM.tool_payload?.accountId);
+    expect(preview.accountName).toBe('Otra');
+  });
+
   it('cleared amount stays null in preview and POST instead of restoring parked amount', () => {
     const draft = effectiveInboxItem(ITEM, { amount: null });
     const preview = confirmPreviewFromDraft(draft, ACCOUNTS);

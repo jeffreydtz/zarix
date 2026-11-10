@@ -28,6 +28,20 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/manifest.json',
+        headers: [
+          { key: 'Content-Type', value: 'application/manifest+json; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+          { key: 'Service-Worker-Allowed', value: '/' },
+        ],
+      },
+      {
         source: '/shared/:path*',
         headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
       },
@@ -58,6 +72,7 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "worker-src 'self'",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://api.telegram.org",
               "font-src 'self' data:",

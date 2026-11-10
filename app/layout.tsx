@@ -29,7 +29,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(appBase),
   title: 'Zarix - Finanzas Personales',
   description: 'App financiera personal para Argentina',
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -75,6 +74,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es-AR" suppressHydrationWarning className={inter.variable}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={`${inter.className} antialiased`}>
         <ClientProviders>{children}</ClientProviders>
       </body>

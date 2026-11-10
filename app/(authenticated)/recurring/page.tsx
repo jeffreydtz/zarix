@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { CategoryIcon, getOptionTextIcon } from '@/lib/category-icons';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
+import { civilTodayYmd } from '@/lib/transaction-date';
 
 interface RecurringRule {
   id: string;
@@ -210,11 +211,12 @@ export default function RecurringPage() {
     categoryId: '',
     description: '',
     frequency: 'monthly',
-    startDate: new Date().toISOString().split('T')[0],
+    startDate: civilTodayYmd(),
     endDate: '',
     notificationEnabled: true,
   });
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
 
   const selectedService = useMemo(
     () => SUBSCRIPTION_SERVICES.find((service) => service.id === form.serviceId),
@@ -311,7 +313,7 @@ export default function RecurringPage() {
       categoryId: '',
       description: '',
       frequency: 'monthly',
-      startDate: new Date().toISOString().split('T')[0],
+      startDate: civilTodayYmd(),
       endDate: '',
       notificationEnabled: true,
     });
@@ -319,18 +321,19 @@ export default function RecurringPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
     setSaving(true);
     try {
       const payload = {
         type: form.kind === 'subscription' ? 'expense' : form.type,
         accountId: form.accountId,
-        amount: form.amount.replace(',', '.'),
+        amount: form.amount,
         currency: form.currency,
-        categoryId: form.categoryId,
+        categoryId: form.categoryId || null,
         description: form.description,
         frequency: form.frequency,
         startDate: form.startDate,
-        endDate: form.endDate,
+        endDate: form.endDate || null,
         isSubscription: form.kind === 'subscription',
         subscriptionName: form.kind === 'subscription' ? selectedService?.name ?? null : null,
         subscriptionPlan: form.kind === 'subscription' ? selectedPlan?.name ?? null : null,
@@ -341,13 +344,17 @@ export default function RecurringPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setShowForm(false);
         resetForm();
         fetchRules();
+        return;
       }
+      setFormError(data.error || 'No se pudo crear la regla recurrente.');
     } catch (e) {
       console.error(e);
+      setFormError('No se pudo crear la regla recurrente.');
     } finally {
       setSaving(false);
     }
@@ -677,6 +684,7 @@ export default function RecurringPage() {
                     </label>
                     <input
                       type="date"
+                      required
                       value={form.startDate}
                       onChange={(e) => setForm((prev) => ({ ...prev, startDate: e.target.value }))}
                       className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
@@ -703,6 +711,10 @@ export default function RecurringPage() {
                       <span>{form.notificationEnabled ? 'Activo' : 'Desactivado'}</span>
                     </button>
                   </div>
+
+                  {formError && (
+                    <p className="md:col-span-2 text-sm text-destructive">{formError}</p>
+                  )}
 
                   <div className="md:col-span-2">
                     <button
