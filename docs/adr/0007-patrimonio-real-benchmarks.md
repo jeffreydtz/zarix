@@ -31,7 +31,7 @@ caución ni un índice único de money market.
 ## Consecuencias
 
 - La UI siempre muestra fuente y fecha, o el motivo de "no disponible".
-- Hace falta la migración `20261110140000_user_benchmark_settings.sql` (no
+- Hace falta la migración `20261110160000_user_benchmark_settings.sql` (no
   aplicarla desde un preview que comparte el Supabase de producción).
 - Variables opcionales: `BENCHMARK_PLAZO_FIJO_TNA`, `BENCHMARK_CAUCION_TNA`,
   `BENCHMARK_FCI_MM_TICKER`.

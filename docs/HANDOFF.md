@@ -59,6 +59,19 @@ npm run telegram:webhook
 
 ---
 
+## Drift de `supabase_migrations` (2026-11-10)
+
+La migración de carga automática está en git como
+`20261110150000_statement_email_ingest.sql`, pero en producción quedó
+registrada como versión **`20261110145236`**. Un `supabase db push` contra prod
+intentaría aplicar `20261110150000` otra vez. No sincronizar el catálogo desde
+este PR: hace falta un PR aparte que alinee el nombre del archivo con
+`20261110145236` (o marque `20261110150000` como ya aplicada) **sin** re-ejecutar
+el SQL. La de patrimonio real va como `20261110160000` para quedar después de
+ambas.
+
+---
+
 ## Slice a shipear ahora — “Trust”
 
 Detalle y DoD: `docs/AUDIT.md` §5.
