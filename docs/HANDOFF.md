@@ -47,6 +47,7 @@ npm run telegram:webhook
 | APIs | `app/api/` — **no** pasan por el guard de `middleware.ts` |
 | Dinero (TS) | `lib/services/transactions.ts`, `accounts.ts` |
 | Resumen de tarjeta | `lib/card-statement.ts`, `lib/services/card-statement.ts`, `GET /api/accounts/[id]/statement` |
+| Rendimiento real | `lib/real-returns.ts`, `lib/services/real-returns.ts`, `GET /api/real-returns` |
 | Dinero (SQL) | `update_account_balance()` en `supabase/schema.sql` + migraciones |
 | Bot | `lib/telegram/bot.ts`, `lib/ai/bot-tools.ts` |
 | Crons | `app/api/cron/*`, template `lib/cron/cron-job.ts`, schedule `vercel.json` |
@@ -55,6 +56,19 @@ npm run telegram:webhook
 | Design | `DESIGN.md`, tokens en `app/globals.css` — UI en **es-AR** |
 
 **Invariante de seguridad:** `createServiceClientSync()` ignora RLS. Toda lectura/escritura de usuario lleva `.eq('user_id', …)` (o token de shared group). Un olvido = fuga cross-tenant.
+
+---
+
+## Drift de `supabase_migrations` (2026-11-10)
+
+La migración de carga automática está en git como
+`20261110150000_statement_email_ingest.sql`, pero en producción quedó
+registrada como versión **`20261110145236`**. Un `supabase db push` contra prod
+intentaría aplicar `20261110150000` otra vez. No sincronizar el catálogo desde
+este PR: hace falta un PR aparte que alinee el nombre del archivo con
+`20261110145236` (o marque `20261110150000` como ya aplicada) **sin** re-ejecutar
+el SQL. La de patrimonio real va como `20261110160000` para quedar después de
+ambas.
 
 ---
 

@@ -17,6 +17,7 @@ import { getMarketSparklines } from '@/lib/services/market-history';
 import { getMonthFlow } from '@/lib/services/month-flow';
 import { getUpcoming } from '@/lib/services/upcoming';
 import { getCardStatements } from '@/lib/services/card-statement';
+import { getRealReturnsReport } from '@/lib/services/real-returns';
 import { getTopBudgets } from '@/lib/services/budget-summary';
 import NetWorthHero from '@/components/dashboard/NetWorthHero';
 import MarketStrip from '@/components/dashboard/MarketStrip';
@@ -26,6 +27,7 @@ import BudgetCluster from '@/components/dashboard/BudgetCluster';
 import StickyNetWorthBar from '@/components/dashboard/StickyNetWorthBar';
 import DashboardSpendingAnalyzerSection from '@/components/dashboard/DashboardSpendingAnalyzerSection';
 import DashboardMore from '@/components/dashboard/DashboardMore';
+import RealReturnsPanel from '@/components/dashboard/RealReturnsPanel';
 import { PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 
@@ -76,6 +78,7 @@ export default async function DashboardPage() {
       sparklines,
       monthFlow,
       cardStatements,
+      realReturns,
       upcoming,
       budgets,
       preferences,
@@ -90,6 +93,7 @@ export default async function DashboardPage() {
       getMarketSparklines(),
       getMonthFlow(user.id).catch(unavailableSection(null)),
       cardStatementsPromise,
+      getRealReturnsReport(user.id).catch(unavailableSection(null)),
       cardStatementsPromise
         .then((statements) => getUpcoming(user.id, 5, { cardStatements: statements }))
         .catch(unavailableSection(null)),
@@ -193,6 +197,16 @@ export default async function DashboardPage() {
 
             <MotionSection delay={0.12} intensity="normal" className="lg:col-span-4">
               {upcoming ? <UpcomingRail items={upcoming} /> : <p role="status" className="card p-4">Próximos movimientos no disponibles.</p>}
+            </MotionSection>
+
+            <MotionSection delay={0.14} intensity="normal" className="lg:col-span-12">
+              {realReturns ? (
+                <RealReturnsPanel report={realReturns} />
+              ) : (
+                <p role="status" className="card p-4 text-muted-foreground">
+                  Rendimiento real no disponible.
+                </p>
+              )}
             </MotionSection>
 
             {quotes?.dolar.blue ? (

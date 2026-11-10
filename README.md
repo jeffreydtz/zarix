@@ -35,7 +35,7 @@ La web de Zarix te permite:
 ## Secciones principales
 
 ### Dashboard
-- Resumen de patrimonio liquido y total.
+- Resumen de patrimonio liquido y total, con rendimiento real vs IPC, MEP, CCL y benchmarks (sin recomendar inversiones).
 - Cotizaciones de dolar y crypto.
 - Ultimos movimientos.
 - Estado general de tarjetas, con resumen proyectado por cierre, cuotas pendientes y deuda futura en ARS/USD.

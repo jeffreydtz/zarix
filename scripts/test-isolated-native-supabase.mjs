@@ -333,6 +333,7 @@ try {
   unwrap(await admin.rpc('finish_plan_usage',{p_user_id:userB,p_feature:'ai',p_request_key:'native-ai-recovery-001',p_token:reservation,p_succeeded:true,p_result:{synthetic:true}}));
   unwrap(await admin.rpc('begin_import_batch',{p_user_id:userB,p_batch_id:importBatch,p_intent_hash:digest('native-synthetic-import'),p_context:{synthetic:true,account_id:accountB}}));
   sql(`INSERT INTO public.inbound_email_mailboxes(user_id,token_hash,token_prefix) VALUES(${literal(userB)},${literal(digest('synthetic-mailbox'))},'zrxm_synth00')`);
+  sql(`INSERT INTO public.user_benchmark_settings(user_id,plazo_fijo_tna) VALUES(${literal(userB)},30)`);
   const rows=tableHashes(pgEnv,['public']);assert.ok(Object.values(rows).every(table=>table.count>0),'Every application table must have recovery fixtures');
   return {applicationTables:Object.keys(rows).length,rowCounts:Object.fromEntries(Object.entries(rows).map(([name,value])=>[name,value.count]))};
  });

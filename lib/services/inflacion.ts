@@ -12,24 +12,59 @@ export interface InflacionMes {
   valor: number;
 }
 
+export const INFLACION_SOURCE_LABEL = 'INDEC vía argentinadatos.com';
+export const INFLACION_PROVIDER_URL = API_URL;
+
+export interface InflacionSeriesMeta {
+  source: string;
+  providerUrl: string;
+  lastFecha: string | null;
+  fetchedAt: string | null;
+}
+
 let cache: { data: InflacionMes[]; at: number } | null = null;
 
+function metaFrom(series: InflacionMes[], fetchedAt: number | null): InflacionSeriesMeta {
+  return {
+    source: INFLACION_SOURCE_LABEL,
+    providerUrl: INFLACION_PROVIDER_URL,
+    lastFecha: series.length ? series[series.length - 1].fecha : null,
+    fetchedAt: fetchedAt ? new Date(fetchedAt).toISOString() : null,
+  };
+}
+
 export async function getInflacionSeries(): Promise<InflacionMes[]> {
-  if (cache && Date.now() - cache.at < TTL_MS) return cache.data;
+  const packed = await getInflacionSeriesWithMeta();
+  return packed.series;
+}
+
+export async function getInflacionSeriesWithMeta(): Promise<{
+  series: InflacionMes[];
+  meta: InflacionSeriesMeta;
+}> {
+  if (cache && Date.now() - cache.at < TTL_MS) {
+    return { series: cache.data, meta: metaFrom(cache.data, cache.at) };
+  }
   try {
-    const res = await fetch(API_URL, { next: { revalidate: 43200 } });
+    const timeoutMs = Number(process.env.MARKET_DATA_TIMEOUT_MS);
+    const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? Math.min(timeoutMs, 20_000) : 8_000;
+    const res = await fetch(API_URL, {
+      next: { revalidate: 43200 },
+      signal: AbortSignal.timeout(timeout),
+    });
     if (!res.ok) throw new Error(`inflacion API ${res.status}`);
     const raw = (await res.json()) as Array<{ fecha: string; valor: number }>;
     const data = raw
       .filter((r) => r && typeof r.valor === 'number' && r.fecha)
       .sort((a, b) => a.fecha.localeCompare(b.fecha));
     cache = { data, at: Date.now() };
-    return data;
+    return { series: data, meta: metaFrom(data, cache.at) };
   } catch (e) {
     console.error('[inflacion] fetch error:', e);
     // Serie vieja es mejor que ninguna: la vista "reales" degrada a nominal
     // si no hay datos (factor 1).
-    return cache?.data ?? [];
+    const data = cache?.data ?? [];
+    return { series: data, meta: metaFrom(data, cache?.at ?? null) };
   }
 }
 

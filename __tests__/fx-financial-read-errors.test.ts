@@ -28,6 +28,11 @@ vi.mock('@/lib/services/card-statement', () => ({
   getCardStatement: async () => null,
   getCardStatements: async () => [],
 }));
+vi.mock('@/lib/services/real-returns', () => ({ getRealReturnsReport: async () => ({
+  todayISO: '2026-11-10', disclaimer: 'Información comparativa.', inflationSource: { source: 'INDEC vía argentinadatos.com', lastFecha: null },
+  quotes: { mep: { rate: null, source: null, asOf: null }, ccl: { rate: null, source: null, asOf: null } },
+  periods: [],
+}) }));
 vi.mock('@/components/investments/PortfolioWidgets', () => ({ MarketDataWidget: () => null, InvestmentAccountsList: () => null }));
 vi.mock('@/components/investments/InvestmentsWorkspace', () => ({
   default: ({ initialPortfolio }: { initialPortfolio: { fxUnavailable?: boolean; investments: { name: string }[] } }) =>
