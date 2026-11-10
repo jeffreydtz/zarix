@@ -51,6 +51,7 @@ export const DOCS_PAGES: DocsPage[] = [
         heading: 'Presupuestos, recurrentes e importación',
         body: [
           'Podés poner un tope por categoría, cargar el alquiler todos los meses y importar/exportar CSV.',
+          'El PDF del resumen o un CSV del banco va a Pendientes (dato de ejemplo: 12 movimientos extraídos). Nada se registra sin que lo confirmes.',
         ],
       },
     ],
@@ -58,7 +59,7 @@ export const DOCS_PAGES: DocsPage[] = [
   {
     slug: 'telegram',
     title: 'Telegram',
-    description: 'Cómo vincular el bot y cargar gastos por texto, voz o foto.',
+    description: 'Cómo vincular el bot y cargar gastos por texto, voz, foto o PDF.',
     sections: [
       {
         heading: 'Vincular tu chat',
@@ -70,7 +71,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'Qué entiende el bot',
         body: [
-          'Texto (“gasté 2500 en el super con Mercado Pago”), voz y foto de ticket. Ejemplo de respuesta: “✓ Super — Mercado Pago $2.500” (dato de ejemplo).',
+          'Texto (“gasté 2500 en el super con Mercado Pago”), voz, foto de ticket y PDF del resumen. Ejemplo de respuesta: “✓ Super — Mercado Pago $2.500” (dato de ejemplo). Un PDF no se registra solo: queda en Pendientes.',
           'El modelo llama herramientas de Zarix (crear movimiento, saldos, presupuestos). No tiene otra vía para tocar tus datos.',
         ],
       },
@@ -132,6 +133,7 @@ export const DOCS_PAGES: DocsPage[] = [
         heading: 'Ingest Wallet',
         body: [
           'POST /api/ingest/wallet con Authorization: Bearer zrxp_… y permiso ingest. Idempotency-Key opcional: replay exacto reusa el pendiente; otro cuerpo o canal da 409. Sin clave no hay duplicate:true. Hay recorte de tamaño y de ráfagas.',
+          'POST /api/ingest/statement (sesión web) sube un PDF/CSV a Pendientes. POST /api/ingest/email es el webhook inbound (secreto de entorno); tampoco confirma solo.',
         ],
       },
       {
@@ -175,6 +177,27 @@ export const DOCS_PAGES: DocsPage[] = [
     ],
   },
   {
+    slug: 'carga-automatica',
+    title: 'Carga automática (PDF, CSV y mail)',
+    description: 'Extraer movimientos de un resumen o de un mail reenviado y confirmarlos en la bandeja.',
+    sections: [
+      {
+        heading: 'Qué entra a Pendientes',
+        body: [
+          'Un PDF de resumen de tarjeta, un CSV o PDF de movimientos bancarios, un PDF por Telegram y un mail reenviado de Mercado Pago o del banco. Ejemplo: 8 gastos extraídos de un resumen Visa Ejemplo (dato de ejemplo).',
+          'Nada de eso se escribe en el libro hasta que lo confirmás en /pendientes. Zarix marca posibles duplicados y cuotas ya cargadas; no los descarta solo.',
+        ],
+      },
+      {
+        heading: 'Mail inbound',
+        body: [
+          'La integración queda detrás de INBOUND_EMAIL_WEBHOOK_SECRET y, si hay dominio, INBOUND_EMAIL_DOMAIN. El proveedor recomendado es Resend Inbound; también sirve un JSON genérico con mailboxToken, text y adjuntos en Base64.',
+          'No se crea ninguna cuenta de proveedor desde el código. POST /api/ingest/email exige el secreto. Los adjuntos no se guardan: se hashean, se extraen y se descartan. Límite de JSON 256 KiB y 4 MB por adjunto.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'gemini',
     title: 'Tu propia clave de Gemini',
     description: 'Bring-your-own-key. Si no hay clave tuya, se usa la del servidor si está configurada.',
@@ -196,7 +219,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'Qué se guarda',
         body: [
-          'Cuentas, movimientos, presupuestos, reglas, sesiones del bot y (si los usás) tokens hasheados y pendientes de Wallet.',
+          'Cuentas, movimientos, presupuestos, reglas, sesiones del bot y (si los usás) tokens hasheados y pendientes de Wallet, resúmenes o mails. Los adjuntos de PDF/mail no se conservan después de extraer.',
           'No se guardan números de tarjeta completos. CBU/CUIT/PAN se enmascaran en las respuestas de las herramientas.',
         ],
       },
@@ -217,7 +240,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: '¿El atajo crea el gasto solo?',
         body: [
-          'No. Lo manda a la bandeja de pendientes. Si activás el auto-confirm, hay timestamp completo o Idempotency-Key, y el comercio ya es conocido, se confirma solo (autoConfirmed). Un posible duplicado nunca se auto-confirma: queda pending en /pendientes para descartar de un clic.',
+          'No. Lo manda a la bandeja de pendientes. Si activás el auto-confirm, hay timestamp completo o Idempotency-Key, y el comercio ya es conocido, se confirma solo (autoConfirmed). Un posible duplicado nunca se auto-confirma: queda pending en /pendientes para descartar de un clic. Un PDF, CSV o mail reenviado nunca se auto-confirma.',
         ],
       },
       {

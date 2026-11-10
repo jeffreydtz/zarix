@@ -177,6 +177,9 @@ Grupos:
 - **App / ops**: `CRON_SECRET` (requerida en prod: sin ella los `/api/cron/*`
   quedan cerrados), `DEV_LOGIN_SECRET` + `ALLOW_DEV_LOGIN` (login de desarrollo),
   `NEXT_PUBLIC_APP_URL`, `COMPARE_USER_ID`.
+- **Inbound email** (opcional): `INBOUND_EMAIL_WEBHOOK_SECRET`,
+  `INBOUND_EMAIL_DOMAIN`. Sin el secreto, `POST /api/ingest/email` queda en 503.
+  No se crea la cuenta del proveedor (Resend u otro) desde el repo.
 
 > Las variables `NEXT_PUBLIC_*` se exponen en el bundle del navegador: nunca
 > pongas secretos ahi.

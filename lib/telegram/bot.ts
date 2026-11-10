@@ -1,4 +1,5 @@
 import { downloadTelegramMedia } from '@/lib/telegram/download-media';
+import { MAX_TELEGRAM_STATEMENT_BYTES } from '@/lib/integrations/statement-parse';
 import { ApiError } from '@/lib/api-handler';
 import { withPlanQuota, AmbiguousPlanWorkError } from '@/lib/plans/service';
 import { Telegraf, Context } from 'telegraf';
@@ -322,7 +323,7 @@ bot.command('help', async (ctx) => {
 • "pagué netflix con la visa, 15 dólares"
 • "compré 100 dólares a 1250"
 • "500 en el súper, 200 de nafta y 80 de café"
-• 📷 Mandame la *foto de un ticket* o un 🎤 *audio*
+• 📷 Mandame la *foto de un ticket*, un *PDF del resumen* o un 🎤 *audio*
 
 *Hablame natural — consultas:*
 • "cuánto gasté en comida este mes?"
@@ -582,6 +583,67 @@ Si no es un ticket/factura o no podés extraer información:
       return ctx.reply(GEMINI_SETUP_MSG);
     }
     return ctx.reply('Hubo un error procesando la imagen. ¿Podés intentar con otra foto o escribirme el gasto?');
+  }
+});
+
+bot.on(message('document'), async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) {
+    return ctx.reply(getSubscriptionBlockedMessage(user.status));
+  }
+
+  const doc = ctx.message.document;
+  const mime = doc.mime_type || '';
+  const name = doc.file_name || 'archivo';
+  const allowed =
+    mime.includes('pdf') ||
+    mime.includes('csv') ||
+    mime === 'text/plain' ||
+    /\.(pdf|csv|txt)$/i.test(name);
+  if (!allowed) {
+    return ctx.reply('Mandame un PDF del resumen o un CSV de movimientos. Las fotos de tickets van como imagen.');
+  }
+
+  try {
+    await ctx.reply('📄 Leyendo el archivo. Los movimientos van a Pendientes: no registro nada sin que confirmes.');
+    const arrayBuffer = await downloadTelegramMedia(
+      ctx.telegram,
+      doc.file_id,
+      MAX_TELEGRAM_STATEMENT_BYTES
+    );
+    const { ingestStatementFile } = await import('@/lib/services/statement-ingest');
+    const result = await withPlanQuota(
+      {
+        userId: user.id,
+        feature: 'ocr',
+        requestKey: `telegram:${ctx.botInfo.id}:${ctx.update.update_id}:statement`,
+        fingerprint: doc.file_unique_id,
+      },
+      () =>
+        ingestStatementFile({
+          userId: user.id,
+          bytes: new Uint8Array(arrayBuffer),
+          filename: name,
+          mimeType: mime,
+          source: 'statement',
+        })
+    );
+    return ctx.reply(
+      `Dejé ${result.parked} movimiento${result.parked === 1 ? '' : 's'} en Pendientes` +
+        (result.duplicates ? ` (${result.duplicates} posible duplicado)` : '') +
+        (result.installments ? ` (${result.installments} cuota ya cargada)` : '') +
+        '. Nada se registró en el libro. Confirmalos en la app.'
+    );
+  } catch (error) {
+    console.error('Document processing error:');
+    if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
+    if (error instanceof GeminiMissingKeyError) {
+      return ctx.reply(GEMINI_SETUP_MSG);
+    }
+    return ctx.reply('No pude leer ese archivo. Probá un PDF o CSV más chico, o cargalo desde la app.');
   }
 });
 

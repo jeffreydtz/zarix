@@ -115,7 +115,7 @@ export interface Transaction {
   installment_number: number | null;
   installment_total: number | null;
   installment_group_id: string | null;
-  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
+  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' | 'email' | 'statement';
   created_at: string;
   updated_at: string;
 }

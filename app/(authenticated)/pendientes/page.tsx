@@ -14,6 +14,21 @@ type Item = InboxDraft;
 
 type Account = { id: string; name: string; currency: string };
 
+function sourceLabel(source: string | undefined): string {
+  switch (source) {
+    case 'statement':
+      return 'resumen';
+    case 'email':
+      return 'mail';
+    case 'wallet':
+      return 'Wallet';
+    case 'telegram':
+      return 'Telegram';
+    default:
+      return source || 'pendiente';
+  }
+}
+
 export default function PendientesPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -74,7 +89,8 @@ export default function PendientesPage() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Bandeja de pendientes</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Movimientos que llegaron por Wallet o Android. Confirmalos, editalos o descartalos. Configuración en{' '}
+            Movimientos que llegaron por Wallet, Android, un PDF/CSV o un mail reenviado. Confirmalos, editalos o
+            descartalos. Nada de un resumen o un mail se registra solo. Configuración en{' '}
             <Link href="/settings/integraciones" className="text-primary">
               Integraciones
             </Link>
@@ -137,10 +153,19 @@ export default function PendientesPage() {
                   </label>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {preview.directionLabel} · {draft.currency} · {new Date(item.created_at).toLocaleString('es-AR')}
+                  {preview.directionLabel} · {draft.currency} · {sourceLabel(item.source)} ·{' '}
+                  {new Date(item.created_at).toLocaleString('es-AR')}
                   {item.status === 'confirming' ? ' · reintento (quedó a medias)' : ''}
                   {item.status === 'uncertain' ? ' · resultado incierto (hay que reconciliar)' : ''}
                 </p>
+                {item.tool_payload?.reconcile?.kind && item.tool_payload.reconcile.kind !== 'none' ? (
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                    {item.tool_payload.reconcile.reason ||
+                      (item.tool_payload.reconcile.kind === 'installment'
+                        ? 'Posible cuota ya cargada.'
+                        : 'Posible duplicado de un movimiento ya cargado.')}
+                  </p>
+                ) : null}
                 {item.possible_duplicate_of ? (
                   <p className="text-sm text-amber-800 dark:text-amber-200">
                     Posible duplicado de{' '}
@@ -170,7 +195,9 @@ export default function PendientesPage() {
             );
           })}
           {items.length === 0 && (
-            <li className="card text-sm text-muted-foreground">No hay pendientes. Cuando un atajo mande un gasto, aparece acá.</li>
+            <li className="card text-sm text-muted-foreground">
+              No hay pendientes. Cuando un atajo, un PDF o un mail mande un gasto, aparece acá.
+            </li>
           )}
         </ul>
       </div>

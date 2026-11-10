@@ -4,6 +4,11 @@
 Never edit those files. Forward-only from
 `supabase/migrations/20261025010000_inbox_claim_category_search_path.sql`.
 
+Forward-only after #16: `20261110150000_statement_email_ingest.sql` (canales
+`email`/`statement` + tabla `inbound_email_mailboxes`) lives in the repo for an
+**explicit production window**. Do not apply it from a Vercel preview: previews
+share prod Supabase.
+
 Never `supabase db push` against production. Prod's `schema_migrations` recorded
 #15 as `20261024182913` (`investment_type_on`) and `20261024182923`
 (`investment_backlog`), not the filenames `20261024170000` / `20261024170100`.

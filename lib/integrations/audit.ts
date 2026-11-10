@@ -8,6 +8,8 @@ export type AuditAction =
   | 'token.revoke'
   | 'token.use'
   | 'ingest'
+  | 'ingest.statement'
+  | 'ingest.email'
   | 'inbox.confirm'
   | 'inbox.discard'
   | 'mcp.write'
@@ -65,7 +67,19 @@ export async function recordIntegrationAudit(input: {
 }
 
 const SECRET_KEYS = /token|secret|password|authorization|gemini|bot_token|api_key|cbu|cuit|pan|card_number/i;
-const AUDIT_KEY_ALLOWLIST = new Set(['tokenId', 'prefix', 'token_prefix', 'itemId', 'pendingId', 'scope', 'tool', 'requestId', 'outcome']);
+const AUDIT_KEY_ALLOWLIST = new Set([
+  'tokenId',
+  'prefix',
+  'token_prefix',
+  'itemId',
+  'pendingId',
+  'scope',
+  'tool',
+  'requestId',
+  'outcome',
+  'parkedCount',
+  'parser',
+]);
 
 export function redactAuditMetadata(value: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};

@@ -7,6 +7,7 @@ export type InboxToolPayload = {
   destinationAccount?: string;
   currency?: string;
   _tool?: string;
+  reconcile?: { kind?: string; reason?: string };
 };
 
 export type InboxDraft = {
@@ -20,6 +21,7 @@ export type InboxDraft = {
   direction?: 'expense' | 'income' | string;
   occurred_at?: string | null;
   created_at: string;
+  source?: string;
   possible_duplicate_of?: string | null;
   possible_duplicate?: {
     id: string;

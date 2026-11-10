@@ -83,6 +83,7 @@ Grupos (ver `.env.example`):
 - Telegram: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, opcional `TELEGRAM_ADMIN_CHAT_ID`
 - Gemini: `GEMINI_API_KEY` (fallback; usuarios pueden BYO)
 - MP: `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`, `MP_SUBSCRIPTION_*`
+- Inbound email (opcional, no crear cuentas desde el repo): `INBOUND_EMAIL_WEBHOOK_SECRET`, `INBOUND_EMAIL_DOMAIN`
 - No usar `ALLOW_DEV_LOGIN` en prod (el handler ya 404 si `NODE_ENV=production`)
 
 ---
