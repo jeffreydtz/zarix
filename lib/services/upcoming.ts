@@ -2,8 +2,8 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Account, Investment, RecurringRule } from '@/types/database';
 import { addDaysYmd, civilTodayYmd } from '@/lib/transaction-date';
 import {
+  labeledTotalsAmount,
   nextClosingOnOrAfter,
-  primaryTotal,
   type CardStatementProjection,
 } from '@/lib/card-statement';
 import { getCardStatements } from '@/lib/services/card-statement';
@@ -107,9 +107,9 @@ function upcomingCardAmount(statement: CardStatementProjection | undefined, card
   if (!statement) {
     return { amountARS: Math.abs(Number(card.balance)), currency: card.currency };
   }
-  const estimated = primaryTotal(statement.nextStatementTotals, statement.primaryCurrency);
-  if (estimated == null) return { currency: card.currency };
-  return { amountARS: estimated, currency: statement.primaryCurrency };
+  const estimated = labeledTotalsAmount(statement.nextStatementTotals, statement.primaryCurrency);
+  if (!estimated) return { currency: card.currency };
+  return { amountARS: estimated.amount, currency: estimated.currency };
 }
 
 /**

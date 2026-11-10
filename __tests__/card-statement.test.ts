@@ -3,10 +3,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import CardStatementPanel from '@/components/dashboard/CardStatementPanel';
 import {
+  addAmount,
   chargeInPeriod,
   clampMonthDay,
   dueDateForClosing,
   futureDebtTotals,
+  labeledTotalsAmount,
   nextClosingOnOrAfter,
   nextNClosings,
   pendingInstallmentsByMonth,
@@ -149,6 +151,27 @@ describe('card statement projection', () => {
     expect(projection.nextStatementTotals.USD).toBe(80);
   });
 
+  it('does not relabel a USD-only cycle as ARS', () => {
+    const projection = projectCardStatement(
+      visa,
+      [charge({ id: 'usd-only', amount: 80, currency: 'USD', dateISO: '2026-11-02' })],
+      { todayISO: '2026-11-08' }
+    );
+    expect(projection.nextStatementTotals).toEqual({ USD: 80 });
+    expect(primaryTotal(projection.nextStatementTotals, 'ARS')).toBeUndefined();
+    expect(labeledTotalsAmount(projection.nextStatementTotals, 'ARS')).toEqual({
+      amount: 80,
+      currency: 'USD',
+    });
+  });
+
+  it('rounds statement totals to cents', () => {
+    const totals: Record<string, number> = {};
+    addAmount(totals, 'ARS', 0.1);
+    addAmount(totals, 'ARS', 0.2);
+    expect(totals).toEqual({ ARS: 0.3 });
+  });
+
   it('still lists pending cuotas when the card has no closing day', () => {
     const projection = projectCardStatement(
       { ...visa, closing_day: null, due_day: null },
@@ -208,6 +231,25 @@ describe('transactionToCardCharge', () => {
       description: 'Pago tarjeta',
     } as Transaction, 'card-visa');
     expect(payment).toMatchObject({ kind: 'payment', amount: 4000 });
+  });
+
+  it('groups a USD charge on an ARS card by original amount, not the ARS conversion', () => {
+    const mapped = transactionToCardCharge(
+      {
+        ...base,
+        id: 'tx-usd',
+        type: 'expense',
+        account_id: 'card-visa',
+        destination_account_id: null,
+        amount: 80,
+        currency: 'USD',
+        amount_in_account_currency: 112000,
+        transaction_date: '2026-11-08',
+        description: 'Steam',
+      } as Transaction,
+      'card-visa'
+    );
+    expect(mapped).toMatchObject({ kind: 'charge', amount: 80, currency: 'USD' });
   });
 });
 

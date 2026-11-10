@@ -91,10 +91,14 @@ export function emptyTotals(): CurrencyTotals {
   return {};
 }
 
+function roundCents(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
 export function addAmount(totals: CurrencyTotals, currency: string, amount: number): void {
   const code = (currency || 'ARS').trim().toUpperCase() || 'ARS';
   if (!Number.isFinite(amount) || amount === 0) return;
-  totals[code] = (totals[code] ?? 0) + amount;
+  totals[code] = roundCents((totals[code] ?? 0) + amount);
 }
 
 export function totalsAreEmpty(totals: CurrencyTotals): boolean {
@@ -104,12 +108,25 @@ export function totalsAreEmpty(totals: CurrencyTotals): boolean {
 export function primaryTotal(totals: CurrencyTotals, primaryCurrency: string): number | undefined {
   const code = (primaryCurrency || 'ARS').trim().toUpperCase() || 'ARS';
   const value = totals[code];
-  if (value == null || !Number.isFinite(value)) {
-    const keys = Object.keys(totals);
-    if (keys.length === 1) return totals[keys[0]];
-    return undefined;
-  }
+  if (value == null || !Number.isFinite(value)) return undefined;
   return value;
+}
+
+/** Amount plus the currency it actually belongs to. Never relabels USD as ARS. */
+export function labeledTotalsAmount(
+  totals: CurrencyTotals,
+  primaryCurrency: string
+): { amount: number; currency: string } | undefined {
+  const primary = primaryTotal(totals, primaryCurrency);
+  const code = (primaryCurrency || 'ARS').trim().toUpperCase() || 'ARS';
+  if (primary != null) return { amount: primary, currency: code };
+  const keys = Object.keys(totals).filter(
+    (key) => Number.isFinite(totals[key]) && Math.abs(totals[key] as number) >= 1e-8
+  );
+  if (keys.length === 1) {
+    return { amount: totals[keys[0]] as number, currency: keys[0] };
+  }
+  return undefined;
 }
 
 /** Día `day` del mes de `fromISO` (YYYY-MM-DD), clampeado a la duración real del mes. */

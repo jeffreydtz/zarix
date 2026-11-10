@@ -3,7 +3,7 @@
 import Amount from '@/components/ui/Amount';
 import {
   formatMonthLabel,
-  primaryTotal,
+  labeledTotalsAmount,
   totalsAreEmpty,
   type CardStatementProjection,
   type CurrencyTotals,
@@ -58,7 +58,7 @@ export default function CardStatementPanel({
 }) {
   const upcomingCycles = statement.cycles.slice(0, compact ? 3 : 6);
   const pendingMonths = statement.pendingByMonth.slice(0, compact ? 4 : 12);
-  const nextAmount = primaryTotal(statement.nextStatementTotals, statement.primaryCurrency);
+  const nextAmount = labeledTotalsAmount(statement.nextStatementTotals, statement.primaryCurrency);
 
   return (
     <div className="mt-4 pt-3 border-t border-border space-y-3">
@@ -67,13 +67,13 @@ export default function CardStatementPanel({
           <p className="text-xs text-muted-foreground">Próximo cierre</p>
           <p className="font-semibold text-foreground">
             {formatCivil(statement.nextClosingISO)}
-            {typeof nextAmount === 'number' ? (
+            {nextAmount ? (
               <>
                 {' · '}
                 <Amount
-                  value={nextAmount}
-                  currency={statement.primaryCurrency === 'USD' ? 'USD' : 'ARS'}
-                  decimals={statement.primaryCurrency === 'USD' ? 2 : 0}
+                  value={nextAmount.amount}
+                  currency={nextAmount.currency === 'USD' ? 'USD' : nextAmount.currency === 'EUR' ? 'EUR' : 'ARS'}
+                  decimals={nextAmount.currency === 'USD' || nextAmount.currency === 'EUR' ? 2 : 0}
                   className="font-semibold"
                 />
               </>

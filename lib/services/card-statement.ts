@@ -50,19 +50,14 @@ function asCardAccount(account: Account): CardStatementAccount {
   };
 }
 
-function amountForCard(tx: ChargeRow, cardId: string): number {
-  if (tx.account_id === cardId) {
-    return Math.abs(Number(tx.amount_in_account_currency ?? tx.amount));
-  }
-  if (tx.destination_account_id === cardId) {
-    return Math.abs(Number(tx.destination_amount_in_account_currency ?? tx.amount));
-  }
+function amountForCard(tx: ChargeRow): number {
+  // Original amount in tx.currency — never the ARS conversion in amount_in_account_currency.
   return Math.abs(Number(tx.amount));
 }
 
 export function transactionToCardCharge(tx: ChargeRow, cardId: string): CardCharge | null {
   const dateISO = transactionCivilYmd(tx.transaction_date);
-  const amount = amountForCard(tx, cardId);
+  const amount = amountForCard(tx);
   if (!Number.isFinite(amount) || amount <= 0) return null;
 
   const isPayment =
