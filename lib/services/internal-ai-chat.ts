@@ -91,7 +91,7 @@ export async function processInternalAiChatMessage(input: {
   financialContext: FinancialContext;
   history?: InternalAiChatHistoryItem[];
   allowLegacyWriteFallback?: boolean;
-  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
+  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' | 'email' | 'statement';
 }): Promise<InternalAiChatSuccessResponse> {
   const requestKey = input.requestKey || randomUUID();
   const financialKey = `ai:${input.userId}:${createHash('sha256').update(requestKey).digest('hex')}`;

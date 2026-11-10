@@ -16,3 +16,4 @@ lugar de editar el viejo.
 | [0004](0004-mercado-pago-suscripciones.md) | Mercado Pago (preapproval) como único medio de pago | Aceptada |
 | [0005](0005-estrategia-testing-risk-based.md) | Estrategia de testing basada en riesgo | Aceptada |
 | [0006](0006-migraciones-supabase-baseline.md) | Migraciones de Supabase: baseline, drift check y rollback | Aceptada |
+| [0008](0008-inbound-email-resend.md) | Inbound email genérico (Resend u otro) para carga automática | Aceptada |

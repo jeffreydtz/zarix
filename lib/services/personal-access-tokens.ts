@@ -193,7 +193,7 @@ async function lookupPatByPresentedToken(token: string): Promise<PatRow | null> 
 export async function authenticatePersonalAccessToken(
   req: Request,
   needed?: PatScope,
-  options?: { source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp'; skipRateLimit?: boolean }
+  options?: { source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' | 'email' | 'statement'; skipRateLimit?: boolean }
 ): Promise<AuthenticatedPat> {
   const ip = clientIpFromRequest(req);
   const ipHash = hashClientIp(ip);

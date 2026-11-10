@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import IntegrationsPanel from '@/components/settings/IntegrationsPanel';
+import StatementIngestPanel from '@/components/settings/StatementIngestPanel';
+import InboundEmailPanel from '@/components/settings/InboundEmailPanel';
 
 export default async function IntegracionesPage() {
   const supabase = await createClient();
@@ -30,13 +32,15 @@ export default async function IntegracionesPage() {
           </p>
           <h1 className="mt-1 text-3xl font-bold text-foreground">Integraciones</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tokens, atajos de Wallet y registro de actividad. Documentación pública en{' '}
+            Tokens, atajos de Wallet, resúmenes PDF/CSV, mail inbound y registro de actividad. Documentación pública en{' '}
             <Link href="/docs" className="text-primary">
               /docs
             </Link>
             .
           </p>
         </div>
+        <StatementIngestPanel />
+        <InboundEmailPanel />
         <IntegrationsPanel appBaseUrl={appBaseUrl} autoConfirm={Boolean(user?.wallet_auto_confirm)} />
       </div>
     </div>

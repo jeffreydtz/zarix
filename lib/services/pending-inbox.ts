@@ -709,7 +709,17 @@ function directionFromType(type: string | undefined): 'expense' | 'income' {
 
 function ledgerChannelFor(row: Pick<PendingInboxItem, 'source'>): WriteChannel {
   const src = row.source;
-  if (src === 'mcp' || src === 'api' || src === 'wallet' || src === 'telegram' || src === 'web') return src;
+  if (
+    src === 'mcp' ||
+    src === 'api' ||
+    src === 'wallet' ||
+    src === 'telegram' ||
+    src === 'web' ||
+    src === 'email' ||
+    src === 'statement'
+  ) {
+    return src;
+  }
   return 'wallet';
 }
 

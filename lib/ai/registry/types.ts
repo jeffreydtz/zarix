@@ -1,4 +1,4 @@
-export const WRITE_CHANNELS = ['web', 'telegram', 'wallet', 'api', 'mcp'] as const;
+export const WRITE_CHANNELS = ['web', 'telegram', 'wallet', 'api', 'mcp', 'email', 'statement'] as const;
 export type WriteChannel = (typeof WRITE_CHANNELS)[number];
 
 export const TOOL_SCOPES = ['read', 'write', 'ingest'] as const;

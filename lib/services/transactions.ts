@@ -219,7 +219,7 @@ export interface CreateTransactionInput {
   isRecurring?: boolean;
   recurringRuleId?: string | null;
   /** Channel that created the row: web, telegram, wallet, api, mcp. */
-  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
+  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' | 'email' | 'statement';
   /** Canonical caller intent for replay hashing (original amount/currency before FX). */
   idempotencyIntent?: Record<string, unknown>;
 }

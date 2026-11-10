@@ -48,7 +48,7 @@ export async function executeBotTransaction(
   txData: BotTxPayload,
   options?: {
     summaryResponse?: string;
-    source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
+    source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' | 'email' | 'statement';
     requestId?: string;
   }
 ): Promise<ExecuteBotTxResult> {
