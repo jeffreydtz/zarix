@@ -16,6 +16,7 @@ import { getInflacionSeries } from '@/lib/services/inflacion';
 import { getMarketSparklines } from '@/lib/services/market-history';
 import { getMonthFlow } from '@/lib/services/month-flow';
 import { getUpcoming } from '@/lib/services/upcoming';
+import { getCardStatements } from '@/lib/services/card-statement';
 import { getTopBudgets } from '@/lib/services/budget-summary';
 import NetWorthHero from '@/components/dashboard/NetWorthHero';
 import MarketStrip from '@/components/dashboard/MarketStrip';
@@ -64,6 +65,7 @@ export default async function DashboardPage() {
       new Promise((resolve) => setTimeout(resolve, 1500)),
     ]).catch(unavailableSection(undefined));
 
+    const cardStatementsPromise = getCardStatements(user.id);
     const [
       accounts,
       recentTransactions,
@@ -73,6 +75,7 @@ export default async function DashboardPage() {
       inflacion,
       sparklines,
       monthFlow,
+      cardStatements,
       upcoming,
       budgets,
       preferences,
@@ -86,7 +89,10 @@ export default async function DashboardPage() {
       getInflacionSeries(),
       getMarketSparklines(),
       getMonthFlow(user.id).catch(unavailableSection(null)),
-      getUpcoming(user.id).catch(unavailableSection(null)),
+      cardStatementsPromise,
+      cardStatementsPromise
+        .then((statements) => getUpcoming(user.id, 5, { cardStatements: statements }))
+        .catch(unavailableSection(null)),
       getTopBudgets(user.id).catch(unavailableSection(null)),
       getPresentationPreferences(user.id).catch(unavailableSection({ default_currency: 'ARS' as const, net_worth_widget_visible: false })),
     ]);
@@ -199,7 +205,7 @@ export default async function DashboardPage() {
 
             <DashboardMore>
               <MotionSection delay={0.2} intensity="subtle" className="lg:col-span-6">
-                <CreditCardsWidget accounts={accounts} />
+                <CreditCardsWidget accounts={accounts} statements={cardStatements} />
               </MotionSection>
 
               <MotionSection delay={0.22} intensity="subtle" className="lg:col-span-6">

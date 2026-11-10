@@ -38,6 +38,7 @@ export const DOCS_PAGES: DocsPage[] = [
         body: [
           'Cada cuenta tiene moneda (ARS, USD o EUR) y tipo: efectivo, banco, tarjeta, billetera, crypto o broker.',
           'En una tarjeta, el saldo es deuda. Ejemplo: Visa Ejemplo con $12.500 ARS de deuda (dato de ejemplo).',
+          'En cada tarjeta ves el resumen proyectado del próximo cierre y de los siguientes: cuotas pendientes mes a mes, deuda futura en ARS y USD, y el vencimiento con el total estimado de ese resumen (no el mínimo ni el saldo de cuenta, que ya incluye cuotas futuras). Ejemplo: cierre 15/11, vencimiento 25/11, $80.000 ARS + US$ 40 (dato de ejemplo).',
         ],
       },
       {

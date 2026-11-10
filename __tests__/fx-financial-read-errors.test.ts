@@ -24,6 +24,10 @@ vi.mock('@/lib/services/subscriptions', () => ({ subscriptionsService: { getUser
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
   getTransactionsFxRates: async () => ({ usdArs: null, eurArs: null, fxUnavailable: true }),
 } }));
+vi.mock('@/lib/services/card-statement', () => ({
+  getCardStatement: async () => null,
+  getCardStatements: async () => [],
+}));
 vi.mock('@/components/investments/PortfolioWidgets', () => ({ MarketDataWidget: () => null, InvestmentAccountsList: () => null }));
 vi.mock('@/components/investments/InvestmentsWorkspace', () => ({
   default: ({ initialPortfolio }: { initialPortfolio: { fxUnavailable?: boolean; investments: { name: string }[] } }) =>

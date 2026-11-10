@@ -46,6 +46,7 @@ npm run telegram:webhook
 | Páginas logueadas | `app/(authenticated)/` |
 | APIs | `app/api/` — **no** pasan por el guard de `middleware.ts` |
 | Dinero (TS) | `lib/services/transactions.ts`, `accounts.ts` |
+| Resumen de tarjeta | `lib/card-statement.ts`, `lib/services/card-statement.ts`, `GET /api/accounts/[id]/statement` |
 | Dinero (SQL) | `update_account_balance()` en `supabase/schema.sql` + migraciones |
 | Bot | `lib/telegram/bot.ts`, `lib/ai/bot-tools.ts` |
 | Crons | `app/api/cron/*`, template `lib/cron/cron-job.ts`, schedule `vercel.json` |
