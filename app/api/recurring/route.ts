@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { errorResponse } from '@/lib/api-handler';
+import { positiveMoneyAmount } from '@/lib/money-amount';
+import { categoriesService } from '@/lib/services/categories';
+import { isCivilYmd } from '@/lib/transaction-date';
 
 export async function GET(req: NextRequest) {
   try {
@@ -31,14 +34,21 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const amount = Number(body.amount);
+    const amount = positiveMoneyAmount(body.amount);
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (amount == null) {
       return NextResponse.json({ error: 'Monto inválido' }, { status: 400 });
     }
 
     if (!body.accountId || !body.type || !body.frequency || !body.startDate) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
+    }
+
+    if (!isCivilYmd(String(body.startDate))) {
+      return NextResponse.json({ error: 'Fecha de inicio inválida' }, { status: 400 });
+    }
+    if (body.endDate && !isCivilYmd(String(body.endDate))) {
+      return NextResponse.json({ error: 'Fecha de fin inválida' }, { status: 400 });
     }
 
     if (body.type !== 'expense' && body.type !== 'income') {
@@ -69,13 +79,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Cuenta inválida' }, { status: 400 });
     }
     if (body.categoryId) {
-      const { data: cat } = await supabase
-        .from('categories')
-        .select('id')
-        .eq('id', body.categoryId)
-        .eq('user_id', user.id)
-        .maybeSingle();
-      if (!cat) {
+      try {
+        // System categories (Suscripciones, Comida, …) are shared: user_id is null.
+        await categoriesService.getById(String(body.categoryId), user.id);
+      } catch {
         return NextResponse.json({ error: 'Categoría inválida' }, { status: 400 });
       }
     }

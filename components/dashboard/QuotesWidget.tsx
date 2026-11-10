@@ -3,6 +3,7 @@
 import { memo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { cotizacionesService } from '@/lib/services/cotizaciones';
+import { formatFxProviderName } from '@/lib/fx-provider-name';
 import FxStatusBanner from '@/components/ui/FxStatusBanner';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
@@ -60,12 +61,12 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
 
       </div>
       
-      {!quotes.dolar.blue && !quotes.dolar.mep && <FxStatusBanner fxUnavailable />}
+      {quotes.dolar.status === 'unavailable' && <FxStatusBanner fxUnavailable />}
       <motion.div 
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-2 md:grid-cols-4 gap-3"
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"
       >
         <motion.div 
           variants={item}
@@ -82,6 +83,33 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <FxStatusBanner fxStale={quotes.dolar.blue?.stale}
               fxAsOf={quotes.dolar.blue?.asOf ? new Date(String(quotes.dolar.blue.asOf)).toISOString() : null} />
           </div>
+          {formatFxProviderName(quotes.dolar.blue?.provider) && (
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Fuente: {formatFxProviderName(quotes.dolar.blue?.provider)}
+            </p>
+          )}
+        </motion.div>
+
+        <motion.div 
+          variants={item}
+          className="p-3 rounded-xl bg-secondary border border-border"
+        >
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="text-base">🏦</span>
+            <span className="text-xs font-medium text-muted-foreground">Oficial</span>
+          </div>
+          <div className="text-xl font-bold text-foreground">
+            {quotes.dolar.oficial
+              ? <AnimatedNumber value={quotes.dolar.oficial.sell} prefix="$" decimals={0} />
+              : <span className="text-sm text-muted-foreground">No disponible</span>}
+            <FxStatusBanner fxStale={quotes.dolar.oficial?.stale}
+              fxAsOf={quotes.dolar.oficial?.asOf ? new Date(String(quotes.dolar.oficial.asOf)).toISOString() : null} />
+          </div>
+          {formatFxProviderName(quotes.dolar.oficial?.provider) && (
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Fuente: {formatFxProviderName(quotes.dolar.oficial?.provider)}
+            </p>
+          )}
         </motion.div>
 
         <motion.div 
@@ -99,6 +127,37 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             <FxStatusBanner fxStale={quotes.dolar.mep?.stale}
               fxAsOf={quotes.dolar.mep?.asOf ? new Date(String(quotes.dolar.mep.asOf)).toISOString() : null} />
           </div>
+          {formatFxProviderName(quotes.dolar.mep?.provider) ? (
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Fuente: {formatFxProviderName(quotes.dolar.mep?.provider)}
+            </p>
+          ) : (
+            <p className="text-[11px] text-muted-foreground mt-1">Sin fuente</p>
+          )}
+        </motion.div>
+
+        <motion.div 
+          variants={item}
+          className="p-3 rounded-xl bg-accent-invest/10 border border-accent-invest/20"
+        >
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="text-base">🔁</span>
+            <span className="text-xs font-medium text-muted-foreground">CCL</span>
+          </div>
+          <div className="text-xl font-bold text-foreground">
+            {quotes.dolar.ccl
+              ? <AnimatedNumber value={quotes.dolar.ccl.sell} prefix="$" decimals={0} />
+              : <span className="text-sm text-muted-foreground">No disponible</span>}
+            <FxStatusBanner fxStale={quotes.dolar.ccl?.stale}
+              fxAsOf={quotes.dolar.ccl?.asOf ? new Date(String(quotes.dolar.ccl.asOf)).toISOString() : null} />
+          </div>
+          {formatFxProviderName(quotes.dolar.ccl?.provider) ? (
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Fuente: {formatFxProviderName(quotes.dolar.ccl?.provider)}
+            </p>
+          ) : (
+            <p className="text-[11px] text-muted-foreground mt-1">Sin fuente</p>
+          )}
         </motion.div>
 
         <motion.div 

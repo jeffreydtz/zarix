@@ -37,9 +37,18 @@ export default function StatementIngestPanel() {
         setMessage(data.error || 'No se pudo leer el archivo.');
         return;
       }
-      setMessage(
-        `Dejé ${data.parked} movimiento${data.parked === 1 ? '' : 's'} en Pendientes. Nada se registró en el libro.`
-      );
+      const parked = Number(data.parked) || 0;
+      const duplicates = Number(data.duplicates) || 0;
+      if (parked > 0) {
+        setMessage(
+          `Dejé ${parked} movimiento${parked === 1 ? '' : 's'} en Pendientes` +
+            (duplicates > 0 ? ` (${duplicates} ya estaban, no se duplicaron).` : '. Nada se registró en el libro.')
+        );
+      } else if (duplicates > 0) {
+        setMessage('Esos movimientos ya estaban en Pendientes. No se duplicaron.');
+      } else {
+        setMessage('No encontré movimientos nuevos.');
+      }
       if (inputRef.current) inputRef.current.value = '';
     } finally {
       setLoading(false);

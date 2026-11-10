@@ -195,6 +195,22 @@ describe('liquid net worth excludes positions and broker cash', () => {
     expect(accountCanHoldPosition('bank', 'crypto')).toBe(false);
   });
 
+  it('subtracts credit-card debt even when include_in_total is false', () => {
+    const card: AccountWithBalance = {
+      ...bank('visa', -30),
+      type: 'credit_card',
+      name: 'Visa',
+      is_debt: true,
+      include_in_total: false,
+      credit_limit: 100,
+    };
+    const totals = accountsService.aggregateAccountTotals([bank('cash', 100), card]);
+    expect(totals.liquidUSD).toBe(70);
+    expect(totals.totalUSD).toBe(70);
+    expect(totals.creditCardDebtUSD).toBe(30);
+    expect(totals.creditCards).toHaveLength(1);
+  });
+
   it('keeps a negative liquid total instead of clamping', () => {
     const card: AccountWithBalance = {
       ...bank('visa', -150),
@@ -468,6 +484,9 @@ describe('category synonyms for new data', () => {
     const existing = [{ id: '1', name: 'Otros', type: 'expense' }];
     expect(findDuplicateCategory('Other', 'expense', existing)?.id).toBe('1');
     expect(findDuplicateCategory('Food', 'expense', existing)).toBeNull();
+    expect(findDuplicateCategory('Supermercado', 'expense', [
+      { id: 'comida', name: 'Comida', type: 'expense' },
+    ])?.id).toBe('comida');
   });
 });
 

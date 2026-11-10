@@ -67,10 +67,15 @@ function fxChange(
       : null
   );
   if (!start || !end) {
+    const liveHint = live.rate != null
+      ? ` Cotización actual: ${live.rate.toLocaleString('es-AR')}` +
+        `${live.source ? ` (${live.source})` : ''}` +
+        `${live.asOf ? ` · ${live.asOf.slice(0, 10)}` : ''}.`
+      : '';
     return unavailable(
       id,
       label,
-      `No hay serie histórica de ${label} para este período (solo se usa exchange_rates persistido).`,
+      `No hay serie histórica de ${label} para este período.${liveHint}`,
       live.source || id
     );
   }

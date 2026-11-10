@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatTransactionWhen } from '@/lib/transaction-date';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import {
@@ -169,11 +168,9 @@ export default function TransactionsList({
           day: 'numeric',
           month: 'short',
           year: 'numeric',
+          timeZone: 'America/Argentina/Cordoba',
         }),
-        distanceLabel: formatDistanceToNow(date, {
-          addSuffix: true,
-          locale: es,
-        }),
+        distanceLabel: formatTransactionWhen(tx.transaction_date),
       });
     }
     return out;

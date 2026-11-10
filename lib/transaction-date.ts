@@ -186,6 +186,36 @@ export function calendarDateToUtcNoonIso(ymd: string): string {
   return date.toISOString();
 }
 
+export function isUtcNoonStored(iso: string): boolean {
+  const d = new Date(iso);
+  return (
+    !Number.isNaN(d.getTime()) &&
+    d.getUTCHours() === 12 &&
+    d.getUTCMinutes() === 0 &&
+    d.getUTCSeconds() === 0 &&
+    d.getUTCMilliseconds() === 0
+  );
+}
+
+/**
+ * Relative label in the app civil timezone. Date-only rows are stored at noon UTC,
+ * which looks like "hace 6 horas" in the afternoon in Argentina — use hoy/ayer instead.
+ */
+export function formatTransactionWhen(iso: string, now: Date = new Date()): string {
+  const civil = transactionCivilYmd(iso);
+  const today = civilTodayYmd(APP_CIVIL_TIMEZONE, now);
+  if (civil === today) return 'hoy';
+  if (civil === addDaysYmd(today, -1)) return 'ayer';
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return civil;
+  return parsed.toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: APP_CIVIL_TIMEZONE,
+  });
+}
+
 /** ISO guardado → valor para `<input type="date">` según calendario local del usuario. */
 export function isoToLocalDateInputValue(iso: string): string {
   const d = new Date(iso);

@@ -33,7 +33,17 @@ function SourceLine({ item }: { item: Comparison }) {
   );
 }
 
-function SubjectBlock({ subject }: { subject: RealReturnsSubject }) {
+function SubjectBlock({
+  subject,
+  mep,
+  ccl,
+  inflation,
+}: {
+  subject: RealReturnsSubject;
+  mep: Comparison;
+  ccl: Comparison;
+  inflation: Comparison;
+}) {
   return (
     <div className="space-y-1">
       <p className="text-xs font-medium text-muted-foreground">{subject.label}</p>
@@ -55,6 +65,20 @@ function SubjectBlock({ subject }: { subject: RealReturnsSubject }) {
           {fmtPct(subject.vsCclPct)}
         </dd>
       </dl>
+      {subject.nominalPct == null && (
+        <p className="text-[11px] text-muted-foreground">
+          Sin snapshots suficientes en este período para calcular el rendimiento.
+        </p>
+      )}
+      {subject.nominalPct != null && subject.realVsInflationPct == null && inflation.reason && (
+        <p className="text-[11px] text-muted-foreground">{inflation.reason}</p>
+      )}
+      {subject.vsMepPct == null && mep.reason && (
+        <p className="text-[11px] text-muted-foreground">{mep.reason}</p>
+      )}
+      {subject.vsCclPct == null && ccl.reason && (
+        <p className="text-[11px] text-muted-foreground">{ccl.reason}</p>
+      )}
     </div>
   );
 }
@@ -71,8 +95,20 @@ function BenchmarkCell({ item }: { item: Comparison }) {
   );
 }
 
+function liveQuoteLine(
+  label: string,
+  quote: { rate: number | null; source: string | null; asOf: string | null }
+): string {
+  if (quote.rate == null) {
+    return `${label}: no disponible${quote.source ? ` (${quote.source})` : ''}`;
+  }
+  const source = quote.source ? ` · ${quote.source}` : ' · sin fuente';
+  const asOf = quote.asOf ? ` · ${quote.asOf.slice(0, 10)}` : '';
+  return `${label}: $${quote.rate.toLocaleString('es-AR')}${source}${asOf}`;
+}
+
 export default function RealReturnsPanel({ report }: { report: RealReturnsReport }) {
-  const [period, setPeriod] = useState<RealReturnPeriodId>('year');
+  const [period, setPeriod] = useState<RealReturnPeriodId>('month');
   const current: RealReturnsPeriodReport | undefined = useMemo(
     () => report.periods.find((p) => p.period === period) ?? report.periods[0],
     [report.periods, period]
@@ -119,10 +155,23 @@ export default function RealReturnsPanel({ report }: { report: RealReturnsReport
         {report.inflationSource.source}
         {report.inflationSource.lastFecha ? ` · ${report.inflationSource.lastFecha}` : ''}.
       </p>
+      <p className="text-[11px] text-muted-foreground">
+        {liveQuoteLine('MEP', report.quotes.mep)} · {liveQuoteLine('CCL', report.quotes.ccl)}
+      </p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <SubjectBlock subject={current.liquid} />
-        <SubjectBlock subject={current.investments} />
+        <SubjectBlock
+          subject={current.liquid}
+          mep={current.mep}
+          ccl={current.ccl}
+          inflation={current.inflation}
+        />
+        <SubjectBlock
+          subject={current.investments}
+          mep={current.mep}
+          ccl={current.ccl}
+          inflation={current.inflation}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 pt-2 border-t border-border">

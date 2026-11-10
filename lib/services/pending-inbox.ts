@@ -84,6 +84,7 @@ export type PendingInboxItem = {
   request_canonical?: string | null;
   created_at: string;
   updated_at?: string;
+  duplicate?: boolean;
 };
 
 function normalizeCard(name: string | null): string {
@@ -289,6 +290,17 @@ export function canonicalInboxPayloadKey(input: {
       ? parked.installments
       : 1),
   });
+}
+
+/** Same statement/email movement replay may differ only in optional account mapping. */
+function isCompatibleInboxReplay(
+  existing: PendingInboxItem,
+  source: string,
+  incomingCanonical: string
+): boolean {
+  if (existing.source !== source) return false;
+  if (storedRequestCanonical(existing) === incomingCanonical) return true;
+  return source === 'statement' || source === 'email';
 }
 
 function storedRequestCanonical(row: PendingInboxItem): string {
@@ -601,10 +613,10 @@ export async function parkRegistryWrite(input: {
   if (clientKey) {
     const existing = await loadByIngestKey(input.userId, ingestKey);
     if (existing) {
-      if (existing.source !== input.source || storedRequestCanonical(existing) !== incomingCanonical) {
+      if (!isCompatibleInboxReplay(existing, input.source, incomingCanonical)) {
         throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
       }
-      return existing;
+      return { ...existing, duplicate: true };
     }
   }
   const supabase = createServiceClientSync();
@@ -640,10 +652,10 @@ export async function parkRegistryWrite(input: {
     if (isUniqueViolation(error) && clientKey) {
       const existing = await loadByIngestKey(input.userId, ingestKey);
       if (existing) {
-        if (existing.source !== input.source || storedRequestCanonical(existing) !== incomingCanonical) {
+        if (!isCompatibleInboxReplay(existing, input.source, incomingCanonical)) {
           throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
         }
-        return existing;
+        return { ...existing, duplicate: true };
       }
     }
     throw error || new ApiError('No se pudo guardar el pendiente.');
@@ -651,7 +663,7 @@ export async function parkRegistryWrite(input: {
   const reservedRow = reserved as { item?: PendingInboxItem; duplicate?: boolean } | null;
   const data = reservedRow?.item;
   if (!data) throw new ApiError('No se pudo guardar el pendiente.');
-  return data;
+  return { ...data, duplicate: Boolean(reservedRow?.duplicate) };
 }
 
 async function attachPossibleDuplicateOriginals(

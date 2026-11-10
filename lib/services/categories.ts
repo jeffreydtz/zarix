@@ -1,7 +1,6 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Category } from '@/types/database';
 import { findDuplicateCategory } from '@/lib/categories/synonyms';
-import { ApiError } from '@/lib/api-handler';
 
 export interface CreateCategoryInput {
   userId: string;
@@ -25,12 +24,13 @@ class CategoriesService {
     return data;
   }
 
-  async create(input: CreateCategoryInput): Promise<Category> {
+  async create(input: CreateCategoryInput): Promise<{ category: Category; reused: boolean }> {
     const supabase = createServiceClientSync();
     const existing = await this.list(input.userId);
     const duplicate = findDuplicateCategory(input.name, input.type, existing);
     if (duplicate) {
-      throw new ApiError(`Ya existe la categoría «${duplicate.name}»`, 409);
+      const row = existing.find((category) => category.id === duplicate.id);
+      if (row) return { category: row, reused: true };
     }
 
     const { data, error } = await supabase
@@ -47,7 +47,7 @@ class CategoriesService {
       .single();
 
     if (error) throw error;
-    return data;
+    return { category: data, reused: false };
   }
 
   async getById(id: string, userId: string): Promise<Category> {

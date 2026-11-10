@@ -48,13 +48,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const category = await categoriesService.create({
+    const { category, reused } = await categoriesService.create({
       userId: user.id,
       name: body.name,
       type: body.type,
       icon: body.icon || '🔁',
       parentId: body.parentId,
     });
+
+    if (reused) {
+      return NextResponse.json({
+        ...category,
+        reused: true,
+        message: `Ya existe la categoría «${category.name}». La reutilizamos en lugar de crear otra.`,
+      });
+    }
 
     return NextResponse.json(category, { status: 201 });
   } catch (error: any) {

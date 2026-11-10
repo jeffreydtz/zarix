@@ -36,7 +36,7 @@ export default function PendientesPage() {
   const [message, setMessage] = useState('');
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/pending-inbox');
+    const res = await fetch('/api/pending-inbox', { cache: 'no-store' });
     const data = await res.json().catch(() => ({}));
     setItems(Array.isArray(data.items) ? data.items : []);
   }, []);
@@ -140,8 +140,8 @@ export default function PendientesPage() {
                     Cuenta Zarix
                     <select
                       className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2"
-                      value={draft.account_id ?? ''}
-                      onChange={(e) => patch(item.id, { account_id: e.target.value })}
+                      value={preview.accountId ?? ''}
+                      onChange={(e) => patch(item.id, { account_id: e.target.value || null })}
                     >
                       <option value="">Elegí una cuenta</option>
                       {accounts.map((a) => (

@@ -404,6 +404,9 @@ class AccountsService {
    * Patrimonio líquido = cash/bank/digital_wallet/other(líquido) + saldos
    * firmados de tarjetas. Cuentas `investment` y `crypto` son cash de broker y
    * no suman al total. Un total negativo se deja negativo.
+   *
+   * Credit-card debt always subtracts from net worth, even when the create form
+   * stored `include_in_total=false` so the card would not look like an asset.
    */
   aggregateAccountTotals(accounts: AccountWithBalance[]): AccountAggregates {
     const excludedAccounts: PartialAccountValuation['excludedAccounts'] = [];
@@ -418,7 +421,8 @@ class AccountsService {
     const creditCards: CreditCardDebtSlice[] = [];
 
     for (const a of accounts) {
-      if (a.include_in_total === false) continue;
+      const isCreditCard = a.type === 'credit_card';
+      if (a.include_in_total === false && !isCreditCard) continue;
       if (a.valuationIssue) {
         excludedAccounts.push({
           accountId: a.id, name: a.name, currency: a.currency,
@@ -490,12 +494,16 @@ class AccountsService {
     const creditCardDebtARSBlue = Math.max(0, -liquidARSBlue + availableARSBlue);
 
     return {
-      fxUnavailable: accounts.some(account => account.include_in_total !== false && account.fxUnavailable),
-      fxStale: accounts.some(account => account.include_in_total !== false && account.fxStale),
-      fxAsOf: accounts.filter(account => account.include_in_total !== false && account.fxStale)
+      fxUnavailable: accounts.some(account =>
+        (account.include_in_total !== false || account.type === 'credit_card') && account.fxUnavailable),
+      fxStale: accounts.some(account =>
+        (account.include_in_total !== false || account.type === 'credit_card') && account.fxStale),
+      fxAsOf: accounts.filter(account =>
+        (account.include_in_total !== false || account.type === 'credit_card') && account.fxStale)
         .map(account => account.fxAsOf).filter((value): value is string => Boolean(value)).sort()[0] ?? null,
       ...(excludedAccounts.length ? { valuation: { status: 'partial' as const, excludedAccounts } } : {}),
-      blueReferences: uniqueBlueFxReferences(accounts.filter(account => account.include_in_total !== false)
+      blueReferences: uniqueBlueFxReferences(accounts
+        .filter(account => account.include_in_total !== false || account.type === 'credit_card')
         .map(account => account.blueReference)),
       availableUSD: roundMoney(availableUSD),
       availableARSBlue: roundMoney(availableARSBlue),

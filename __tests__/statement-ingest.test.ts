@@ -7,6 +7,7 @@ import {
 } from '@/lib/integrations/statement-parse';
 import { reconcileExtractedMovement } from '@/lib/integrations/statement-reconcile';
 import { wrapUntrustedExtract } from '@/lib/integrations/untrusted-extract';
+import { statementMovementIngestKey } from '@/lib/services/statement-ingest';
 import { parseInboundEmailPayload } from '@/lib/integrations/inbound-email';
 import { UNTRUSTED_CLOSE, UNTRUSTED_OPEN } from '@/lib/ai/registry/mask';
 import { WRITE_CHANNELS } from '@/lib/ai/registry/types';
@@ -36,6 +37,32 @@ describe('statement CSV', () => {
 
   it('returns null when headers are not a statement', () => {
     expect(parseStatementCsv('foo,bar\n1,2')).toBeNull();
+  });
+});
+
+describe('statement movement ingest keys', () => {
+  const movement = {
+    amount: 1250.5,
+    currency: 'ARS',
+    type: 'expense' as const,
+    merchant: 'Mercado Pago Super',
+    description: 'super',
+    date: '2026-10-15',
+    installments: 1,
+    installmentNumber: null,
+  };
+
+  it('is stable for the same movement regardless of file hash', () => {
+    expect(statementMovementIngestKey('statement', movement, 0)).toBe(
+      statementMovementIngestKey('statement', movement, 0)
+    );
+    expect(statementMovementIngestKey('statement', movement, 0)).toMatch(/^statement:mv:[a-f0-9]{64}$/);
+  });
+
+  it('disambiguates two identical rows in the same extract', () => {
+    expect(statementMovementIngestKey('statement', movement, 0)).not.toBe(
+      statementMovementIngestKey('statement', movement, 1)
+    );
   });
 });
 

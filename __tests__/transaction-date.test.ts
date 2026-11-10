@@ -4,6 +4,7 @@ import {
   todayLocalYmd,
   calendarDateToUtcNoonIso,
   civilTodayYmd,
+  formatTransactionWhen,
   isoToLocalDateInputValue,
   parseBotTransactionDateInput,
   parseCivilMonthQuery,
@@ -49,6 +50,15 @@ describe('calendarDateToUtcNoonIso', () => {
     expect(isCivilYmd('2026-04-31')).toBe(false);
     expect(isCivilYmd(' 2026-01-01')).toBe(false);
     expect(calendarDateToUtcNoonIso('0099-02-28')).toBe('0099-02-28T12:00:00.000Z');
+  });
+});
+
+describe('formatTransactionWhen', () => {
+  it('uses civil hoy/ayer instead of UTC-noon relative hours', () => {
+    const now = new Date('2026-11-10T21:00:00.000Z');
+    expect(formatTransactionWhen('2026-11-10T12:00:00.000Z', now)).toBe('hoy');
+    expect(formatTransactionWhen('2026-11-09T12:00:00.000Z', now)).toBe('ayer');
+    expect(formatTransactionWhen('2026-10-01T12:00:00.000Z', now)).toMatch(/1 de oct/i);
   });
 });
 

@@ -40,7 +40,24 @@ describe('display quotes vs executable FX writes', () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     const quotes = await cotizacionesService.getAllQuotes();
     expect(quotes.dolar.blue?.sell).toBe(1500);
+    expect(quotes.dolar.mep?.sell).toBe(1450);
+    expect(quotes.dolar.ccl?.sell).toBe(1460);
+    expect(quotes.dolar.mep?.provider).toBe('criptoya');
+    expect(quotes.dolar.ccl?.provider).toBe('criptoya');
     expect(quotes.dolar.status).toBe('available');
+  });
+
+  it('reads MEP/CCL from gd30/ci when al30 24hs is missing', async () => {
+    vi.mocked(fetch).mockResolvedValue(json({
+      blue: { bid: 1400, ask: 1500, timestamp: Date.now() / 1000 },
+      oficial: { bid: 1300, ask: 1350, timestamp: Date.now() / 1000 },
+      mep: { gd30: { ci: { price: 1470, timestamp: Date.now() / 1000 } } },
+      ccl: { gd30: { '24hs': { price: 1480, timestamp: Date.now() / 1000 } } },
+    }));
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    const quotes = await cotizacionesService.getDolarQuotes();
+    expect(quotes.mep?.sell).toBe(1470);
+    expect(quotes.ccl?.sell).toBe(1480);
   });
 
   it('getExchangeRate rejects when live FX is down and nothing executable is stored', async () => {

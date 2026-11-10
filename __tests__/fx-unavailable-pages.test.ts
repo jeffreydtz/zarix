@@ -233,6 +233,9 @@ describe('FX outages preserve financial server renders', () => {
     })));
     expect(text).toContain('Cotizaciones no disponibles');
     expect(text).toContain('Bitcoin');
+    expect(text).toContain('CCL');
+    expect(text).toContain('Oficial');
+    expect(text).toContain('MEP');
     expect(text).not.toContain('En vivo');
     expect(text).not.toMatch(/NaN|Infinity/);
   });

@@ -2,8 +2,7 @@
 
 import { memo, useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatTransactionWhen } from '@/lib/transaction-date';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import Link from 'next/link';
 import { motionVariants, maybeReduceTransition, motionTransition } from '@/lib/motion';
@@ -96,10 +95,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
                     <span className="truncate">{tx.account?.name}</span>
                     <span className="text-muted-foreground">•</span>
                     <span>
-                      {formatDistanceToNow(new Date(tx.transaction_date), {
-                        addSuffix: true,
-                        locale: es,
-                      })}
+                      {formatTransactionWhen(tx.transaction_date)}
                     </span>
                   </div>
                 </div>

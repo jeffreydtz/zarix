@@ -135,9 +135,32 @@ interface DolarApiRow {
 
 /** Provider time, never retrieval time: absent/invalid dates must fail freshness checks. */
 function sourceTimestamp(value: unknown): Date {
-  if (typeof value === 'number' && Number.isFinite(value)) return new Date(value * 1000);
-  if (typeof value === 'string' && value.trim()) return new Date(value);
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return new Date(value > 1e12 ? value : value * 1000);
+  }
+  if (typeof value === 'string' && value.trim()) {
+    const numeric = Number(value);
+    if (/^\d+(\.\d+)?$/.test(value.trim()) && Number.isFinite(numeric)) {
+      return new Date(numeric > 1e12 ? numeric : numeric * 1000);
+    }
+    return new Date(value);
+  }
   return new Date(Number.NaN);
+}
+
+function criptoyaMarketSample(node: unknown): { price: number; timestamp: unknown } {
+  if (!node || typeof node !== 'object') return { price: 0, timestamp: undefined };
+  const rec = node as Record<string, any>;
+  const sample =
+    rec.al30?.['24hs'] ??
+    rec.al30?.ci ??
+    rec.gd30?.['24hs'] ??
+    rec.gd30?.ci ??
+    rec['24hs'] ??
+    rec.ci ??
+    rec;
+  const price = Number(sample?.price ?? sample?.ask ?? sample?.bid ?? rec.price ?? rec.ask ?? rec.bid ?? 0);
+  return { price, timestamp: sample?.timestamp ?? rec.timestamp };
 }
 
 /**
@@ -181,15 +204,15 @@ class CriptoYaProvider implements DolarRateProvider {
       },
       mep: {
         type: 'mep',
-        buy: data.mep?.al30?.['24hs']?.price || 0,
-        sell: data.mep?.al30?.['24hs']?.price || 0,
-        timestamp: sourceTimestamp(data.mep?.al30?.['24hs']?.timestamp),
+        buy: criptoyaMarketSample(data.mep).price,
+        sell: criptoyaMarketSample(data.mep).price,
+        timestamp: sourceTimestamp(criptoyaMarketSample(data.mep).timestamp),
       },
       ccl: {
         type: 'ccl',
-        buy: data.ccl?.al30?.['24hs']?.price || 0,
-        sell: data.ccl?.al30?.['24hs']?.price || 0,
-        timestamp: sourceTimestamp(data.ccl?.al30?.['24hs']?.timestamp),
+        buy: criptoyaMarketSample(data.ccl).price,
+        sell: criptoyaMarketSample(data.ccl).price,
+        timestamp: sourceTimestamp(criptoyaMarketSample(data.ccl).timestamp),
       },
     };
 

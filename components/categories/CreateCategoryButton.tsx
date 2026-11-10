@@ -37,8 +37,8 @@ export default function CreateCategoryButton() {
         }),
       });
 
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'Error al crear la categoría');
       }
 
@@ -47,6 +47,9 @@ export default function CreateCategoryButton() {
       setType('expense');
       setIsOpen(false);
       router.refresh();
+      if (data.reused && data.message) {
+        alert(data.message);
+      }
     } catch (error: any) {
       console.error('Error:', error);
       alert(error.message || 'Error al crear la categoría');

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Sparkline from '@/components/ui/Sparkline';
 import type { MarketSparklines } from '@/lib/services/market-history';
 
+import { formatFxProviderName } from '@/lib/fx-provider-name';
 import type { cotizacionesService } from '@/lib/services/cotizaciones';
 type MarketStripQuotes = Awaited<ReturnType<typeof cotizacionesService.getAllQuotes>>;
 
@@ -72,7 +73,9 @@ function TickerCard({
  */
 export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketStripProps) {
   const blue = quotes.dolar.blue;
+  const oficial = quotes.dolar.oficial;
   const mep = quotes.dolar.mep;
+  const ccl = quotes.dolar.ccl;
   const { btc, eth } = quotes.crypto;
   const holdings = topHoldings.slice(0, 2);
 
@@ -105,6 +108,23 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
               />
             </div>
           )}
+          {formatFxProviderName(blue?.provider) && (
+            <p className="text-[10px] text-muted-foreground mt-1">{formatFxProviderName(blue?.provider)}</p>
+          )}
+        </TickerCard>
+
+        <TickerCard ariaLabel="Dólar oficial, compra y venta. Ver inversiones">
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="text-base">🏦</span>
+            <span className="text-xs font-medium text-muted-foreground">Oficial</span>
+          </div>
+          <div className="text-sm text-foreground tabular-nums leading-tight">
+            <div className="text-muted-foreground">{oficial ? `C: $${formatARS(oficial.buy)}` : 'No disponible'}</div>
+            {oficial && <div className="font-semibold">V: ${formatARS(oficial.sell)}</div>}
+          </div>
+          {formatFxProviderName(oficial?.provider) && (
+            <p className="text-[10px] text-muted-foreground mt-1">{formatFxProviderName(oficial?.provider)}</p>
+          )}
         </TickerCard>
 
         <TickerCard ariaLabel="Dólar MEP, compra y venta. Ver inversiones">
@@ -116,6 +136,23 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
             <div className="text-muted-foreground">{mep ? `C: $${formatARS(mep.buy)}` : 'No disponible'}</div>
             {mep && <div className="font-semibold">V: ${formatARS(mep.sell)}</div>}
           </div>
+          <p className="text-[10px] text-muted-foreground mt-1">
+            {formatFxProviderName(mep?.provider) || 'Sin fuente'}
+          </p>
+        </TickerCard>
+
+        <TickerCard ariaLabel="Dólar CCL, compra y venta. Ver inversiones">
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="text-base">🔁</span>
+            <span className="text-xs font-medium text-muted-foreground">CCL</span>
+          </div>
+          <div className="text-sm text-foreground tabular-nums leading-tight">
+            <div className="text-muted-foreground">{ccl ? `C: $${formatARS(ccl.buy)}` : 'No disponible'}</div>
+            {ccl && <div className="font-semibold">V: ${formatARS(ccl.sell)}</div>}
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-1">
+            {formatFxProviderName(ccl?.provider) || 'Sin fuente'}
+          </p>
         </TickerCard>
 
         {btc && <TickerCard ariaLabel={`Bitcoin, US$${formatUSD(btc.priceUSD)}. Ver inversiones`}>
