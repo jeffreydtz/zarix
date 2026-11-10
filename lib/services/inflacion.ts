@@ -46,7 +46,12 @@ export async function getInflacionSeriesWithMeta(): Promise<{
     return { series: cache.data, meta: metaFrom(cache.data, cache.at) };
   }
   try {
-    const res = await fetch(API_URL, { next: { revalidate: 43200 } });
+    const timeoutMs = Number(process.env.MARKET_DATA_TIMEOUT_MS);
+    const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? Math.min(timeoutMs, 20_000) : 8_000;
+    const res = await fetch(API_URL, {
+      next: { revalidate: 43200 },
+      signal: AbortSignal.timeout(timeout),
+    });
     if (!res.ok) throw new Error(`inflacion API ${res.status}`);
     const raw = (await res.json()) as Array<{ fecha: string; valor: number }>;
     const data = raw

@@ -108,7 +108,7 @@ function addDaysIso(iso: string, days: number): string {
 /**
  * Inflación acumulada entre dos fechas: producto de (1+i/100) de los meses
  * estrictamente posteriores al mes de inicio y hasta el mes de fin inclusive.
- * Serie vacía → null (no se degrada a 0).
+ * Serie vacía o sin meses de IPC en el período → null (no se degrada a 0%).
  */
 export function inflationPctBetween(
   series: ReadonlyArray<{ fecha: string; valor: number }>,
@@ -128,7 +128,7 @@ export function inflationPctBetween(
       used += 1;
     }
   }
-  if (used === 0) return 0;
+  if (used === 0) return null;
   return (factor - 1) * 100;
 }
 

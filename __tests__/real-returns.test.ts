@@ -25,6 +25,11 @@ describe('real return math', () => {
     expect(inflationPctBetween([], '2026-01-01', '2026-03-01')).toBeNull();
   });
 
+  it('marks inflation unavailable when the period has no IPC months yet', () => {
+    const series = [{ fecha: '2026-10-01', valor: 2.5 }];
+    expect(inflationPctBetween(series, '2026-10-11', '2026-11-10')).toBeNull();
+  });
+
   it('compounds IPC months after start through end inclusive', () => {
     const series = [
       { fecha: '2026-01-01', valor: 2 },
