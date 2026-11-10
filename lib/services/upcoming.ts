@@ -1,5 +1,12 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Account, Investment, RecurringRule } from '@/types/database';
+import { addDaysYmd, civilTodayYmd } from '@/lib/transaction-date';
+import {
+  labeledTotalsAmount,
+  nextClosingOnOrAfter,
+  type CardStatementProjection,
+} from '@/lib/card-statement';
+import { getCardStatements } from '@/lib/services/card-statement';
 
 export type UpcomingKind = 'recurring' | 'card_close' | 'card_due' | 'maturity';
 
@@ -86,28 +93,42 @@ function getNextOccurrence(rule: RecurringRule, today: Date): Date | null {
   return null;
 }
 
-/** Próxima fecha (>= hoy) en la que cae el día `day` del mes, clampeado a la duración real del mes. */
-function nextDateForMonthDay(day: number, today: Date): Date {
-  const lastDayThisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const targetDayThisMonth = Math.min(day, lastDayThisMonth);
-  const candidate = new Date(today.getFullYear(), today.getMonth(), targetDayThisMonth);
+function statementByAccountId(
+  statements: CardStatementProjection[] | undefined,
+  accountId: string
+): CardStatementProjection | undefined {
+  return statements?.find((row) => row.accountId === accountId);
+}
 
-  if (candidate >= today) return candidate;
-
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  const lastDayNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0).getDate();
-  const targetDayNextMonth = Math.min(day, lastDayNextMonth);
-  return new Date(nextMonth.getFullYear(), nextMonth.getMonth(), targetDayNextMonth);
+function upcomingCardAmount(statement: CardStatementProjection | undefined, card: Account): {
+  amountARS?: number;
+  currency?: string;
+} {
+  if (!statement) {
+    return { amountARS: Math.abs(Number(card.balance)), currency: card.currency };
+  }
+  const estimated = labeledTotalsAmount(statement.nextStatementTotals, statement.primaryCurrency);
+  if (!estimated) return { currency: card.currency };
+  return { amountARS: estimated.amount, currency: estimated.currency };
 }
 
 /**
  * Lista cronológica unificada de próximas obligaciones/eventos: próximas
  * corridas de reglas recurrentes de gasto, cierres/vencimientos de tarjeta
  * de crédito y vencimientos de inversiones dentro de los próximos 30 días.
+ *
+ * Cierre y vencimiento de tarjeta usan el monto estimado del próximo resumen
+ * (ciclo de cierre), no el saldo de cuenta — ese saldo ya incluye cuotas futuras.
  */
-export async function getUpcoming(userId: string, limit = 5): Promise<UpcomingItem[]> {
+export async function getUpcoming(
+  userId: string,
+  limit = 5,
+  options?: { cardStatements?: CardStatementProjection[] }
+): Promise<UpcomingItem[]> {
   const supabase = createServiceClientSync();
   const today = startOfToday();
+  const todayISO = civilTodayYmd();
+  const cardHorizonISO = addDaysYmd(todayISO, CARD_HORIZON_DAYS);
 
   const [rulesRes, accountsRes, investmentsRes] = await Promise.all([
     supabase
@@ -150,31 +171,37 @@ export async function getUpcoming(userId: string, limit = 5): Promise<UpcomingIt
     });
   }
 
-  // 2. Cierres y vencimientos de tarjeta de crédito.
-  const cardHorizon = addDays(today, CARD_HORIZON_DAYS);
-  for (const card of (accountsRes.data ?? []) as Account[]) {
-    if (card.closing_day) {
-      const closeDate = nextDateForMonthDay(card.closing_day, today);
-      if (closeDate <= cardHorizon) {
-        items.push({
-          kind: 'card_close',
-          label: `Cierre ${card.name}`,
-          dateISO: toISODate(closeDate),
-        });
-      }
+  // 2. Cierres y vencimientos de tarjeta de crédito (calendario Córdoba).
+  const cards = (accountsRes.data ?? []) as Account[];
+  const statements =
+    options?.cardStatements ??
+    (cards.length > 0 ? await getCardStatements(userId, { cycles: 1, todayISO }) : []);
+  for (const card of cards) {
+    const statement = statementByAccountId(statements, card.id);
+    const amount = upcomingCardAmount(statement, card);
+
+    const closeISO = statement?.nextClosingISO
+      ?? (card.closing_day ? nextClosingOnOrAfter(card.closing_day, todayISO) : null);
+    if (closeISO && closeISO <= cardHorizonISO) {
+      items.push({
+        kind: 'card_close',
+        label: `Cierre ${card.name}`,
+        dateISO: closeISO,
+        amountARS: amount.amountARS,
+        currency: amount.currency,
+      });
     }
 
-    if (card.due_day) {
-      const dueDate = nextDateForMonthDay(card.due_day, today);
-      if (dueDate <= cardHorizon) {
-        items.push({
-          kind: 'card_due',
-          label: `Vencimiento ${card.name}`,
-          dateISO: toISODate(dueDate),
-          amountARS: Math.abs(Number(card.balance)),
-          currency: card.currency,
-        });
-      }
+    const dueISO = statement?.nextDueISO
+      ?? (card.due_day ? nextClosingOnOrAfter(card.due_day, todayISO) : null);
+    if (dueISO && dueISO <= cardHorizonISO) {
+      items.push({
+        kind: 'card_due',
+        label: `Vencimiento ${card.name}`,
+        dateISO: dueISO,
+        amountARS: amount.amountARS,
+        currency: amount.currency,
+      });
     }
   }
 

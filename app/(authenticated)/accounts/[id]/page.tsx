@@ -16,6 +16,8 @@ import CreateTransactionButton from '@/components/expenses/CreateTransactionButt
 import ReconcileBalanceButton from '@/components/accounts/ReconcileBalanceButton';
 import AccountDetailEditButton from '@/components/accounts/AccountDetailEditButton';
 import { getAccountDisplayName, getAccountTypeLabelEs } from '@/lib/account-display-name';
+import { getCardStatement } from '@/lib/services/card-statement';
+import CardStatementPanel from '@/components/dashboard/CardStatementPanel';
 
 export default async function AccountDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -29,7 +31,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
 
     // params.id === account.id; usamos params.id en el filtro para poder
     // resolver getById en paralelo con el resto (un round-trip menos).
-    const [account, accounts, transactions, categoriesResult, fxRates] = await Promise.all([
+    const [account, accounts, transactions, categoriesResult, fxRates, cardStatement] = await Promise.all([
       accountsService.getById(params.id, user.id),
       accountsService.list(user.id, { allowPartialValuation: true }),
       transactionsService
@@ -39,6 +41,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
         .select('*')
         .or(`user_id.eq.${user.id},is_system.eq.true`),
       cotizacionesService.getTransactionsFxRates(),
+      getCardStatement(user.id, params.id),
     ]);
 
     if (!account) {
@@ -173,6 +176,16 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
           </div>
 
           <FxStatusBanner {...combinedFxStatus(enriched ? [enriched] : [])} />
+          {account.type === 'credit_card' && cardStatement && (
+            <div className="card p-4">
+              <h2 className="text-lg font-semibold text-foreground mb-1">Resumen proyectado</h2>
+              <p className="text-sm text-muted-foreground">
+                Cierre, vencimiento y cuotas pendientes de esta tarjeta. El saldo de la cuenta ya
+                incluye las cuotas futuras; el vencimiento estima solo este resumen.
+              </p>
+              <CardStatementPanel statement={cardStatement} />
+            </div>
+          )}
           <RepairCurrencyRangePanel accountId={account.id} />
 
           <TransactionsList

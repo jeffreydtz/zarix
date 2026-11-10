@@ -38,7 +38,7 @@ La web de Zarix te permite:
 - Resumen de patrimonio liquido y total.
 - Cotizaciones de dolar y crypto.
 - Ultimos movimientos.
-- Estado general de tarjetas.
+- Estado general de tarjetas, con resumen proyectado por cierre, cuotas pendientes y deuda futura en ARS/USD.
 
 ### Movimientos
 - Alta, edicion y eliminacion de gastos/ingresos/transferencias.

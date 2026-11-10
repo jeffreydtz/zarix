@@ -7,12 +7,15 @@ import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquiv
 import ProgressBar from '@/components/ui/ProgressBar';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import SettleCardButton from '@/components/dashboard/SettleCardButton';
+import CardStatementPanel from '@/components/dashboard/CardStatementPanel';
+import type { CardStatementProjection } from '@/lib/card-statement';
 
 interface CreditCardsWidgetProps {
   accounts: AccountWithBalance[];
+  statements?: CardStatementProjection[];
 }
 
-function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
+function CreditCardsWidget({ accounts, statements = [] }: CreditCardsWidgetProps) {
   const creditCards = accounts.filter(acc => acc.type === 'credit_card' && acc.credit_limit);
 
   if (creditCards.length === 0) return null;
@@ -86,6 +89,7 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
               type: a.type,
               last_4_digits: a.last_4_digits,
             }));
+          const statement = statements.find((s) => s.accountId === card.id);
 
           return (
             <motion.div 
@@ -192,7 +196,7 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
 
               <ProgressBar value={utilization} max={100} height="h-2" />
 
-              {(card.closing_day || card.due_day) && (
+              {(card.closing_day || card.due_day) && !statement && (
                 <div className="flex gap-4 mt-4 pt-3 border-t border-border">
                   {card.closing_day && (
                     <div className="flex items-center gap-2 text-sm">
@@ -210,6 +214,8 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
                   )}
                 </div>
               )}
+
+              {statement ? <CardStatementPanel statement={statement} compact /> : null}
             </motion.div>
           );
         })}

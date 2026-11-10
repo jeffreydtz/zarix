@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   user: vi.fn(), accounts: vi.fn(), transactions: vi.fn(), portfolio: vi.fn(),
   quotes: vi.fn(), dolar: vi.fn(), history: vi.fn(), snapshot: vi.fn(),
-  inflacion: vi.fn(), sparklines: vi.fn(), monthFlow: vi.fn(), upcoming: vi.fn(), budgets: vi.fn(),
+  inflacion: vi.fn(), sparklines: vi.fn(), monthFlow: vi.fn(), cardStatements: vi.fn(), upcoming: vi.fn(), budgets: vi.fn(),
   totals: vi.fn(),
   preferences: vi.fn(),
 }));
@@ -20,6 +20,7 @@ vi.mock('@/lib/services/presentation-preferences', () => ({ getPresentationPrefe
 vi.mock('@/lib/services/inflacion', () => ({ getInflacionSeries: mocks.inflacion }));
 vi.mock('@/lib/services/market-history', () => ({ getMarketSparklines: mocks.sparklines }));
 vi.mock('@/lib/services/month-flow', () => ({ getMonthFlow: mocks.monthFlow }));
+vi.mock('@/lib/services/card-statement', () => ({ getCardStatements: mocks.cardStatements }));
 vi.mock('@/lib/services/upcoming', () => ({ getUpcoming: mocks.upcoming }));
 vi.mock('@/lib/services/budget-summary', () => ({ getTopBudgets: mocks.budgets }));
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
@@ -51,6 +52,7 @@ beforeEach(() => {
   mocks.inflacion.mockResolvedValue([]);
   mocks.sparklines.mockResolvedValue({ blue: [], btc: [], eth: [] });
   mocks.monthFlow.mockResolvedValue({ incomeARS: 100, spentARS: 20 });
+  mocks.cardStatements.mockResolvedValue([]);
   mocks.upcoming.mockResolvedValue([]);
   mocks.budgets.mockResolvedValue([]);
   mocks.totals.mockReturnValue({
