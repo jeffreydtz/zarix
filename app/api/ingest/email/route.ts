@@ -77,11 +77,3 @@ export async function POST(req: NextRequest) {
     return errorResponse(error);
   }
 }
-
-export async function GET() {
-  return NextResponse.json({
-    endpoint: '/api/ingest/email',
-    configured: inboundEmailConfigured(),
-    note: 'Webhook genérico. Nada se registra sin confirmar en Pendientes. No se crean cuentas de proveedores desde el código.',
-  });
-}

@@ -9,7 +9,9 @@ import {
   looksLikePdf,
   parseGeminiExtractJson,
   parseStatementCsv,
+  pdfPageCountHint,
   MAX_EXTRACTED_MOVEMENTS,
+  MAX_STATEMENT_PDF_PAGES,
   type ExtractedMovement,
   type ExtractedStatement,
 } from '@/lib/integrations/statement-parse';
@@ -97,7 +99,11 @@ export async function extractStatementFromBytes(input: {
   filename?: string | null;
   mimeType?: string | null;
 }): Promise<ExtractedStatement> {
-  if (looksLikePdf(input.bytes, input.mimeType, input.filename)) {
+  if (looksLikePdf(input.bytes)) {
+    const pages = pdfPageCountHint(input.bytes);
+    if (pages != null && pages > MAX_STATEMENT_PDF_PAGES) {
+      throw new ApiError(`El PDF tiene más de ${MAX_STATEMENT_PDF_PAGES} páginas.`, 413);
+    }
     return extractWithGemini({
       userId: input.userId,
       pdfBase64: Buffer.from(input.bytes).toString('base64'),

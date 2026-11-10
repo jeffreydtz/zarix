@@ -84,21 +84,21 @@ export default function InboundEmailPanel() {
           reciben hasta que exista el secreto.
         </p>
       )}
-      {mailbox?.address && (
-        <p className="text-sm">
-          Dirección:{' '}
-          <code className="text-foreground">{mailbox.address}</code>
+      {mailbox?.tokenPrefix && !freshToken && (
+        <p className="text-sm text-muted-foreground">
+          Prefijo <code className="text-foreground">{mailbox.tokenPrefix}…</code>. La dirección completa se
+          muestra una sola vez al generarla.
         </p>
       )}
       {freshToken && mailbox?.domain && (
         <p className="text-sm">
-          Dirección completa:{' '}
+          Dirección completa (una sola vez):{' '}
           <code className="break-all text-foreground">{`${freshToken}@${mailbox.domain}`}</code>
         </p>
       )}
       {freshToken && !mailbox?.domain && (
         <p className="text-sm">
-          Token de buzón (para el JSON genérico <code>mailboxToken</code>):{' '}
+          Token de buzón (una sola vez, JSON <code>mailboxToken</code>):{' '}
           <code className="break-all text-foreground">{freshToken}</code>
         </p>
       )}
@@ -111,9 +111,18 @@ export default function InboundEmailPanel() {
             Revocar
           </button>
         )}
-        {mailbox?.address && (
-          <button type="button" className="text-sm text-primary" onClick={() => copy(mailbox.address!)}>
+        {freshToken && mailbox?.domain && (
+          <button
+            type="button"
+            className="text-sm text-primary"
+            onClick={() => copy(`${freshToken}@${mailbox.domain}`)}
+          >
             Copiar dirección
+          </button>
+        )}
+        {freshToken && !mailbox?.domain && (
+          <button type="button" className="text-sm text-primary" onClick={() => copy(freshToken)}>
+            Copiar token
           </button>
         )}
       </div>

@@ -1,10 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { parseGeminiExtractJson, parseStatementCsv } from '@/lib/integrations/statement-parse';
+import {
+  looksLikePdf,
+  parseGeminiExtractJson,
+  parseStatementCsv,
+  pdfPageCountHint,
+} from '@/lib/integrations/statement-parse';
 import { reconcileExtractedMovement } from '@/lib/integrations/statement-reconcile';
 import { wrapUntrustedExtract } from '@/lib/integrations/untrusted-extract';
 import { parseInboundEmailPayload } from '@/lib/integrations/inbound-email';
 import { UNTRUSTED_CLOSE, UNTRUSTED_OPEN } from '@/lib/ai/registry/mask';
 import { WRITE_CHANNELS } from '@/lib/ai/registry/types';
+import { hashMailboxToken } from '@/lib/services/inbound-mailbox';
 
 describe('statement CSV', () => {
   it('parses Argentine bank columns without Gemini', () => {
@@ -144,6 +150,30 @@ describe('inbound email payload', () => {
     expect(generic.mailboxToken).toBe('zrxm_deadbeef');
     expect(generic.attachments).toHaveLength(1);
     expect(generic.attachments[0]?.filename).toBe('a.csv');
+  });
+});
+
+describe('pdf detection', () => {
+  it('requires %PDF magic bytes and ignores a spoofed name', () => {
+    const pdf = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]);
+    const spoof = new TextEncoder().encode('not a pdf');
+    expect(looksLikePdf(pdf, 'application/octet-stream', 'x.bin')).toBe(true);
+    expect(looksLikePdf(spoof, 'application/pdf', 'resumen.pdf')).toBe(false);
+  });
+
+  it('counts uncompressed /Type /Page objects', () => {
+    const body = Buffer.from('%PDF-1.4\n1 0 obj\n<< /Type /Page >>\nendobj\n2 0 obj\n<< /Type /Pages /Count 1 >>\nendobj\n');
+    expect(pdfPageCountHint(new Uint8Array(body))).toBe(1);
+  });
+});
+
+describe('mailbox token', () => {
+  it('stores only a hash of the zrxm_ token', () => {
+    const token = `zrxm_${'ab'.repeat(24)}`;
+    const hash = hashMailboxToken(token);
+    expect(hash).toHaveLength(64);
+    expect(hash).not.toContain('zrxm_');
+    expect(hash).not.toEqual(token);
   });
 });
 

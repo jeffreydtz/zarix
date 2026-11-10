@@ -18,7 +18,7 @@ function inboundDomain(): string | null {
   return raw || null;
 }
 
-function hashMailboxToken(token: string): string {
+export function hashMailboxToken(token: string): string {
   return createHash('sha256').update(token, 'utf8').digest('hex');
 }
 
@@ -37,7 +37,7 @@ export async function getInboundMailbox(userId: string): Promise<InboundMailboxP
   const supabase = createServiceClientSync();
   const { data, error } = await supabase
     .from('inbound_email_mailboxes')
-    .select('token_prefix, local_part, created_at, revoked_at')
+    .select('token_prefix, created_at, revoked_at')
     .eq('user_id', userId)
     .maybeSingle();
   if (error && isMissingRelation(error)) {
@@ -45,14 +45,20 @@ export async function getInboundMailbox(userId: string): Promise<InboundMailboxP
   }
   if (error) throw error;
   if (!data || data.revoked_at) {
-    return { configured: webhookConfigured && Boolean(domain), domain, address: null, tokenPrefix: null, createdAt: null, webhookConfigured };
+    return {
+      configured: webhookConfigured && Boolean(domain),
+      domain,
+      address: null,
+      tokenPrefix: null,
+      createdAt: null,
+      webhookConfigured,
+    };
   }
   const prefix = data.token_prefix as string;
-  const localPart = data.local_part as string;
   return {
     configured: webhookConfigured,
     domain,
-    address: domain ? `${localPart}@${domain}` : localPart,
+    address: null,
     tokenPrefix: prefix,
     createdAt: data.created_at as string,
     webhookConfigured,
@@ -69,7 +75,6 @@ export async function issueInboundMailbox(userId: string): Promise<{ token: stri
       user_id: userId,
       token_hash: hash,
       token_prefix: prefix,
-      local_part: token,
       created_at: new Date().toISOString(),
       revoked_at: null,
     },
@@ -81,8 +86,15 @@ export async function issueInboundMailbox(userId: string): Promise<{ token: stri
     }
     throw error;
   }
-  const mailbox = await getInboundMailbox(userId);
-  return { token, mailbox };
+  const stored = await getInboundMailbox(userId);
+  const domain = inboundDomain();
+  return {
+    token,
+    mailbox: {
+      ...stored,
+      address: domain ? `${token}@${domain}` : null,
+    },
+  };
 }
 
 export async function revokeInboundMailbox(userId: string): Promise<void> {

@@ -18,8 +18,15 @@ export async function POST(req: NextRequest) {
     if (!rateLimitAllow(`statement-ingest:${user.id}:${ip}`, 10, 60_000)) {
       throw new ApiError('Demasiados envíos. Esperá un minuto.', 429);
     }
-    const declared = Number(req.headers.get('content-length') || 0);
-    if (Number.isFinite(declared) && declared > MAX_STATEMENT_BYTES + 64 * 1024) {
+    const lengthHeader = req.headers.get('content-length');
+    if (lengthHeader == null || lengthHeader === '') {
+      throw new ApiError('Falta Content-Length.', 411);
+    }
+    const declared = Number(lengthHeader);
+    if (!Number.isFinite(declared) || declared < 0) {
+      throw new ApiError('Falta Content-Length.', 411);
+    }
+    if (declared > MAX_STATEMENT_BYTES + 256 * 1024) {
       throw new ApiError('El archivo supera 4 MB.', 413);
     }
 

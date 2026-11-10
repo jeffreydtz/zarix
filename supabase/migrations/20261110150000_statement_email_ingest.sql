@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS public.inbound_email_mailboxes (
   user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
   token_hash TEXT NOT NULL UNIQUE,
   token_prefix TEXT NOT NULL,
-  local_part TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   revoked_at TIMESTAMPTZ
 );
@@ -111,4 +110,4 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.inbound_email_mailboxes TO authen
 GRANT ALL ON public.inbound_email_mailboxes TO service_role;
 
 COMMENT ON TABLE public.inbound_email_mailboxes IS
-  'Per-user inbound mailbox token (hashed). The raw token is shown once; emails never auto-post to the ledger.';
+  'Per-user inbound mailbox. Only SHA-256 of zrxm_ token is stored; the raw token is shown once. Emails never auto-post to the ledger.';

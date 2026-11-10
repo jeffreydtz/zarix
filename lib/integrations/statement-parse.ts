@@ -8,6 +8,7 @@ export const MAX_STATEMENT_BYTES = 4 * 1024 * 1024;
 export const MAX_TELEGRAM_STATEMENT_BYTES = 8 * 1024 * 1024;
 export const MAX_EMAIL_JSON_BYTES = 256 * 1024;
 export const MAX_EMAIL_ATTACHMENT_BYTES = 4 * 1024 * 1024;
+export const MAX_STATEMENT_PDF_PAGES = 20;
 
 export type ExtractedMovement = {
   amount: number;
@@ -187,10 +188,20 @@ export function parseGeminiExtractJson(raw: string): ExtractedStatement {
   return { movements, parser: 'gemini', cardLast4: last4 };
 }
 
-export function looksLikePdf(bytes: Uint8Array, mime?: string | null, filename?: string | null): boolean {
-  if (mime?.toLowerCase().includes('pdf')) return true;
-  if (filename?.toLowerCase().endsWith('.pdf')) return true;
-  return bytes.length >= 5 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46;
+export function looksLikePdf(bytes: Uint8Array, _mime?: string | null, _filename?: string | null): boolean {
+  return (
+    bytes.length >= 5 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46
+  );
+}
+
+/** Cheap ASCII scan of uncompressed page objects. Compressed PDFs may return null. */
+export function pdfPageCountHint(bytes: Uint8Array): number | null {
+  if (!looksLikePdf(bytes)) return null;
+  const slice = bytes.subarray(0, Math.min(bytes.length, 512 * 1024));
+  const text = Buffer.from(slice).toString('latin1');
+  const matches = text.match(/\/Type\s*\/Page(?![sA-Za-z])/g);
+  if (!matches || matches.length === 0) return null;
+  return matches.length;
 }
 
 export function looksLikeCsv(mime?: string | null, filename?: string | null, text?: string): boolean {

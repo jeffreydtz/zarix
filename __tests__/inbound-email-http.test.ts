@@ -68,4 +68,10 @@ describe('POST /api/ingest/email', () => {
     expect(json.autoConfirmed).toBe(false);
     expect(json.parked).toBe(1);
   });
+
+  it('does not expose configured on GET', async () => {
+    vi.resetModules();
+    const route = await import('@/app/api/ingest/email/route');
+    expect(route).not.toHaveProperty('GET');
+  });
 });

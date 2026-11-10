@@ -26,8 +26,8 @@ Opciones evaluadas:
 Exponer `POST /api/ingest/email` como webhook genérico:
 
 - Autenticación fail-closed con `INBOUND_EMAIL_WEBHOOK_SECRET`.
-- Dirección por usuario: `zrxm_<token>@INBOUND_EMAIL_DOMAIN` (el token se
-  hashea en `inbound_email_mailboxes`).
+- Dirección por usuario: `zrxm_<token>@INBOUND_EMAIL_DOMAIN`. Solo se persiste
+  SHA-256 (`token_hash`) y un prefijo; el token crudo se muestra una vez.
 - Payload: Resend (`type: email.received`) o JSON `{ mailboxToken, text,
   attachments[].contentBase64 }`. No se descargan URLs (SSRF).
 - Extraído → `parkRegistryWrite` con `source=email`. **Nunca** `confirmPendingItem`.

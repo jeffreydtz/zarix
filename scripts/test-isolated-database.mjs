@@ -335,6 +335,7 @@ for(const legacyGrants of [false,true]) {
       await service(db,"INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,card_name,account_id,status,fingerprint,source) VALUES($1,12.5,'ARS','Comercio sintético','Visa Ejemplo',$2,'pending',$3,'wallet')",[ids.a,ids.accountA,digest('synthetic-pending')]);
       await service(db,"INSERT INTO integration_audit_log(user_id,action,source,ip_hash,metadata) VALUES($1,'token.create','web',$2,'{\"synthetic\":true}'::jsonb)",[ids.a,digest('synthetic-ip')]);
       await service(db,"INSERT INTO rate_limit_counters(key,count,window_start) VALUES('synthetic-recovery',1,'2026-10-24T12:00:00Z')");
+      await service(db,"INSERT INTO inbound_email_mailboxes(user_id,token_hash,token_prefix) VALUES($1,$2,'zrxm_synth00')",[ids.a,digest('synthetic-mailbox')]);
       const data=await snapshot(db);
       assert.ok(Object.values(data).every(value=>JSON.parse(value).length>0),'Each application table must contain recovery fixtures');
       return {rowCounts:Object.fromEntries(Object.entries(data).map(([name,value])=>[name,JSON.parse(value).length]))};

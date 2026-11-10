@@ -6663,7 +6663,7 @@ $$;
 -- END supabase/migrations/20261025030000_category_system_select.sql
 
 -- BEGIN supabase/migrations/20261110150000_statement_email_ingest.sql
--- SHA256 8f776737e1085337c72f2e7604303ca9240cb4a9f78a28cf0a59e71d054e9aa5
+-- SHA256 cd61f0848fd13e82a93a8cf03654fc6540985a5c059db4acdbcabaaca89de0d8
 -- Carga automática: canales email/statement en inbox y ledger, más buzón inbound.
 -- NEVER supabase db push against production from a preview.
 -- Previews share prod Supabase; apply only after an explicit production window.
@@ -6756,7 +6756,6 @@ CREATE TABLE IF NOT EXISTS public.inbound_email_mailboxes (
   user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
   token_hash TEXT NOT NULL UNIQUE,
   token_prefix TEXT NOT NULL,
-  local_part TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   revoked_at TIMESTAMPTZ
 );
@@ -6777,5 +6776,5 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.inbound_email_mailboxes TO authen
 GRANT ALL ON public.inbound_email_mailboxes TO service_role;
 
 COMMENT ON TABLE public.inbound_email_mailboxes IS
-  'Per-user inbound mailbox token (hashed). The raw token is shown once; emails never auto-post to the ledger.';
+  'Per-user inbound mailbox. Only SHA-256 of zrxm_ token is stored; the raw token is shown once. Emails never auto-post to the ledger.';
 -- END supabase/migrations/20261110150000_statement_email_ingest.sql
