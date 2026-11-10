@@ -17,6 +17,7 @@ export default function CreateCategoryButton() {
   const [selectedIcon, setSelectedIcon] = useState('🎯');
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [iconMode, setIconMode] = useState<'emoji' | 'symbol'>('emoji');
+  const [hint, setHint] = useState('');
 
   const handleCreate = async () => {
     if (!name.trim()) {
@@ -48,7 +49,9 @@ export default function CreateCategoryButton() {
       setIsOpen(false);
       router.refresh();
       if (data.reused && data.message) {
-        alert(data.message);
+        setHint(data.message);
+      } else {
+        setHint(typeof data.hint === 'string' ? data.hint : '');
       }
     } catch (error: any) {
       console.error('Error:', error);
@@ -60,9 +63,16 @@ export default function CreateCategoryButton() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)} className="btn btn-primary">
-        + Nueva Categoría
-      </button>
+      <div>
+        <button onClick={() => setIsOpen(true)} className="btn btn-primary">
+          + Nueva Categoría
+        </button>
+        {hint && (
+          <p className="mt-2 text-sm text-muted-foreground" role="status">
+            {hint}
+          </p>
+        )}
+      </div>
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-4 sm:py-8 z-50 overflow-y-auto">

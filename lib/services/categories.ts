@@ -1,6 +1,6 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Category } from '@/types/database';
-import { findDuplicateCategory } from '@/lib/categories/synonyms';
+import { findOwnExactCategory, findSimilarSystemCategory } from '@/lib/categories/synonyms';
 
 export interface CreateCategoryInput {
   userId: string;
@@ -24,14 +24,23 @@ class CategoriesService {
     return data;
   }
 
-  async create(input: CreateCategoryInput): Promise<{ category: Category; reused: boolean }> {
+  async create(input: CreateCategoryInput): Promise<{
+    category: Category;
+    reused: boolean;
+    similarSystem: Category | null;
+  }> {
     const supabase = createServiceClientSync();
     const existing = await this.list(input.userId);
-    const duplicate = findDuplicateCategory(input.name, input.type, existing);
-    if (duplicate) {
-      const row = existing.find((category) => category.id === duplicate.id);
-      if (row) return { category: row, reused: true };
+    const ownExact = findOwnExactCategory(input.name, input.type, existing);
+    if (ownExact) {
+      const row = existing.find((category) => category.id === ownExact.id);
+      if (row) return { category: row, reused: true, similarSystem: null };
     }
+
+    const similar = findSimilarSystemCategory(input.name, input.type, existing);
+    const similarRow = similar
+      ? existing.find((category) => category.id === similar.id) ?? null
+      : null;
 
     const { data, error } = await supabase
       .from('categories')
@@ -47,7 +56,7 @@ class CategoriesService {
       .single();
 
     if (error) throw error;
-    return { category: data, reused: false };
+    return { category: data, reused: false, similarSystem: similarRow };
   }
 
   async getById(id: string, userId: string): Promise<Category> {

@@ -1,12 +1,14 @@
 /**
- * Impide categorías nuevas que duplican una existente por idioma o sinónimo
- * (ej. Other / Otros). No fusiona ni reescribe filas ya guardadas.
+ * Own-category duplicates are exact names only (case/accents insensitive).
+ * Synonym groups are a non-blocking hint against system categories.
  */
 
 export interface CategoryIdentity {
   id: string;
   name: string;
   type: string;
+  is_system?: boolean | null;
+  user_id?: string | null;
 }
 
 const SYNONYM_GROUPS: string[][] = [
@@ -49,12 +51,37 @@ for (const group of SYNONYM_GROUPS) {
   for (const alias of group) CANONICAL.set(fold(alias), canon);
 }
 
+export function foldedCategoryName(name: string): string {
+  return fold(name);
+}
+
 export function categoryMatchKey(name: string): string {
   const folded = fold(name);
   return CANONICAL.get(folded) ?? folded;
 }
 
-export function findDuplicateCategory(
+function isSystemCategory(category: CategoryIdentity): boolean {
+  return category.is_system === true;
+}
+
+/** Exact name match of the caller's own categories (folded: case and accents). */
+export function findOwnExactCategory(
+  name: string,
+  type: string,
+  existing: readonly CategoryIdentity[]
+): CategoryIdentity | null {
+  const key = fold(name);
+  if (!key) return null;
+  for (const category of existing) {
+    if (category.type !== type) continue;
+    if (isSystemCategory(category)) continue;
+    if (fold(category.name) === key) return category;
+  }
+  return null;
+}
+
+/** Synonym or exact name of a system category — hint only, never blocks create. */
+export function findSimilarSystemCategory(
   name: string,
   type: string,
   existing: readonly CategoryIdentity[]
@@ -63,7 +90,17 @@ export function findDuplicateCategory(
   if (!key) return null;
   for (const category of existing) {
     if (category.type !== type) continue;
+    if (!isSystemCategory(category)) continue;
     if (categoryMatchKey(category.name) === key) return category;
   }
   return null;
+}
+
+/** @deprecated Prefer findOwnExactCategory. Kept for callers that pass only user rows. */
+export function findDuplicateCategory(
+  name: string,
+  type: string,
+  existing: readonly CategoryIdentity[]
+): CategoryIdentity | null {
+  return findOwnExactCategory(name, type, existing);
 }

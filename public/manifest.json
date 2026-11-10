@@ -44,6 +44,22 @@
       "purpose": "maskable"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshots/wide-1280x720.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Zarix en escritorio"
+    },
+    {
+      "src": "/screenshots/narrow-1080x1920.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Zarix en el teléfono"
+    }
+  ],
   "categories": ["finance", "productivity"],
   "shortcuts": [
     {

@@ -26,7 +26,11 @@ import {
   quoteCacheKey,
   quoteCacheKeyForPosition,
 } from '@/lib/market-data/quote-refresh';
-import { findDuplicateCategory } from '@/lib/categories/synonyms';
+import {
+  findDuplicateCategory,
+  findOwnExactCategory,
+  findSimilarSystemCategory,
+} from '@/lib/categories/synonyms';
 import { accountCanHoldPosition, priceFactorForType, yahooSymbolFor } from '@/lib/investments/type-meta';
 import {
   composeComposition,
@@ -480,13 +484,21 @@ describe('IOL Mi Portafolio CSV', () => {
 });
 
 describe('category synonyms for new data', () => {
-  it('detects Other/Otros as the same identity without mutating existing rows', () => {
-    const existing = [{ id: '1', name: 'Otros', type: 'expense' }];
-    expect(findDuplicateCategory('Other', 'expense', existing)?.id).toBe('1');
+  it('blocks only an exact own-category name, ignoring case and accents', () => {
+    const existing = [{ id: '1', name: 'Otros', type: 'expense', is_system: false }];
+    expect(findDuplicateCategory('otros', 'expense', existing)?.id).toBe('1');
+    expect(findDuplicateCategory('OTROS', 'expense', existing)?.id).toBe('1');
+    expect(findDuplicateCategory('Other', 'expense', existing)).toBeNull();
     expect(findDuplicateCategory('Food', 'expense', existing)).toBeNull();
-    expect(findDuplicateCategory('Supermercado', 'expense', [
-      { id: 'comida', name: 'Comida', type: 'expense' },
-    ])?.id).toBe('comida');
+  });
+
+  it('does not treat a system synonym as a duplicate of a new user name', () => {
+    const existing = [{ id: 'comida', name: 'Comida', type: 'expense', is_system: true }];
+    expect(findOwnExactCategory('Supermercado', 'expense', existing)).toBeNull();
+    expect(findOwnExactCategory('Comida', 'expense', existing)).toBeNull();
+    expect(findDuplicateCategory('Supermercado', 'expense', existing)).toBeNull();
+    expect(findSimilarSystemCategory('Supermercado', 'expense', existing)?.id).toBe('comida');
+    expect(findSimilarSystemCategory('Comida', 'expense', existing)?.id).toBe('comida');
   });
 });
 

@@ -73,8 +73,9 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('POST /api/recurring', () => {
-  it('accepts a system category and Argentine money string', async () => {
+  it('returns 201 on success with a system category and Argentine money string', async () => {
     const res = await POST(request(validBody));
+    expect([200, 201]).toContain(res.status);
     expect(res.status).toBe(201);
     expect(mocks.getById).toHaveBeenCalledWith(SYSTEM_CATEGORY, USER);
     const json = await res.json();
