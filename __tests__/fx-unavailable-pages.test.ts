@@ -63,6 +63,7 @@ vi.mock('@/lib/services/inflacion', () => ({ getInflacionSeries: async () => [],
 vi.mock('@/lib/services/market-history', () => ({ getMarketSparklines: async () => ({ blue: [], btc: [], eth: [] }) }));
 vi.mock('@/lib/services/month-flow', () => ({ getMonthFlow: async () => null }));
 vi.mock('@/lib/services/card-statement', () => ({ getCardStatements: async () => [], getCardStatement: async () => null }));
+vi.mock('@/lib/services/real-returns', () => ({ getRealReturnsReport: async () => null }));
 vi.mock('@/lib/services/upcoming', () => ({ getUpcoming: async () => [] }));
 vi.mock('@/lib/services/budget-summary', () => ({ getTopBudgets: fixture.budget }));
 vi.mock('@/lib/services/presentation-preferences', () => ({

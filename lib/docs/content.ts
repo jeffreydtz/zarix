@@ -46,6 +46,7 @@ export const DOCS_PAGES: DocsPage[] = [
         body: [
           'El patrimonio líquido suma efectivo y bancos y resta la deuda de tarjetas. Las posiciones de inversión viven en /inversiones y no se mezclan con ese total.',
           'El dashboard de cartera muestra valuación, variación y composición. Ejemplo: 2 CEDEARs AAPL (dato de ejemplo).',
+          'Rendimiento real 2.0 compara patrimonio líquido e inversiones contra inflación INDEC, dólar MEP y CCL, y contra benchmarks (plazo fijo, caución, FCI money market) por mes, trimestre, año y desde el inicio. Cada número muestra fuente y fecha. Si un benchmark no tiene serie confiable queda no disponible o se carga a mano en Configuración. No hay recomendaciones de inversión ni de rebalanceo. Ejemplo: líquido +2,1% real vs IPC en 12 meses (dato de ejemplo).',
         ],
       },
       {

@@ -7,6 +7,7 @@ import SettingsForm from '@/components/settings/SettingsForm';
 import type { User } from '@/types/database';
 import PasskeysSection from '@/components/settings/PasskeysSection';
 import ExportImport from '@/components/settings/ExportImport';
+import BenchmarkSettingsForm from '@/components/settings/BenchmarkSettingsForm';
 import LogoutButton from '@/components/settings/LogoutButton';
 import ReplayTourButton from '@/components/onboarding/ReplayTourButton';
 
@@ -74,6 +75,8 @@ export default async function SettingsPage() {
             appBaseUrl={appBaseUrl}
           />
         )}
+
+        <BenchmarkSettingsForm />
 
         <PasskeysSection />
 

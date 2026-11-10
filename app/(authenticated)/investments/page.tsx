@@ -10,6 +10,8 @@ import type { Investment, InvestmentType } from '@/types/database';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 import { subscriptionsService } from '@/lib/services/subscriptions';
+import { getRealReturnsReport } from '@/lib/services/real-returns';
+import RealReturnsPanel from '@/components/dashboard/RealReturnsPanel';
 import { effectivePlan } from '@/lib/plans/rules';
 
 
@@ -33,7 +35,7 @@ export default async function InvestmentsPage() {
     const in30Days = new Date(now);
     in30Days.setDate(in30Days.getDate() + 30);
 
-    const [portfolio, investmentAccounts, upcomingMaturities, subscription] = await Promise.all([
+    const [portfolio, investmentAccounts, upcomingMaturities, subscription, realReturns] = await Promise.all([
       investmentsService.getPortfolioSummary(user.id, {
         skipDailySnapshot: true,
         skipQuoteRefresh: true,
@@ -53,6 +55,7 @@ export default async function InvestmentsPage() {
         return (data ?? []) as Investment[];
       })(),
       subscriptionsService.getUserState(user.id),
+      getRealReturnsReport(user.id),
     ]);
 
     return (
@@ -65,6 +68,10 @@ export default async function InvestmentsPage() {
           />
         )}
       >
+        <MotionSection delay={0.02} intensity="normal">
+          <RealReturnsPanel report={realReturns} />
+        </MotionSection>
+
         {investmentAccounts.length > 0 ? (
           <MotionSection delay={0.04} intensity="hero">
             <InvestmentAccountsList accounts={investmentAccounts} />
