@@ -866,7 +866,36 @@ class InvestmentsService {
     return (data || []) as InvestmentSale[];
   }
 
-  private async recordDailySnapshot(userId: string, summary: PortfolioSummaryPayload): Promise<void> {
+  /**
+   * Idempotent daily portfolio snapshot (unique user_id+snapshot_date).
+   * Page loads pass skipDailySnapshot; the net-worth cron calls this once per user.
+   */
+  async recordDailySnapshotForUser(userId: string): Promise<boolean> {
+    try {
+      const summary = await this.getPortfolioSummary(userId, {
+        skipQuoteRefresh: true,
+        skipDailySnapshot: true,
+      });
+      if (summary.fxUnavailable || summary.fxStale) return false;
+      return this.persistDailySnapshot(userId, summary);
+    } catch (error) {
+      console.error('recordDailySnapshotForUser:', error);
+      return false;
+    }
+  }
+
+  private async persistDailySnapshot(userId: string, summary: PortfolioSummaryPayload): Promise<boolean> {
+    if (
+      summary.totalPurchaseValue == null ||
+      summary.totalCurrentValue == null ||
+      summary.totalPnL == null ||
+      summary.totalPnLPercent == null ||
+      summary.blueArsPerUsd == null ||
+      !(summary.blueArsPerUsd > 0)
+    ) {
+      return false;
+    }
+
     const supabase = createServiceClientSync();
     const snapshotDate = new Date().toISOString().split('T')[0];
 
@@ -885,7 +914,9 @@ class InvestmentsService {
 
     if (error) {
       console.error('recordDailySnapshot:', error);
+      return false;
     }
+    return true;
   }
 
   async getPortfolioSummary(
@@ -959,8 +990,10 @@ class InvestmentsService {
       investments,
     };
 
+    // Interactive reads pass skipDailySnapshot so a dashboard/investments load
+    // never waits on the upsert. The daily net-worth cron records it instead.
     if (!options?.skipDailySnapshot && !payload.fxUnavailable && !payload.fxStale) {
-      await this.recordDailySnapshot(userId, payload);
+      await this.persistDailySnapshot(userId, payload);
     }
 
     return payload;

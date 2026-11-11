@@ -9,9 +9,18 @@ vi.mock('@/lib/supabase/server', () => ({
   createClient: async () => ({ auth: { getUser: async () => ({ data: { user: mocks.user } }) }, from: mocks.normalFrom }),
   createServiceClientSync: mocks.serviceClient,
 }));
-vi.mock('@/lib/services/transactions', () => ({
-  transactionsService: { recomputeAccountBalanceFromLedger: mocks.recompute }, computeTransferAmounts: vi.fn(),
-}));
+vi.mock('@/lib/services/transactions', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/services/transactions')>();
+  return {
+    ...actual,
+    transactionsService: new Proxy(actual.transactionsService, {
+      get(target, prop, receiver) {
+        if (prop === 'recomputeAccountBalanceFromLedger') return mocks.recompute;
+        return Reflect.get(target, prop, receiver);
+      },
+    }),
+  };
+});
 import { DELETE as deleteOne } from '@/app/api/transactions/[id]/route';
 import { DELETE as deleteBulk } from '@/app/api/transactions/bulk/route';
 import { DELETE as deleteAll } from '@/app/api/transactions/route';

@@ -195,6 +195,22 @@ export async function computeTransferAmounts(
   return { amountInSource, amountInDestination, exchangeRate };
 }
 
+export interface UpdateTransactionInput {
+  accountId: string;
+  amount: number;
+  currency: string;
+  categoryId?: string | null;
+  description?: string | null;
+  notes?: string | null;
+  transactionDate?: string;
+  destinationAccountId?: string | null;
+  exchangeRateOverride?: number | null;
+  type?: string;
+}
+
+/** User-scoped client so DELETE audit records auth.uid(); service role if omitted. */
+export type TransactionMutationClient = Pick<ReturnType<typeof createServiceClientSync>, 'from'>;
+
 export interface CreateTransactionInput {
   /** Stable logical operation ID, retained by the caller across every retry. */
   requestId?: string;
@@ -597,8 +613,114 @@ class TransactionsService {
     return data as TransactionWithCategory;
   }
 
-  async delete(id: string, userId: string): Promise<void> {
+  async update(id: string, userId: string, input: UpdateTransactionInput): Promise<Transaction> {
     const supabase = createServiceClientSync();
+
+    const { data: existing, error: existingErr } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
+
+    if (existingErr && existingErr.code !== 'PGRST116') throw existingErr;
+    if (existingErr?.code === 'PGRST116' || !existing) {
+      throw new ApiError('Movimiento no encontrado', 404);
+    }
+
+    if (existing.type === 'adjustment') {
+      throw new ApiError('Los ajustes se registran mediante el formulario de saldo.');
+    }
+
+    if (input.type && input.type !== existing.type) {
+      throw new ApiError('No se puede cambiar el tipo de un movimiento. Borralo y creá uno nuevo.');
+    }
+
+    const { data: accRow, error: accErr } = await supabase
+      .from('accounts')
+      .select('currency, is_active')
+      .eq('id', input.accountId)
+      .eq('user_id', userId)
+      .single();
+
+    if (accErr && accErr.code !== 'PGRST116') throw accErr;
+    if (accErr?.code === 'PGRST116' || !accRow || accRow.is_active === false) {
+      throw new ApiError('Cuenta no encontrada');
+    }
+
+    let amountPatch: Record<string, unknown> = {};
+    const destinationId = input.destinationAccountId ?? existing.destination_account_id;
+    const financialChanged = input.amount !== Number(existing.amount) || input.currency !== existing.currency ||
+      input.accountId !== existing.account_id ||
+      (existing.type === 'transfer' && destinationId !== existing.destination_account_id) ||
+      input.exchangeRateOverride != null;
+    if (!financialChanged) {
+      // Corregir texto/categoría no aplica una cotización nueva al movimiento histórico.
+      amountPatch = {
+        amount_in_account_currency: existing.amount_in_account_currency,
+        destination_amount_in_account_currency: existing.destination_amount_in_account_currency ?? null,
+        exchange_rate: existing.exchange_rate,
+      };
+    }
+    if (financialChanged && (existing.type === 'expense' || existing.type === 'income')) {
+      const rec = await this.recomputeExpenseIncomeAmountFields(
+        input.amount,
+        input.currency,
+        accRow.currency
+      );
+      amountPatch = {
+        amount_in_account_currency: rec.amount_in_account_currency,
+        exchange_rate: rec.exchange_rate,
+      };
+    } else if (financialChanged && existing.type === 'transfer') {
+      if (!destinationId || destinationId === input.accountId) {
+        throw new ApiError('La cuenta destino debe ser distinta del origen.');
+      }
+      const { data: destination, error: destinationError } = await supabase
+        .from('accounts').select('currency, is_active').eq('id', destinationId).eq('user_id', userId).single();
+      if (destinationError && destinationError.code !== 'PGRST116') throw destinationError;
+      if (destinationError?.code === 'PGRST116' || !destination || destination.is_active === false) {
+        throw new ApiError('Cuenta destino no encontrada o archivada.');
+      }
+      const transfer = await computeTransferAmounts(
+        input.amount, input.currency, accRow.currency, destination.currency,
+        input.exchangeRateOverride == null ? undefined : Number(input.exchangeRateOverride)
+      );
+      amountPatch = {
+        destination_account_id: destinationId,
+        amount_in_account_currency: transfer.amountInSource,
+        destination_amount_in_account_currency: transfer.amountInDestination,
+        exchange_rate: transfer.exchangeRate === 1 ? null : transfer.exchangeRate,
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('transactions')
+      .update({
+        type: existing.type,
+        amount: input.amount,
+        currency: input.currency,
+        account_id: input.accountId,
+        category_id: input.categoryId || null,
+        description: input.description || null,
+        transaction_date: input.transactionDate,
+        notes: input.notes || null,
+        ...amountPatch,
+      })
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    // Primary-key + owner filters can match at most one row.
+    if (error?.code === 'PGRST116') throw new ApiError('Movimiento no encontrado', 404);
+    if (error) throw error;
+
+    return data as Transaction;
+  }
+
+  async delete(id: string, userId: string, client?: TransactionMutationClient): Promise<void> {
+    const supabase = client ?? createServiceClientSync();
 
     const { error } = await supabase
       .from('transactions')

@@ -589,14 +589,14 @@ isOneToOne: false
                   ]
                 },"transactions": {
                   Row: {
-                    "account_id": string | null,"amount": number,"amount_in_account_currency": number,"category_id": string | null,"created_at": string,"currency": string,"description": string | null,"destination_account_id": string | null,"destination_amount_in_account_currency": number | null,"exchange_rate": number | null,"id": string,"installment_group_id": string | null,"installment_number": number | null,"installment_total": number | null,"is_recurring": boolean | null,"location": Json | null,"notes": string | null,"receipt_url": string | null,"recurring_rule_id": string | null,"source": string,"tags": (string)[] | null,"transaction_date": string,"type": Database["public"]['Enums']["transaction_type"],"updated_at": string,"user_id": string
+                    "account_id": string,"amount": number,"amount_in_account_currency": number,"category_id": string | null,"created_at": string,"currency": string,"description": string | null,"destination_account_id": string | null,"destination_amount_in_account_currency": number | null,"exchange_rate": number | null,"id": string,"installment_group_id": string | null,"installment_number": number | null,"installment_total": number | null,"is_recurring": boolean | null,"location": Json | null,"notes": string | null,"receipt_url": string | null,"recurring_rule_id": string | null,"source": string,"tags": (string)[] | null,"transaction_date": string,"type": Database["public"]['Enums']["transaction_type"],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "account_id"?: string | null,"amount": number,"amount_in_account_currency": number,"category_id"?: string | null,"created_at"?: string,"currency": string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"source"?: string,"tags"?: (string)[] | null,"transaction_date"?: string,"type": Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id": string
+                    "account_id": string,"amount": number,"amount_in_account_currency": number,"category_id"?: string | null,"created_at"?: string,"currency": string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"source"?: string,"tags"?: (string)[] | null,"transaction_date"?: string,"type": Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "account_id"?: string | null,"amount"?: number,"amount_in_account_currency"?: number,"category_id"?: string | null,"created_at"?: string,"currency"?: string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"source"?: string,"tags"?: (string)[] | null,"transaction_date"?: string,"type"?: Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id"?: string
+                    "account_id"?: string,"amount"?: number,"amount_in_account_currency"?: number,"category_id"?: string | null,"created_at"?: string,"currency"?: string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"source"?: string,"tags"?: (string)[] | null,"transaction_date"?: string,"type"?: Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -629,6 +629,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "accounts"
       referencedColumns: ["id","user_id"]
+    },{
+      foreignKeyName: "transactions_recurring_rule_owner_fk"
+      columns: ["user_id","recurring_rule_id"]
+isOneToOne: false
+      referencedRelation: "recurring_rules"
+      referencedColumns: ["user_id","id"]
     },{
       foreignKeyName: "transactions_user_id_fkey"
       columns: ["user_id"]
@@ -674,7 +680,21 @@ isOneToOne: false
                   Update: {
                     "account_id"?: string | null,"amount"?: number | null,"amount_ambiguous"?: boolean,"card_name"?: string | null,"category_id"?: string | null,"claim_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"direction"?: string,"discarded_at"?: string | null,"fingerprint"?: string,"id"?: string,"idempotency_key"?: string | null,"ingest_key"?: string,"merchant"?: string | null,"occurred_at"?: string | null,"possible_duplicate_of"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"request_canonical"?: string,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"tool_payload"?: Json | null,"updated_at"?: string,"user_id"?: string
                   }
-                  Relationships: []
+                  Relationships: [
+                    {
+      foreignKeyName: "pending_inbox_items_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "pending_inbox_confirmed_transaction_fk"
+      columns: ["user_id","confirmed_transaction_id"]
+isOneToOne: false
+      referencedRelation: "transactions"
+      referencedColumns: ["user_id","id"]
+    }
+                  ]
                 },"personal_access_tokens": {
                   Row: {
                     "created_at": string,"expires_at": string | null,"hash_version": number,"id": string,"last_used_at": string | null,"name": string,"revoked_at": string | null,"scopes": string[],"token_hash": string,"token_prefix": string,"updated_at": string,"user_id": string
@@ -755,7 +775,7 @@ isOneToOne: false
                            },
 "analytics_top_expenses":
 { Args: { "p_end": string,"p_limit"?: number,"p_start": string,"p_user_id": string }; Returns: {
-              "account_id": string | null,
+              "account_id": string,
 "amount": number,
 "amount_in_account_currency": number,
 "category_id": string | null,

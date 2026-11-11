@@ -12,12 +12,34 @@ export function projectionWindow(now: Date = new Date()) {
   return { startYmd: addMonthsYmd(endExclusive, -3), endExclusive };
 }
 
+export interface FinancialProjectionEmpty {
+  hasData: false;
+  message: string;
+}
+
+export interface FinancialProjectionReady {
+  hasData: true;
+  avgIncome: number;
+  avgExpense: number;
+  avgSavings: number;
+  savingsRate: number;
+  currentBalance: number;
+  projection3m: number;
+  projection6m: number;
+  projection12m: number;
+  futureMonths: Array<{ month: string; projected: number }>;
+  monthsAnalyzed: number;
+  trend: 'positive' | 'negative';
+}
+
+export type FinancialProjection = FinancialProjectionEmpty | FinancialProjectionReady;
+
 /** Average observed complete calendar months; current and future months never contribute. */
 export function calculateFinancialProjection(
   transactions: ProjectionTransaction[],
   currentARS: number,
   now: Date = new Date()
-) {
+): FinancialProjection {
   const { startYmd, endExclusive } = projectionWindow(now);
   const monthlyData = new Map<string, { income: number; expense: number }>();
   for (const t of transactions) {
