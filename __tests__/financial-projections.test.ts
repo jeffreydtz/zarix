@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { calculateFinancialProjection, projectionWindow } from '@/lib/financial-projections';
+import {
+  calculateFinancialProjection,
+  projectionWindow,
+  type FinancialProjection,
+} from '@/lib/financial-projections';
 
 const now = new Date('2026-10-06T12:00:00Z');
 const tx = (type: string, amountArs: number, day: string) => ({ type, amountArs, transaction_date: `${day}T12:00:00.000Z` });
 
 describe('financial projection over completed calendar months', () => {
   it('excludes the partial current month and future entries from the average', () => {
-    const result = calculateFinancialProjection([
+    const result: FinancialProjection = calculateFinancialProjection([
       tx('income', 1200, '2026-08-10'), tx('expense', 600, '2026-08-12'),
       tx('income', 1800, '2026-09-10'), tx('expense', 900, '2026-09-12'),
       tx('expense', 50000, '2026-10-01'), tx('income', 100000, '2026-11-01'),
