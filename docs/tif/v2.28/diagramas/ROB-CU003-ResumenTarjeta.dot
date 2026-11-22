@@ -1,0 +1,19 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU003: A07 resumen proyectado de tarjeta"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b15 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP15 Resumen de tarjeta"];
+va [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nValidarAcceso"];
+pr [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nProyectarResumenTarjeta"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta (tarjeta)"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+er [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nResumenDeTarjeta\n(derivado)"];
+u -> b15 [label="abrir desde Dashboard\no ficha de cuenta"];
+b15 -> va [label="identidad"];
+b15 -> pr [dir=both,label="tarjeta elegida\n↔\nciclos por moneda /\nsin datos"];
+pr -> ec [label="tarjeta propia,\ncierre y\nvencimiento"];
+pr -> em [label="cargos, pagos\ny cuotas"];
+pr -> er [label="armar por ciclo\nsin guardar"];
+}

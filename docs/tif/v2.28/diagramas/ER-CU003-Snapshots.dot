@@ -1,0 +1,13 @@
+digraph G {
+graph [rankdir=LR,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ER: historial de patrimonio y referencias"; labelloc=t; fontsize=22;
+net_worth_snapshots [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>net_worth_snapshots</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">uuid user_id FK</TD></TR><TR><TD ALIGN="LEFT">date snapshot_date</TD></TR><TR><TD ALIGN="LEFT">numeric liquid_usd</TD></TR><TR><TD ALIGN="LEFT">numeric investments_usd</TD></TR><TR><TD ALIGN="LEFT">numeric total_usd</TD></TR><TR><TD ALIGN="LEFT">numeric total_ars_blue</TD></TR><TR><TD ALIGN="LEFT">numeric blue_ars_per_usd</TD></TR></TABLE>>];
+portfolio_performance_snapshots [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>portfolio_performance_snapshots</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">uuid user_id FK</TD></TR><TR><TD ALIGN="LEFT">date snapshot_date</TD></TR><TR><TD ALIGN="LEFT">numeric cost_basis_usd</TD></TR><TR><TD ALIGN="LEFT">numeric market_value_usd</TD></TR><TR><TD ALIGN="LEFT">numeric unrealized_pnl_usd</TD></TR><TR><TD ALIGN="LEFT">numeric roi_percent</TD></TR><TR><TD ALIGN="LEFT">numeric blue_ars_per_usd</TD></TR></TABLE>>];
+user_benchmark_settings [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>user_benchmark_settings</B></TD></TR><TR><TD ALIGN="LEFT">uuid user_id PK,FK</TD></TR><TR><TD ALIGN="LEFT">numeric plazo_fijo_tna NULL</TD></TR><TR><TD ALIGN="LEFT">text plazo_fijo_label NULL</TD></TR><TR><TD ALIGN="LEFT">numeric caucion_tna NULL</TD></TR><TR><TD ALIGN="LEFT">text caucion_label NULL</TD></TR><TR><TD ALIGN="LEFT">text fci_mm_ticker NULL</TD></TR></TABLE>>];
+users [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>users</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">contexto</TD></TR></TABLE>>];
+users -> net_worth_snapshots [dir=none,label="patrimonio diario\nusers 1\nnet_worth_snapshots 0..*"];
+users -> portfolio_performance_snapshots [dir=none,label="portafolio diario\nusers 1\nportfolio_performance_\nsnapshots 0..*"];
+users -> user_benchmark_settings [dir=none,label="referencias\nusers 1\nuser_benchmark_settings 0..1"];
+}

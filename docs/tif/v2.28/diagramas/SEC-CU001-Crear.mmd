@@ -1,0 +1,39 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P01 / POST /api/transactions (B)
+ participant C as TransactionsService (C)
+ participant Q as CotizacionesService (C)
+ participant D as Supabase (E)
+ participant T as update_account_balance
+ U->>B: Completar movimiento
+ B->>C: create(input: CreateTransactionInput)
+ C->>C: Validar tipo, monto (2 decimales),<br/>cuotas 1..36 y cuentas distintas
+ opt Con requestId
+  C->>D: transaction_requests (misma solicitud)
+  D-->>C: Respuesta previa / ninguna
+ end
+ C->>D: accounts propia y activa
+ alt Cuenta inexistente, ajena o archivada
+  C-->>B: Error sin INSERT
+ else Cuenta válida
+  opt Moneda distinta de la cuenta
+   C->>Q: getExchangeRate(from, to)
+   Q-->>C: Tasa ejecutable / FxUnavailableError
+  end
+  alt Cuotas mayores a 1
+   C->>D: rpc create_installment_transactions
+  else Movimiento único
+   C->>D: rpc create_transaction_once<br/>o INSERT en transactions
+  end
+  D->>T: AFTER INSERT
+  T->>D: Aplicar el efecto en el saldo
+  alt Commit
+   D-->>C: Transaction
+   C-->>B: Transaction
+   B-->>U: Movimiento y saldo
+  else Error de SQL
+   D-->>C: Rollback completo
+   C-->>B: Error
+  end
+ end

@@ -1,0 +1,32 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P16 (B)
+ participant C as CalcularRendimiento (C)
+ participant R as ObtenerReferencias (C)
+ participant I as INDEC (B)
+ participant D as Datos (E)
+ U->>B: Elegir período
+ B->>C: getRealReturnsReport(userId)
+ C->>D: getNetWorthHistory(userId, 3650)<br/>listPerformanceSnapshots(userId, 730)
+ D-->>C: Series / vacías
+ C->>R: Referencias del período
+ R->>I: Serie de inflación mensual
+ I-->>R: Meses publicados / falla
+ R->>D: Cotizaciones MEP y CCL
+ D-->>R: Serie por día
+ R-->>C: Valores con fuente y fecha
+ loop Mes, trimestre, año, desde el inicio
+  alt Sin registro anterior o igual al inicio,<br/>o patrimonio inicial cero
+   C->>C: Rendimiento no disponible
+  else Último registro ≤ inicio y último disponible
+   C->>C: Nominal (%) = 100 × (fin − inicio) / |inicio|
+   alt Hay meses de IPC utilizables en el intervalo
+    C->>C: Real (%) = 100 × ((1 + nominal/100) /<br/>(1 + inflación/100) − 1)
+   else Sin meses utilizables
+    C->>C: Inflación no disponible<br/>(nunca 0 %)
+   end
+  end
+ end
+ C-->>B: Informe por período
+ B-->>U: Valores o “—” con el motivo

@@ -1,0 +1,33 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.35",ranksep="0.55",splines=polyline];
+node [fontname="Arial",fontsize=15,shape=plain];
+edge [fontname="Arial",fontsize=14,color="#475569",arrowsize=0.8];
+label="Clases CU003: análisis, resumen de tarjeta y rendimiento real"; labelloc=t; fontsize=20;
+an [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«módulo» lib/financial-anomalies.ts</FONT><BR/><B>financial-anomalies</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+anomalyWindow(now?: Date): { todayYmd: string; currentMonthStartYmd: string;<BR/>      startYmd: string; endExclusiveYmd: string; startIso: string; endExclusiveIso: string }<BR/>+calculateFinancialAnomalies(transactions: AnomalyTransaction[], now?: Date): FinancialAnomaly[]</TD></TR></TABLE>>];
+pr [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«módulo» lib/financial-projections.ts</FONT><BR/><B>financial-projections</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+projectionWindow(now?: Date): { startYmd: string; endExclusive: string }<BR/>+calculateFinancialProjection(transactions: ProjectionTransaction[], currentARS: number, now?: Date): FinancialProjection</TD></TR></TABLE>>];
+fp [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«type»</FONT><BR/><B>FinancialProjection</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">FinancialProjectionEmpty | FinancialProjectionReady</TD></TR></TABLE>>];
+fpe [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>FinancialProjectionEmpty</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+hasData: false<BR/>+message: string</TD></TR></TABLE>>];
+fpr [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>FinancialProjectionReady</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+hasData: true<BR/>+avgIncome: number<BR/>+avgExpense: number<BR/>+avgSavings: number<BR/>+savingsRate: number<BR/>+currentBalance: number<BR/>+projection3m: number<BR/>+projection6m: number<BR/>+projection12m: number<BR/>+futureMonths: Array&lt;{ month: string; projected: number }&gt;<BR/>+monthsAnalyzed: number<BR/>+trend: 'positive' | 'negative'</TD></TR></TABLE>>];
+at [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>AnomalyTransaction</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+type: string<BR/>+amountArs: number<BR/>+transaction_date: string<BR/>+category_id: string | null<BR/>+category?: { name?: string | null; icon?: string | null } | null</TD></TR></TABLE>>];
+fa [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>FinancialAnomaly</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+categoryId: string<BR/>+categoryName: string<BR/>+categoryIcon: string<BR/>+currentAmount: number<BR/>+historicalAvg: number<BR/>+ratio: number | null<BR/>+extraAmount: number</TD></TR></TABLE>>];
+cst [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«módulo» lib/services/card-statement.ts</FONT><BR/><B>card-statement</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+transactionToCardCharge(tx: ChargeRow, cardId: string): CardCharge | null<BR/>+loadCreditCards(userId: string, accountId?: string): Promise&lt;Account[]&gt;<BR/>+loadCardCharges(userId: string, cardIds: string[], fromISO: string, toISO: string): Promise&lt;CardCharge[]&gt;<BR/>+getCardStatements(userId: string, options?: { accountId?: string; cycles?: number;<BR/>      todayISO?: string }): Promise&lt;CardStatementProjection[]&gt;<BR/>+getCardStatement(userId: string, accountId: string, options?: { cycles?: number;<BR/>      todayISO?: string }): Promise&lt;CardStatementProjection | null&gt;</TD></TR></TABLE>>];
+csp [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>CardStatementProjection</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+accountId: string<BR/>+name: string<BR/>+last4: string | null<BR/>+primaryCurrency: string<BR/>+secondaryCurrency: string | null<BR/>+isMulticurrency: boolean<BR/>+closingDay: number | null<BR/>+dueDay: number | null<BR/>+todayISO: string<BR/>+nextClosingISO: string | null<BR/>+nextDueISO: string | null<BR/>+nextStatementTotals: CurrencyTotals<BR/>+futureDebtTotals: CurrencyTotals<BR/>+cycles: StatementCycle[]<BR/>+pendingByMonth: PendingInstallmentMonth[]</TD></TR></TABLE>>];
+rr [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«módulo» lib/services/real-returns.ts</FONT><BR/><B>real-returns</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+getRealReturnsReport(userId: string): Promise&lt;RealReturnsReport&gt;</TD></TR></TABLE>>];
+rrr [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>RealReturnsReport</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+todayISO: string<BR/>+disclaimer: string<BR/>+inflationSource: { source: string; lastFecha: string | null }<BR/>+quotes: {<BR/>      mep: { rate: number | null; source: string | null; asOf: string | null };<BR/>      ccl: { rate: number | null; source: string | null; asOf: string | null } }<BR/>+periods: RealReturnsPeriodReport[]</TD></TR></TABLE>>];
+an -> at [style=dashed,arrowhead=vee,label="«use»"];
+an -> fa [style=dashed,arrowhead=vee,label="«create»"];
+cst -> csp [style=dashed,arrowhead=vee,label="«create»"];
+rr -> rrr [style=dashed,arrowhead=vee,label="«create»"];
+pr -> fp [style=dashed,arrowhead=vee,label="«create»"];
+fpe -> fp [style=dashed,arrowhead=onormal,arrowsize=1.2];
+fpr -> fp [style=dashed,arrowhead=onormal,arrowsize=1.2];
+{rank=same; an; pr;}
+{rank=same; at; fa; fp;}
+{rank=same; fpe; fpr;}
+{rank=same; cst; rr;}
+{rank=same; csp; rrr;}
+an -> at [style=invis];
+at -> fpe [style=invis];
+fpe -> cst [style=invis];
+cst -> csp [style=invis];
+}

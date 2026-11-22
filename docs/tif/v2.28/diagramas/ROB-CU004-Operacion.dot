@@ -1,0 +1,24 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU004: Básico/A01–A03: lote y venta"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+bo [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP09 Portafolio"];
+au [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nValidarAcceso"];
+gp [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nGestionarPortafolio"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta"];
+ea [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nActivo"];
+ep [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nPosición"];
+cp [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nCalcularCostoPosicion"];
+eo [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nVentaInversión"];
+u -> bo [label="básico / A01–A03"];
+bo -> au [label="identidad /\nPremium /\npropiedad"];
+bo -> gp [dir=both,label="consultar /\nregistrar lote /\nvender / manual\n↔\nresultado /\nprecio ausente /\nrollback"];
+gp -> ec [label="cuenta propia\nactiva"];
+gp -> ea [label="activo / moneda"];
+gp -> ep [label="lote / lock\nventa"];
+gp -> cp [label="costo lote /\nventa /\nresultado"];
+gp -> eo [label="venta atómica\ncon\ncantidad"];
+
+}

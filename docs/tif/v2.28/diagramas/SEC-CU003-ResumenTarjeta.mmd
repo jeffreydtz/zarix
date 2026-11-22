@@ -1,0 +1,27 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P15 (B)
+ participant C as ProyectarResumen (C)
+ participant D as Datos (E)
+ U->>B: Abrir resumen de tarjeta
+ B->>C: getCardStatement(userId,<br/>accountId)
+ C->>D: Cuenta propia, activa,<br/>de tipo tarjeta
+ alt Inexistente, ajena, inactiva<br/>o que no es tarjeta
+  D-->>C: Sin resultado
+  C-->>B: null
+  B-->>U: Sin datos para esta cuenta
+ else Tarjeta propia
+  D-->>C: Tarjeta (cierre y vencimiento opcionales)
+  C->>D: Cargos, pagos y cuotas<br/>del rango proyectado
+  D-->>C: Movimientos
+  opt Día de cierre configurado
+   loop Seis ciclos
+    C->>C: Asignar a ciclo según cierre<br/>(calendario argentino)
+    C->>C: Sumar por moneda sin convertir
+   end
+  end
+  Note over C: Sin cierre: sin ciclos ni próximo cierre.<br/>Sin día de vencimiento: vencimiento vacío
+  C-->>B: Próximo cierre, vencimiento,<br/>ciclos y cuotas futuras
+  B-->>U: Monto estimado por moneda
+ end

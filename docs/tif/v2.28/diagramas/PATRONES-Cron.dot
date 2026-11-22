@@ -1,0 +1,24 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.35",ranksep="0.55",splines=polyline];
+node [fontname="Arial",fontsize=15,shape=plain];
+edge [fontname="Arial",fontsize=14,color="#475569",arrowsize=0.8];
+label="Patrón: Template Method"; labelloc=t; fontsize=20;
+cj [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«abstract»</FONT><BR/><B>CronJob</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: string</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+run(request: NextRequest): Promise&lt;NextResponse&gt;<BR/>#execute(supabase: ServiceClient): Promise&lt;Record&lt;string, unknown&gt;&gt; {abstract}</TD></TR></TABLE>>];
+ij [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«abstract»</FONT><BR/><B>IterativeCronJob</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">#execute(supabase: ServiceClient): Promise&lt;Record&lt;string, unknown&gt;&gt;<BR/>#fetchItems(supabase: ServiceClient): Promise&lt;TItem[]&gt; {abstract}<BR/>#processItem(supabase: ServiceClient, item: TItem): Promise&lt;boolean | void&gt; {abstract}<BR/>#shouldProcess(_item: TItem): boolean | Promise&lt;boolean&gt;<BR/>#beforeAll(_supabase: ServiceClient, _items: TItem[]): Promise&lt;void&gt;<BR/>#afterAll(_supabase: ServiceClient, _items: TItem[]): Promise&lt;void&gt;<BR/>#emptyMessage(): string</TD></TR></TABLE>>];
+rj [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><B>RecurringRulesJob</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: "recurring"</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">#fetchItems(supabase: ServiceClient): Promise&lt;any[]&gt;<BR/>#shouldProcess(rule: any): boolean<BR/>#processItem(supabase: ServiceClient, rule: any): Promise&lt;boolean | void&gt;<BR/>#emptyMessage(): string</TD></TR></TABLE>>];
+nw [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><B>NetWorthSnapshotJob</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: "net-worth-snapshot"</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">#fetchItems(supabase: ServiceClient): Promise&lt;Array&lt;{ id: string }&gt;&gt;<BR/>#processItem(_supabase: ServiceClient, user: { id: string }): Promise&lt;boolean&gt;</TD></TR></TABLE>>];
+ivs [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><B>InvestmentsService</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+recordDailySnapshotForUser(userId: string): Promise&lt;boolean&gt;</TD></TR></TABLE>>];
+nwm [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«módulo» lib/services/net-worth.ts</FONT><BR/><B>net-worth</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+recordNetWorthSnapshot(userId: string): Promise&lt;boolean&gt;</TD></TR></TABLE>>];
+ij -> cj [arrowhead=onormal,arrowsize=1.2];
+rj -> ij [arrowhead=onormal,arrowsize=1.2];
+nw -> ij [arrowhead=onormal,arrowsize=1.2];
+nw -> nwm [style=dashed,arrowhead=vee,label="«use» processItem"];
+nw -> ivs [style=dashed,arrowhead=vee,label="«use» processItem"];
+{rank=same; cj;}
+{rank=same; ij;}
+{rank=same; rj; nw;}
+{rank=same; nwm; ivs;}
+cj -> ij [style=invis];
+ij -> rj [style=invis];
+rj -> nwm [style=invis];
+}

@@ -1,0 +1,31 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU003: A08 rendimiento real frente a inflación"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+pg [shape=plaintext,fontcolor="#243b53",label="Programador\nexterno"];
+b16 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP16 Rendimiento real"];
+bc [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nDisparador diario"];
+bi [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nFuente de inflación\n(INDEC)"];
+va [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nValidarAcceso"];
+rp [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nRegistrarPatrimonio"];
+cr [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nCalcularRendimientoReal"];
+orf [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nObtenerReferencias"];
+erp [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nRegistroDePatrimonio"];
+ecz [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCotización (MEP / CCL)"];
+erc [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nReferenciaDeComparación"];
+epf [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nPreferencias"];
+u -> b16 [label="elegir\nperíodo"];
+pg -> bc [label="una vez\npor día"];
+bc -> rp [label="registrar"];
+rp -> erp [label="patrimonio\ndel día"];
+b16 -> va [label="identidad"];
+b16 -> cr [dir=both,label="período\n↔\nnominal / real /\nno disponible"];
+cr -> erp [label="último registro ≤ inicio\ny último disponible"];
+cr -> orf [label="referencias\ndel período"];
+orf -> bi [dir=both,label="pedir serie\n↔\nmeses publicados"];
+orf -> ecz [label="serie diaria"];
+orf -> erc [label="valor, fuente\ny fecha"];
+cr -> epf [label="TNA y fondo\nelegidos"];
+}

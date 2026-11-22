@@ -1,0 +1,29 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="Dominio conceptual: cuentas, movimientos, resúmenes e ítems pendientes"; labelloc=t; fontsize=22;
+Usuario [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Usuario</B></TD></TR><TR><TD ALIGN="LEFT">nombre</TD></TR></TABLE>>];
+Cuenta [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Cuenta</B></TD></TR><TR><TD ALIGN="LEFT">nombre</TD></TR><TR><TD ALIGN="LEFT">tipo</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR><TR><TD ALIGN="LEFT">politicaSaldo</TD></TR></TABLE>>];
+SaldoMoneda [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>SaldoMoneda</B></TD></TR><TR><TD ALIGN="LEFT">moneda</TD></TR><TR><TD ALIGN="LEFT">valorFirmado</TD></TR><TR><TD ALIGN="LEFT">limite</TD></TR></TABLE>>];
+Movimiento [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Movimiento</B></TD></TR><TR><TD ALIGN="LEFT">tipo</TD></TR><TR><TD ALIGN="LEFT">fecha</TD></TR><TR><TD ALIGN="LEFT">descripcion</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR><TR><TD ALIGN="LEFT">origen</TD></TR></TABLE>>];
+EfectoMonetario [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>EfectoMonetario</B></TD></TR><TR><TD ALIGN="LEFT">moneda</TD></TR><TR><TD ALIGN="LEFT">importeFirmado</TD></TR></TABLE>>];
+Categoria [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Categoria</B></TD></TR><TR><TD ALIGN="LEFT">nombre</TD></TR><TR><TD ALIGN="LEFT">naturaleza</TD></TR></TABLE>>];
+Usuario -> Cuenta [dir=none,label="posee\nUsuario 1\nCuenta 0..*"];
+Usuario -> Categoria [dir=none,label="define\nUsuario 0..1\nCategoria 0..*"];
+Cuenta -> SaldoMoneda [dir=none,label="separa monedas\nCuenta 1\nSaldoMoneda 1..*"];
+Movimiento -> EfectoMonetario [dir=none,label="impacta\nMovimiento 1\nEfectoMonetario 1..2"];
+SaldoMoneda -> EfectoMonetario [dir=none,label="saldo afectado\nSaldoMoneda 1\nEfectoMonetario 0..*"];
+Categoria -> Movimiento [dir=none,label="clasifica\nCategoria 0..1\nMovimiento 0..*"];
+ItemPendiente [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>ÍtemPendiente</B></TD></TR><TR><TD ALIGN="LEFT">origen</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR><TR><TD ALIGN="LEFT">fechaPropuesta</TD></TR><TR><TD ALIGN="LEFT">importePropuesto</TD></TR><TR><TD ALIGN="LEFT">moneda</TD></TR></TABLE>>];
+BuzonDeIngreso [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>BuzónDeIngreso</B></TD></TR><TR><TD ALIGN="LEFT">direccionPersonal</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR></TABLE>>];
+ResumenImportado [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>ResumenImportado</B></TD></TR><TR><TD ALIGN="LEFT">nombreArchivo</TD></TR><TR><TD ALIGN="LEFT">fechaCarga</TD></TR></TABLE>>];
+ResumenDeTarjeta [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" STYLE="dashed"><TR><TD BGCOLOR="#f8fafc"><B>/ResumenDeTarjeta (derivado)</B></TD></TR><TR><TD ALIGN="LEFT">ciclo</TD></TR><TR><TD ALIGN="LEFT">fechaCierre</TD></TR><TR><TD ALIGN="LEFT">fechaVencimiento</TD></TR><TR><TD ALIGN="LEFT">totalPorMoneda</TD></TR><TR><TD ALIGN="LEFT">cuotasFuturas</TD></TR></TABLE>>];
+Usuario -> BuzonDeIngreso [dir=none,label="habilita\nUsuario 1\nBuzónDeIngreso 0..1"];
+BuzonDeIngreso -> ItemPendiente [dir=none,label="origina\nBuzónDeIngreso 0..1\nÍtemPendiente 0..*"];
+ResumenImportado -> ItemPendiente [dir=none,label="origina\nResumenImportado 0..1\nÍtemPendiente 0..*"];
+Usuario -> ResumenImportado [dir=none,label="carga\nUsuario 1\nResumenImportado 0..*"];
+ItemPendiente -> Movimiento [dir=none,label="se confirma como\nÍtemPendiente 0..1\nMovimiento 0..*"];
+Cuenta -> ResumenDeTarjeta [dir=none,label="tarjeta por ciclo\nCuenta 1\nResumenDeTarjeta 0..*"];
+ResumenDeTarjeta -> Movimiento [dir=none,label="agrupa cargos, pagos y cuotas\nResumenDeTarjeta 0..*\nMovimiento 0..*"];
+}

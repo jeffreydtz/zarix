@@ -1,0 +1,18 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P05 / POST /api/accounts (B)
+ participant C as AccountsService (C)
+ participant D as Supabase (E)
+ U->>B: Crear cuenta
+ B->>B: requireUser()
+ B->>C: create(input: CreateAccountInput)
+ C->>C: Validar nombre, moneda soportada,<br/>día de cierre y vencimiento 1..31<br/>y cuatro dígitos de tarjeta
+ alt Datos inválidos
+  C-->>B: ApiError
+ else Válidos
+  C->>D: rpc create_account_with_opening_balance
+  D-->>C: Account y saldo inicial / error
+  C-->>B: Account
+ end
+ B-->>U: Cuenta creada / motivo del error

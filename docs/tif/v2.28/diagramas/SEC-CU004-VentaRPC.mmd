@@ -1,0 +1,26 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P09 / POST /api/investments/[id]/sell (B)
+ participant C as InvestmentsService (C)
+ participant Q as CotizacionesService (C)
+ participant D as Supabase (E)
+ U->>B: Vender cantidad a un precio
+ B->>C: sell(input: SellPositionInput)
+ C->>D: investments propia
+ alt Cantidad mayor a la tenencia
+  C-->>B: Rechazo antes del RPC
+ else Cantidad válida
+  C->>Q: getDolarQuotes({ require: blue,<br/>executable: true })
+  Q-->>C: Blue ejecutable / FxUnavailableError
+  C->>D: rpc sell_investment_once<br/>(envuelve sell_investment_position)
+  alt CANTIDAD_INSUFICIENTE o Z0002
+   D-->>C: Rollback completo
+   C-->>B: Error sin cambio parcial
+  else Commit
+   D-->>C: Venta y cantidad restante
+   C-->>B: SellPositionResult
+  end
+ end
+ B-->>U: Resultado
+ Note over D: La venta no acredita efectivo<br/>en ninguna cuenta

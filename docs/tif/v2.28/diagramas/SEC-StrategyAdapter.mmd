@@ -1,0 +1,32 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ participant D as Dashboard
+ participant C as CotizacionesService
+ participant S as DolarRateProvider
+ participant H as API externa
+ participant B as exchange_rates
+ D->>C: getDolarQuotes({ preferCache: true,<br/>require: blue })
+ alt Caché en memoria vigente con los tipos pedidos
+  C-->>D: DolarQuotes desde caché
+ else Sin caché suficiente
+  opt preferCache y no executable
+   C->>S: DbCacheProvider.fetch()
+   S->>B: Última cotización por tipo
+   B-->>S: Filas guardadas
+   S-->>C: DolarRates
+   Note over C: Si están todos los tipos pedidos,<br/>devuelve DolarQuotes y termina
+  end
+  loop CriptoYaProvider, DolarApiProvider, DbCacheProvider
+   C->>S: fetch()
+   S->>H: fetchFxJson(url, options, pair)
+   H-->>S: JSON propio / error
+   S->>S: Adaptar a DolarQuote<br/>(buy, sell, timestamp)
+   S-->>C: DolarRates / falla registrada
+   C->>C: Por tipo, conservar la cotización más<br/>reciente. Si empatan, gana el orden<br/>CriptoYa, DolarApi, DB
+  end
+  C->>B: saveLatestDolarQuotes(cotizaciones en vivo)
+  opt Ninguna cotización válida
+   C->>C: Usar la última guardada marcada stale
+  end
+  C-->>D: DolarQuotes con status y faltantes
+ end

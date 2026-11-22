@@ -1,0 +1,25 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.35",ranksep="0.55",splines=polyline];
+node [fontname="Arial",fontsize=15,shape=plain];
+edge [fontname="Arial",fontsize=14,color="#475569",arrowsize=0.8];
+label="Clases CU001: reglas y presupuestos"; labelloc=t; fontsize=20;
+rs [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><B>RecurringService</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+listActive(userId: string): Promise&lt;RecurringRuleWithRelations[]&gt;<BR/>+create(input: CreateRecurringInput): Promise&lt;RecurringRule&gt;</TD></TR></TABLE>>];
+cri [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>CreateRecurringInput</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+userId: string<BR/>+accountId: string<BR/>+type: TransactionType<BR/>+amount: number<BR/>+currency: string<BR/>+categoryId?: string | null<BR/>+description: string<BR/>+frequency: RecurrenceFrequency<BR/>+startDate: string<BR/>+endDate?: string | null</TD></TR></TABLE>>];
+rr [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>RecurringRule</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+id: string<BR/>+user_id: string<BR/>+account_id: string<BR/>+type: TransactionType<BR/>+amount: number<BR/>+currency: string<BR/>+category_id: string | null<BR/>+description: string<BR/>+frequency: RecurrenceFrequency<BR/>+start_date: string<BR/>+end_date: string | null<BR/>+last_executed_date: string | null<BR/>+is_subscription: boolean<BR/>+subscription_name: string | null<BR/>+subscription_plan: string | null<BR/>+notification_enabled: boolean<BR/>+is_active: boolean<BR/>+created_at: string</TD></TR></TABLE>>];
+rj [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><B>RecurringRulesJob</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: "recurring"</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">#fetchItems(supabase: ServiceClient): Promise&lt;any[]&gt;<BR/>#shouldProcess(rule: any): boolean<BR/>#processItem(supabase: ServiceClient, rule: any): Promise&lt;boolean | void&gt;<BR/>#emptyMessage(): string</TD></TR></TABLE>>];
+bs [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><B>BudgetsService</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+create(input: CreateBudgetInput): Promise&lt;Budget&gt;<BR/>+list(userId: string, month?: string): Promise&lt;Budget[]&gt;<BR/>+getStatus(userId: string, month: Date | string): Promise&lt;BudgetStatus[]&gt;<BR/>+checkAndSendAlerts(userId: string, categoryId: string | null, month: string): Promise&lt;void&gt;<BR/>+update(id: string, userId: string, updates: Record&lt;string, any&gt;): Promise&lt;Budget&gt;<BR/>+delete(id: string, userId: string): Promise&lt;void&gt;<BR/>+checkAllBudgetsForUser(userId: string): Promise&lt;void&gt;</TD></TR></TABLE>>];
+bu [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>Budget</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+id: string<BR/>+user_id: string<BR/>+category_id: string | null<BR/>+month: string<BR/>+amount: number<BR/>+currency: string<BR/>+rollover_enabled: boolean<BR/>+rollover_amount: number<BR/>+alert_at_percent: number<BR/>+created_at: string</TD></TR></TABLE>>];
+bst [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>BudgetStatus</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+category_id: string<BR/>+category_name: string<BR/>+budget_amount: number<BR/>+spent_amount: number<BR/>+remaining_amount: number<BR/>+percent_used: number</TD></TR></TABLE>>];
+rs -> cri [style=dashed,arrowhead=vee,label="«use»"];
+rs -> rr [style=dashed,arrowhead=vee,label="«create»"];
+rj -> rr [style=dashed,arrowhead=vee,label="«use» reglas activas"];
+bs -> bu [style=dashed,arrowhead=vee,label="«create»"];
+bs -> bst [style=dashed,arrowhead=vee,label="«create» get_budget_status"];
+{rank=same; rs; rj;}
+{rank=same; cri; rr;}
+{rank=same; bs;}
+{rank=same; bu; bst;}
+rs -> cri [style=invis];
+cri -> bs [style=invis];
+bs -> bu [style=invis];
+}
