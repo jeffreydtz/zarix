@@ -1,6 +1,6 @@
 # Fuentes de diagramas — tesis v2.28
 
-Las figuras impresas del documento vigente (`ZARIX-Plan-de-Desarrollo-Tecnologico-v2.28`) mandan sobre cualquier fuente anterior. Esta carpeta reúne las fuentes editables (`.dot`, `.mmd` y el generador de prototipos) que reproducen esas figuras, más los SVG/PNG regenerados desde ellas.
+Las figuras impresas del documento vigente (`ZARIX-Plan-de-Desarrollo-Tecnologico-v2.28`) mandan sobre cualquier fuente anterior, salvo las Figuras 14, 40 y 48, que se alinearon después con el código de `c830f85` (apartado 3). Esta carpeta reúne las fuentes editables (`.dot`, `.mmd` y el generador de prototipos) y los SVG/PNG regenerados desde ellas.
 
 `docs/tif/v2.13/diagramas/` y `docs/tif/v2.13/figures/` se conservan como snapshot histórico. No se modificaron: las discrepancias respecto de lo impreso se resolvieron aquí, no in situ.
 
@@ -89,7 +89,7 @@ Origen de cada fuente:
 | 5–7 | `prototipos-pt15-pt17.py`, `figures/PT15.png`–`PT17.png` | No estaban en `prototipos.py` (solo PT01–PT12) |
 | 9 | `DOM-Finanzas.dot` | `v2.13` no dibuja bandeja, buzón, resumen importado ni resumen de tarjeta |
 | 11 | `DOM-Inversiones.dot` | `v2.13` no dibuja patrimonio, referencias ni rendimiento real |
-| 14 | `ER-CU001-Movimientos.dot` | Fuente alineada al raster impreso (sigue sin `NOT NULL` ni `source`; ver apartado 3) |
+| 14 | `ER-CU001-Movimientos.dot` | Alineada a `c830f85`: `account_id FK NOT NULL`, origen `accounts 1`, columna `source` con su check |
 | 15–18 | `ER-CU002-Cuentas.dot`, `ER-CU002-Usuario.dot`, `ER-CU004-Inversiones.dot`, `ER-CU001-Grupos.dot` | Columnas, nulos y asociaciones del impreso (p. ej. Fig. 18: `text`, `user_id FK NULL`, arista «cuenta vinculada») |
 | 19 | `ER-CU001-Bandeja.dot` | No existía en el repositorio |
 | 20 | `ER-CU003-Snapshots.dot` | `v2.13` omitía `user_benchmark_settings` y `roi_percent` |
@@ -98,13 +98,13 @@ Origen de cada fuente:
 | 30–35 | `SEC-CU001-Crear.mmd`, `SEC-CU001-EditarEliminar.mmd`, `SEC-CU003-Dashboard.mmd`, `SEC-CU004-Compra.mmd`, `SEC-CU004-VentaRPC.mmd`, `SEC-CU002-CuentasAlta.mmd` | Participantes y mensajes del impreso (nombres reales de ruta/servicio/RPC) |
 | 36–38 | `SEC-CU001-IngresarResumen.mmd`, `SEC-CU003-ResumenTarjeta.mmd`, `SEC-CU003-RendimientoReal.mmd` | No existían en el repositorio |
 | 39 | `CLASES-CU001-Movimientos.dot` | Reconstruida: 11 operaciones de `TransactionsService` y DTO del impreso |
-| 40 | `CLASES-CU001-Automatizacion.dot` | Completa: `RecurringRule`, `RecurringRulesJob`, `Budget`, `BudgetStatus` y 7 operaciones de `BudgetsService` |
+| 40 | `CLASES-CU001-Automatizacion.dot` | Completa más `CreateBudgetInput` (atributos de `lib/services/budgets.ts`) y «use» desde `BudgetsService.create` |
 | 41 | `CLASES-CU001-Compartidos.dot` | Reconstruida: 8 operaciones de `SharedExpensesService` y tipos del impreso |
 | 42 | `CLASES-CU002-Cuentas.dot` | Reconstruida: 18 operaciones de `AccountsService` |
 | 43 | `CLASES-CU003-Analisis.dot` | Completa: módulos de anomalías, proyección, tarjeta y rendimiento real |
 | 44 | `CLASES-CU004-Inversiones.dot` | Reconstruida: 10 operaciones de `InvestmentsService` |
 | 47 | `PATRONES-Cotizaciones.dot` | Firmas, estereotipos y «API HTTP externa» del impreso |
-| 48 | `PATRONES-Cron.dot` | Incorpora `NetWorthSnapshotJob` e `IterativeCronJob.emptyMessage` tal como están impresos (el job no muestra `emptyMessage`; ver apartado 3) |
+| 48 | `PATRONES-Cron.dot` | `NetWorthSnapshotJob` con `fetchItems`, `processItem` y `emptyMessage`, como en `app/api/cron/net-worth-snapshot/route.ts` |
 | 49–50 | `SEC-StrategyAdapter.mmd`, `SEC-TemplateMethod.mmd` | Secuencias de patrones alineadas al impreso |
 
 ## 2. Figuras que ya coincidían (no se tocaron)
@@ -128,13 +128,12 @@ Vistas **solo de anexo digital** (Anexo E) que no están impresas en el cuerpo: 
 
 La integración PAT/MCP/REST citada por el Anexo E para componentes sigue en `docs/tif/diagrams/fig14_integraciones.puml`.
 
-## 3. Diferencias figura impresa ↔ código (`c830f85`)
+## 3. Alineación posterior con el código (`c830f85`)
 
-No se «corrigieron» las fuentes para acercarlas al código: la figura impresa es la autoridad. Quedan registradas para trazabilidad.
+Las Figuras 14, 40 y 48 se actualizaron para coincidir con `c830f85`. Los PNG de esas tres se regeneraron a ~300 dpi.
 
-1. **Figura 14 / `transactions`.** El dibujo muestra `uuid account_id FK` (sin `NOT NULL`) y multiplicidad de origen `accounts 0..1`. En `c830f85` la columna es `NOT NULL` (`supabase/migrations/20261111154733_transactions_account_id_not_null.sql`, concatenado en `supabase/schema.sql` hacia la línea 6950). El dibujo tampoco incluye la columna `source`; el código la declara con check `web \| telegram \| wallet \| api \| mcp \| email \| statement` (`supabase/schema.sql` hacia la línea 6672).
-2. **Figura 48 / `NetWorthSnapshotJob`.** El dibujo muestra el atributo `name` y dos operaciones protegidas (`fetchItems`, `processItem`). En `app/api/cron/net-worth-snapshot/route.ts` la clase también redefine `emptyMessage()` (línea 31). `RecurringRulesJob` en la misma figura sí muestra `emptyMessage`.
-3. **Figura 40 / `BudgetsService.create`.** El parámetro es `CreateBudgetInput`, pero el dibujo no incluye una caja para esa interfaz (el código sí la exporta en `lib/services/budgets.ts`).
-4. **Figuras 39 y 42 / retornos inferidos.** `TransactionsService.getMonthSummary` y `AccountsService.getTotalBalance` / `getTotalBalanceWithInvestments` se imprimen sin tipo de retorno; en el código tampoco tienen anotación explícita, así que coinciden con el dibujo. No es una discrepancia; se anota para no confundirla con una omisión.
+1. **Figura 14 / `transactions`.** `uuid account_id FK NOT NULL` y origen `accounts 1`. Columna `text source NOT NULL (web|telegram|wallet|api|mcp|email|statement)` (`supabase/schema.sql` hacia 6672 y 6950; migración `20261111154733_transactions_account_id_not_null.sql`).
+2. **Figura 40 / `CreateBudgetInput`.** Caja «interface» con `userId`, `categoryId`, `month`, `amount`, `currency`, `rolloverEnabled?`, `alertAtPercent?` y arista «use» desde `BudgetsService` (`lib/services/budgets.ts:7-15`).
+3. **Figura 48 / `NetWorthSnapshotJob`.** Tercera operación protegida `#emptyMessage(): string` (`app/api/cron/net-worth-snapshot/route.ts:31`).
 
-Las demás cajas de las Figuras 39 a 44, 47 y 48 (operaciones públicas de servicios, atributos de interfaces, `emptyMessage` de `IterativeCronJob` y de `RecurringRulesJob`) coinciden con las firmas de `c830f85` en lo que el raster llega a mostrar.
+Queda como coincidencia, no como hueco: `TransactionsService.getMonthSummary` y `AccountsService.getTotalBalance` / `getTotalBalanceWithInvestments` se dibujan sin tipo de retorno porque el código tampoco anota uno.
