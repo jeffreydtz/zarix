@@ -1,0 +1,25 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.35",ranksep="0.55",splines=polyline];
+node [fontname="Arial",fontsize=15,shape=plain];
+edge [fontname="Arial",fontsize=14,color="#475569",arrowsize=0.8];
+label="Patrones: Strategy y Adapter"; labelloc=t; fontsize=20;
+cs [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«Context»</FONT><BR/><B>CotizacionesService</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">-dolarProviders: DolarRateProvider[]</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+getDolarQuotes(opts?: {…}): Promise&lt;DolarQuotes&gt;</TD></TR></TABLE>>];
+dp [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface» «Strategy»</FONT><BR/><B>DolarRateProvider</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: string<BR/>+fetch(): Promise&lt;DolarRates&gt;</TD></TR></TABLE>>];
+cy [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«ConcreteStrategy / Adapter»</FONT><BR/><B>CriptoYaProvider</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: "criptoya"<BR/>-baseURL: string</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+fetch(): Promise&lt;Record&lt;string, DolarQuote&gt;&gt;</TD></TR></TABLE>>];
+da [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«ConcreteStrategy / Adapter»</FONT><BR/><B>DolarApiProvider</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: "dolarapi"<BR/>-baseURL: string</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+fetch(): Promise&lt;Record&lt;string, DolarQuote&gt;&gt;</TD></TR></TABLE>>];
+db [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><FONT POINT-SIZE="14">«ConcreteStrategy»</FONT><BR/><B>DbCacheProvider</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: "db"</TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+fetch(): Promise&lt;DolarRates&gt;</TD></TR></TABLE>>];
+ext [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#fff7ed"><FONT POINT-SIZE="14">«Adaptee»</FONT><BR/><B>API HTTP externa</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">https://criptoya.com/api/dolar<BR/>https://dolarapi.com/v1/dolares<BR/>leída con fetchFxJson(url, options, pair)</TD></TR></TABLE>>];
+cs -> dp [dir=both,arrowtail=diamond,arrowhead=none,label="dolarProviders",taillabel="1",headlabel="3 (en orden)",labelfontsize=15];
+cy -> dp [style=dashed,arrowhead=onormal,arrowsize=1.2];
+da -> dp [style=dashed,arrowhead=onormal,arrowsize=1.2];
+db -> dp [style=dashed,arrowhead=onormal,arrowsize=1.2];
+cy -> ext [style=dashed,arrowhead=vee,label="«adapta»"];
+da -> ext [style=dashed,arrowhead=vee,label="«adapta»"];
+{rank=same; cs;}
+{rank=same; dp;}
+{rank=same; cy; da; db;}
+{rank=same; ext;}
+cs -> dp [style=invis];
+dp -> cy [style=invis];
+cy -> ext [style=invis];
+}

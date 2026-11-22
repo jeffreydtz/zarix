@@ -1,0 +1,25 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: Básico, A01/A08/A10/A11"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b1 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP01 Formulario"];
+b12 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP12 Cuotas / Cola local"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nValidarAcceso"];
+m [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nGestionarMovimiento"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / SaldoMoneda"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+cat [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCategoría"];
+u -> b1 [label="básico / A01 /\nA08"];
+u -> b12 [label="A10 cuotas / A11\ncola\npendiente"];
+b1 -> v [label="identidad"];
+b12 -> v [label="identidad\nvigente"];
+b12 -> m [dir=both,label="confirmar /\nsincronizar\n↔\nresultado o\nerror"];
+
+b1 -> m [dir=both,label="confirmar /\ncorregir /\nanular\n↔\nresultado /\nerror"];
+m -> ec [label="propia /\nsaldo"];
+m -> em [label="SQL\natómico"];
+m -> cat [label="propia o de\nsistema"];
+
+}

@@ -1,0 +1,37 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P17 / API de carga (B)
+ participant C as IngresarResumen (C)
+ participant X as Extracción (B)
+ participant K as Conciliar (C)
+ participant D as Datos (E)
+ U->>B: Subir PDF/CSV y cuenta
+ alt Sin archivo, cuenta ajena<br/>o archivo mayor a 4 MB
+  B-->>U: Rechazo 400 / 413 con motivo
+ else Archivo aceptado
+  B->>C: ingestStatementFile({userId, bytes,<br/>filename, mimeType, accountId})
+  alt CSV con columnas reconocibles
+   C->>C: Leer fecha, comercio<br/>e importe por fila
+  else PDF o texto/CSV no reconocido
+   C->>X: Contenido envuelto
+   X-->>C: Movimientos propuestos / falla
+  end
+  alt PDF con más de 20 páginas<br/>o extracción sin configurar
+   C-->>B: Rechazo 413 / 400
+   B-->>U: Motivo del rechazo
+  else Sin movimientos
+   C-->>B: No se encontraron movimientos
+   B-->>U: Aviso
+  else Hay movimientos (hasta 80)
+   C->>K: Propuestas
+   K->>D: Hasta 500 movimientos y cuotas<br/>desde hace 120 días
+   D-->>K: Coincidencias
+   K-->>C: Posibles duplicados /<br/>cuotas existentes
+   C->>D: parkRegistryWrite(...) con<br/>statementMovementIngestKey
+   D-->>C: Nuevos / ya estacionados
+   C-->>B: {parked, duplicates, installments}
+   B-->>U: Resultado y enlace a P13
+  end
+ end
+ Note over C,D: Ningún ítem llega al libro<br/>sin confirmación en P13

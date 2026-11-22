@@ -1,0 +1,28 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P07 dashboard/page.tsx (B)
+ participant Q as CotizacionesService (C)
+ participant A as AccountsService (C)
+ participant I as InvestmentsService (C)
+ participant S as Otros servicios (C)
+ U->>B: Abrir Dashboard
+ B->>Q: getDolarQuotes({ preferCache: true, require: blue })<br/>con espera máxima de 1,5 s
+ Q-->>B: Caché de cotizaciones precalentada
+ par Promise.all
+  B->>A: list(userId, { allowPartialValuation: true })
+  A-->>B: AccountWithBalance[]
+ and
+  B->>I: getPortfolioSummary(userId,<br/>{ skipQuoteRefresh, skipDailySnapshot })
+  I-->>B: PortfolioSummaryPayload
+ and
+  B->>Q: getAllQuotes()
+  Q-->>B: Cotizaciones con fuente y fecha
+ and
+  B->>S: transactionsService.list, getCardStatements,<br/>getNetWorthHistory, getMonthFlow,<br/>getRealReturnsReport, getTopBudgets
+  S-->>B: Resultados o sección no disponible
+ end
+ B->>A: aggregateAccountTotals(accounts)
+ A-->>B: Disponible, deuda de tarjeta,<br/>inversiones y patrimonio líquido
+ B-->>U: Paneles con totales, fuentes y fechas
+ Note over B,S: Una sección secundaria que falla se muestra<br/>como no disponible sin ocultar el resto. La carga no escribe<br/>el registro diario del portafolio: lo hace NetWorthSnapshotJob

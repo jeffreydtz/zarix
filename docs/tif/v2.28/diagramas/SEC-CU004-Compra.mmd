@@ -1,0 +1,27 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P09 / POST /api/investments (B)
+ participant C as InvestmentsService (C)
+ participant D as Supabase (E)
+ U->>B: Registrar compra
+ B->>C: create(input: CreateInvestmentInput)
+ C->>C: Validar cantidad, precio de compra<br/>y precio manual mayores a cero
+ alt Datos inválidos
+  C-->>B: Error sin INSERT
+ else Válidos
+  opt Con requestId
+   C->>D: investment_create_requests
+   D-->>C: Respuesta previa / ninguna
+  end
+  C->>D: rpc create_investment_once
+  alt Cuenta ajena o solicitud reutilizada
+   D-->>C: Error (Z0001 → 409)
+   C-->>B: Rechazo
+  else Commit
+   D-->>C: Investment
+   C-->>B: Investment
+   B-->>U: Lote registrado
+  end
+ end
+ Note over C: Cada compra es un lote nuevo con su<br/>precio y no se promedia sobre otro lote

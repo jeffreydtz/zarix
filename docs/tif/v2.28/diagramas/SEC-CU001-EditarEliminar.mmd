@@ -1,0 +1,40 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P01 / PATCH y DELETE /api/transactions/[id] (B)
+ participant C as TransactionsService (C)
+ participant D as Supabase (E)
+ participant T as Triggers de transactions
+ U->>B: Editar o eliminar un movimiento propio
+ B->>B: requireUser(): user y cliente de la sesión
+ alt Sin sesión
+  B-->>U: 401
+ else PATCH
+  B->>B: Validar cuenta, moneda (ARS, USD, EUR)<br/>y monto con dos decimales
+  B->>C: update(id, user.id, UpdateTransactionInput)
+  C->>D: transactions y accounts propios
+  D-->>C: Movimiento y cuenta / sin filas
+  alt No existe, es un ajuste o cambia el tipo
+   C-->>B: ApiError 404 / 400
+  else Cambia el importe de un gasto o ingreso
+   C->>C: recomputeExpenseIncomeAmountFields(amount,<br/>currency, accountCurrency)
+  else Cambia el importe de una transferencia
+   C->>C: computeTransferAmounts(amount, currency,<br/>origen, destino, override)
+  else Sólo texto o categoría
+   C->>C: Conservar importes y tasa históricos
+  end
+  C->>D: UPDATE transactions<br/>WHERE id y user_id
+  D->>T: OLD y NEW
+  T->>D: Revertir OLD y aplicar NEW
+  D-->>C: Fila actualizada / error
+  C-->>B: Transaction
+  B-->>U: 200 con el movimiento / error
+ else DELETE
+  B->>C: delete(id, user.id, cliente de la sesión)
+  C->>D: DELETE transactions<br/>WHERE id y user_id
+  D->>T: OLD
+  T->>D: Revertir el efecto y guardar<br/>transaction_deletion_audit con auth.uid()
+  D-->>C: Sin error / error
+  C-->>B: void
+  B-->>U: 204 / error
+ end

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "PT15",
+    "title": "Resumen de tarjeta",
+    "coverage": "CU-003 A07 · RF20 · desde el Dashboard o la ficha de la cuenta",
+    "path": "figures/PT15.png",
+    "width": 1300,
+    "height": 1477,
+    "kind": "Prototipo documental, diseño con datos sintéticos"
+  },
+  {
+    "id": "PT16",
+    "title": "Rendimiento real: patrimonio líquido e inversiones",
+    "coverage": "CU-003 A08 · RF21 · Dashboard e Inversiones",
+    "path": "figures/PT16.png",
+    "width": 1300,
+    "height": 1827,
+    "kind": "Prototipo documental, diseño con datos sintéticos"
+  },
+  {
+    "id": "PT17",
+    "title": "Carga de resúmenes y buzón de correo",
+    "coverage": "CU-001 A14 · RF22 · desde Integraciones",
+    "path": "figures/PT17.png",
+    "width": 1300,
+    "height": 1555,
+    "kind": "Prototipo documental, diseño con datos sintéticos"
+  }
+]

@@ -1,0 +1,28 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 30, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ participant R as Ruta /api/cron/recurring
+ participant B as CronJob
+ participant I as IterativeCronJob
+ participant J as RecurringRulesJob
+ R->>J: new RecurringRulesJob().run(request)
+ J->>B: run(request) heredado
+ B->>B: verifyCronBearer y<br/>createServiceClientSync()
+ alt Bearer inválido
+  B-->>R: 401
+ else Autorizado
+  B->>I: execute(supabase)
+  I->>J: fetchItems(supabase)
+  J-->>I: Reglas activas
+  loop Cada regla
+   I->>J: shouldProcess(rule)
+   opt Corresponde hoy
+    I->>J: processItem(supabase, rule)
+    J-->>I: Resultado / error del ítem
+   end
+  end
+  I-->>B: Contadores processed / errors
+  opt Hubo errores
+   B->>B: alertAdmin(...)
+  end
+  B-->>R: JSON success / 500
+ end

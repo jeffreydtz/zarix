@@ -1,0 +1,18 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU002: Básico, A01/A02/A03: cuentas"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b1 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP05 Cuentas"];
+au [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nValidarAcceso"];
+ac [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAdministrarCuenta"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / SaldoMoneda"];
+eh [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento / Posición /\nReglaRecurrente"];
+u -> b1 [label="básico / A01–A03"];
+b1 -> au [label="validar sesión"];
+b1 -> ac [dir=both,label="crear / editar /\narchivar /\nrestaurar\n↔\ncuenta / error /\nlímite Free"];
+ac -> ec [label="apertura /\najuste /\nsaldos por\nmoneda"];
+ac -> eh [label="historia /\nmoneda\nbloqueada"];
+
+}

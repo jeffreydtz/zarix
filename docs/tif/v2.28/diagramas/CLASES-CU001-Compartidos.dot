@@ -1,0 +1,35 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.35",ranksep="0.55",splines=polyline];
+node [fontname="Arial",fontsize=15,shape=plain];
+edge [fontname="Arial",fontsize=14,color="#475569",arrowsize=0.8];
+label="Clases CU001: gasto compartido"; labelloc=t; fontsize=20;
+ss [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#eef2f6"><B>SharedExpensesService</B></TD></TR><HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT">+createGroup(input: CreateSharedGroupInput): Promise&lt;SharedGroup&gt;<BR/>+listGroupsForOwner(userId: string): Promise&lt;Array&lt;SharedGroup &amp; {…}&gt;&gt;<BR/>+deleteGroup(groupId: string,<BR/>      userId: string): Promise&lt;void&gt;<BR/>+getGroupByToken(token: string): Promise&lt;SharedGroupDetail | null&gt;<BR/>+addMemberByToken(token: string,<BR/>      input: {…}): Promise&lt;SharedGroupMember | null&gt;<BR/>+addExpenseByToken(token: string,<BR/>      input: {…}): Promise&lt;SharedExpense | null&gt;<BR/>+updateExpenseByToken(token: string,<BR/>      expenseId: string,<BR/>      input: {…}): Promise&lt;SharedExpense | null&gt;<BR/>+deleteExpenseByToken(token: string,<BR/>      expenseId: string,<BR/>      actorMemberId: string): Promise&lt;boolean&gt;</TD></TR></TABLE>>];
+cgi [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>CreateSharedGroupInput</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+ownerUserId: string<BR/>+name: string<BR/>+currency: string<BR/>+members: Array&lt;{…}&gt;</TD></TR></TABLE>>];
+sg [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>SharedGroup</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+id: string<BR/>+owner_user_id: string<BR/>+name: string<BR/>+currency: string<BR/>+share_token: string<BR/>+is_active: boolean<BR/>+created_at: string</TD></TR></TABLE>>];
+sm [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>SharedGroupMember</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+id: string<BR/>+group_id: string<BR/>+user_id?: string | null<BR/>+display_name: string<BR/>+email?: string | null<BR/>+phone?: string | null</TD></TR></TABLE>>];
+se [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>SharedExpense</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+id: string<BR/>+group_id: string<BR/>+paid_by_member_id: string<BR/>+description: string<BR/>+amount: number<BR/>+expense_date: string<BR/>+created_at: string<BR/>+splits: SharedExpenseSplit[]</TD></TR></TABLE>>];
+ses [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>SharedExpenseSplit</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+member_id: string<BR/>+amount: number</TD></TR></TABLE>>];
+sd [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>SharedGroupDetail</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+group: Pick&lt;SharedGroup, 'id' | 'name' | 'currency' | 'created_at'&gt;<BR/>+members: SharedGroupMember[]<BR/>+expenses: SharedExpense[]<BR/>+totalSpent: number<BR/>+balances: MemberBalance[]<BR/>+settlements: Settlement[]</TD></TR></TABLE>>];
+mb [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>MemberBalance</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+member_id: string<BR/>+display_name: string<BR/>+paid: number<BR/>+owed: number<BR/>+net: number</TD></TR></TABLE>>];
+st [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#f1f5f9"><FONT POINT-SIZE="14">«interface»</FONT><BR/><B>Settlement</B></TD></TR><TR><TD ALIGN="LEFT" BALIGN="LEFT">+from_member_id: string<BR/>+from_name: string<BR/>+to_member_id: string<BR/>+to_name: string<BR/>+amount: number</TD></TR></TABLE>>];
+ss -> cgi [style=dashed,arrowhead=vee,label="«use»"];
+ss -> sg [style=dashed,arrowhead=vee,label="«create»"];
+ss -> sd [style=dashed,arrowhead=vee,label="«create»"];
+ss -> se [style=dashed,arrowhead=vee,label="«create» save_shared_expense_once"];
+sg -> sm [dir=none,label="reúne",taillabel="1",headlabel="0..*",labelfontsize=15];
+sg -> se [dir=none,label="registra",taillabel="1",headlabel="0..*",labelfontsize=15];
+sm -> se [dir=none,label="paga",taillabel="1",headlabel="0..*",labelfontsize=15];
+se -> ses [dir=none,label="se reparte en",taillabel="1",headlabel="0..*",labelfontsize=15];
+sd -> mb [style=dashed,arrowhead=vee,label="balances"];
+sd -> st [style=dashed,arrowhead=vee,label="settlements"];
+{rank=same; ss; cgi;}
+{rank=same; sg; sm;}
+{rank=same; sd; se;}
+{rank=same; mb; ses;}
+{rank=same; st;}
+ss -> cgi [style=invis];
+cgi -> sg [style=invis];
+sg -> sd [style=invis];
+sd -> mb [style=invis];
+mb -> st [style=invis];
+}
