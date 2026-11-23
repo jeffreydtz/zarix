@@ -19,7 +19,7 @@ No es un producto pulido y cobrable todavía. En prod hoy:
 
 1. **`/auth/callback` devuelve 500** — `NEXT_PUBLIC_APP_URL` no está seteada. Se rompe confirmación de email, magic link y cualquier redirect de Supabase. Login por password de usuarios ya confirmados puede seguir andando.
 2. **Open Graph apunta a `http://localhost:3000/...`** (mismo env faltante, bakeado en el build).
-3. **Billing desalineado:** landing vende Premium a **USD 8/mes** y “2 cuentas” en Free; la API pública de planes devuelve el fallback **9.99 ARS**; los usuarios nuevos nacen `status = ACTIVE` (acceso al orquestador/bot). Los límites de Free **no existen en código**.
+3. **Billing desalineado:** landing vende Premium a **USD 7/mes** y “2 cuentas” en Free; la API pública de planes devuelve el fallback **9.99 ARS**; los usuarios nuevos nacen `status = ACTIVE` (acceso al orquestador/bot). Los límites de Free **no existen en código**.
 4. **Cron `update-prices` pega 429 de Yahoo** (AAPL, visto el 2026-09-08). El cron **sí corre**. El path de UI de inversiones tiene fallback Stooq; el cron no.
 5. **No hay “olvidé mi contraseña”** en la UI. Mensajes de error lo mencionan.
 
@@ -83,7 +83,7 @@ Proyecto Vercel `prj_K16EpV6Y3YUISohZkFSh6hGUYnpK`, último production `dpl_GonM
 | `/api/webhooks/mercado-pago` sin firma | 401 | OK (fail-closed; implica `MP_WEBHOOK_SECRET` seteado **o** rechazo por secret vacío) |
 | `/api/telegram/webhook` GET | 405 | Endpoint existe (solo POST) |
 | `/api/auth/dev-login` | 404 | OK (cerrado en production) |
-| `/api/billing/subscription-link` GET | 200, plan fallback 9.99 ARS | **Desalineado** vs landing USD 8 |
+| `/api/billing/subscription-link` GET | 200, plan fallback 9.99 ARS | **Desalineado** vs landing USD 7 |
 | `/auth/callback` | **500** cuerpo vacío | **ROTO** |
 | OG / Twitter image | `http://localhost:3000/logo-formats/og-image-1200x630.png` | **ROTO** (el PNG en sí da 200 en el host prod) |
 | `manifest.json` / `sw.js` | 200 | OK |
@@ -106,7 +106,7 @@ Prioridad = daño a confianza o a plata, no volumen de código.
 | ID | Gap | Por qué importa | Fix acotado |
 |----|-----|-----------------|-------------|
 | **P0-1** | `NEXT_PUBLIC_APP_URL` ausente → `/auth/callback` 500 | Registro y magic link no cierran. Un producto de plata que no deja entrar no es creíble. | Setear `https://zarix-phi.vercel.app` (o dominio final) en Vercel **Production + Preview**, redeploy. Verificar 302 en `/auth/callback` sin code y un magic link real. Código: `lib/auth/email-redirect.ts` + `app/layout.tsx`. |
-| **P0-2** | Landing vs realidad de planes | “2 cuentas”, “USD 8”, Free vs Premium. API 9.99 ARS. Nuevos users `ACTIVE` (schema default). No hay `MAX_ACCOUNTS`. | Elegir **una** verdad: (A) beta abierta, landing dice “todo incluido, cobro después”; o (B) default `PAST_DUE`/`CANCELED` + enforce límites + precio ARS real en `MP_SUBSCRIPTION_*`. No las dos. |
+| **P0-2** | Landing vs realidad de planes | “2 cuentas”, “USD 7”, Free vs Premium. API 9.99 ARS. Nuevos users `ACTIVE` (schema default). No hay `MAX_ACCOUNTS`. | Elegir **una** verdad: (A) beta abierta, landing dice “todo incluido, cobro después”; o (B) default `PAST_DUE`/`CANCELED` + enforce límites + precio ARS real en `MP_SUBSCRIPTION_*`. No las dos. |
 | **P0-3** | Mercado Pago no está “en producción comercial” | GET planes = fallback de código. POST `createPreapproval` explota sin `MP_ACCESS_TOKEN`. Webhook HMAC está bien diseñado. | O configurar token + monto ARS + preapproval sandbox E2E, o esconder el CTA Premium / Settings checkout. |
 | **P0-4** | Precios US del cron | P&L de AAPL/CEDEAR US puede quedar congelado. Cron usa `getStockQuote` (Yahoo, throw); UI usa Stooq. | Reusar `fetchStooqUsQuote` en `update-prices` / `getStockQuote`; no pisar `current_price` si el fetch falla. |
 | **P0-5** | Sin recuperación de contraseña | Error copy dice “recuperar”; no hay `resetPasswordForEmail`. | Pantalla/link en `/login` + template Supabase + `NEXT_PUBLIC_APP_URL`. |

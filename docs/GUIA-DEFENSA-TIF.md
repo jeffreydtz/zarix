@@ -88,7 +88,7 @@ Tres segmentos priorizados: **Early Adopter Tech-Finance** (25–35, IT/finanzas
 - Operaciones: unipersonal (founder = PM+dev+UX+marketing), sprints de 2 semanas, GitHub + deploy automático a Vercel. Fase 3 incorpora dev frontend + community manager.
 
 ### B.8 Plan Financiero
-- Ingresos: mes 6 = USD 300; mes 12 = 1.200; mes 24 = 4.480 (7.000 usuarios, 8% conversión, ticket USD 8).
+- Ingresos: mes 6 = USD 300; mes 12 = 1.200; mes 24 = 4.480 (7.000 usuarios, 8% conversión, ticket USD 7).
 - Egresos: Supabase 0–25, Vercel 0–20, Gemini 10–50, dominio 2 → Fase 1 total 12–50/mes.
 - **Punto de equilibrio: 7–10 suscriptores**. Repago mes 5–6. VAN positivo (tasa 10%, 2 años). TIR >200% (inversión mínima).
 - Impuestos: Monotributo (persona física) ahora, SAS en Fase 3. IIBB Santa Fe ~3.5%.

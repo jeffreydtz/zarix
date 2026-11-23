@@ -69,11 +69,12 @@ Esta nota cubre la entrega inicial (PR #27, sobre `f43d158`), el seguimiento de 
 | 10.5.10 Trazabilidad | 19 RF | #16, #17, #25 |
 | 10.5.12 Pruebas | Corrida 26/10/2026 sobre `b7da00b`: 2424/2424 en 159 archivos; fila «auditoría de código y pruebas diferenciales contra main» (rondas 19/19 y 16/16; 6.742 escrituras; replays R16 9.252, R17 fresh 11.152 y foco 208) y fila «revisión de pares interna (Kael), 26/10/2026» (112.800 casos; #26 CI 40392284614) | #16, #17, #25, #26 |
 | 11.2 Formatos | Planilla financiera v2.13 conservada sin recálculo | — |
+| Precio comercial Premium | Hipótesis de ticket actualizada a **USD 7**/mes (decisión del owner). No se recalcularon VAN, escenarios ni partidas de infraestructura. | precio USD 7 |
 | Anexo A | Next.js 15.5.28; migraciones 20261024–20261025; ficha CAFCI; balas de auditoría de código y pruebas diferenciales contra main y de revisión de pares interna (Kael), 26/10/2026 (A.1 y A.7); `npm audit` actual sin confirmar | #16, #19, #25, #26 |
 | Anexo E | PT13, PT14, ARQ-Componentes-Integraciones | #16, #17, #25 |
 
 ## Qué no se modificó
 
-- Capítulos 1–9 de negocio y el modelo financiero (VAN, escenarios, costos de infraestructura). Cheerio/parse5 es dependencia de biblioteca, no una partida de infraestructura.
+- El recálculo de VAN, escenarios y costos de infraestructura (la planilla v2.13 se conserva). Cheerio/parse5 es dependencia de biblioteca, no una partida de infraestructura. El ticket comercial de Premium en el Word pasa a USD 7 sin rearmar esa planilla.
 - Tablas de revisión/firmas y los seis ítems pendientes del checklist de la cátedra.
 - Numeración de las 37 figuras centrales.
