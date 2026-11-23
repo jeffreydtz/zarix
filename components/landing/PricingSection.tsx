@@ -74,7 +74,7 @@ export default function PricingSection() {
             Mas popular
           </span>
           <h3 className="mt-4 text-xl font-semibold text-foreground">Plan Premium</h3>
-          <p className="mt-1 text-2xl font-bold text-foreground">USD 8/mes</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">USD 7/mes</p>
           <p className="text-sm text-muted-foreground">Pro</p>
           <ul className="mt-5 space-y-2">
             {premiumFeatures.map((feature) => (
