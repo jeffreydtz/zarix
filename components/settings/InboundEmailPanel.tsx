@@ -73,15 +73,13 @@ export default function InboundEmailPanel() {
     <section className="card space-y-3">
       <h2 className="text-xl font-semibold">Mails de Mercado Pago y bancos</h2>
       <p className="text-sm text-muted-foreground">
-        Reenviá el mail del resumen o del aviso a tu dirección Zarix. El webhook genérico (Resend inbound u otro
-        proveedor) deja los movimientos en Pendientes. No se crea ninguna cuenta de proveedor desde la app: hace falta
-        configurar <code className="text-foreground">INBOUND_EMAIL_WEBHOOK_SECRET</code> y, si usás dominio propio,
-        <code className="text-foreground">INBOUND_EMAIL_DOMAIN</code>.
+        Reenviá el mail del resumen o del aviso a tu dirección de Zarix. Los movimientos aparecen en Pendientes para
+        que los confirmes. No hace falta crear una cuenta en otro servicio desde acá.
       </p>
       {!mailbox?.webhookConfigured && (
         <p className="text-sm text-amber-800 dark:text-amber-200">
-          El webhook todavía no está configurado en este entorno. Podés generar el token igual; los mails no se
-          reciben hasta que exista el secreto.
+          El correo todavía no está habilitado en esta cuenta. Podés generar la dirección igual; los mails se reciben
+          cuando el servicio esté activo.
         </p>
       )}
       {mailbox?.tokenPrefix && !freshToken && (
@@ -98,7 +96,7 @@ export default function InboundEmailPanel() {
       )}
       {freshToken && !mailbox?.domain && (
         <p className="text-sm">
-          Token de buzón (una sola vez, JSON <code>mailboxToken</code>):{' '}
+          Clave del buzón (se muestra una sola vez):{' '}
           <code className="break-all text-foreground">{freshToken}</code>
         </p>
       )}
@@ -122,7 +120,7 @@ export default function InboundEmailPanel() {
         )}
         {freshToken && !mailbox?.domain && (
           <button type="button" className="text-sm text-primary" onClick={() => copy(freshToken)}>
-            Copiar token
+            Copiar clave
           </button>
         )}
       </div>

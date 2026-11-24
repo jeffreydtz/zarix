@@ -472,10 +472,10 @@ export default function SettingsForm({
 
       {isPastDue ? (
         <div className="card border-2 border-destructive/30">
-          <h2 className="text-xl font-semibold mb-2">Bot de IA bloqueado por suscripcion</h2>
+          <h2 className="text-xl font-semibold mb-2">Bot de IA bloqueado por suscripción</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Tu estado actual es <strong>{subscriptionStatus}</strong>. Para volver a usar el panel
-            del bot de IA (Gemini + Telegram), necesitas activar o regularizar el pago.
+            del bot de IA (Gemini + Telegram), necesitás activar o regularizar el pago.
           </p>
           <button
             type="button"
@@ -483,7 +483,7 @@ export default function SettingsForm({
             disabled={billingLoading}
             className="btn btn-primary disabled:opacity-50"
           >
-            {billingLoading ? 'Abriendo checkout...' : 'Actualizar suscripcion'}
+            {billingLoading ? 'Abriendo checkout...' : 'Actualizar suscripción'}
           </button>
         </div>
       ) : (

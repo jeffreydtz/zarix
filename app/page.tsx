@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(appBase),
   title: 'Zarix | Tu patrimonio real en tiempo real',
   description:
-    'Zarix es la app de finanzas personales para Argentina que unifica pesos, dolar blue, MEP, CCL y tus inversiones en un panel real.',
+    'Zarix es la app de finanzas personales para Argentina que unifica pesos, dólar blue, MEP, CCL y tus inversiones en un panel real.',
   openGraph: {
     title: 'Zarix | Tu patrimonio real en tiempo real',
     description:

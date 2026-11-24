@@ -16,19 +16,19 @@ const cards = [
   {
     title: '5 tipos de cambio, 0 claridad',
     description:
-      'Oficial, blue, MEP, CCL, crypto. A cuanto vale realmente tu plata? Con Zarix lo sabes al instante, en la moneda que elijas.',
+      'Oficial, blue, MEP, CCL, crypto. ¿A cuánto vale realmente tu plata? Con Zarix lo sabés al instante, en la moneda que elijas.',
     icon: DollarSign,
   },
   {
     title: 'Tus cuentas en 10 lugares distintos',
     description:
-      'Banco, Mercado Pago, Uala, efectivo, crypto. Zarix los unifica en un solo panel. Tu foto financiera real, completa.',
+      'Banco, Mercado Pago, Ualá, efectivo, crypto. Zarix los unifica en un solo panel. Tu foto financiera real, completa.',
     icon: LayoutDashboard,
   },
   {
-    title: 'Cuanto perdiste por la inflacion este mes?',
+    title: '¿Cuánto perdiste por la inflación este mes?',
     description:
-      'No solo registras gastos. Zarix trackea tu patrimonio en USD para que veas si realmente estas ganando o perdiendo poder adquisitivo.',
+      'No solo registrás gastos. Zarix trackea tu patrimonio en USD para que veas si realmente estás ganando o perdiendo poder adquisitivo.',
     icon: TrendingUp,
   },
 ];

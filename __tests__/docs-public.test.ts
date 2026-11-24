@@ -38,10 +38,11 @@ describe('public docs', () => {
 
   it('documents auto-confirm identity, returned status, and limiter 503', () => {
     const panel = readFileSync('components/settings/IntegrationsPanel.tsx', 'utf8');
-    expect(panel).toMatch(/Idempotency-Key/);
-    expect(panel).toMatch(/autoConfirmed/);
     expect(panel).toMatch(/posible duplicado/);
-    expect(panel).toMatch(/409/);
+    expect(panel).toMatch(/autoConfirmed/);
+    expect(panel).toMatch(/Pendientes/);
+    expect(panel).not.toMatch(/Idempotency-Key/);
+    expect(panel).not.toMatch(/Authorization: Bearer/);
     const readme = readFileSync('supabase/manual/README.md', 'utf8');
     expect(readme).toMatch(/HTTP 503/);
     expect(readme).not.toMatch(/fail-closed with HTTP 429/);

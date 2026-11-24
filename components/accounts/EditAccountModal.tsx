@@ -6,6 +6,7 @@ import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { useRouter } from 'next/navigation';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import { moneyAmountFromToken } from '@/lib/money-amount';
 import {
   ACCOUNT_FORM_CURRENCIES,
   ACCOUNT_FORM_ICONS,
@@ -100,8 +101,8 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
       return;
     }
     if (isCreditCard) {
-      const lim = parseFloat(creditLimit.replace(',', '.'));
-      if (!Number.isFinite(lim) || lim <= 0) {
+      const lim = moneyAmountFromToken(creditLimit);
+      if (lim == null || lim <= 0) {
         setError('Ingresá un límite de crédito válido para la tarjeta');
         return;
       }
@@ -155,7 +156,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
     };
 
     if (isCreditCard) {
-      payload.credit_limit = parseFloat(creditLimit.replace(',', '.'));
+      payload.credit_limit = moneyAmountFromToken(creditLimit);
       payload.closing_day = closingDay.trim() ? parseInt(closingDay, 10) : null;
       payload.due_day = dueDay.trim() ? parseInt(dueDay, 10) : null;
       payload.last_4_digits = last4Digits.trim() || null;

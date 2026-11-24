@@ -30,7 +30,7 @@ interface PortfolioPerformanceChartProps {
 }
 
 function formatUsd(n: number): string {
-  return `USD ${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+  return `USD ${n.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
 }
 
 export default function PortfolioPerformanceChart({

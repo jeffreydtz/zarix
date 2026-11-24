@@ -354,7 +354,7 @@ export default function EditTransactionModal({
 
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Descripcion
+              Descripción
             </label>
             <input
               type="text"

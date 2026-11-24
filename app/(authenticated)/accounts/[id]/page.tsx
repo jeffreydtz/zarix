@@ -18,6 +18,7 @@ import AccountDetailEditButton from '@/components/accounts/AccountDetailEditButt
 import { getAccountDisplayName, getAccountTypeLabelEs } from '@/lib/account-display-name';
 import { getCardStatement } from '@/lib/services/card-statement';
 import CardStatementPanel from '@/components/dashboard/CardStatementPanel';
+import CreditFacilityStats from '@/components/accounts/CreditFacilityStats';
 
 export default async function AccountDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -176,6 +177,12 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
           </div>
 
           <FxStatusBanner {...combinedFxStatus(enriched ? [enriched] : [])} />
+          {account.type === 'credit_card' && account.credit_limit ? (
+            <div className="card p-4">
+              <h2 className="text-lg font-semibold text-foreground mb-3">Límite y disponible</h2>
+              <CreditFacilityStats account={editableAccount} currency={account.currency} />
+            </div>
+          ) : null}
           {account.type === 'credit_card' && cardStatement && (
             <div className="card p-4">
               <h2 className="text-lg font-semibold text-foreground mb-1">Resumen proyectado</h2>

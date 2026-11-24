@@ -117,8 +117,7 @@ const SUBSCRIPTION_SERVICES: SubscriptionService[] = [
 ];
 
 function formatMoney(value: number, currency: string): string {
-  const locale = currency === 'ARS' ? 'es-AR' : 'en-US';
-  return `${currency} ${value.toLocaleString(locale, { maximumFractionDigits: 2 })}`;
+  return `${currency} ${value.toLocaleString('es-AR', { maximumFractionDigits: 2 })}`;
 }
 
 function getCurrencyTotalsRows(totals: Record<string, number>): Array<{ currency: string; amount: number }> {

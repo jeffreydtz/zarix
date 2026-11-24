@@ -124,7 +124,7 @@ export default async function InvestmentsPage() {
                       <div className={`text-xl font-bold leading-none ${daysLeft === 0 ? 'text-destructive' : daysLeft <= 3 ? 'text-warning' : 'text-foreground'}`}>
                         {daysLeft}
                       </div>
-                      <div className="text-xs text-muted-foreground">{daysLeft === 1 ? 'dia' : 'dias'}</div>
+                      <div className="text-xs text-muted-foreground">{daysLeft === 1 ? 'día' : 'días'}</div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-foreground truncate">

@@ -26,6 +26,8 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import AssetLogo from '@/components/investments/AssetLogo';
 import { priceFactorForType } from '@/lib/investments/type-meta';
 import { formatQuoteUpdatedAtLabel } from '@/lib/investments/quote-updated-at';
+import { formatCurrency } from '@/lib/utils/currency';
+import { hasConfirmedMarketQuote, typeBadgeText } from '@/lib/investments/display';
 
 interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
@@ -50,10 +52,10 @@ const TYPE_ICON: Record<InvestmentType, typeof CandlestickChart> = {
 };
 
 function formatPrice(value: number, currency: string): string {
-  if (currency === 'ARS') {
-    return `ARS ${value.toLocaleString('es-AR', { maximumFractionDigits: 2 })}`;
-  }
-  return `${currency} ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return formatCurrency(value, currency, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 function pnlColor(value: number | null): string {
@@ -141,6 +143,9 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                     {inv.ticker ? (
                       <span className="font-semibold text-foreground font-mono tracking-tight">{inv.ticker}</span>
                     ) : null}
+                    <span className="rounded-full bg-surface-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {typeBadgeText(inv.type, inv.ticker)}
+                    </span>
                     <span className="text-sm text-muted-foreground truncate">{inv.name}</span>
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground tabular-nums">
@@ -148,10 +153,10 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                     {inv.quantity.toLocaleString('es-AR', { maximumFractionDigits: 8 })}
                     {priceFactorForType(inv.type) !== 100 ? ' unidades' : ''}
                     {' · '}
-                    Compra: {inv.purchase_currency}{' '}
+                    Compra:{' '}
                     {hidden
-                      ? PRIVACY_MASK
-                      : inv.purchase_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      ? `${inv.purchase_currency} ${PRIVACY_MASK}`
+                      : formatCurrency(inv.purchase_price, inv.purchase_currency)}
                     {priceFactorForType(inv.type) === 100 ? ' / VN 100' : ''}
                   </div>
                   {inv.current_price ? (
@@ -198,7 +203,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                       <HandCoins size={11} aria-hidden className="opacity-70" />
                       <span className="text-muted-foreground">Realizado:</span>
                       <span className={`font-semibold tabular-nums ${pnlColor(inv.realized_pnl_usd)}`}>
-                        {inv.realized_pnl_usd >= 0 ? '+' : ''}USD {inv.realized_pnl_usd.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                        {formatCurrency(inv.realized_pnl_usd, 'USD', { signed: true, minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                       <span className="text-muted-foreground/70">
                         · {inv.sales_count} {inv.sales_count === 1 ? 'venta' : 'ventas'}
@@ -219,20 +224,29 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                   {inv.market_value_usd != null && <><div className="text-base sm:text-lg font-bold text-foreground tabular-nums">
                     {hidden
                       ? `USD ${PRIVACY_MASK}`
-                      : `USD ${inv.market_value_usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                      : formatCurrency(inv.market_value_usd, 'USD')}
                   </div>
                   <div className="text-xs text-muted-foreground tabular-nums">
                     {inv.market_value_ars_blue == null ? 'Conversión ARS no disponible' : hidden
                       ? `≈ ARS ${PRIVACY_MASK}`
-                      : `≈ ARS ${inv.market_value_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
+                      : `≈ ${formatCurrency(inv.market_value_ars_blue, 'ARS', { maximumFractionDigits: 0, minimumFractionDigits: 0 })}`}
                   </div>
                   </>}
-                  {inv.profit_loss_usd != null && inv.profit_loss_percent_usd != null && <div className={`text-sm font-semibold tabular-nums ${pnlColor(inv.profit_loss_usd)}`}>
-                    {totalPositive ? '+' : ''}USD {inv.profit_loss_usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    <span className="ml-1 text-xs opacity-80">
-                      ({totalPositive ? '+' : ''}{inv.profit_loss_percent_usd.toFixed(2)}%)
-                    </span>
-                  </div>}
+                  {hasConfirmedMarketQuote(inv.valuation_price_source)
+                    && inv.profit_loss_usd != null
+                    && inv.profit_loss_percent_usd != null && (
+                    <div className={`text-sm font-semibold tabular-nums ${pnlColor(inv.profit_loss_usd)}`}>
+                      {formatCurrency(inv.profit_loss_usd, 'USD', { signed: true })}
+                      <span className="ml-1 text-xs opacity-80">
+                        ({totalPositive ? '+' : ''}{inv.profit_loss_percent_usd.toFixed(2)}%)
+                      </span>
+                    </div>
+                  )}
+                  {!hasConfirmedMarketQuote(inv.valuation_price_source) && (
+                    <div className="text-xs text-muted-foreground">
+                      Rendimiento no disponible · sin cotización
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-1">

@@ -1,16 +1,70 @@
+export const MONEY_LOCALE = 'es-AR';
+
+export type FormatCurrencyOptions = {
+  locale?: string;
+  minimumFractionDigits?: number;
+  maximumFractionDigits?: number;
+  /** Prefix a '+' for non-negative amounts (P&L). */
+  signed?: boolean;
+};
+
+function resolveFormatOptions(
+  localeOrOptions?: string | FormatCurrencyOptions
+): Required<Pick<FormatCurrencyOptions, 'locale'>> & FormatCurrencyOptions {
+  if (typeof localeOrOptions === 'string' || localeOrOptions == null) {
+    return { locale: localeOrOptions || MONEY_LOCALE };
+  }
+  return { locale: MONEY_LOCALE, ...localeOrOptions };
+}
+
+function prefixForCurrency(currency: string): string {
+  const c = (currency || 'ARS').toUpperCase();
+  if (c === 'USD') return 'USD';
+  if (c === 'EUR') return '€';
+  if (c === 'ARS') return '$';
+  return c;
+}
+
+/**
+ * User-facing money for es-AR: "USD 1.127,17", "$ 6.210.468".
+ * Third argument may be a locale string (legacy) or options.
+ */
 export function formatCurrency(
   amount: number,
   currency: string,
-  locale: string = 'es-AR'
+  localeOrOptions: string | FormatCurrencyOptions = MONEY_LOCALE
 ): string {
-  if (currency === 'BTC' || currency === 'ETH') {
-    return `${amount.toFixed(8)} ${currency}`;
+  const options = resolveFormatOptions(localeOrOptions);
+  const locale = options.locale || MONEY_LOCALE;
+  const c = (currency || 'ARS').toUpperCase();
+  const sign = options.signed && amount > 0 ? '+' : '';
+
+  if (c === 'BTC' || c === 'ETH') {
+    const digits = options.maximumFractionDigits ?? 8;
+    return `${sign}${amount.toLocaleString(locale, {
+      minimumFractionDigits: options.minimumFractionDigits ?? digits,
+      maximumFractionDigits: digits,
+    })} ${c}`;
   }
 
-  const prefix = currency === 'USD' ? 'USD' : currency === 'EUR' ? '€' : '$';
-  return `${prefix} ${amount.toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+  const explicitMin = options.minimumFractionDigits;
+  const explicitMax = options.maximumFractionDigits;
+  let min: number;
+  let max: number;
+  if (explicitMin != null || explicitMax != null) {
+    min = explicitMin ?? explicitMax ?? 2;
+    max = explicitMax ?? min;
+  } else if (c === 'USD' || c === 'EUR') {
+    min = 2;
+    max = 2;
+  } else {
+    const cents = Math.round(Math.abs(amount) * 100) % 100;
+    min = cents === 0 ? 0 : 2;
+    max = cents === 0 ? 0 : 2;
+  }
+  return `${sign}${prefixForCurrency(c)} ${amount.toLocaleString(locale, {
+    minimumFractionDigits: min,
+    maximumFractionDigits: max,
   })}`;
 }
 

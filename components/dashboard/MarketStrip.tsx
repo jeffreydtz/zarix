@@ -24,7 +24,7 @@ function formatARS(value: number): string {
 }
 
 function formatUSD(value: number, decimals = 0): string {
-  return value.toLocaleString('en-US', {
+  return value.toLocaleString('es-AR', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });

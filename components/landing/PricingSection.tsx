@@ -28,8 +28,8 @@ const premiumFeatures = [
   'OCR de tickets por foto (IA)',
   'Portafolio de inversiones (Merval + USA)',
   'Cuentas ilimitadas',
-  'Analitica avanzada y proyecciones',
-  'Exportacion de datos (CSV)',
+  'Analítica avanzada y proyecciones',
+  'Exportación de datos (CSV)',
   'Alertas inteligentes',
 ];
 

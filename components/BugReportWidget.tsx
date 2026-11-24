@@ -4,7 +4,7 @@ import { AlertCircle, Bug, Send, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 
-type Severity = 'Bajo' | 'Medio' | 'Alto' | 'Critico';
+type Severity = 'Bajo' | 'Medio' | 'Alto' | 'Crítico';
 
 const SUPPORT_EMAIL = 'jef_dietz@hotmail.com';
 
@@ -28,10 +28,10 @@ export default function BugReportWidget() {
     const subject = `[Zarix Bug] ${title.trim()}`;
     const body = [
       `Severidad: ${severity}`,
-      `Pagina: ${page}`,
+      `Página: ${page}`,
       `Fecha: ${now}`,
       '',
-      'Descripcion:',
+      'Descripción:',
       details.trim(),
       '',
       'Pasos para reproducir:',
@@ -62,7 +62,7 @@ export default function BugReportWidget() {
           <div className="w-full max-w-lg max-h-[90dvh] overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-5 text-foreground shadow-2xl">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <p className="text-lg font-semibold">Contanos que se rompio</p>
+                <p className="text-lg font-semibold">Contanos qué se rompió</p>
                 <p className="mt-1 text-sm text-muted-foreground">Vamos a abrir tu mail con el reporte listo para enviar.</p>
               </div>
               <button
@@ -130,7 +130,7 @@ export default function BugReportWidget() {
                   <option value="Bajo">Bajo</option>
                   <option value="Medio">Medio</option>
                   <option value="Alto">Alto</option>
-                  <option value="Critico">Critico</option>
+                  <option value="Crítico">Crítico</option>
                 </select>
               </div>
             </div>

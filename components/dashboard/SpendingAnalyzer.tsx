@@ -261,8 +261,7 @@ function analyzerCurrencyFootnote(currencyFilter: string, convertToArsBlue: bool
 }
 
 function formatCurrencyAmount(value: number, currency: string): string {
-  const locale = currency === 'ARS' ? 'es-AR' : 'en-US';
-  return `${currency} ${value.toLocaleString(locale, { maximumFractionDigits: 0 })}`;
+  return `${currency} ${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
 }
 
 function buildSummaryRows(totalsByCurrency: Record<string, number>, currencyFilter: string): Array<{ currency: string; amount: number }> {

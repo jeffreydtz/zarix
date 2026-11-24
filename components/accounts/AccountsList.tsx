@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAddTransaction } from '@/components/add-transaction/AddTransactionProvider';
 import { Plus } from 'lucide-react';
+import CreditFacilityStats from '@/components/accounts/CreditFacilityStats';
+import { formatCurrency } from '@/lib/utils/currency';
 
 interface AccountsListProps {
   accounts: AccountWithBalance[];
@@ -258,7 +260,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                   animate={{ opacity: 1, height: 'auto' }}
                   className="mt-3 text-sm text-warning bg-warning/10 p-3 rounded-xl border border-warning/30"
                 >
-                  Saldo por debajo del minimo (${account.min_balance.toFixed(2)})
+                  Saldo por debajo del mínimo ({formatCurrency(account.min_balance, account.currency)})
                 </motion.div>
               )}
 
@@ -266,20 +268,15 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mt-4 pt-4 border-t border-border"
+                  className="mt-4 pt-4 border-t border-border space-y-3"
                 >
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground text-xs mb-0.5">Límite</p>
-                      <p className="font-semibold text-muted-foreground">
-                        ${account.credit_limit.toLocaleString('es-AR')}
-                      </p>
-                    </div>
+                  <CreditFacilityStats account={account} currency={account.currency} />
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     {account.closing_day && (
                       <div>
                         <p className="text-muted-foreground text-xs mb-0.5">Cierre</p>
                         <p className="font-semibold text-muted-foreground">
-                          Dia {account.closing_day}
+                          Día {account.closing_day}
                         </p>
                       </div>
                     )}
@@ -289,7 +286,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                           Vencimiento
                         </p>
                         <p className="font-semibold text-muted-foreground">
-                          Dia {account.due_day}
+                          Día {account.due_day}
                         </p>
                       </div>
                     )}
@@ -335,11 +332,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 <span className="text-base font-medium text-muted-foreground">ARS</span>
               </p>
               <p className="text-sm text-muted-foreground mt-1 tabular-nums">
-                USD{' '}
-                {aggregates.totalUSD.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                {formatCurrency(aggregates.totalUSD, 'USD')}
               </p>
             </div>
             <div className="space-y-2 text-sm">

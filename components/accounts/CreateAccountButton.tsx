@@ -10,6 +10,7 @@ import {
   ACCOUNT_FORM_TYPES,
 } from '@/components/accounts/account-form-constants';
 import { useRouter } from 'next/navigation';
+import { moneyAmountFromToken } from '@/lib/money-amount';
 
 export default function CreateAccountButton() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function CreateAccountButton() {
     }
 
     if (isCreditCard && !creditLimit) {
-      setError('El limite de credito es requerido para tarjetas');
+      setError('El límite de crédito es requerido para tarjetas');
       return;
     }
 
@@ -77,7 +78,13 @@ export default function CreateAccountButton() {
       };
 
       if (isCreditCard) {
-        payload.creditLimit = parseFloat(creditLimit.replace(',', '.'));
+        const parsedLimit = moneyAmountFromToken(creditLimit);
+        if (parsedLimit == null || parsedLimit <= 0) {
+          setError('Ingresá un límite de crédito válido para la tarjeta');
+          setLoading(false);
+          return;
+        }
+        payload.creditLimit = parsedLimit;
         if (closingDay) payload.closingDay = parseInt(closingDay);
         if (dueDay) payload.dueDay = parseInt(dueDay);
         if (isMulticurrency) {
@@ -304,7 +311,7 @@ export default function CreateAccountButton() {
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                Dia de cierre
+                                Día de cierre
                               </label>
                               <input
                         disabled={pending || loading}
@@ -320,7 +327,7 @@ export default function CreateAccountButton() {
 
                             <div>
                               <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                Dia de vencimiento
+                                Día de vencimiento
                               </label>
                               <input
                         disabled={pending || loading}

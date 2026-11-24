@@ -6,6 +6,8 @@ import type { AccountWithBalance } from '@/lib/services/accounts';
 import { getAccountDisplayName } from '@/lib/account-display-name';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import Link from 'next/link';
+import { creditFacilityFigures } from '@/lib/credit-card-display';
+import { formatCurrency } from '@/lib/utils/currency';
 
 interface AccountCardsProps {
   accounts: AccountWithBalance[];
@@ -40,19 +42,10 @@ function AccountCards({ accounts }: AccountCardsProps) {
           const multicurrencyPrimaryBalance = Number(
             account.multicurrency_balance_primary ?? account.balance
           );
-          const creditUsed = isCreditCard
-            ? Math.abs(
-                account.is_multicurrency
-                  ? Number(
-                      account.multicurrency_total_ars_blue ??
-                        account.balance_ars_blue ??
-                        account.multicurrency_balance_primary ??
-                        account.balance
-                    )
-                  : Number(account.balance)
-              )
-            : 0;
-          const creditLimit = account.credit_limit || 0;
+          const facility = isCreditCard ? creditFacilityFigures(account) : null;
+          const creditLimit = facility?.limit || 0;
+          const creditUsed = facility?.used || 0;
+          const creditAvailable = facility?.available ?? 0;
           const creditUtilization = creditLimit > 0 ? (creditUsed / creditLimit) * 100 : 0;
 
           return (
@@ -146,8 +139,9 @@ function AccountCards({ accounts }: AccountCardsProps) {
                       className="bg-white h-2 rounded-full"
                     />
                   </div>
-                  <div className="text-xs mt-2 opacity-75 font-medium">
-                    Límite: ${creditLimit.toLocaleString('es-AR')}
+                  <div className="mt-2 space-y-0.5 text-xs font-medium opacity-90">
+                    <div>Límite: {formatCurrency(creditLimit, account.currency, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
+                    <div>Disponible: {formatCurrency(creditAvailable, account.currency, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
                   </div>
                 </div>
               )}
