@@ -1,4 +1,5 @@
 import type { InvestmentType } from '@/types/database';
+import { CRYPTO_LOGO_TICKERS } from '@/lib/investments/display';
 import { stripBymaSuffix } from '@/lib/market-data/quote-currency';
 
 const TICKER_RE = /^[A-Z0-9.]{1,16}$/;
@@ -51,6 +52,7 @@ export function logoCandidateUrls(type: InvestmentType, ticker: string): string[
   if (!raw || !TICKER_RE.test(raw)) return [];
   const urls: string[] = [];
   if (type === 'crypto') {
+    if (!CRYPTO_LOGO_TICKERS.has(raw)) return urls;
     const coin = raw.toLowerCase();
     urls.push(`https://cdn.jsdelivr.net/npm/cryptocurrency-icons@0.18.1/svg/color/${coin}.svg`);
     urls.push(`https://cdn.jsdelivr.net/npm/cryptocurrency-icons@0.18.1/32/color/${coin}.png`);

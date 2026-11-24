@@ -12,16 +12,16 @@ const steps = [
   },
   {
     number: '02',
-    title: 'Conecta tus cuentas y activos',
+    title: 'Conectá tus cuentas y activos',
     description:
-      'Suma tus cuentas bancarias, billeteras y posiciones de inversion manualmente. Sin APIs de homebanking: vos controlas tus datos.',
+      'Sumá tus cuentas bancarias, billeteras y posiciones de inversión manualmente. Sin APIs de homebanking: vos controlás tus datos.',
     icon: Layers3,
   },
   {
     number: '03',
-    title: 'Entende tu plata de verdad',
+    title: 'Entendé tu plata de verdad',
     description:
-      'Dashboard, cotizaciones, presupuestos y analisis en una sola pantalla. Con el dolar real, no el oficial.',
+      'Dashboard, cotizaciones, presupuestos y análisis en una sola pantalla. Con el dólar real, no el oficial.',
     icon: ScanSearch,
   },
 ];

@@ -8,6 +8,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Loader2, RefreshCw } from 'lucide-react';
 import type { Account } from '@/types/database';
 import type { InvestmentWithPnL, PortfolioSummaryPayload } from '@/lib/services/investments';
+import { hasConfirmedMarketQuote } from '@/lib/investments/display';
 import PortfolioSummary from '@/components/investments/PortfolioSummary';
 import InvestmentsList from '@/components/investments/InvestmentsList';
 import AddInvestmentPanel from '@/components/investments/AddInvestmentPanel';
@@ -95,6 +96,10 @@ export default function InvestmentsWorkspace({
     }
   }, []);
 
+  useEffect(() => {
+    void refreshLive();
+  }, [refreshLive]);
+
   const onPortfolioChanged = useCallback(() => {
     void refreshLive();
     router.refresh();
@@ -166,6 +171,9 @@ export default function InvestmentsWorkspace({
           monthlyChange={portfolio.monthlyChange}
           topGainers={portfolio.topGainers}
           topLosers={portfolio.topLosers}
+          hasMarketQuotes={portfolio.investments.some((inv) =>
+            hasConfirmedMarketQuote(inv.valuation_price_source)
+          )}
         />
       </motion.div>
 

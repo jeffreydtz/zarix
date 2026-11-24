@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import Amount from '@/components/ui/Amount';
 import type { TopBudgetItem } from '@/lib/services/budget-summary';
+import { budgetRemainderLabel } from '@/lib/budget-display';
 import { motionVariants, maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface BudgetClusterProps {
@@ -82,9 +83,9 @@ function BudgetCluster({ budgets }: BudgetClusterProps) {
                         <span className="truncate">{budget.name}</span>
                       </span>
                       <span className="shrink-0 text-sm text-foreground">
-                        Te quedan{' '}
+                        {budgetRemainderLabel(budget.remainingAmount)}{' '}
                         <Amount
-                          value={budget.remainingAmount}
+                          value={Math.abs(budget.remainingAmount)}
                           currency={budget.currency === 'USD' ? 'USD' : 'ARS'}
                           className="font-bold"
                         />{' '}
@@ -106,7 +107,9 @@ function BudgetCluster({ budgets }: BudgetClusterProps) {
           </ul>
 
           <p className="mt-4 pt-3 border-t border-border text-xs text-muted-foreground">
-            Disponible por día: <Amount value={availablePerDay} currency="ARS" className="font-medium" />
+            {availablePerDay < 0
+              ? <>Excedido por día: <Amount value={Math.abs(availablePerDay)} currency="ARS" className="font-medium" /></>
+              : <>Disponible por día: <Amount value={availablePerDay} currency="ARS" className="font-medium" /></>}
           </p>
         </>
       )}

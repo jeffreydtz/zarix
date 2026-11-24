@@ -6,6 +6,7 @@
 import { createHash } from 'node:crypto';
 import type { InvestmentType } from '@/types/database';
 import { parseCSVFile } from '@/lib/import/csv';
+import { looksLikeIolFciTicker } from '@/lib/market-data/fci-catalog';
 
 export interface IolHoldingRow {
   ticker: string;
@@ -223,6 +224,7 @@ function mapType(raw: string | undefined, ticker: string): InvestmentType {
     return 'stock_arg';
   }
   if (t.includes('etf')) return 'etf';
+  if (looksLikeIolFciTicker(sym)) return 'fci';
   if (sym.endsWith('O') && sym.length >= 5) return 'on';
   return 'other';
 }

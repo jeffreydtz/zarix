@@ -29,6 +29,17 @@ function defaultOneYearExpiry(): string {
   return `${d.toISOString().slice(0, 10)}T23:59:59.000Z`;
 }
 
+const SCOPE_LABELS: Record<string, string> = {
+  read: 'Lectura',
+  write: 'Escritura',
+  ingest: 'Cargar gastos',
+  'write:confirm': 'Confirmar solo',
+};
+
+function scopeLabel(scope: string): string {
+  return SCOPE_LABELS[scope] || scope;
+}
+
 const EXAMPLE_BODY = `{
   "amount": 1250.50,
   "currency": "ARS",
@@ -85,7 +96,7 @@ export default function IntegrationsPanel({
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'No se pudo crear');
       setFreshToken(data.token);
-      setMessage(data.warning || 'Token creado. Copialo ahora: no se vuelve a mostrar.');
+      setMessage(data.warning || 'Clave creada. Copiala ahora: no se vuelve a mostrar.');
       await load();
     } catch (e) {
       setMessage(`❌ ${(e as Error).message}`);
@@ -115,7 +126,7 @@ export default function IntegrationsPanel({
   };
 
   const revoke = async (id: string) => {
-    if (!confirm('¿Revocar este token? Deja de funcionar al toque.')) return;
+    if (!confirm('¿Revocar esta clave? Deja de funcionar de inmediato.')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/user/tokens/${id}`, { method: 'DELETE' });
@@ -179,10 +190,10 @@ export default function IntegrationsPanel({
       )}
 
       <section className="card space-y-4">
-        <h2 className="text-xl font-semibold">Tokens de acceso personal</h2>
+        <h2 className="text-xl font-semibold">Claves de acceso</h2>
         <p className="text-sm text-muted-foreground">
-          El token se muestra una sola vez. Zarix guarda únicamente el hash. Permisos: lectura, escritura e ingest (Wallet).
-          Caduca en un año por defecto; podés editar la fecha.
+          La clave se muestra una sola vez. Elegí qué puede hacer: leer, dejar gastos pendientes o cargarlos desde el
+          teléfono. Caduca en un año; podés cambiar la fecha.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="flex-1 text-sm">
@@ -206,7 +217,7 @@ export default function IntegrationsPanel({
             {['read', 'write', 'ingest'].map((s) => (
               <label key={s} className="inline-flex items-center gap-1">
                 <input type="checkbox" checked={scopes.includes(s)} onChange={() => toggleScope(s)} />
-                {s}
+                {scopeLabel(s)}
               </label>
             ))}
             <label className="inline-flex items-center gap-1">
@@ -215,18 +226,18 @@ export default function IntegrationsPanel({
                 checked={scopes.includes('write:confirm')}
                 onChange={() => toggleScope('write:confirm')}
               />
-              write:confirm
+              Confirmar solo
             </label>
           </div>
           {scopes.includes('write:confirm') && (
             <p className="text-xs text-amber-700 dark:text-amber-400">
-              write:confirm deja que una IA (MCP/REST) confirme movimientos por su cuenta, sin que pases por la
-              bandeja. Un token robado con este permiso puede cargar gastos. Preferí confirmar vos en Pendientes
-              o Telegram. write solo estaciona; no confirma.
+              Este permiso deja que un atajo confirme gastos solo, sin pasar por Pendientes. Si alguien copia tu
+              clave, podría cargar movimientos. Lo más seguro es confirmar vos en Pendientes o Telegram. Escritura
+              solo deja el gasto en la bandeja; no lo confirma.
             </p>
           )}
           <button type="button" className="btn-primary" disabled={loading} onClick={createToken}>
-            Crear token
+            Crear clave
           </button>
         </div>
         {freshToken && (
@@ -234,7 +245,7 @@ export default function IntegrationsPanel({
             <p className="text-xs text-muted-foreground mb-1">Mostrado una sola vez</p>
             <code className="block break-all text-sm">{freshToken}</code>
             <button type="button" className="mt-2 text-sm text-primary" onClick={() => copy(freshToken)}>
-              Copiar token
+              Copiar clave
             </button>
           </div>
         )}
@@ -244,7 +255,7 @@ export default function IntegrationsPanel({
               <div>
                 <p className="font-medium">{t.name}</p>
                 <p className="text-muted-foreground">
-                  {t.token_prefix}… · {t.scopes.join(', ')}
+                  {t.token_prefix}… · {t.scopes.map(scopeLabel).join(', ')}
                   {t.expires_at ? ` · caduca ${new Date(t.expires_at).toLocaleDateString('es-AR')}` : ''}
                   {t.revoked_at ? ' · revocado' : t.last_used_at ? ` · usado ${new Date(t.last_used_at).toLocaleString('es-AR')}` : ''}
                 </p>
@@ -267,36 +278,34 @@ export default function IntegrationsPanel({
               )}
             </li>
           ))}
-          {tokens.length === 0 && <li className="py-2 text-sm text-muted-foreground">Todavía no hay tokens.</li>}
+          {tokens.length === 0 && <li className="py-2 text-sm text-muted-foreground">Todavía no hay claves.</li>}
         </ul>
       </section>
 
       <section className="card space-y-3">
-        <h2 className="text-xl font-semibold">Atajo de Apple (Wallet / Shortcuts)</h2>
+        <h2 className="text-xl font-semibold">Atajo del iPhone (Wallet)</h2>
         <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
-          <li>En el iPhone abrí Atajos → Automatización personal → transacción de Wallet (o “Transacción”).</li>
-          <li>Agregá la acción “Obtener contenido de URL”.</li>
-          <li>Método POST, URL <code className="text-foreground">{ingestUrl || 'https://tu-dominio/api/ingest/wallet'}</code>.</li>
+          <li>En el iPhone abrí Atajos y creá una automatización cuando hay una transacción de Wallet.</li>
+          <li>Agregá la acción para enviar datos a una página web.</li>
           <li>
-            Cabeceras: <code className="text-foreground">Authorization: Bearer TU_TOKEN</code>,{' '}
-            <code className="text-foreground">Content-Type: application/json</code> y, si querés reintentos
-            silenciosos o auto-confirmar sin timestamp, <code className="text-foreground">Idempotency-Key</code>.
+            Dirección:{' '}
+            <code className="text-foreground">{ingestUrl || 'https://tu-dominio/api/ingest/wallet'}</code>.
           </li>
+          <li>Pegá tu clave de acceso en la autorización del atajo.</li>
           <li>
-            Cuerpo JSON con monto, moneda, comercio, tarjeta y fecha (ver plantilla). La misma Idempotency-Key con el
-            mismo cuerpo y canal reusa el pendiente; otro cuerpo, payload nulo o canal distinto da 409. Sin esa clave
-            siempre se crea un pendiente nuevo: un match de 15 minutos aparece en Pendientes como posible duplicado
-            (un clic para descartar) y no se auto-confirma. Auto-confirmación exige timestamp completo o Idempotency-Key.
+            Enviá el monto, la moneda, el comercio, la tarjeta y la fecha. Zarix deja el gasto en Pendientes para que
+            lo confirmes. Si el atajo reenvía el mismo gasto, no se duplica; si es parecido, lo vas a ver marcado como
+            posible duplicado.
           </li>
-          <li>
-            Mostrá el status de la respuesta (<code className="text-foreground">autoConfirmed</code> o{' '}
-            <code className="text-foreground">pending</code>) y un enlace a Pendientes.
-          </li>
+          <li>Revisá el resultado en Pendientes.</li>
         </ol>
-        <pre className="overflow-x-auto rounded-xl bg-secondary p-3 text-xs">{EXAMPLE_BODY}</pre>
+        <details className="rounded-xl bg-secondary p-3 text-sm">
+          <summary className="cursor-pointer font-medium text-foreground">Ejemplo de datos que envía el atajo</summary>
+          <pre className="mt-2 overflow-x-auto text-xs">{EXAMPLE_BODY}</pre>
+        </details>
         <div className="flex flex-wrap gap-2">
           <button type="button" className="text-sm text-primary" onClick={() => copy(EXAMPLE_BODY)}>
-            Copiar JSON de ejemplo
+            Copiar ejemplo
           </button>
           <button type="button" className="btn-primary" disabled={loading} onClick={sendTest}>
             Enviar prueba
@@ -316,27 +325,25 @@ export default function IntegrationsPanel({
       </section>
 
       <section className="card space-y-3">
-        <h2 className="text-xl font-semibold">Android (MacroDroid / Tasker)</h2>
+        <h2 className="text-xl font-semibold">Android (notificaciones del banco)</h2>
         <p className="text-sm text-muted-foreground">
-          Dispará una automatización cuando llega la notificación de la app de tu banco o Wallet. Hacé POST al mismo
-          endpoint con el texto crudo de la notificación (Content-Type: text/plain) y el Bearer token. Zarix parsea el
-          monto y el comercio con una heurística; no hace falta una llamada paga a IA. La auto-confirmación exige un
-          timestamp completo o Idempotency-Key; una fecha sola (YYYY-MM-DD) no alcanza. Sin clave, un reintento cercano
-          queda pending como posible duplicado. Mostrá autoConfirmed/pending de la respuesta y un enlace a Pendientes.
+          Cuando te llega la notificación del banco o de Wallet, tu automatización puede mandar ese texto a Zarix.
+          Zarix interpreta el monto y el comercio. Los gastos aparecen en Pendientes; si el mismo aviso se reenvía, no
+          se duplica.
         </p>
         <p className="text-sm text-muted-foreground">
-          Guía completa en{' '}
+          Paso a paso en la{' '}
           <Link href="/docs/android" className="text-primary">
-            /docs/android
+            guía para Android
           </Link>
           .
         </p>
       </section>
 
       <section className="card space-y-3">
-        <h2 className="text-xl font-semibold">Registro de auditoría</h2>
+        <h2 className="text-xl font-semibold">Historial de actividad</h2>
         <p className="text-sm text-muted-foreground">
-          Altas y bajas de tokens, usos, ingestas y confirmaciones. La IP se guarda hasheada. Sin secretos.
+          Altas y bajas de claves, usos y cargas. Sin datos sensibles.
         </p>
         <ul className="divide-y divide-border text-sm">
           {events.map((e) => (

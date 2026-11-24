@@ -32,9 +32,10 @@ export default async function IntegracionesPage() {
           </p>
           <h1 className="mt-1 text-3xl font-bold text-foreground">Integraciones</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tokens, atajos de Wallet, resúmenes PDF/CSV, mail inbound y registro de actividad. Documentación pública en{' '}
+            Conectá Wallet, resúmenes de tarjeta y mails del banco. Los movimientos llegan a Pendientes para que los
+            revises. Más detalle en la{' '}
             <Link href="/docs" className="text-primary">
-              /docs
+              guía
             </Link>
             .
           </p>

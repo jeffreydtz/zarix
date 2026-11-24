@@ -4,6 +4,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDownRight, ArrowUpRight, HandCoins, TrendingUp } from 'lucide-react';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
+import { formatCurrency } from '@/lib/utils/currency';
+import { investmentTypeLabel } from '@/lib/investments/display';
 
 interface PortfolioSummaryProps {
   totalValue: number | null;
@@ -40,28 +42,14 @@ interface PortfolioSummaryProps {
     profit_loss_usd: number;
     profit_loss_percent_usd: number;
   }>;
+  hasMarketQuotes?: boolean;
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  stock_arg: 'Acciones ARG',
-  cedear: 'CEDEARs',
-  stock_us: 'Acciones USA',
-  etf: 'ETFs',
-  crypto: 'Crypto',
-  plazo_fijo: 'Plazo Fijo',
-  fci: 'FCI',
-  bond: 'Bonos soberanos',
-  on: 'ONs',
-  caucion: 'Cauciones',
-  real_estate: 'Inmuebles',
-  other: 'Otros',
-};
-
 function formatUsd(value: number, fractionDigits = 2): string {
-  return value.toLocaleString('en-US', {
+  return formatCurrency(value, 'USD', {
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
-  });
+  }).replace(/^USD\s/, '');
 }
 
 function formatArs(value: number): string {
@@ -97,6 +85,7 @@ export default function PortfolioSummary({
   monthlyChange = null,
   topGainers = [],
   topLosers = [],
+  hasMarketQuotes = true,
 }: PortfolioSummaryProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const { hidden } = useInvestmentsPrivacy();
@@ -148,6 +137,7 @@ export default function PortfolioSummary({
           </div>
 
           <div className="flex flex-col gap-1 sm:items-end">
+            {hasMarketQuotes ? (
             <div className={`flex items-center gap-1.5 text-sm font-semibold tabular-nums ${pnlClass(totalDailyPnLUsd)}`}>
               {dayPositive ? (
                 <ArrowUpRight size={16} aria-hidden />
@@ -161,6 +151,9 @@ export default function PortfolioSummary({
                 ({formatPct(totalDailyPnLPercent)})
               </span>
             </div>
+            ) : (
+            <div className="text-sm text-muted-foreground">Rendimiento no disponible</div>
+            )}
             <div className="text-[11px] text-muted-foreground uppercase tracking-wide">P&L del día</div>
             <div className="text-[11px] text-muted-foreground tabular-nums">
               ARS {dayPositive ? '+' : ''}
@@ -189,6 +182,7 @@ export default function PortfolioSummary({
               <TrendingUp size={14} aria-hidden className="opacity-70" />
               <span>P&L no realizado (vs. compra)</span>
             </div>
+            {hasMarketQuotes ? (
             <div className={`text-sm font-semibold tabular-nums ${pnlClass(totalPnL)}`}>
               {totalPositive ? '+' : ''}USD {formatUsd(totalPnL)}
               <span className="ml-1 text-xs opacity-80">({formatPct(totalPnLPercent)})</span>
@@ -197,6 +191,9 @@ export default function PortfolioSummary({
                 {formatArs(totalPnLArsBlue)}
               </span>
             </div>
+            ) : (
+            <div className="text-sm text-muted-foreground">Rendimiento no disponible · sin cotización</div>
+            )}
           </div>
           {hasRealized && (
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -232,7 +229,7 @@ export default function PortfolioSummary({
                 <div key={item.type}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm font-medium text-foreground">
-                      {TYPE_LABELS[item.type] || item.type}
+                      {investmentTypeLabel(item.type)}
                     </span>
                     <span className="text-sm text-muted-foreground tabular-nums">
                       {percent.toFixed(1)}%
@@ -257,11 +254,11 @@ export default function PortfolioSummary({
                     </span>
                     <div className="flex items-center gap-2 text-xs tabular-nums">
                       <span className="text-muted-foreground">
-                        USD {item.value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                        {formatCurrency(item.value, 'USD', { maximumFractionDigits: 0, minimumFractionDigits: 0 })}
                       </span>
                       <span className={pnlClass(item.pnl)}>
                         {pnlSign}
-                        {item.pnl.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                        {formatUsd(item.pnl, 0)}
                       </span>
                     </div>
                   </div>
@@ -286,7 +283,7 @@ export default function PortfolioSummary({
                 <div key={item.type} className="flex items-center justify-between gap-3 text-sm">
                   <span className="font-medium">{item.type}</span>
                   <span className="text-muted-foreground tabular-nums">
-                    {percent.toFixed(1)}% · USD {item.value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    {percent.toFixed(1)}% · {formatCurrency(item.value, 'USD', { maximumFractionDigits: 0, minimumFractionDigits: 0 })}
                   </span>
                 </div>
               );
@@ -295,7 +292,7 @@ export default function PortfolioSummary({
         </motion.div>
       )}
 
-      {(topGainers.length > 0 || topLosers.length > 0) && (
+      {hasMarketQuotes && (topGainers.length > 0 || topLosers.length > 0) && (
         <div className="grid gap-4 sm:grid-cols-2">
           {[{ title: 'Mayores subas', rows: topGainers }, { title: 'Mayores bajas', rows: topLosers }].map((col) => (
             <div key={col.title} className="card">

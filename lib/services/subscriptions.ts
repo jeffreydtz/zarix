@@ -54,12 +54,12 @@ class SubscriptionsService {
 
   getDeniedMessage(status: SubscriptionStatus | null): string {
     if (status === 'PAST_DUE') {
-      return 'Tu suscripcion esta vencida por falta de pago. Actualiza tu metodo de pago para volver a usar el orquestador.';
+      return 'Tu suscripción está vencida por falta de pago. Actualizá tu método de pago para volver a usar el orquestador.';
     }
     if (status === 'CANCELED') {
-      return 'Tu suscripcion esta cancelada. Reactivala para volver a usar el orquestador.';
+      return 'Tu suscripción está cancelada. Reactivala para volver a usar el orquestador.';
     }
-    return 'No encontramos una suscripcion activa para esta cuenta.';
+    return 'No encontramos una suscripción activa para esta cuenta.';
   }
 
   async ensureOrchestratorAccess(userId: string): Promise<SubscriptionStatus> {

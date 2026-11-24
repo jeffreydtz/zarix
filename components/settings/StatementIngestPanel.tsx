@@ -59,11 +59,11 @@ export default function StatementIngestPanel() {
     <section className="card space-y-3">
       <h2 className="text-xl font-semibold">Resumen de tarjeta o movimientos del banco</h2>
       <p className="text-sm text-muted-foreground">
-        Subí el PDF del resumen o un CSV/PDF de la cuenta. Zarix extrae los movimientos y los deja en{' '}
+        Subí el PDF del resumen o un archivo CSV de la cuenta. Zarix extrae los movimientos y los deja en{' '}
         <Link href="/pendientes" className="text-primary">
           Pendientes
         </Link>
-        . Nunca los registra solo. Un CSV con columnas fecha/importe se lee sin Gemini; el PDF usa Gemini.
+        . Nunca los registra solo: vos confirmás cada uno.
       </p>
       <label className="text-sm">
         Cuenta (opcional)

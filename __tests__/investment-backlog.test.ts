@@ -471,6 +471,18 @@ describe('IOL Mi Portafolio CSV', () => {
     expect(iolImportRequestId('fixture-user', 'acct-1', changed, 0)).toBe(a);
   });
 
+  it('maps IOL FCI tickers such as IOLCAMA as fci, not crypto', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'IOLCAMA,IOL Caja de Ahorro MM,20000,1.05,1.06,ARS,FCI',
+      'IOLDOLD,IOL Dolar,100,1,1,USD,',
+    ].join('\n');
+    const parsed = parseIolPortfolioCsv(csv);
+    expect(parsed.holdings[0]).toMatchObject({ ticker: 'IOLCAMA', type: 'fci', quantity: 20000 });
+    expect(parsed.holdings[1]).toMatchObject({ ticker: 'IOLDOLD', type: 'fci' });
+    expect(parsed.holdings.every((row) => row.type !== 'crypto')).toBe(true);
+  });
+
   it('maps ON without treating "Bono" as an obligación negociable', () => {
     const csv = [
       'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',

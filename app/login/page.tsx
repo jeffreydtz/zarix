@@ -231,7 +231,7 @@ function LoginForm() {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Contrasena
+            Contraseña
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.97 }}
@@ -276,7 +276,7 @@ function LoginForm() {
                 transition={{ duration: 0.2 }}
               >
                 <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-2">
-                  Contrasena
+                  Contraseña
                 </label>
                 <div className="relative">
                   <input
@@ -284,7 +284,7 @@ function LoginForm() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Minimo 6 caracteres"
+                    placeholder="Mínimo 6 caracteres"
                     required
                     className="input pr-11"
                   />

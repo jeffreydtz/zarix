@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import type { InvestmentType } from '@/types/database';
 import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import { catalogLookup, searchCatalog, type CatalogEntry } from '@/lib/market-data/argentine-catalog';
+import { searchFciCatalog } from '@/lib/market-data/fci-catalog';
 import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
@@ -114,6 +115,11 @@ async function searchArgentineUniverse(
       hits.push({ symbol: entry.symbol, name: entry.name });
     }
   }
+  if (type === 'fci') {
+    for (const entry of searchFciCatalog(upper, 20)) {
+      hits.push({ symbol: entry.symbol, name: entry.name });
+    }
+  }
 
   try {
     const universe = await loadArgentineQuotes();
@@ -172,6 +178,11 @@ export async function GET(req: NextRequest) {
       if (type === 'on') {
         const seeded = await searchArgentineUniverse('on', '');
         return NextResponse.json({ results: seeded.slice(0, 12) });
+      }
+      if (type === 'fci') {
+        return NextResponse.json({
+          results: searchFciCatalog('', 12).map((e) => ({ symbol: e.symbol, name: e.name })),
+        });
       }
       return NextResponse.json({ results: [] as SearchHit[] });
     }

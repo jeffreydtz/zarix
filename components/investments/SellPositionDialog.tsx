@@ -185,7 +185,7 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
                   required
                 />
                 <span className="block text-[11px] text-muted-foreground mt-1">
-                  Precio promedio: {Number(investment.purchase_price).toLocaleString('en-US', { maximumFractionDigits: 4 })}
+                  Precio promedio: {Number(investment.purchase_price).toLocaleString('es-AR', { maximumFractionDigits: 4 })}
                   {investment.type === 'bond' || investment.type === 'on' ? ' / VN 100' : ''}
                 </span>
               </label>
@@ -239,7 +239,7 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
               <div className={`mt-1 text-lg font-semibold tabular-nums ${previewClass}`}>
                 {previewRealizedNative === null
                   ? '—'
-                  : `${previewRealizedNative >= 0 ? '+' : ''}${currency} ${Math.abs(previewRealizedNative).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`}
+                  : `${previewRealizedNative >= 0 ? '+' : ''}${currency} ${Math.abs(previewRealizedNative).toLocaleString('es-AR', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`}
               </div>
               <p className="text-[11px] text-muted-foreground mt-1">
                 {currency.toUpperCase() !== investment.purchase_currency.toUpperCase()

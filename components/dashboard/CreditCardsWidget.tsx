@@ -9,6 +9,7 @@ import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import SettleCardButton from '@/components/dashboard/SettleCardButton';
 import CardStatementPanel from '@/components/dashboard/CardStatementPanel';
 import type { CardStatementProjection } from '@/lib/card-statement';
+import { creditFacilityFigures } from '@/lib/credit-card-display';
 
 interface CreditCardsWidgetProps {
   accounts: AccountWithBalance[];
@@ -57,19 +58,8 @@ function CreditCardsWidget({ accounts, statements = [] }: CreditCardsWidgetProps
                 card.balance
             )
           );
-          const used = Math.abs(
-            card.is_multicurrency
-              ? Number(
-                  card.multicurrency_total_ars_blue ??
-                    card.balance_ars_blue ??
-                    card.multicurrency_balance_primary ??
-                    card.balance
-                )
-              : Number(card.balance)
-          );
-          const limit = card.credit_limit || 0;
+          const { limit, used, available } = creditFacilityFigures(card);
           const utilization = limit > 0 ? (used / limit) * 100 : 0;
-          const available = limit - used;
 
           // Cuentas de la misma moneda con saldo a favor para saldar la deuda principal.
           const fundingAccounts = accounts
@@ -136,7 +126,7 @@ function CreditCardsWidget({ accounts, statements = [] }: CreditCardsWidgetProps
               </div>
 
               {isMulticurrencyCard ? (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Saldo ARS</p>
                     <p className="font-bold text-foreground">
@@ -159,6 +149,12 @@ function CreditCardsWidget({ accounts, statements = [] }: CreditCardsWidgetProps
                     <p className="text-xs text-muted-foreground mb-0.5">Límite</p>
                     <p className="font-semibold text-muted-foreground">
                       <AnimatedNumber value={limit} prefix="$" decimals={0} />
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-0.5">Disponible</p>
+                    <p className="font-bold text-success">
+                      <AnimatedNumber value={available} prefix="$" decimals={0} />
                     </p>
                   </div>
                 </div>

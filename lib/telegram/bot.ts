@@ -248,7 +248,7 @@ bot.command('cuentas', async (ctx) => {
     message += `Cotizaciones no disponibles. Saldos en moneda original.\n`;
   } else {
     message += `💵 $${total.totalARSBlue.toLocaleString('es-AR')} ARS (blue)\n`;
-    message += `💵 USD ${total.totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}\n`;
+    message += `💵 USD ${total.totalUSD.toLocaleString('es-AR', { minimumFractionDigits: 2 })}\n`;
     if (total.fxStale && total.fxAsOf) message += `Cotización del ${new Date(total.fxAsOf).toLocaleDateString('es-AR')}\n`;
   }
 
@@ -268,7 +268,7 @@ bot.command('cotizaciones', async (ctx) => {
     }
     message += `\n₿ *CRYPTO*\n`;
     for (const [symbol, quote] of Object.entries(quotes.crypto)) {
-      message += `${symbol.toUpperCase()}: ${quote ? `USD ${quote.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 4 })}` : 'No disponible'}\n`;
+      message += `${symbol.toUpperCase()}: ${quote ? `USD ${quote.priceUSD.toLocaleString('es-AR', { maximumFractionDigits: 4 })}` : 'No disponible'}\n`;
     }
 
     ctx.reply(message, { parse_mode: 'Markdown' });

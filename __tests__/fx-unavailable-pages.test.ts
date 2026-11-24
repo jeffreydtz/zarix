@@ -219,7 +219,7 @@ describe('FX outages preserve financial server renders', () => {
     };
     const text = readable(renderToStaticMarkup(createElement(InvestmentsList, { investments: [investment] })));
     expect(text).toContain('Fondo de prueba');
-    expect(text).toContain('USD 17.50');
+    expect(text).toContain('USD 17,50');
     expect(text).toContain('Cotizaciones no disponibles');
     expect(text).not.toMatch(/NaN|Infinity|≈ ARS 0/);
   });

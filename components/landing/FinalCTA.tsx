@@ -24,10 +24,10 @@ export default function FinalCTA() {
       >
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-3xl" />
         <h2 className="relative text-balance text-3xl font-semibold text-foreground sm:text-5xl">
-          Cuanto vale tu patrimonio hoy?
+          ¿Cuánto vale tu patrimonio hoy?
         </h2>
         <p className="relative mx-auto mt-4 max-w-2xl text-muted-foreground">
-          Descubrilo en 30 segundos. Sin configuracion. Sin letra chica.
+          Descubrilo en 30 segundos. Sin configuración. Sin letra chica.
         </p>
         <Link
           href="/register"

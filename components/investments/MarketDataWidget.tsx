@@ -83,7 +83,7 @@ function CryptoRow({
       <div className="text-right">
         <div className="text-sm font-bold text-foreground tabular-nums">
           ${coin.price >= 1
-            ? coin.price.toLocaleString('en-US', { maximumFractionDigits: 2 })
+            ? coin.price.toLocaleString('es-AR', { maximumFractionDigits: 2 })
             : coin.price.toFixed(6)}
         </div>
         <ChangeBadge value={coin.change24h} />
@@ -112,11 +112,11 @@ function StockRow({
   if (isIndex && isPts) {
     priceStr = `${stock.price.toLocaleString('es-AR', { maximumFractionDigits: 0 })} pts`;
   } else if (isIndex) {
-    priceStr = `${stock.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} pts`;
+    priceStr = `${stock.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} pts`;
   } else if (isArg) {
     priceStr = `$${stock.price.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS`;
   } else {
-    priceStr = `$${stock.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    priceStr = `$${stock.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
   const displayTicker = stock.ticker.replace('.BA', '').replace(/^\^/, '');
