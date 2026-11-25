@@ -67,7 +67,7 @@ El layout de Graphviz no tiene que coincidir píxel a píxel con el recorte embe
 | 36 | Secuencia CU001 A14: carga de resúmenes | `diagramas/SEC-CU001-IngresarResumen.mmd` |
 | 37 | Secuencia CU003 A07: resumen de tarjeta | `diagramas/SEC-CU003-ResumenTarjeta.mmd` |
 | 38 | Secuencia CU003 A08: rendimiento real | `diagramas/SEC-CU003-RendimientoReal.mmd` |
-| 39 | Diagrama de clases general: servicios, módulos y entidades de dominio por paquete | `docs/tif/diagrams/fig08_clases.puml` |
+| 39 | Diagrama de clases general: servicios, módulos y entidades de dominio por paquete | `diagramas/CLASES-General.dot` |
 | 40 | Clases CU001: registro y conversión | `diagramas/CLASES-CU001-Movimientos.dot` |
 | 41 | Clases CU001: reglas y presupuestos | `diagramas/CLASES-CU001-Automatizacion.dot` |
 | 42 | Clases CU001: gasto compartido | `diagramas/CLASES-CU001-Compartidos.dot` |
@@ -83,8 +83,9 @@ Origen de cada fuente:
 
 - La mayoría coincide con las fuentes usadas para imprimir la v2.28 (mismas cajas, columnas, mensajes y estereotipos que el raster del PDF).
 - Figuras 41 y 44: las copias `CLASES-CU001-Automatizacion.dot` / `CLASES-CU003-Analisis.dot` de ese mismo paquete están simplificadas y **no** coinciden con lo impreso. Aquí se usaron las variantes completas (`fig40-completa.dot` y `fig43-completa.dot`), que sí coinciden.
-- Figuras 40, 42, 43 y 45: no había en el repositorio ni en el paquete externo una fuente que coincidiera con lo impreso (las `CLASES-*.dot` de `v2.13` y las simplificadas del paquete omiten cajas y operaciones). Se reconstruyeron a partir del raster de la v2.28, sin agregar ni quitar cajas, atributos u operaciones.
-- Figura 39: diagrama de clases general insertado en tesis v2.34+. La fuente en el repositorio es `docs/tif/diagrams/fig08_clases.puml` (servicios, módulos/paquetes y entidades de dominio).
+- Figuras 40, 43 y 45: no había en el repositorio ni en el paquete externo una fuente que coincidiera con lo impreso (las `CLASES-*.dot` de `v2.13` y las simplificadas del paquete omiten cajas y operaciones). Se reconstruyeron a partir del raster de la v2.28, sin agregar ni quitar cajas, atributos u operaciones.
+- Figura 42: regenerada en tesis v2.36. Suma el módulo `sharedExpenses` (`isValidShareToken`, `computeBalances`, `computeSettlements`, `splitEqually`) sobre el diagrama de clases de gasto compartido.
+- Figura 39: diagrama de clases general insertado en tesis v2.34+; fuente v2.36 `diagramas/CLASES-General.dot` (servicios, módulos y entidades de dominio por paquete). El `docs/tif/diagrams/fig08_clases.puml` del catálogo ICONIX anterior (Fig. 8 en `docs/tif/README.md`) se conserva ahí; no es la Figura 39.
 
 ## 1. Figuras actualizadas o agregadas
 
@@ -101,10 +102,10 @@ Origen de cada fuente:
 | 27–29 | `ROB-CU001-IngresarResumen.dot`, `ROB-CU003-ResumenTarjeta.dot`, `ROB-CU003-RendimientoReal.dot` | No existían en el repositorio |
 | 30–35 | `SEC-CU001-Crear.mmd`, `SEC-CU001-EditarEliminar.mmd`, `SEC-CU003-Dashboard.mmd`, `SEC-CU004-Compra.mmd`, `SEC-CU004-VentaRPC.mmd`, `SEC-CU002-CuentasAlta.mmd` | Participantes y mensajes del impreso (nombres reales de ruta/servicio/RPC) |
 | 36–38 | `SEC-CU001-IngresarResumen.mmd`, `SEC-CU003-ResumenTarjeta.mmd`, `SEC-CU003-RendimientoReal.mmd` | No existían en el repositorio |
-| 39 | `docs/tif/diagrams/fig08_clases.puml` | Insertada en tesis v2.34+: clases general (servicios, módulos y entidades de dominio por paquete) |
+| 39 | `CLASES-General.dot` | Tesis v2.36: clases general (servicios, módulos y entidades de dominio por paquete) |
 | 40 | `CLASES-CU001-Movimientos.dot` | Reconstruida: 11 operaciones de `TransactionsService` y DTO del impreso |
 | 41 | `CLASES-CU001-Automatizacion.dot` | Completa más `CreateBudgetInput` (atributos de `lib/services/budgets.ts`) y «use» desde `BudgetsService.create` |
-| 42 | `CLASES-CU001-Compartidos.dot` | Reconstruida: 8 operaciones de `SharedExpensesService` y tipos del impreso |
+| 42 | `CLASES-CU001-Compartidos.dot` | Regenerada v2.36: módulo `sharedExpenses` con `isValidShareToken`, `computeBalances`, `computeSettlements`, `splitEqually` |
 | 43 | `CLASES-CU002-Cuentas.dot` | Reconstruida: 18 operaciones de `AccountsService` |
 | 44 | `CLASES-CU003-Analisis.dot` | Completa: módulos de anomalías, proyección, tarjeta y rendimiento real |
 | 45 | `CLASES-CU004-Inversiones.dot` | Reconstruida: 10 operaciones de `InvestmentsService` |
