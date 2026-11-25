@@ -14,7 +14,8 @@ profiles = {
     'optimista': dict(reg=[20,30,50,100,140,180,240,300,360,420,480,540]+list(range(600,1261,60)), conversion=.10, churn=.02, collect=.98, mau=.40, ai_util=.60, marketing=40, cloud_mult=1, variable_tax=.05, fixed_tax=30, fee=.06),
     'adverso': dict(reg=[20,30,50,30,40,50,60,60,70,70,80,80]+[80]*12, conversion=.04, churn=.08, collect=.90, mau=.25, ai_util=1, marketing=15, cloud_mult=1.50, variable_tax=.08, fixed_tax=45, fee=.08),
 }
-common = dict(currency='USD constantes del momento de evaluación', price_usd=7.50, launch_month=4, horizon_months=24, annual_discount_real_usd=annual_rate, monthly_discount=monthly_rate,
+PRICE_USD = D('7')
+common = dict(currency='USD constantes del momento de evaluación', price_usd=PRICE_USD, launch_month=4, horizon_months=24, annual_discount_real_usd=annual_rate, monthly_discount=monthly_rate,
     ai_model='gemini-2.5-flash', ai_input_per_million=.30, ai_output_per_million=2.50, ai_queries_quota=40, ai_ocr_quota=20, ai_query_input=4000, ai_query_output=800, ai_ocr_input=3000, ai_ocr_output=400, ai_retry_factor=1.25,
     vercel_pro=20, supabase_pro=25, email=3, data_api_budget=15, cloud_import_buffer=.25, accounting=30, operating_other=10, extra_cloud_per_mau=.01,
     domain_initial=18, domain_renewal=18, domain_renewal_months=[12,24], initial_legal_setup=150, initial_test_budget=30, academic_monthly_tools_ai=10,
@@ -50,7 +51,7 @@ for name, p in profiles.items():
     assert len(p['reg']) == 24, 'Cada escenario requiere exactamente 24 meses'
     rows=[]; cumulative=D(0); premium=0; registered=0; prev_invoice=D(0); support=False
     initial=money(common['domain_initial']+common['initial_legal_setup']+common['initial_test_budget'])
-    rows.append(dict(escenario=name,mes=0,altas_registrados=0,registrados_acumulados=0,mau_estimados=0,altas_premium=0,bajas_premium=0,premium_fin=0,precio_usd=7.50,facturacion_bruta=0,cobros_brutos=0,comision_cobro=0,hosting_vercel=0,base_supabase=0,email=0,api_cotizaciones=0,ia_tokens=0,colchon_importacion=0,infra_variable=0,administracion=0,marketing=0,otros_operativos=0,provision_fiscal_fija=0,provision_fiscal_variable=0,soporte_contratado=0,dominio=18,puesta_marcha=180,pagos_totales=initial,flujo_proyecto=-initial,acumulado_proyecto=-initial,horas_fundador=80,costo_oportunidad_fundador=960,flujo_economico=-initial-D(960),cuentas_cobrar=0))
+    rows.append(dict(escenario=name,mes=0,altas_registrados=0,registrados_acumulados=0,mau_estimados=0,altas_premium=0,bajas_premium=0,premium_fin=0,precio_usd=PRICE_USD,facturacion_bruta=0,cobros_brutos=0,comision_cobro=0,hosting_vercel=0,base_supabase=0,email=0,api_cotizaciones=0,ia_tokens=0,colchon_importacion=0,infra_variable=0,administracion=0,marketing=0,otros_operativos=0,provision_fiscal_fija=0,provision_fiscal_variable=0,soporte_contratado=0,dominio=18,puesta_marcha=180,pagos_totales=initial,flujo_proyecto=-initial,acumulado_proyecto=-initial,horas_fundador=80,costo_oportunidad_fundador=960,flujo_economico=-initial-D(960),cuentas_cobrar=0))
     cumulative=-initial
     pre_support_margins=[]
     for m in range(1,25):
@@ -60,7 +61,7 @@ for name, p in profiles.items():
         churn=count(premium*p['churn']) if m>=4 else 0
         premium=max(0,premium+gross_add-churn)
         assert premium<=registered
-        invoice=money(premium*7.50) if m>=4 else D(0)
+        invoice=money(premium*PRICE_USD) if m>=4 else D(0)
         received=money(prev_invoice*D(p['collect']))
         fee=money(received*D(p['fee']))
         commercial=m>=4
@@ -88,7 +89,7 @@ for name, p in profiles.items():
         cumulative=money(cumulative+flow)
         hours=60 if m<=3 else (32 if support else 40)
         opportunity=money(hours*12)
-        rows.append(dict(escenario=name,mes=m,altas_registrados=p['reg'][m-1],registrados_acumulados=registered,mau_estimados=mau,altas_premium=gross_add,bajas_premium=churn,premium_fin=premium,precio_usd=7.50,facturacion_bruta=invoice,cobros_brutos=received,comision_cobro=fee,hosting_vercel=hosting,base_supabase=db,email=email,api_cotizaciones=data,ia_tokens=ai,colchon_importacion=cloud_buffer,infra_variable=extra,administracion=admin,marketing=marketing,otros_operativos=other,provision_fiscal_fija=tax_fixed,provision_fiscal_variable=tax_variable,soporte_contratado=support_fee,dominio=domain,puesta_marcha=0,pagos_totales=total,flujo_proyecto=flow,acumulado_proyecto=cumulative,horas_fundador=hours,costo_oportunidad_fundador=opportunity,flujo_economico=flow-opportunity,cuentas_cobrar=money(invoice*D(p['collect']))))
+        rows.append(dict(escenario=name,mes=m,altas_registrados=p['reg'][m-1],registrados_acumulados=registered,mau_estimados=mau,altas_premium=gross_add,bajas_premium=churn,premium_fin=premium,precio_usd=PRICE_USD,facturacion_bruta=invoice,cobros_brutos=received,comision_cobro=fee,hosting_vercel=hosting,base_supabase=db,email=email,api_cotizaciones=data,ia_tokens=ai,colchon_importacion=cloud_buffer,infra_variable=extra,administracion=admin,marketing=marketing,otros_operativos=other,provision_fiscal_fija=tax_fixed,provision_fiscal_variable=tax_variable,soporte_contratado=support_fee,dominio=domain,puesta_marcha=0,pagos_totales=total,flujo_proyecto=flow,acumulado_proyecto=cumulative,horas_fundador=hours,costo_oportunidad_fundador=opportunity,flujo_economico=flow-opportunity,cuentas_cobrar=money(invoice*D(p['collect']))))
         pre_support_margins.append(before_support)
         prev_invoice=invoice
     flows=[r['flujo_proyecto'] for r in rows]
@@ -114,7 +115,7 @@ for name, p in profiles.items():
         economic_cum+=r['flujo_economico']
         if r['mes']>0 and economic_cum>=0 and economic_payback is None: economic_payback=r['mes']
     per_premium_ai=ai_quota_cost*D(p['ai_util'])
-    contribution=D('7.50')*D(p['collect'])*(1-D(p['fee'])-D(p['variable_tax'])) - per_premium_ai*D('1.25')
+    contribution=PRICE_USD*D(p['collect'])*(1-D(p['fee'])-D(p['variable_tax'])) - per_premium_ai*D('1.25')
     # Equilibrio de régimen estable para el MAU M12: cuotas cobradas con rezago constante.
     eq_fixed=base_fixed_m4+D(rows[12]['infra_variable'])+D('1.50') # dominio anual equivalente
     eq=math.ceil(float(eq_fixed/contribution))
