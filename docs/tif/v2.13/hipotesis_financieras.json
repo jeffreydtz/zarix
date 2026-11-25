@@ -1,7 +1,7 @@
 {
   "common": {
     "currency": "USD constantes del momento de evaluación",
-    "price_usd": 7.5,
+    "price_usd": 7.0,
     "launch_month": 4,
     "horizon_months": 24,
     "annual_discount_real_usd": 0.25,

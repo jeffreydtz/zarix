@@ -1,6 +1,8 @@
 # Fuentes de diagramas — tesis v2.28
 
-Las figuras impresas del documento vigente (`ZARIX-Plan-de-Desarrollo-Tecnologico-v2.28`) mandan sobre cualquier fuente anterior, salvo las Figuras 14, 40 y 48, que se alinearon después con el código de `c830f85` (apartado 3). Esta carpeta reúne las fuentes editables (`.dot`, `.mmd` y el generador de prototipos) y los SVG/PNG regenerados desde ellas.
+Las figuras impresas del documento vigente (`ZARIX-Plan-de-Desarrollo-Tecnologico-v2.28`) mandan sobre cualquier fuente anterior, salvo las Figuras 14, 41 y 49, que se alinearon después con el código de `c830f85` (apartado 3). Esta carpeta reúne las fuentes editables (`.dot`, `.mmd` y el generador de prototipos) y los SVG/PNG regenerados desde ellas.
+
+La numeración de este README sigue la tesis v2.34+: se insertó la Figura 39 (*Diagrama de clases general: servicios, módulos y entidades de dominio por paquete*) y las que en v2.28 eran 39–57 pasaron a 40–58.
 
 `docs/tif/v2.13/diagramas/` y `docs/tif/v2.13/figures/` se conservan como snapshot histórico. No se modificaron: las discrepancias respecto de lo impreso se resolvieron aquí, no in situ.
 
@@ -65,22 +67,25 @@ El layout de Graphviz no tiene que coincidir píxel a píxel con el recorte embe
 | 36 | Secuencia CU001 A14: carga de resúmenes | `diagramas/SEC-CU001-IngresarResumen.mmd` |
 | 37 | Secuencia CU003 A07: resumen de tarjeta | `diagramas/SEC-CU003-ResumenTarjeta.mmd` |
 | 38 | Secuencia CU003 A08: rendimiento real | `diagramas/SEC-CU003-RendimientoReal.mmd` |
-| 39 | Clases CU001: registro y conversión | `diagramas/CLASES-CU001-Movimientos.dot` |
-| 40 | Clases CU001: reglas y presupuestos | `diagramas/CLASES-CU001-Automatizacion.dot` |
-| 41 | Clases CU001: gasto compartido | `diagramas/CLASES-CU001-Compartidos.dot` |
-| 42 | Clases CU002: cuenta y consulta de saldos | `diagramas/CLASES-CU002-Cuentas.dot` |
-| 43 | Clases CU003: análisis, resumen de tarjeta y rendimiento real | `diagramas/CLASES-CU003-Analisis.dot` |
-| 44 | Clases CU004: inversión y venta | `diagramas/CLASES-CU004-Inversiones.dot` |
-| 47 | Patrones: Strategy y Adapter | `diagramas/PATRONES-Cotizaciones.dot` |
-| 48 | Patrón: Template Method | `diagramas/PATRONES-Cron.dot` |
-| 49 | Secuencia de patrones: Strategy y Adapter | `diagramas/SEC-StrategyAdapter.mmd` |
-| 50 | Secuencia de patrón: Template Method | `diagramas/SEC-TemplateMethod.mmd` |
+| 39 | Diagrama de clases general: servicios, módulos y entidades de dominio por paquete | `diagramas/CLASES-General.dot` |
+| 40 | Clases CU001: registro y conversión | `diagramas/CLASES-CU001-Movimientos.dot` |
+| 41 | Clases CU001: reglas y presupuestos | `diagramas/CLASES-CU001-Automatizacion.dot` |
+| 42 | Clases CU001: gasto compartido | `diagramas/CLASES-CU001-Compartidos.dot` |
+| 43 | Clases CU002: cuenta y consulta de saldos | `diagramas/CLASES-CU002-Cuentas.dot` |
+| 44 | Clases CU003: análisis, resumen de tarjeta y rendimiento real | `diagramas/CLASES-CU003-Analisis.dot` |
+| 45 | Clases CU004: inversión y venta | `diagramas/CLASES-CU004-Inversiones.dot` |
+| 48 | Patrones: Strategy y Adapter | `diagramas/PATRONES-Cotizaciones.dot` |
+| 49 | Patrón: Template Method | `diagramas/PATRONES-Cron.dot` |
+| 50 | Secuencia de patrones: Strategy y Adapter | `diagramas/SEC-StrategyAdapter.mmd` |
+| 51 | Secuencia de patrón: Template Method | `diagramas/SEC-TemplateMethod.mmd` |
 
 Origen de cada fuente:
 
 - La mayoría coincide con las fuentes usadas para imprimir la v2.28 (mismas cajas, columnas, mensajes y estereotipos que el raster del PDF).
-- Figuras 40 y 43: las copias `CLASES-CU001-Automatizacion.dot` / `CLASES-CU003-Analisis.dot` de ese mismo paquete están simplificadas y **no** coinciden con lo impreso. Aquí se usaron las variantes completas (`fig40-completa.dot` y `fig43-completa.dot`), que sí coinciden.
-- Figuras 39, 41, 42 y 44: no había en el repositorio ni en el paquete externo una fuente que coincidiera con lo impreso (las `CLASES-*.dot` de `v2.13` y las simplificadas del paquete omiten cajas y operaciones). Se reconstruyeron a partir del raster de la v2.28, sin agregar ni quitar cajas, atributos u operaciones.
+- Figuras 41 y 44: las copias `CLASES-CU001-Automatizacion.dot` / `CLASES-CU003-Analisis.dot` de ese mismo paquete están simplificadas y **no** coinciden con lo impreso. Aquí se usaron las variantes completas (`fig40-completa.dot` y `fig43-completa.dot`), que sí coinciden.
+- Figuras 40, 43 y 45: no había en el repositorio ni en el paquete externo una fuente que coincidiera con lo impreso (las `CLASES-*.dot` de `v2.13` y las simplificadas del paquete omiten cajas y operaciones). Se reconstruyeron a partir del raster de la v2.28, sin agregar ni quitar cajas, atributos u operaciones.
+- Figura 42: regenerada en tesis v2.36. Suma el módulo `sharedExpenses` (`isValidShareToken`, `computeBalances`, `computeSettlements`, `splitEqually`) sobre el diagrama de clases de gasto compartido.
+- Figura 39: diagrama de clases general insertado en tesis v2.34+; fuente v2.36 `diagramas/CLASES-General.dot` (servicios, módulos y entidades de dominio por paquete). El `docs/tif/diagrams/fig08_clases.puml` del catálogo ICONIX anterior (Fig. 8 en `docs/tif/README.md`) se conserva ahí; no es la Figura 39.
 
 ## 1. Figuras actualizadas o agregadas
 
@@ -97,15 +102,16 @@ Origen de cada fuente:
 | 27–29 | `ROB-CU001-IngresarResumen.dot`, `ROB-CU003-ResumenTarjeta.dot`, `ROB-CU003-RendimientoReal.dot` | No existían en el repositorio |
 | 30–35 | `SEC-CU001-Crear.mmd`, `SEC-CU001-EditarEliminar.mmd`, `SEC-CU003-Dashboard.mmd`, `SEC-CU004-Compra.mmd`, `SEC-CU004-VentaRPC.mmd`, `SEC-CU002-CuentasAlta.mmd` | Participantes y mensajes del impreso (nombres reales de ruta/servicio/RPC) |
 | 36–38 | `SEC-CU001-IngresarResumen.mmd`, `SEC-CU003-ResumenTarjeta.mmd`, `SEC-CU003-RendimientoReal.mmd` | No existían en el repositorio |
-| 39 | `CLASES-CU001-Movimientos.dot` | Reconstruida: 11 operaciones de `TransactionsService` y DTO del impreso |
-| 40 | `CLASES-CU001-Automatizacion.dot` | Completa más `CreateBudgetInput` (atributos de `lib/services/budgets.ts`) y «use» desde `BudgetsService.create` |
-| 41 | `CLASES-CU001-Compartidos.dot` | Reconstruida: 8 operaciones de `SharedExpensesService` y tipos del impreso |
-| 42 | `CLASES-CU002-Cuentas.dot` | Reconstruida: 18 operaciones de `AccountsService` |
-| 43 | `CLASES-CU003-Analisis.dot` | Completa: módulos de anomalías, proyección, tarjeta y rendimiento real |
-| 44 | `CLASES-CU004-Inversiones.dot` | Reconstruida: 10 operaciones de `InvestmentsService` |
-| 47 | `PATRONES-Cotizaciones.dot` | Firmas, estereotipos y «API HTTP externa» del impreso |
-| 48 | `PATRONES-Cron.dot` | `NetWorthSnapshotJob` con `fetchItems`, `processItem` y `emptyMessage`, como en `app/api/cron/net-worth-snapshot/route.ts` |
-| 49–50 | `SEC-StrategyAdapter.mmd`, `SEC-TemplateMethod.mmd` | Secuencias de patrones alineadas al impreso |
+| 39 | `CLASES-General.dot` | Tesis v2.36: clases general (servicios, módulos y entidades de dominio por paquete) |
+| 40 | `CLASES-CU001-Movimientos.dot` | Reconstruida: 11 operaciones de `TransactionsService` y DTO del impreso |
+| 41 | `CLASES-CU001-Automatizacion.dot` | Completa más `CreateBudgetInput` (atributos de `lib/services/budgets.ts`) y «use» desde `BudgetsService.create` |
+| 42 | `CLASES-CU001-Compartidos.dot` | Regenerada v2.36: módulo `sharedExpenses` con `isValidShareToken`, `computeBalances`, `computeSettlements`, `splitEqually` |
+| 43 | `CLASES-CU002-Cuentas.dot` | Reconstruida: 18 operaciones de `AccountsService` |
+| 44 | `CLASES-CU003-Analisis.dot` | Completa: módulos de anomalías, proyección, tarjeta y rendimiento real |
+| 45 | `CLASES-CU004-Inversiones.dot` | Reconstruida: 10 operaciones de `InvestmentsService` |
+| 48 | `PATRONES-Cotizaciones.dot` | Firmas, estereotipos y «API HTTP externa» del impreso |
+| 49 | `PATRONES-Cron.dot` | `NetWorthSnapshotJob` con `fetchItems`, `processItem` y `emptyMessage`, como en `app/api/cron/net-worth-snapshot/route.ts` |
+| 50–51 | `SEC-StrategyAdapter.mmd`, `SEC-TemplateMethod.mmd` | Secuencias de patrones alineadas al impreso |
 
 ## 2. Figuras que ya coincidían (no se tocaron)
 
@@ -120,9 +126,9 @@ Siguen en `docs/tif/v2.13/`. El raster de la v2.28 coincide con esas fuentes en 
 | 13 Dominio: gastos compartidos | `docs/tif/v2.13/diagramas/DOM-Compartidos.dot` |
 | 21 Arquitectura: vista lógica | `docs/tif/v2.13/diagramas/ARQ-Logica-Impresa.dot` |
 | 22 Arquitectura: despliegue objetivo | `docs/tif/v2.13/diagramas/ARQ-Despliegue-Impresa.dot` |
-| 45 CFG 01 Guardas | `docs/tif/v2.13/diagramas/CFG-01-Guardas.dot` |
-| 46 CFG 01 Frecuencia | `docs/tif/v2.13/diagramas/CFG-01-Frecuencia.dot` |
-| 51–57 capturas del Anexo F | no son diagramas de diseño; no hay fuente `.dot`/`.mmd` |
+| 46 CFG 01 Guardas | `docs/tif/v2.13/diagramas/CFG-01-Guardas.dot` |
+| 47 CFG 01 Frecuencia | `docs/tif/v2.13/diagramas/CFG-01-Frecuencia.dot` |
+| 52–58 capturas del Anexo F | no son diagramas de diseño; no hay fuente `.dot`/`.mmd` |
 
 Vistas **solo de anexo digital** (Anexo E) que no están impresas en el cuerpo: no se actualizaron. Siguen, cuando existían, en `v2.13` (p. ej. `ER-CU001-Recurrentes`, `ER-CU001-Presupuestos`, `ER-CU001-Reparto`, `ER-CU002-Integraciones`, `CLASES-Datos-*`, `SEC-CU001-OCR` y el resto de ROB/SEC de detalle). PT13 (bandeja) y PT14 (integraciones) siguen sin generador en el repositorio; no se reconstruyeron porque no son figuras del cuerpo.
 
@@ -130,10 +136,10 @@ La integración PAT/MCP/REST citada por el Anexo E para componentes sigue en `do
 
 ## 3. Alineación posterior con el código (`c830f85`)
 
-Las Figuras 14, 40 y 48 se actualizaron para coincidir con `c830f85`. Los PNG de esas tres se regeneraron a ~300 dpi.
+Las Figuras 14, 41 y 49 se actualizaron para coincidir con `c830f85`. Los PNG de esas tres se regeneraron a ~300 dpi.
 
 1. **Figura 14 / `transactions`.** `uuid account_id FK NOT NULL` y origen `accounts 1`. Columna `text source NOT NULL (web|telegram|wallet|api|mcp|email|statement)` (`supabase/schema.sql` hacia 6672 y 6950; migración `20261111154733_transactions_account_id_not_null.sql`).
-2. **Figura 40 / `CreateBudgetInput`.** Caja «interface» con `userId`, `categoryId`, `month`, `amount`, `currency`, `rolloverEnabled?`, `alertAtPercent?` y arista «use» desde `BudgetsService` (`lib/services/budgets.ts:7-15`).
-3. **Figura 48 / `NetWorthSnapshotJob`.** Tercera operación protegida `#emptyMessage(): string` (`app/api/cron/net-worth-snapshot/route.ts:31`).
+2. **Figura 41 / `CreateBudgetInput`.** Caja «interface» con `userId`, `categoryId`, `month`, `amount`, `currency`, `rolloverEnabled?`, `alertAtPercent?` y arista «use» desde `BudgetsService` (`lib/services/budgets.ts:7-15`).
+3. **Figura 49 / `NetWorthSnapshotJob`.** Tercera operación protegida `#emptyMessage(): string` (`app/api/cron/net-worth-snapshot/route.ts:31`).
 
 Queda como coincidencia, no como hueco: `TransactionsService.getMonthSummary` y `AccountsService.getTotalBalance` / `getTotalBalanceWithInvestments` se dibujan sin tipo de retorno porque el código tampoco anota uno.

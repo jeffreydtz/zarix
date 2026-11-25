@@ -7,7 +7,7 @@ export default function TrustBar() {
         </p>
         <div className="grid gap-3 text-sm text-foreground sm:grid-cols-3">
           <p className="rounded-xl border border-border/60 bg-card px-4 py-3">
-            <span className="font-semibold text-primary">+2M</span> de argentinos son el mercado objetivo
+            <span className="font-semibold text-primary">Sin APIs de homebanking</span> — vos controlás tus datos
           </p>
           <p className="rounded-xl border border-border/60 bg-card px-4 py-3">
             <span className="font-semibold text-primary">&lt; 30s</span> para ver tu patrimonio real

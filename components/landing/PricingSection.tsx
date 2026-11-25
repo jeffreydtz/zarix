@@ -16,7 +16,7 @@ const fadeUpVariants = {
 const freeFeatures = [
   'Dashboard completo',
   'Movimientos ilimitados',
-  '2 cuentas conectadas',
+  'Cuentas ilimitadas',
   'Cotizaciones dólar blue / MEP / CCL',
   'Presupuestos básicos',
   'Análisis mensual',
@@ -27,7 +27,6 @@ const premiumFeatures = [
   'Bot de Telegram personal',
   'OCR de tickets por foto (IA)',
   'Portafolio de inversiones (Merval + USA)',
-  'Cuentas ilimitadas',
   'Analítica avanzada y proyecciones',
   'Exportación de datos (CSV)',
   'Alertas inteligentes',
