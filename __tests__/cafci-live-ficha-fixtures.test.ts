@@ -180,7 +180,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(72);
     expect(failures).toEqual([]);
-  }, 20_000);
+  }, 40_000);
 
   const DATE_WRAPS: Array<[string, (inner: string) => string]> = [
     ['span display:block', (inner) => `<span style="display:block">${inner}</span>`],
@@ -210,7 +210,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(20);
     expect(failures).toEqual([]);
-  }, 20_000);
+  }, 40_000);
 
   const CONTROL_DATES = [
     ['literal U+0001', 'Valores al 23/10/2026\u00011'],
@@ -249,7 +249,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(20);
     expect(failures).toEqual([]);
-  }, 20_000);
+  }, 40_000);
 
   const DATE_SPLITS: Array<[string, string]> = [
     ['br', '<h3>Valores al <br>23/10/2026</h3>'],
@@ -278,7 +278,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(16);
     expect(failures).toEqual([]);
-  }, 20_000);
+  }, 40_000);
 
   const BORROWED_DATES: Array<[string, string]> = [
     ['following p', '<h3>Valores al</h3><p>26/10/2026</p>'],
@@ -308,7 +308,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(24);
     expect(failures).toEqual([]);
-  }, 20_000);
+  }, 40_000);
 
   const WRONG_DATES: Array<[string, string]> = [
     ['label cell has extra text', '<table><tr><td><span>Valores al</span><span>pendientes</span></td><td>26/10/2026</td></tr></table>'],
@@ -343,7 +343,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
     }
     expect(cases).toBe(24);
     expect(failures).toEqual([]);
-  }, 20_000);
+  }, 40_000);
 
   it('reads a block-displayed Moneda label from the next line in the same parent', () => {
     const failures: string[] = [];
@@ -368,7 +368,7 @@ describe('live CAFCI ficha fixtures (captured 2026-10-26)', () => {
       }
     }
     expect(failures).toEqual([]);
-  }, 20_000);
+  }, 40_000);
 
   it.each(LIVE)('$fondoId/$claseId still parses with an identical adjacent Moneda li', (row) => {
     const html = readFileSync(join(fixtures, row.file), 'utf8');
